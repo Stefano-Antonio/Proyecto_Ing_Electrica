@@ -1,0 +1,30 @@
+.header {
+    display: flex;
+    align-items: center;
+    background-color: #002a5c; /* Color de fondo azul */
+    padding: 10px;
+    color: white;
+   
+  }
+  
+  .header-logo_uaz {
+    width: 120px; /* Ajusta el tamaño del logo según tus necesidades */
+    height: auto;
+    margin-right: 15px;
+  }
+  
+  .header-logo_uaei {
+    width: 100px; /* Ajusta el tamaño del logo según tus necesidades */
+    height: auto;
+    margin-right: 15px;
+  }
+
+  .header-title {
+    font-size: 2.5rem;
+    flex-grow: 1; /* Permite que el título ocupe el espacio disponible */
+    text-align: center; /* Centra el texto dentro del título */
+    color: #af7800; /* Cambia el color de las letras aquí */
+
+  }
+  .header-title .highlight { color: white; /* Cambia el color del texto a blanco */ }
+     

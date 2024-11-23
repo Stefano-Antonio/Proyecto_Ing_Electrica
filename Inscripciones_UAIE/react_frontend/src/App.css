@@ -1,0 +1,30 @@
+.App {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Asegúrate de que ocupe el 100% de la altura de la ventana */
+  margin: 0; /* Elimina márgenes no deseados */
+  padding: 0; /* Elimina rellenos no deseados */
+  overflow-x: hidden;
+}
+
+.Main-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr 220px; 
+  box-sizing: border-box;
+  flex: 1;
+  max-width: 100%; /* Asegura que el ancho sea completo */
+}
+
+.Lat_iazquierda, .Lat_derecha {
+  background-color: #e0e0e0; 
+  min-height:75vh;
+}
+
+.Contenido {
+  padding: 1px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%; /* Asegura que el contenido ocupe todo el espacio disponible */
+}
