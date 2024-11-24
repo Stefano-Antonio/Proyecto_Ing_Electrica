@@ -17,9 +17,13 @@ import InicioTutor from './components/InicioTutor';
 import './components/InicioTutor.css';
 import RevisionHorarioTutor from './components/RevisionHorarioTutor';
 import "./components/RevisionHorarioTutor.css";
+import PrivateRoute from './components/PrivateRoute';
+import RedirectRoute from './components/RedirectRoute';
 
 
 function App() {
+  // Simula el tipo de usuario para esta lógica (esto puede venir del back-end o de localStorage)
+  const userType = localStorage.getItem("userType") || "alumno"; // Puede ser "alumno" o "usuario"
   return (
     <Router>
       <div className="App">
@@ -28,12 +32,13 @@ function App() {
           <div className="Lat_iazquierda"></div> {/* Barra lateral izquierda */}
           <div className="Contenido">
             <Routes>
-              <Route path="/" element={<Registro />} />
-              <Route path="/horario-seleccion" element={<HorarioSeleccion />} />
-              <Route path="/validacion" element={<Validacion1 />} />
+              <Route path="/" element={<RedirectRoute userType={userType}><Registro /></RedirectRoute>} />
+              <Route path="/horario-seleccion" element={<PrivateRoute><HorarioSeleccion /></PrivateRoute>} />
+              <Route path="/validacion" element={<PrivateRoute><Validacion1 /></PrivateRoute>} />
+              <Route path="/validacion-estatus" element={<PrivateRoute><Validacion2 /></PrivateRoute>} />
               <Route path="/inicio-tutor" element={<InicioTutor />} />
-              <Route path="/validacion-estatus" element={<Validacion2 />} />
               <Route path="/revisar-horario" element={<RevisionHorarioTutor />} />
+              
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </div>

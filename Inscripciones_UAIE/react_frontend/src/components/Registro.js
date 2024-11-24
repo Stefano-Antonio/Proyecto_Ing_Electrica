@@ -23,6 +23,8 @@ function Registro() {
       });
       setMensaje(response.data.mensaje);
       if (response.status === 200) {
+        localStorage.setItem("isAuthenticated", "true");
+        setMensaje(response.data.mensaje);
         navigate('/horario-seleccion'); // Redirecciona a la página de selección de horario
       }
     } catch (error) {

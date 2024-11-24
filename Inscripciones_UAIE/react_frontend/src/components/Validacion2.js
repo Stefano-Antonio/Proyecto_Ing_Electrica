@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import {useNavigate} from "react-router-dom";
 import "./Validacion2.css";
 
 function Validacion2() {
+  const navigate = useNavigate();
   const [archivo, setArchivo] = useState(null); // Estado para almacenar el archivo seleccionado
   const [archivoSubido, setArchivoSubido] = useState(false); // Estado para indicar si el archivo fue subido
   const [archivoURL, setArchivoURL] = useState(""); // URL temporal del archivo para previsualización/descarga
@@ -24,9 +26,18 @@ function Validacion2() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("userType");
+    navigate("/");
+  }
+
   return (
     <div className="validacion-layout">
       <div className="validacion-container">
+      <div className="top-right"> 
+        <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
+      </div>
         <h2>Validación de horario</h2>
 
         <p>

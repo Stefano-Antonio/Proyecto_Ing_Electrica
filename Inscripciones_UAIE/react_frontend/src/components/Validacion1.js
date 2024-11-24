@@ -15,6 +15,12 @@ function Validacion1() {
     navigate("/validacion-estatus");
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("userType");
+    navigate("/");
+  }
+
   const generarCSV = () => {
     if (materiasSeleccionadas.length === 0) {
       alert("No hay materias seleccionadas para descargar.");
@@ -72,6 +78,9 @@ function Validacion1() {
     <div className="horario-layout">
     
     <div className="horario-container">
+    <div className="top-right"> 
+        <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
+      </div>
       <h2>Verificación de horario</h2>
       <p>Verifique que las materias seleccionadas estén correctas.</p>
       <p>Una vez finalizado el proceso, no se podrán agregar ni quitar materias.</p>

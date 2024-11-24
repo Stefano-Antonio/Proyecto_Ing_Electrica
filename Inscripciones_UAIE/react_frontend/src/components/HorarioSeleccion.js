@@ -35,6 +35,12 @@ function HorarioSeleccion() {
     setMateriasSeleccionadas([]); // Vaciar las seleccionadas
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("userType");
+    navigate("/");
+  }
+
   const handleCheckboxChange = (materia, checked) => {
     if (checked) {
       setMateriasSeleccionadas((prev) => [...prev, materia]);
@@ -113,7 +119,11 @@ function HorarioSeleccion() {
 
   return (
     <div className="horario-layout">
+      
       <div className="horario-container">
+      <div className="top-right"> 
+        <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
+      </div>
         <h2>Sistema de selección de horario</h2>
         <p>A continuación, seleccione las materias que va a cargar en el semestre</p>
 
