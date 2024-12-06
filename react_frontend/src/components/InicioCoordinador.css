@@ -1,0 +1,53 @@
+
+.header {
+  background-color: #002060;
+  color: white;
+  text-align: center;
+  padding: 10px;
+}
+
+.header img {
+  width: 80px;
+  vertical-align: middle;
+  margin-right: 20px;
+}
+
+.header h1 {
+  display: inline-block;
+  margin: 0;
+  font-size: 24px;
+  vertical-align: middle;
+}
+
+.header h2 {
+  margin: 5px 0 0 0;
+}
+
+.coordinador-container {
+  position: relative; /* Permite el posicionamiento absoluto de elementos hijos */
+  flex: 1; /* Hace que el contenido principal ocupe el espacio restante */
+  padding: 20px;
+  text-align: center;
+  background-color: white;
+  margin: 20px auto;
+  padding: 20px;
+  max-width: 800px;
+}
+
+.buttons {
+  text-align: center;
+}
+
+button {
+  background-color: #003366;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  margin: 0 10px;
+  border-radius: 4px;
+}
+
+button:hover {
+  background-color: #0055a5;
+}

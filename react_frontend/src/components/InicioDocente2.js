@@ -1,13 +1,17 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./InicioDocente.css";
 
 function InicioDocente() {
 
   const navigate = useNavigate();
 
+  const location = useLocation();
+
+  const nombre = location.state?.nombre || "Docente";
+
   const handleListaAlumnos = () => {
-    navigate(`/docente-alumnos`);
+    navigate(`/docente-alumnos`, {state: {nombre}});
   };
 
   const handleLogout = () => {
@@ -17,7 +21,7 @@ function InicioDocente() {
   }
 
   const handleChangeView = () => {
-    navigate('/inicio-docente')
+    navigate('/inicio-docente', {state: {nombre}});
   }
 
   return (
@@ -29,7 +33,7 @@ function InicioDocente() {
         </div>
 
         <h2>Docente</h2>
-        <p>M en C Juan Carlos Sanchez</p>
+        <h4>{`Bienvenido, ${nombre}`}</h4>
         <p>A continuacion, seleccione la lista que desee visualizar</p>
 
         <div className="docente-buttons">

@@ -7,7 +7,7 @@ const userRoutes = require('./routes/userRoutes');
 const alumnoRoutes = require('./routes/alumnoRoutes');
 const authRoutes = require('./routes/authRoutes');  // Importa las rutas de autenticación
 const materiasRoutes = require('./routes/materiasRoutes');
-
+const personalRoutes = require('./routes/personalRoutes');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -19,6 +19,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/alumnos', alumnoRoutes);
 app.use('/api/auth', authRoutes);  // Usa las rutas de autenticación
 app.use('/api/materias', materiasRoutes);
+app.use('/api/personal', personalRoutes);
 
 // Conexión a MongoDB
 mongoose.connect('mongodb+srv://rogerzma500:upiiz_rzm500@dbuaie.mlhfo.mongodb.net/DBUAIE?retryWrites=true&w=majority', {

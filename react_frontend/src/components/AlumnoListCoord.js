@@ -3,7 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
 import "./AlumnoList.css";
 
-const AlumnoList = () => {
+const AlumnoListCoord = () => {
   const [alumnos, setAlumnos] = useState([]);
 
   const navigate = useNavigate();
@@ -64,6 +64,7 @@ const AlumnoList = () => {
 
       <div className="add-delete-buttons">
           <button onClick={handleNavigate}>Agregar alumnos</button>
+          <button >Administrar tutorados</button>
         </div>
 
       <ul>
@@ -75,4 +76,4 @@ const AlumnoList = () => {
 
 
 
-export default AlumnoList;
+export default AlumnoListCoord;

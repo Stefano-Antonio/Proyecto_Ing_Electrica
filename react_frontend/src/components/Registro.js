@@ -9,7 +9,7 @@ function Registro() {
   const [nombre, setNombre] = useState("");
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
-  const navigate = useNavigate(); // Hook para la navegación
+  const navigate = useNavigate();
 
   const handleTipoUsuarioChange = (event) => {
     setTipoUsuario(event.target.value);
@@ -18,17 +18,44 @@ function Registro() {
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post(`http://localhost:5000/api/auth/${tipoUsuario === 'alumno' ? 'alumno' : 'usuario'}/login`, { 
-        matricula, 
-        ...(tipoUsuario === 'usuario' && { password })
-      });
-      setMensaje(response.data.mensaje);
+      const endpoint =
+        tipoUsuario === "alumno"
+          ? "http://localhost:5000/api/auth/alumno/login"
+          : "http://localhost:5000/api/auth/personal/login";
+  
+      const payload =
+        tipoUsuario === "alumno"
+          ? { matricula }
+          : { matricula, password };
+  
+      const response = await axios.post(endpoint, payload);
+  
       if (response.status === 200) {
+        const { mensaje, roles, token, nombre } = response.data;
+  
+        setMensaje(mensaje);
         localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("matricula", matricula);
-        localStorage.setItem("nombreAlumno", nombre);
-        setMensaje(response.data.mensaje);
-        navigate('/horario-seleccion', {state: {nombre}}); // Redirecciona a la página de selección de horario
+        localStorage.setItem("nombre", nombre);
+        localStorage.setItem("roles", JSON.stringify(roles));
+        localStorage.setItem("userType", tipoUsuario); // Almacena el tipo de usuario
+
+        // Redirigir según el tipo de usuario
+        if (tipoUsuario === "personal") {
+          if (roles.includes("D")) {
+            navigate("/inicio-docente", { state: { nombre } });
+          } else if (roles.includes("C")) {
+            navigate("/inicio-coordinador", { state: { nombre } });
+          } else if (roles.includes("A")) {
+            navigate("/inicio-administrador", { state: { nombre } });
+          } else {
+            setMensaje("Usuario personal desconocido");
+          }
+        } else if (tipoUsuario === "alumno") {
+          navigate("/horario-seleccion", { state: { nombre } });
+        } else {
+          setMensaje("Usuario desconocido");
+        }
       }
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
@@ -39,38 +66,35 @@ function Registro() {
   return (
     <div className="registro-layout">
       <div className="registro-container">
-      <h1>¡Bienvenido!</h1>
-    <p>A continuación, seleccione el tipo de sesión</p>
+        <h1>¡Bienvenido!</h1>
+        <p>A continuación, seleccione el tipo de sesión</p>
 
-    {/* Selección de sesión */}
-    
-    {/* Selección de sesión */}
-    <div className="session-selection">
-      <h2>Selección de sesión</h2>
-      <div className="field-group">
-        <label>Tipo de usuario</label>
-        <div className="radio-group">
-          <label className="radio-option">
-            <input
-              type="radio"
-              name="usuario"
-              value="alumno"
-              checked={tipoUsuario === "alumno"}
-              onChange={handleTipoUsuarioChange}
-            />{" "}
-            Alumno
-          </label>
-          <label className="radio-option">
-            <input
-              type="radio"
-              name="usuario"
-              value="personal"
-              checked={tipoUsuario === "personal"}
-              onChange={handleTipoUsuarioChange}
-            />{" "}
-            Personal
-          </label>
-        </div>
+        <div className="session-selection">
+          <h2>Selección de sesión</h2>
+          <div className="field-group">
+            <label>Tipo de usuario</label>
+            <div className="radio-group">
+              <label className="radio-option">
+                <input
+                  type="radio"
+                  name="usuario"
+                  value="alumno"
+                  checked={tipoUsuario === "alumno"}
+                  onChange={handleTipoUsuarioChange}
+                />{" "}
+                Alumno
+              </label>
+              <label className="radio-option">
+                <input
+                  type="radio"
+                  name="usuario"
+                  value="personal"
+                  checked={tipoUsuario === "personal"}
+                  onChange={handleTipoUsuarioChange}
+                />{" "}
+                Personal
+              </label>
+            </div>
           </div>
 
           <div className="field-group">
@@ -84,14 +108,11 @@ function Registro() {
             </select>
           </div>
         </div>
-
-        
       </div>
 
       <div className="registro-container">
         <h1>Ingrese sus credenciales</h1>
         <p>A continuación</p>
-        {/* Inicio de sesión */}
         <div className="login-section">
           <h2>Iniciar sesión</h2>
           <form onSubmit={handleLogin}>
@@ -122,7 +143,6 @@ function Registro() {
           {mensaje && <p>{mensaje}</p>}
         </div>
       </div>
-
     </div>
   );
 }

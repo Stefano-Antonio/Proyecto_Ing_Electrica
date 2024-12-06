@@ -56,6 +56,11 @@
   margin-top: 20px;
 }
 
+.scrollable-table {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
 .button {
   padding: 10px 20px;
   font-size: 1rem;

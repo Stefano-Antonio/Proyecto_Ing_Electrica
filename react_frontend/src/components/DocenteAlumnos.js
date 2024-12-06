@@ -1,10 +1,14 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./InicioDocente.css";
 
 function InicioDocente() {
 
   const navigate = useNavigate();
+
+  const location = useLocation();
+
+  const nombre = location.state?.nombre || "Docente";
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
@@ -22,7 +26,7 @@ function InicioDocente() {
         
         <h2>Docente</h2>
         <div className="docente-header">
-            <h3>M en C Juan Carlos Sanchez</h3>
+            <h3>{`${nombre}`}</h3>
             <h3>Grupo: 1A</h3>
             <h3>Materia: Álgebra Lineal</h3>
         </div>

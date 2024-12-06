@@ -1,15 +1,19 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import "./InicioDocente.css";
+import "./AdministrarTutorados.css";
 
-function InicioDocente() {
-
+function AdministrarTutorados() {
   const navigate = useNavigate();
-
   const location = useLocation();
-  
+  const [personal, setPersonal] = useState([]);
 
-  console.log("Estado recibido:", location.state);
+  useEffect(() => {
+    // Fetch de personal desde el servidor
+    fetch("http://localhost:5000/api/personal")
+      .then((response) => response.json())
+      .then((data) => setPersonal(data))
+      .catch((error) => console.error("Error al obtener el personal:", error));
+  }, []);
 
   const nombre = location.state?.nombre || "Docente";
 
@@ -23,29 +27,29 @@ function InicioDocente() {
     navigate("/");
   };
 
-  const handleChangeView = () => {
-    navigate('/inicio-docente-2', { state: { nombre } })
-  }
-
   return (
-    <div className="docente-layout">
-      <div className="docente-container">
-
+    <div className="tutorados-layout">
+      <div className="tutorados-container">
         <div className="top-right"> 
-          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
+          <button className="logout-button" onClick={handleLogout}>
+            Cerrar sesión
+          </button> 
         </div>
 
-        <h2>Docente</h2>
-        <h4>{`Bienvenido, ${nombre}`}</h4>
-        <h4>A continuacion, seleccione la lista que desee visualizar</h4>
-
-        <div className="docente-buttons">
-            <button className="button">Lista de alumnos</button>
-            <button className="button" onClick={handleChangeView}>Lista de materias</button>
+        <h2>Administración de tutores</h2>
+        <div className="tutorados-field-group">
+          <h4>Tutor:</h4>
+          <select>
+            {personal.map((persona) => (
+              <option key={persona._id} value={persona.nombre}>
+                {persona.nombre}
+              </option>
+            ))}
+          </select>
         </div>
 
-        <div className="docente-content">
-          <table className="docente-table">
+        <div className="tutorados-content">
+          <table className="tutorados-table">
             <thead>
               <tr>
                 <th>Nombre del alumno</th>
@@ -138,11 +142,10 @@ function InicioDocente() {
           <button className="button">
             Subir base de datos de materias
           </button>
-          
         </div>
       </div>
     </div>
   );
 }
 
-export default InicioDocente;
+export default AdministrarTutorados;

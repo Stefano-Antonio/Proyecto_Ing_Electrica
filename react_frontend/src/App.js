@@ -25,12 +25,26 @@ import InicioDocente2 from './components/InicioDocente2';
 import './components/InicioDocente2.css';
 import DocenteAlumnos from './components/DocenteAlumnos';
 import './components/DocenteAlumnos.css';
-
-
+import InicioCoordinador from './components/InicioCoordinador';
+import './components/InicioCoordinador.css';
+import InicioCoordinador2 from './components/InicioCoordinador2';
+import './components/InicioCoordinador2.css';
+import InicioAdministrador from './components/InicioAdministrador';
+import './components/InicioAdministrador.css';
+import AdministrarMaterias from './components/AdministrarMaterias';
+import './components/AdministrarMaterias.css';
+import AdministrarPersonal from './components/AdministrarPersonal';
+import './components/AdministrarPersonal.css';
+import CrearAlumno from './components/CrearAlumno';
+import './components/CrearAlumno.css';
+import CrearPersonal from './components/CrearPersonal';
+import './components/CrearPersonal.css';
+import AdministrarTutorados from './components/AdministrarTutorados';
+import './components/CrearPersonal.css';
 
 function App() {
-  // Simula el tipo de usuario para esta lógica (esto puede venir del back-end o de localStorage)
-  const userType = localStorage.getItem("userType") || "alumno"; // Puede ser "alumno" o "usuario"
+  const userType = localStorage.getItem("userType") || "alumno"; // Puede ser "alumno" o "personal"
+
   return (
     <Router>
       <div className="App">
@@ -46,11 +60,18 @@ function App() {
               <Route path="/validacion-estatus" element={<PrivateRoute><Validacion2 /></PrivateRoute>} />
               <Route path="/inicio-tutor" element={<InicioTutor />} />
               
-              <Route path="/inicio-docente" element={<InicioDocente />} />
-              <Route path="/inicio-docente-2" element={<InicioDocente2 />} />
-              <Route path="/revisar-horario" element={<RevisionHorarioTutor />} />
-              <Route path="/docente-alumnos" element={<DocenteAlumnos/>}></Route>
-              
+              <Route path="/inicio-docente" element={<PrivateRoute><InicioDocente /></PrivateRoute>} />
+              <Route path="/inicio-docente-2" element={<PrivateRoute><InicioDocente2 /></PrivateRoute>} />
+              <Route path="/revisar-horario" element={<PrivateRoute><RevisionHorarioTutor /></PrivateRoute>} />
+              <Route path="/docente-alumnos" element={<PrivateRoute><DocenteAlumnos/></PrivateRoute>}></Route>
+              <Route path="/inicio-coordinador" element={<InicioCoordinador/>}></Route>
+              <Route path="/inicio-coordinador2" element={<InicioCoordinador2/>}></Route>
+              <Route path="/inicio-administrador" element={<InicioAdministrador/>}></Route>
+              <Route path="/administrar-materias" element={<AdministrarMaterias/>}></Route>
+              <Route path="/administrar-personal" element={<AdministrarPersonal/>}></Route>
+              <Route path="/crear-alumno" element={<CrearAlumno/>}></Route>
+              <Route path="/crear-personal" element={<CrearPersonal/>}></Route>
+              <Route path="/admin-tutor" element={<AdministrarTutorados/>}></Route>
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </div>
