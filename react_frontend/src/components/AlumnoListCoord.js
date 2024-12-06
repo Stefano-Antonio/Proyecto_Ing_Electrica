@@ -17,8 +17,12 @@ const AlumnoListCoord = () => {
       .catch(error => console.error('Error al obtener alumnos:', error));
   }, []);
 
-  const handleNavigate = () => {
+  const handleNavigate1 = () => {
     navigate("/crear-alumno");
+  };
+
+  const handleNavigate2 = () => {
+    navigate("/admin-tutor");
   };
   
 
@@ -63,8 +67,8 @@ const AlumnoListCoord = () => {
       </div>
 
       <div className="add-delete-buttons">
-          <button onClick={handleNavigate}>Agregar alumnos</button>
-          <button >Administrar tutorados</button>
+          <button onClick={handleNavigate1}>Agregar alumnos</button>
+          <button onClick={handleNavigate2}>Administrar tutorados</button>
         </div>
 
       <ul>

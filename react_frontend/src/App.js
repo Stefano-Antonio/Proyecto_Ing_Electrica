@@ -27,8 +27,6 @@ import DocenteAlumnos from './components/DocenteAlumnos';
 import './components/DocenteAlumnos.css';
 import InicioCoordinador from './components/InicioCoordinador';
 import './components/InicioCoordinador.css';
-import InicioCoordinador2 from './components/InicioCoordinador2';
-import './components/InicioCoordinador2.css';
 import InicioAdministrador from './components/InicioAdministrador';
 import './components/InicioAdministrador.css';
 import AdministrarMaterias from './components/AdministrarMaterias';
@@ -64,14 +62,13 @@ function App() {
               <Route path="/inicio-docente-2" element={<PrivateRoute><InicioDocente2 /></PrivateRoute>} />
               <Route path="/revisar-horario" element={<PrivateRoute><RevisionHorarioTutor /></PrivateRoute>} />
               <Route path="/docente-alumnos" element={<PrivateRoute><DocenteAlumnos/></PrivateRoute>}></Route>
-              <Route path="/inicio-coordinador" element={<InicioCoordinador/>}></Route>
-              <Route path="/inicio-coordinador2" element={<InicioCoordinador2/>}></Route>
+              <Route path="/inicio-coordinador" element={<PrivateRoute><InicioCoordinador/></PrivateRoute>}></Route>
               <Route path="/inicio-administrador" element={<InicioAdministrador/>}></Route>
               <Route path="/administrar-materias" element={<AdministrarMaterias/>}></Route>
-              <Route path="/administrar-personal" element={<AdministrarPersonal/>}></Route>
-              <Route path="/crear-alumno" element={<CrearAlumno/>}></Route>
-              <Route path="/crear-personal" element={<CrearPersonal/>}></Route>
-              <Route path="/admin-tutor" element={<AdministrarTutorados/>}></Route>
+              <Route path="/administrar-personal" element={<PrivateRoute><AdministrarPersonal/></PrivateRoute>}></Route>
+              <Route path="/crear-alumno" element={<PrivateRoute><CrearAlumno/></PrivateRoute>}></Route>
+              <Route path="/crear-personal" element={<PrivateRoute><CrearPersonal/></PrivateRoute>}></Route>
+              <Route path="/admin-tutor" element={<PrivateRoute><AdministrarTutorados/></PrivateRoute>}></Route>
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </div>
