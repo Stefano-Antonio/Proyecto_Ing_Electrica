@@ -7,7 +7,6 @@ function InicioDocente() {
   const navigate = useNavigate();
 
   const location = useLocation();
-  
 
   console.log("Estado recibido:", location.state);
 
