@@ -65,12 +65,41 @@
     margin-left: 10px;
   }
   
+
   .validacion-buttons {
     display: flex;
     justify-content: left;
     gap: 20px;
     margin-top: 20px;
   }
+  
+  .file-upload-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .archivo-mensaje {
+    margin-left: 10px; /* Espacio entre el botón y el mensaje */
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  .archivo-info {
+    margin-top: 20px; /* Espacio adicional para la sección de archivo */
+  }
+  
+  
+  .file-upload-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .archivo-mensaje {
+    margin-left: 10px; /* Espacio entre el botón y el mensaje */
+    font-size: 1rem;
+    color: #555;
+  }
+  
 
   .button {
     padding: 10px 20px;
@@ -84,6 +113,20 @@
   
   .button:hover {
     background-color: #003a8c;
+  }
+
+  .button-validar {
+    padding: 5px 20px;
+    font-size: 1rem;
+    background-color: #838383;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+
+  
+  .button-validar:hover {
+    background-color: #424242;
   }
 
   .top-right {

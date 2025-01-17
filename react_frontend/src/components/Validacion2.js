@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./Validacion2.css";
 
 function Validacion2() {
@@ -30,17 +30,16 @@ function Validacion2() {
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("userType");
     navigate("/");
-  }
+  };
 
   return (
     <div className="validacion-layout">
       <div className="validacion-container">
-      
-
         <h2>Validación de horario</h2>
-
-        <div className="top-right"> 
-          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
+        <div className="top-right">
+          <button className="logout-button" onClick={handleLogout}>
+            Cerrar sesión
+          </button>
         </div>
 
         <p>
@@ -53,8 +52,8 @@ function Validacion2() {
         </div>
 
         <div className="validacion-buttons">
-          <div>
-            <label htmlFor="archivo" className="button">
+          <div className="file-upload-container">
+            <label htmlFor="archivo" className="button-validar">
               Subir archivo
             </label>
             <input
@@ -63,32 +62,25 @@ function Validacion2() {
               accept=".pdf"
               onChange={handleFileChange}
               style={{ display: "none" }} // Oculta el input estándar
-              disabled={archivoSubido} // Deshabilitado si ya se subió el archivo
             />
+            <span className="archivo-mensaje">{archivo ? archivo.name : "Ningún archivo seleccionado"}</span>
           </div>
+        </div>
+        <div className="validacion-buttons">
           <button
             className="button"
             onClick={handleSubirComprobante}
-            disabled={!archivo || archivoSubido} // Deshabilitado si no hay archivo o ya se subió
+            disabled={!archivo} // Deshabilitado si no hay archivo seleccionado
           >
             Subir comprobante de pago
           </button>
         </div>
 
-        {archivo && (
+        {archivoSubido && (
           <div className="archivo-info">
-            <p>
-              Archivo cargado: <strong>{archivo.name}</strong>
-            </p>
-            {archivoSubido && (
-              <a
-                href={archivoURL}
-                download={archivo.name}
-                className="button"
-              >
-                Descargar comprobante
-              </a>
-            )}
+            <a href={archivoURL} download={archivo.name} className="button">
+              Descargar comprobante
+            </a>
           </div>
         )}
       </div>

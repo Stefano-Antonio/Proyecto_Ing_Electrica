@@ -1,0 +1,77 @@
+
+.header {
+    background-color: #002f6c;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.header img {
+    width: 50px;
+    vertical-align: middle;
+}
+
+.personal-container {
+    flex: 1; /* Hace que el contenido principal ocupe el espacio restante */
+    padding: 20px;
+    text-align: center;
+    background-color: white;
+    position: relative; /* Permite el posicionamiento relativo del botón */
+}
+
+.personal-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0px;
+    text-align: left;
+  }
+  
+  .personal-table, th, td {
+    border: 1px solid #ccc;
+  }
+  
+  .personal-table th, td {
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .personal-table th {
+    background-color: #002060;
+    color: white;
+  }
+
+  .personal-scrollable {
+    max-height: 250px;
+    overflow-y: auto;
+  }
+
+.personal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+button, input[type="button"] {
+    padding: 10px 20px;
+    background-color: #002f6c;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover, input[type="button"]:hover {
+    background-color: #004080;
+}
+
+.close-btn {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    background-color: red;
+    padding: 10px;
+    color: white;
+    text-align: center;
+    border-radius: 50%;
+    cursor: pointer;
+}

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./CrearAlumno.css";
 
-function CrearAlumno() {
+function ModificarAlumno() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
     nombre: "",
@@ -110,4 +110,4 @@ function CrearAlumno() {
   );
 }
 
-export default CrearAlumno;
+export default ModificarAlumno;

@@ -36,9 +36,12 @@ import './components/AdministrarPersonal.css';
 import CrearAlumno from './components/CrearAlumno';
 import './components/CrearAlumno.css';
 import CrearPersonal from './components/CrearPersonal';
+import CrearPersonal2 from './components/CrearPersonal2';
 import './components/CrearPersonal.css';
 import AdministrarTutorados from './components/AdministrarTutorados';
 import './components/CrearPersonal.css';
+import ModificarPersonal from './components/ModificarPersonal';
+import './components/ModificarPersonal.css'
 
 function App() {
   const userType = localStorage.getItem("userType") || "alumno"; // Puede ser "alumno" o "personal"
@@ -57,7 +60,6 @@ function App() {
               <Route path="/validacion" element={<PrivateRoute><Validacion1 /></PrivateRoute>} />
               <Route path="/validacion-estatus" element={<PrivateRoute><Validacion2 /></PrivateRoute>} />
               <Route path="/inicio-tutor" element={<InicioTutor />} />
-              
               <Route path="/inicio-docente" element={<PrivateRoute><InicioDocente /></PrivateRoute>} />
               <Route path="/inicio-docente-2" element={<PrivateRoute><InicioDocente2 /></PrivateRoute>} />
               <Route path="/revisar-horario" element={<PrivateRoute><RevisionHorarioTutor /></PrivateRoute>} />
@@ -68,6 +70,8 @@ function App() {
               <Route path="/administrar-personal" element={<PrivateRoute><AdministrarPersonal/></PrivateRoute>}></Route>
               <Route path="/crear-alumno" element={<PrivateRoute><CrearAlumno/></PrivateRoute>}></Route>
               <Route path="/crear-personal" element={<PrivateRoute><CrearPersonal/></PrivateRoute>}></Route>
+              <Route path="/crear-personal-2" element={<PrivateRoute><CrearPersonal2/></PrivateRoute>}></Route>
+              <Route path="/modificar-personal" element={<PrivateRoute><ModificarPersonal/></PrivateRoute>}></Route>
               <Route path="/admin-tutor" element={<PrivateRoute><AdministrarTutorados/></PrivateRoute>}></Route>
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>

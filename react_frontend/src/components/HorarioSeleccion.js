@@ -132,7 +132,6 @@ function HorarioSeleccion() {
 
   return (
     <div className="horario-layout">
-      
       <div className="horario-container">
       <div className="top-right"> 
         <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 

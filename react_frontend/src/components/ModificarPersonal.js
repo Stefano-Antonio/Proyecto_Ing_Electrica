@@ -1,16 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Navigate, useNavigate } from "react-router-dom";
-import "./CrearPersonal.css";
+import { Navigate, useNavigate, useLocation } from "react-router-dom";
+import "./ModificarPersonal.css";
 
-function CrearPersonal() {
+function ModificarPersonal() {
+  const location = useLocation();
+  const persona = location.state ? location.state.persona : null;
+
   const [form, setForm] = useState({
-    nombre: "",
-    matricula: "",
-    correo: "",
-    telefono: "",
-    roles: [],
-    password: ""
+    nombre: persona ? persona.nombre : "",
+    matricula: persona ? persona.matricula : "",
+    correo: persona ? persona.correo : "",
+    telefono: persona ? persona.telefono : "",
+    roles: persona ? persona.roles : [],
+    password: persona ? persona.password : ""
   });
 
   const navigate = useNavigate();
@@ -25,36 +28,36 @@ function CrearPersonal() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/api/personal", form);
-      console.log("Usuario agregado:", response.data);
-      alert("Usuario agregado con éxito");
+      const response = await axios.put(`http://localhost:5000/api/personal/${persona._id}`, form);
+      console.log("Usuario actualizado:", response.data);
+      alert("Usuario actualizado con éxito");
       setForm({ nombre: "", matricula: "", correo: "", telefono: "", roles: "", password: "" }); // Reset form
     } catch (error) {
-      console.error("Error al agregar el usuario:", error);
-      alert("Hubo un error al agregar el usuario");
+      console.error("Error al actualizar el usuario:", error);
+      alert("Hubo un error al actualizar el usuario");
     }
   };
 
   const handleBack = () => { 
     navigate(-1); // Navegar a la página anterior 
-    };
+  };
 
-    const handleLogout = () => {
-      localStorage.removeItem("isAuthenticated");
-      localStorage.removeItem("userType");
-      navigate("/");
-    };
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("userType");
+    navigate("/");
+  };
 
   return (
     <div className="persona1-layout">
       <div className="persona1-container">
-      <div className="top-left"> 
+        <div className="top-left"> 
           <button className="back-button" onClick={handleBack}>Regresar</button> 
         </div>
-      <div className="top-right"> 
+        <div className="top-right"> 
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
         </div>
-        <h1>Agregar personal</h1>
+        <h1>Modificar personal</h1>
         <div className="persona1-content">
           <form onSubmit={handleSubmit}>
             <div className="form-group">
@@ -91,7 +94,7 @@ function CrearPersonal() {
                 />
               </div>
               <div className="input-wrapper short-field2">
-                <label htmlFor="telefono">Telefono</label>
+                <label htmlFor="telefono">Teléfono</label>
                 <input
                   type="text"
                   id="telefono"
@@ -105,11 +108,11 @@ function CrearPersonal() {
               <div className="input-wrapper short-field">
                 <label htmlFor="roles">Permisos</label>
                 <select id="roles" value={form.roles} onChange={handleChange} required>
-                    <option value="" disabled hidden>Seleccione...</option>
-                    <option value="D">Docente</option>
-                    <option value="T">Tutor</option>
-                    <option value="C">Coordinador</option>
-                    <option value="A">Administrador</option>
+                  <option value="" disabled hidden>Seleccione...</option>
+                  <option value="D">Docente</option>
+                  <option value="T">Tutor</option>
+                  <option value="C">Coordinador</option>
+                  <option value="A">Administrador</option>
                 </select>
               </div>
               <div className="input-wrapper short-field2">
@@ -124,8 +127,7 @@ function CrearPersonal() {
               </div>
             </div>
             <div className="persona1-buttons">
-              <button type="submit" className="button">Agregar</button>
-              <button type="button" className="button">Subir base de datos de personal</button>
+              <button type="submit" className="button">Actualizar</button>
             </div>
           </form>
         </div>
@@ -134,4 +136,4 @@ function CrearPersonal() {
   );
 }
 
-export default CrearPersonal;
+export default ModificarPersonal;

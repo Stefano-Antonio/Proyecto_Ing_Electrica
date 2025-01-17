@@ -3,7 +3,7 @@ import axios from "axios";
 import { Navigate, useNavigate } from "react-router-dom";
 import "./CrearPersonal.css";
 
-function CrearPersonal() {
+function CrearPersonal2() {
   const [form, setForm] = useState({
     nombre: "",
     matricula: "",
@@ -134,4 +134,4 @@ function CrearPersonal() {
   );
 }
 
-export default CrearPersonal;
+export default CrearPersonal2;

@@ -4,7 +4,7 @@
   align-items: center;
   width: 100%;
   justify-content: space-around; /* Espacio uniforme entre los contenedores */ 
-  margin-top: 0px
+  margin-top: 0px;
 }
 
 .registro-container {
