@@ -4,13 +4,13 @@ const Materia = require('../models/Materia');
 
 // Crear una nueva materia
 exports.createMateria = async (req, res) => {
-  const { id_materia, nombre, horarios, salon, cupo, docente } = req.body;
+  const { id_materia, nombre, horarios, salon, grupo, cupo, docente } = req.body;
   console.log('Datos recibidos para crear la materia:', req.body);
   try {
 
     const docenteFinal = docente.trim() === "" ? null : docente;
 
-    const newMateria = new Materia({ id_materia, nombre, horarios, salon, cupo, docente: docenteFinal  });
+    const newMateria = new Materia({ id_materia, nombre, horarios, salon, grupo, cupo, docente: docenteFinal  });
     await newMateria.save();
 
     console.log('Materia creada:', newMateria);
@@ -49,11 +49,11 @@ exports.getMateriaById = async (req, res) => {
 
 // Actualizar una materia
 exports.updateMateria = async (req, res) => {
-  const { nombre, horarios, salon, cupo, docente } = req.body;
+  const { nombre, horarios, salon, grupo, cupo, docente } = req.body;
   try {
     const materia = await Materia.findByIdAndUpdate(
       req.params.id,
-      { nombre, horarios, salon, cupo, docente },
+      { nombre, horarios, salon, grupo, cupo, docente },
       { new: true }
     );
     if (!materia) {

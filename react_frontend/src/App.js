@@ -41,7 +41,11 @@ import './components/CrearPersonal.css';
 import AdministrarTutorados from './components/AdministrarTutorados';
 import './components/CrearPersonal.css';
 import ModificarPersonal from './components/ModificarPersonal';
-import './components/ModificarPersonal.css'
+import './components/ModificarPersonal.css';
+import CrearMateria from './components/CrearMateria';
+import './components/CrearMateria';
+import Materia2 from './components/Materia2';
+
 
 function App() {
   const userType = localStorage.getItem("userType") || "alumno"; // Puede ser "alumno" o "personal"
@@ -67,8 +71,10 @@ function App() {
               <Route path="/inicio-coordinador" element={<PrivateRoute><InicioCoordinador/></PrivateRoute>}></Route>
               <Route path="/inicio-administrador" element={<InicioAdministrador/>}></Route>
               <Route path="/administrar-materias" element={<AdministrarMaterias/>}></Route>
+              <Route path="/materias" element={<Materia2/>}></Route>
               <Route path="/administrar-personal" element={<PrivateRoute><AdministrarPersonal/></PrivateRoute>}></Route>
               <Route path="/crear-alumno" element={<PrivateRoute><CrearAlumno/></PrivateRoute>}></Route>
+              <Route path="/crear-materias" element={<CrearMateria/>}></Route>
               <Route path="/crear-personal" element={<PrivateRoute><CrearPersonal/></PrivateRoute>}></Route>
               <Route path="/crear-personal-2" element={<PrivateRoute><CrearPersonal2/></PrivateRoute>}></Route>
               <Route path="/modificar-personal" element={<PrivateRoute><ModificarPersonal/></PrivateRoute>}></Route>
