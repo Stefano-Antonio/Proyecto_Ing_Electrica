@@ -48,6 +48,8 @@ function Registro() {
             navigate("/inicio-coordinador", { state: { nombre } });
           } else if (roles.includes("A")) {
             navigate("/inicio-administrador", { state: { nombre } });
+          } else if (roles.includes("T")) {
+            navigate("/inicio-tutor", { state: { nombre } });
           } else {
             setMensaje("Usuario personal desconocido");
           }

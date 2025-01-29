@@ -100,3 +100,63 @@ exports.deletePersonal = async (req, res) => {
         res.status(500).json({ message: 'Error al eliminar el personal', error });
     }
 };
+
+// Subir datos desde CSV a la base de datos
+exports.subirPersonalCSV = async (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No se ha enviado ningún archivo CSV' });
+    }
+  
+    const results = [];
+    
+    fs.createReadStream(req.file.path)
+      .pipe(csv())
+      .on('data', (data) => {
+        results.push(data);
+      })
+      .on('end', async () => {
+        try {
+          const matriculasCSV = results.map((personal) => personal.matricula); // Guardamos solo las matrículas del CSV
+  
+          for (const personalData of results) {
+            const { matricula, nombre, password, roles, correo, telefono } = personalData;
+  
+            // Busca y actualiza, si no existe lo crea
+            await Personal.findOneAndUpdate(
+              { matricula }, // Busca por matrícula
+              { nombre, telefono, correo, roles }, // Actualiza estos campos
+              { upsert: true, new: true } // upsert: true -> crea si no existe
+            );
+          }
+  
+          // Eliminar registros de la BD que ya no estén en el CSV
+          await Personal.deleteMany({ matricula: { $nin: matriculasCSV } });
+  
+          fs.unlinkSync(req.file.path); // Eliminar el archivo una vez procesado
+          res.status(200).json({ message: 'Base de datos actualizada con éxito desde el archivo CSV' });
+  
+        } catch (error) {
+          console.error('Error al procesar el CSV:', error);
+          res.status(500).json({ message: 'Error al actualizar la base de datos desde el CSV', error });
+        }
+      })
+      .on('error', (err) => {
+        console.error('Error al leer el CSV:', err);
+        res.status(500).json({ message: 'Error al procesar el archivo CSV', error: err });
+      });
+  };
+  
+  exports.exportarPersonalCSV = async (req, res) => {
+    try {
+      const personal = await Personal.find(); // Obtén todos los docentes
+      const fields = ['matricula', 'nombre', 'password', 'roles', 'telefono', 'correo']; // Campos del CSV
+      const json2csvParser = new Parser({ fields });
+      const csv = json2csvParser.parse(personal);
+  
+      res.header('Content-Type', 'text/csv');
+      res.attachment('personal.csv');
+      res.send(csv);
+    } catch (error) {
+      res.status(500).json({ message: 'Error al exportar a CSV', error });
+    }
+  };

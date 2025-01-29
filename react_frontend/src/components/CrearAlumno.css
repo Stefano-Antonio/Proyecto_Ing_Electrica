@@ -58,6 +58,14 @@
     padding: 10px;
     text-align: center;
   }
+
+  td.actions {
+    display: flex;
+    justify-content: center;
+    gap: 5px; /* Espaciado entre botones */
+    align-items: center;
+}
+
   
   .alumno-table th {
     background-color: #f2f2f2;
@@ -92,6 +100,20 @@
   
   .logout-button {
     background-color: #f44336; /* Color de fondo del botón */
+    color: white; /* Color del texto */
+    border: none; /* Sin borde */
+    padding: 10px 20px; /* Espaciado interno */
+    text-align: center; /* Alineación del texto */
+    text-decoration: none; /* Sin subrayado */
+    display: inline-block; /* Mostrar en línea */
+    font-size: 16px; /* Tamaño de la fuente */
+    margin: 4px 2px; /* Margen */
+    cursor: pointer; /* Cambiar el cursor al pasar sobre el botón */
+    border-radius: 12px; /* Bordes redondeados */
+  }
+
+  .button-1 {
+    background-color: #616161; /* Color de fondo del botón */
     color: white; /* Color del texto */
     border: none; /* Sin borde */
     padding: 10px 20px; /* Espaciado interno */

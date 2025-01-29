@@ -35,32 +35,38 @@
     margin: 0 auto;
   }
   
-  .docente-table {
+  .docente-scrollable-table {
+    max-height: 280px;
+    overflow-y: auto;
+  }
+
+  .docente-tabla {
     width: 100%;
     table-layout: fixed; /* Hace que las columnas tengan un ancho fijo */
   }
-  
-  .docente-table th,
-  .docente-table td {
-    width: 33.33%; /* Asegura que cada columna tenga el mismo ancho */
-    text-align: center; /* Centra el contenido */
-  }
-  
-  .docente-table {
+
+  .docente-tabla {
     width: 100%;
     border-collapse: collapse;
     margin: 20px 0;
     overflow-x: auto;
   }
   
-  .docente-table th,
-  .docente-table td {
+  .docente-tabla th,
+  .docente-tabla td {
+    width: 33.33%; /* Asegura que cada columna tenga el mismo ancho */
+    text-align: center; /* Centra el contenido */
+  }
+  
+  
+  .docente-tabla th,
+  .docente-tabla td {
     border: 1px solid #ddd;
     padding: 10px;
     text-align: center;
   }
   
-  .docente-table th {
+  .docente-tabla th {
     background-color: #f2f2f2;
     font-weight: bold;
   }

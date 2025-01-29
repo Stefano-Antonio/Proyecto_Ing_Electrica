@@ -86,7 +86,7 @@ const AdministratPersonalCoordinador = () => {
       <h3>Administrar personal</h3>
       <p className="info">Lista de docentes asociados al programa académico:</p>
       
-      <div className="personal-scrollable">
+      <div className="personal-scrollable-1">
         <table className="personal-table">
           <thead>
             <tr>
@@ -97,8 +97,7 @@ const AdministratPersonalCoordinador = () => {
               <th>Administrador</th>
               <th>Coordinador</th>
               <th>Tutor</th>
-              <th>Modificar</th>
-              <th>Eliminar</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -136,23 +135,23 @@ const AdministratPersonalCoordinador = () => {
                   />
                 </td>
                 <td>
-                  <button className="icon-button" onClick={() => handleModify(persona)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M12 20h9"></path>
-                      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                    </svg>
-                  </button>
-                </td>
-                <td>
-                  <button className="icon-button" onClick={() => setModal(persona._id)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="red" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="3 6 5 6 21 6"></polyline>
-                      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
-                      <path d="M10 11v6"></path>
-                      <path d="M14 11v6"></path>
-                      <path d="M15 6V4a1 1 0 0 0-1-1H10a1 1 0 0 0-1 1v2"></path>
-                    </svg>
-                  </button>
+                  <div className="action-buttons">
+                      <button className="icon-button" onClick={() => handleModify(persona)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 20h9"></path>
+                          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                      </button>
+                      <button className="icon-button" onClick={() => setModal(persona._id)}>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="red" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                        <path d="M10 11v6"></path>
+                        <path d="M14 11v6"></path>
+                        <path d="M15 6V4a1 1 0 0 0-1-1H10a1 1 0 0 0-1 1v2"></path>
+                      </svg>
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

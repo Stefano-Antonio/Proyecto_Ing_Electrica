@@ -21,15 +21,26 @@ function AdministrarTutorados() {
     navigate(`/revisar-horario`);
   };
 
+  const handleAsignarTutor = () => {
+    navigate(`/asignar-tutor`);
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("userType");
     navigate("/");
   };
 
+  const handleBack = () => { 
+    navigate(-1); // Navegar a la página anterior 
+    }
+
   return (
     <div className="tutorados-layout">
       <div className="tutorados-container">
+        <div className="top-left"> 
+            <button className="back-button" onClick={handleBack}>Regresar</button> 
+          </div>
         <div className="top-right"> 
           <button className="logout-button" onClick={handleLogout}>
             Cerrar sesión
@@ -60,7 +71,7 @@ function AdministrarTutorados() {
             <tbody>
               <tr>
                 <td>Juan Pérez</td>
-                <td className="actions">
+                <td>
                   <button className="icon-button" onClick={handleRevisarHorario}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -68,7 +79,7 @@ function AdministrarTutorados() {
                     </svg>
                   </button>
                 </td>
-                <td className="actions">
+                <td>
                   <span className="status-circle validated">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M20 6L9 17l-5-5"></path>
@@ -78,7 +89,7 @@ function AdministrarTutorados() {
               </tr>
               <tr>
                 <td>Alejandro Sánchez</td>
-                <td className="actions">
+                <td>
                   <button className="icon-button" onClick={handleRevisarHorario}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -86,7 +97,7 @@ function AdministrarTutorados() {
                     </svg>
                   </button>
                 </td>
-                <td className="actions">
+                <td>
                   <span className="status-circle rejected">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -97,7 +108,7 @@ function AdministrarTutorados() {
               </tr>
               <tr>
                 <td>Jesus Sánchez</td>
-                <td className="actions">
+                <td>
                   <button className="icon-button" onClick={handleRevisarHorario}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -105,7 +116,7 @@ function AdministrarTutorados() {
                     </svg>
                   </button>
                 </td>
-                <td className="actions">
+                <td>
                   <span className="status-circle pending">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="5" cy="12" r="2"></circle>
@@ -117,15 +128,15 @@ function AdministrarTutorados() {
               </tr>
               <tr>
                 <td>María González</td>
-                <td className="actions" onClick={handleRevisarHorario}>
-                  <button className="icon-button">
+                <td>
+                  <button className="icon-button" onClick={handleRevisarHorario}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                       <circle cx="12" cy="12" r="3"></circle>
                     </svg>
                   </button>
                 </td>
-                <td className="actions">
+                <td>
                   <span className="status-circle not-uploaded">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="5" cy="12" r="2"></circle>
@@ -139,8 +150,8 @@ function AdministrarTutorados() {
           </table>
         </div>
         <div className="horario-buttons">
-          <button className="button">
-            Subir base de datos de materias
+          <button className="button" onClick={handleAsignarTutor}>
+            Asignar tutor
           </button>
         </div>
       </div>

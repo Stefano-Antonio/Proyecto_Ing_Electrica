@@ -43,6 +43,11 @@
     margin-bottom: 20px;
     font-weight: bold;
   }
+
+  .alumno-scrollable-table {
+    max-height: 370px;
+    overflow-y: auto;
+  }
   
   .alumnos-table {
     width: 100%;
@@ -59,6 +64,15 @@
     padding: 10px;
     text-align: center;
   }
+
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0px; /* Añade espacio entre los botones */
+}
+
+
   
   .alumnos-table th {
     background-color: #002060;
@@ -80,11 +94,7 @@
   .close-session:hover {
     background-color: #e0e0e0;
   }
-  
-  .scrollable-table {
-    max-height: 250px;
-    overflow-y: auto;
-  }
+
   
   .icon-button {
     background-color: transparent;

@@ -5,12 +5,47 @@ import "./CrearAlumno.css";
 
 function CrearAlumno() {
   const navigate = useNavigate();
+  const [mostrarModal, setMostrarModal] = useState(false);
   const [form, setForm] = useState({
     nombre: "",
     matricula: "",
     correo: "",
     telefono: ""
   });
+
+  const [file, setFile] = useState(null); // Estado para el archivo
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]); // Guarda el archivo CSV
+  };
+
+  
+  const handleSubmitCSV = async (e) => {
+    e.preventDefault();
+    if (!file) {
+      alert("Por favor selecciona un archivo CSV");
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append("csv", file);
+  
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/alumnos/subir-csv",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+  
+      alert("Base de datos actualizada con éxito desde el archivo CSV");
+  
+      setMostrarModal(false); // Cierra el modal después de subir el archivo
+    } catch (error) {
+      console.error("Error al subir el archivo CSV:", error);
+      alert("Hubo un error al actualizar la base de datos");
+    }
+  };
+  
 
   const handleChange = (e) => {
     setForm({
@@ -42,6 +77,34 @@ function CrearAlumno() {
       alert("Hubo un error al agregar el alumno");
     }
   };
+
+  const handleDownloadCSV = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/alumnos/exportar-csv",
+        {
+          responseType: "blob", // Asegúrate de recibir el archivo como blob
+        }
+      );
+  
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "alumnos.csv");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Error al descargar el archivo CSV:", error);
+      alert("No se pudo descargar el archivo");
+    }
+  };
+  
+
+  const handleSumbitDB = async (e) => {
+    setMostrarModal(true);
+      return;
+  }
 
   return (
     <div className="alumno-layout">
@@ -99,9 +162,25 @@ function CrearAlumno() {
                 />
               </div>
             </div>
+            {mostrarModal && (
+              <div className="modal">
+                <div className="modal-content">
+                  <h3>Subir base de datos</h3>
+                  <p>Seleccione el archivo a subir:</p>
+                  <ul>
+                  </ul>
+                  <p>
+                  </p>
+                  <input type="file" accept=".csv" onChange={handleFileChange} />
+                  <button onClick={handleSubmitCSV}>Subir CSV</button>
+                  <button onClick={handleDownloadCSV}>Descargar CSV</button>
+                  <button onClick={() => setMostrarModal(false)}>Cerrar</button>
+                </div>
+              </div>
+            )}
             <div className="alumno-buttons">
               <button type="submit" className="button">Agregar</button>
-              <button type="button" className="button">Subir base de datos de alumnos</button>
+              <button type="button" className="button" onClick={handleSumbitDB}>Subir base de datos de alumnos</button>
             </div>
           </form>
         </div>

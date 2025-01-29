@@ -1,16 +1,31 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import "./CrearAlumno.css";
 
 function ModificarAlumno() {
   const navigate = useNavigate();
+  const location = useLocation(); // Obtén el estado pasado desde el componente anterior
+  const alumno = location.state?.alumno; // Asegúrate de manejar casos donde el estado sea nulo
+
   const [form, setForm] = useState({
     nombre: "",
     matricula: "",
     correo: "",
     telefono: ""
   });
+
+  // Llenar los campos del formulario con los datos del alumno
+  useEffect(() => {
+    if (alumno) {
+      setForm({
+        nombre: alumno.nombre || "",
+        matricula: alumno.matricula || "",
+        correo: alumno.correo || "",
+        telefono: alumno.telefono || ""
+      });
+    }
+  }, [alumno]);
 
   const handleChange = (e) => {
     setForm({
@@ -23,36 +38,36 @@ function ModificarAlumno() {
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("userType");
     navigate("/");
-  }
+  };
 
-  const handleBack = () => { 
-    navigate(-1); // Navegar a la página anterior 
-    }
-
+  const handleBack = () => {
+    navigate(-1); // Navegar a la página anterior
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/api/alumnos", form);
-      console.log("Alumno agregado:", response.data);
-      alert("Alumno agregado con éxito");
-      setForm({ nombre: "", matricula: "", correo: "", telefono: "" }); // Reset form
+      // Enviar la actualización a la API
+      const response = await axios.put(`http://localhost:5000/api/alumnos/${alumno._id}`, form);
+      console.log("Alumno actualizado:", response.data);
+      alert("Alumno actualizado con éxito");
+      navigate(-1); // Navegar de regreso a la lista
     } catch (error) {
-      console.error("Error al agregar el alumno:", error);
-      alert("Hubo un error al agregar el alumno");
+      console.error("Error al actualizar el alumno:", error);
+      alert("Hubo un error al actualizar el alumno");
     }
   };
 
   return (
     <div className="alumno-layout">
       <div className="alumno-container">
-      <div className="top-left"> 
-          <button className="back-button" onClick={handleBack}>Regresar</button> 
+        <div className="top-left">
+          <button className="back-button" onClick={handleBack}>Regresar</button>
         </div>
-      <div className="top-right"> 
-          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
+        <div className="top-right">
+          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
         </div>
-        <h1>Agregar alumno</h1>
+        <h1>Modificar Alumno</h1>
         <div className="alumno-content">
           <form onSubmit={handleSubmit}>
             <div className="form-group">
@@ -74,6 +89,7 @@ function ModificarAlumno() {
                   placeholder="Ingresar la matricula"
                   value={form.matricula}
                   onChange={handleChange}
+                  //readOnly // Solo lectura si no se puede modificar la matrícula
                 />
               </div>
             </div>
@@ -100,8 +116,7 @@ function ModificarAlumno() {
               </div>
             </div>
             <div className="alumno-buttons">
-              <button type="submit" className="button">Agregar</button>
-              <button type="button" className="button">Subir base de datos de alumnos</button>
+              <button type="submit" className="button">Actualizar</button>
             </div>
           </form>
         </div>

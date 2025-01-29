@@ -35,6 +35,7 @@ import AdministrarPersonal from './components/AdministrarPersonal';
 import './components/AdministrarPersonal.css';
 import CrearAlumno from './components/CrearAlumno';
 import './components/CrearAlumno.css';
+import ModificarAlumno from './components/ModificarAlumno';
 import CrearPersonal from './components/CrearPersonal';
 import CrearPersonal2 from './components/CrearPersonal2';
 import './components/CrearPersonal.css';
@@ -43,9 +44,8 @@ import './components/CrearPersonal.css';
 import ModificarPersonal from './components/ModificarPersonal';
 import './components/ModificarPersonal.css';
 import CrearMateria from './components/CrearMateria';
-import './components/CrearMateria';
-import Materia2 from './components/Materia2';
-
+import './components/CrearMateria.css';
+import AsignarTutor from './components/AsignarTutor';
 
 function App() {
   const userType = localStorage.getItem("userType") || "alumno"; // Puede ser "alumno" o "personal"
@@ -63,7 +63,7 @@ function App() {
               <Route path="/horario-seleccion" element={<PrivateRoute><HorarioSeleccion /></PrivateRoute>} />
               <Route path="/validacion" element={<PrivateRoute><Validacion1 /></PrivateRoute>} />
               <Route path="/validacion-estatus" element={<PrivateRoute><Validacion2 /></PrivateRoute>} />
-              <Route path="/inicio-tutor" element={<InicioTutor />} />
+              <Route path="/inicio-tutor" element={<PrivateRoute><InicioTutor /></PrivateRoute>} />
               <Route path="/inicio-docente" element={<PrivateRoute><InicioDocente /></PrivateRoute>} />
               <Route path="/inicio-docente-2" element={<PrivateRoute><InicioDocente2 /></PrivateRoute>} />
               <Route path="/revisar-horario" element={<PrivateRoute><RevisionHorarioTutor /></PrivateRoute>} />
@@ -71,14 +71,15 @@ function App() {
               <Route path="/inicio-coordinador" element={<PrivateRoute><InicioCoordinador/></PrivateRoute>}></Route>
               <Route path="/inicio-administrador" element={<InicioAdministrador/>}></Route>
               <Route path="/administrar-materias" element={<AdministrarMaterias/>}></Route>
-              <Route path="/materias" element={<Materia2/>}></Route>
               <Route path="/administrar-personal" element={<PrivateRoute><AdministrarPersonal/></PrivateRoute>}></Route>
               <Route path="/crear-alumno" element={<PrivateRoute><CrearAlumno/></PrivateRoute>}></Route>
+              <Route path="/modificar-alumno" element={<PrivateRoute><ModificarAlumno/></PrivateRoute>}></Route>
               <Route path="/crear-materias" element={<CrearMateria/>}></Route>
               <Route path="/crear-personal" element={<PrivateRoute><CrearPersonal/></PrivateRoute>}></Route>
               <Route path="/crear-personal-2" element={<PrivateRoute><CrearPersonal2/></PrivateRoute>}></Route>
               <Route path="/modificar-personal" element={<PrivateRoute><ModificarPersonal/></PrivateRoute>}></Route>
               <Route path="/admin-tutor" element={<PrivateRoute><AdministrarTutorados/></PrivateRoute>}></Route>
+              <Route path="/asignar-tutor" element={<PrivateRoute><AsignarTutor/></PrivateRoute>}></Route>
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </div>
