@@ -8,6 +8,7 @@ function ModificarMateria() {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [file, setFile] = useState(null); // Almacenar el archivo CSV
   const [formData, setFormData] = useState({
+      id_materia: '',
       nombre: '',
       horarios: {
         lunes: '',
@@ -29,6 +30,7 @@ function ModificarMateria() {
       useEffect(() => {
         if (materia) {
           setFormData({
+            id_materia: materia.id_materia || "",
             nombre: materia.nombre || "",
             salon: materia.salon || "",
             grupo: materia.grupo || "",
@@ -44,6 +46,23 @@ function ModificarMateria() {
           });
         }
       }, [materia]);
+
+      // Dentro del componente CrearMateria
+    const [docentes, setDocentes] = useState([]);
+
+    useEffect(() => {
+      const fetchDocentes = async () => {
+        try {
+          const response = await axios.get("http://localhost:5000/api/personal"); // Cambia la URL según tu configuración
+          const docentesData = response.data.filter(personal => personal.roles.includes('D'));
+          setDocentes(docentesData);
+        } catch (error) {
+          console.error("Error al obtener los docentes:", error);
+        }
+      };
+
+      fetchDocentes();
+    }, []);
 
 
     const handleFileChange = (e) => {
@@ -157,6 +176,17 @@ function ModificarMateria() {
         <div className="materia-content">
           <form onSubmit={handleSubmit}>
             <div className="form-group">
+            <div className="input-wrapper short-field">
+                <label htmlFor="id_materia">ID de materia</label>
+                <input
+                  type="text"
+                  id="id_materia"
+                  placeholder="ID de la materia"
+                  value={formData.id_materia}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
               <div className="input-wrapper short-field">
                 <label htmlFor="nombre">Nombre</label>
                 <input
@@ -205,13 +235,12 @@ function ModificarMateria() {
               </div>
               <div className="input-wrapper short-field2">
                 <label htmlFor="docente">Docente</label>
-                <input
-                  type="text"
-                  id="docente"
-                  placeholder="Ingrese el docente"
-                  value={formData.docente}
-                  onChange={handleChange}
-                />
+                <select id="docente" value={formData.docente} onChange={handleChange} required>
+                  <option value="" disabled hidden>Seleccione un docente</option>
+                  {docentes.map(docente => (
+                    <option key={docente.matricula} value={docente.matricula}>{docente.nombre}</option>
+                  ))}
+                </select>
               </div>
               
             </div>

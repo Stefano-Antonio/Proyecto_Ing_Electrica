@@ -4,24 +4,42 @@ import { useNavigate } from 'react-router-dom';
 import "./AdministrarMaterias.css";
 
 
-const AdministrartMaterias = () => {
+const AdministrarMaterias = () => {
   const [materias, setMaterias] = useState([]);
+  const [docentes, setDocentes] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
     
 
   useEffect(() => {
     // Realiza la solicitud para obtener las materias desde la base de datos
-    axios.get('http://localhost:5000/api/materias')
-      .then(response => {
-        console.log(response.data); // Verificar los datos recibidos
+    const fetchMaterias = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/materias');
         setMaterias(response.data); // Establece los datos de materias en el estado
-        setLoading(false); // Indica que los datos han sido cargados
-      })
-      .catch(error => {
-        console.error('Error al obtener datos de materias:', error); // Imprimir error en consola
-        setLoading(false); // Asegurarse de cambiar el estado a 'false' en caso de error
-      });
+      } catch (error) {
+        console.error('Error al obtener datos de materias:', error);
+      }
+    };
+
+    // Realiza la solicitud para obtener los docentes desde la base de datos
+    const fetchDocentes = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/personal');
+        const docentesData = response.data.filter(personal => personal.roles.includes('D'));
+        setDocentes(docentesData); // Establece los datos de docentes en el estado
+      } catch (error) {
+        console.error('Error al obtener datos de docentes:', error);
+      }
+    };
+
+    const fetchData = async () => {
+      await fetchMaterias();
+      await fetchDocentes();
+      setLoading(false); // Indica que los datos han sido cargados
+    };
+
+    fetchData();
   }, []); // Solo se ejecuta una vez cuando el componente se monta
 
   if (loading) {
@@ -29,19 +47,21 @@ const AdministrartMaterias = () => {
   }
 
   const handleNavigate = () => {
-    navigate("/crear-materias");
+    navigate("/crear-materia");
   };
 
   const handleModify = (materia) => {
     navigate("/modificar-materia", { state: { materia } });
   };
 
-
+  // Mapea la matrícula del docente al nombre del docente
+  const getDocenteNombre = (matricula) => {
+    const docente = docentes.find(docente => docente.matricula === matricula);
+    return docente ? docente.nombre : "Sin asignar";
+  };
 
   return (
     <div className="admin-materias">
-      
-
       <div className="materia-container">
         <h3>Administrar materias</h3>
         <h4>A continuación, se muestran las siguientes opciones:</h4>
@@ -72,7 +92,7 @@ const AdministrartMaterias = () => {
                   <td>{materia.grupo}</td>
                   <td>{materia.salon}</td>
                   <td>{materia.nombre}</td>
-                  <td>{materia.docente || "-"}</td>
+                  <td>{getDocenteNombre(materia.docente)}</td> {/* Muestra el nombre del docente */}
                   <td>
                     <button className="icon-button" onClick={() => handleModify(materia)}>
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -111,4 +131,4 @@ const AdministrartMaterias = () => {
   );
 };
 
-export default AdministrartMaterias;
+export default AdministrarMaterias;

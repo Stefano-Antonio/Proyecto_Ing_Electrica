@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect  } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./CrearMateria.css";
@@ -21,6 +21,24 @@ function CrearMateria() {
       cupo: '',
       docente: '' // Aquí puedes colocar el ObjectId del docente si es necesario
     });
+
+    // Dentro del componente CrearMateria
+    const [docentes, setDocentes] = useState([]);
+
+    useEffect(() => {
+      const fetchDocentes = async () => {
+        try {
+          const response = await axios.get("http://localhost:5000/api/personal"); // Cambia la URL según tu configuración
+          const docentesData = response.data.filter(personal => personal.roles.includes('D'));
+          setDocentes(docentesData);
+        } catch (error) {
+          console.error("Error al obtener los docentes:", error);
+        }
+      };
+
+      fetchDocentes();
+    }, []);
+
 
     const handleFileChange = (e) => {
       setFile(e.target.files[0]); // Guarda el archivo CSV seleccionado
@@ -80,12 +98,26 @@ function CrearMateria() {
   }
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value
-    });
+    const { id, value } = e.target;
+  
+    if (["lunes", "martes", "miercoles", "jueves", "viernes"].includes(id)) {
+      // Si el cambio es en los horarios, actualiza solo esa clave dentro de horarios
+      setFormData((prevState) => ({
+        ...prevState,
+        horarios: {
+          ...prevState.horarios,
+          [id]: value, // Actualiza el día correspondiente
+        },
+      }));
+    } else {
+      // Si es otro campo, actualiza normalmente
+      setFormData((prevState) => ({
+        ...prevState,
+        [id]: value,
+      }));
+    }
   };
-
+  
   const handleBack = () => { 
     navigate(-1); // Navegar a la página anterior 
     }
@@ -105,6 +137,7 @@ function CrearMateria() {
         const response = await axios.post('http://localhost:5000/api/materias', finalData);
         alert('Materia creada con éxito');
         setFormData({
+          id_materia: '',
           nombre: '',
           horarios: { lunes: '', martes: '', miercoles: '', jueves: '', viernes: '' },
           salon: '',
@@ -133,6 +166,17 @@ function CrearMateria() {
         <div className="materia-content">
           <form onSubmit={handleSubmit}>
             <div className="form-group">
+            <div className="input-wrapper short-field">
+                <label htmlFor="id_materia">ID de materia</label>
+                <input
+                  type="text"
+                  id="id_materia"
+                  placeholder="ID de la materia"
+                  value={formData.id_materia}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
               <div className="input-wrapper short-field">
                 <label htmlFor="nombre">Nombre</label>
                 <input
@@ -181,21 +225,21 @@ function CrearMateria() {
               </div>
               <div className="input-wrapper short-field2">
                 <label htmlFor="docente">Docente</label>
-                <input
-                  type="text"
-                  id="docente"
-                  placeholder="Ingrese el docente"
-                  value={formData.docente}
-                  onChange={handleChange}
-                />
+                <select id="docente" value={formData.docente} onChange={handleChange} required>
+                  <option value="" disabled hidden>Seleccione un docente</option>
+                  {docentes.map(docente => (
+                    <option key={docente.matricula} value={docente.matricula}>{docente.nombre}</option>
+                  ))}
+                </select>
               </div>
+
               
             </div>
             <div className="form-group">
                 <div className="input-wrapper short-field">
                     <label htmlFor="lunes">Lunes</label>
                     <select
-                        id="horarios-lunes"
+                        id="lunes"
                         value={formData.horarios.lunes}
                         onChange={handleChange}
                     >
@@ -213,7 +257,7 @@ function CrearMateria() {
                 <div className="input-wrapper short-field">
                     <label htmlFor="martes">Martes</label>
                     <select
-                        id="horarios-martes"
+                        id="martes"
                         value={formData.horarios.martes}
                         onChange={handleChange}
                     >
@@ -231,7 +275,7 @@ function CrearMateria() {
                 <div className="input-wrapper short-field">
                     <label htmlFor="miercoles">Miercoles</label>
                     <select
-                        id="horarios-miercoles"
+                        id="miercoles"
                         value={formData.horarios.miercoles}
                         onChange={handleChange}
                     >
@@ -249,7 +293,7 @@ function CrearMateria() {
                 <div className="input-wrapper short-field">
                     <label htmlFor="jueves">Jueves</label>
                     <select
-                        id="horarios-jueves"
+                        id="jueves"
                         value={formData.horarios.jueves}
                         onChange={handleChange}
                     >
@@ -267,7 +311,7 @@ function CrearMateria() {
                 <div className="input-wrapper short-field">
                     <label htmlFor="viernes">Viernes</label>
                     <select
-                        id="horarios-viernes"
+                        id="viernes"
                         value={formData.horarios.viernes}
                         onChange={handleChange}
                     >
