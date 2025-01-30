@@ -1,0 +1,8 @@
+"id_materia","nombre","horarios","salon","grupo","cupo","docente"
+,"Álgebra I","{""sabado"":null,""lunes"":""7:00-8:30"",""martes"":null,""jueves"":""10:00-11:30"",""viernes"":""10:00-11:30"",""miercoles"":null}","101","1A",30,"Sin asignar"
+,"Algebra Lineal","{""sabado"":null,""lunes"":""8:30-10:00"",""martes"":"""",""miercoles"":""8:30-10:00"",""jueves"":"""",""viernes"":""""}","103","1A",35,"Sin asignar"
+,"Historia Universal","{""lunes"":null,""miercoles"":null,""viernes"":null,""sabado"":null,""martes"":""11:30-13:00"",""jueves"":""13:00-14:30""}","B-101","2B",25,"Sin asignar"
+,"Fundamentos de programación","{""lunes"":null,""martes"":null,""sabado"":null,""miercoles"":""13:00-14:30"",""jueves"":""14:30-16:00"",""viernes"":""14:30-16:00""}","C1","2B",25,"Sin asignar"
+,"Álgebra II","{""sabado"":null,""lunes"":""7:00-8:30"",""martes"":null,""miercoles"":""7:00-8:30"",""jueves"":null,""viernes"":""7:00-8:30""}","111","3A",30,"Sin asignar"
+101,"Comunicacion oral y escrita","{""lunes"":""13:00-14:30"",""martes"":null,""miercoles"":""13:00-14:30"",""jueves"":""11:30-13:00"",""viernes"":null,""sabado"":null}","111","1A",30,"Sin asignar"
+,"Estadistica","{""lunes"":""7:00-8:30"",""martes"":null,""miercoles"":""7:00-8:30"",""jueves"":null,""viernes"":""8:30-10:00"",""sabado"":null}","103","3A",30,"Sin asignar"

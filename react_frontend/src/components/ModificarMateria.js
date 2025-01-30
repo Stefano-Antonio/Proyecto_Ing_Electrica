@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import "./CrearMateria.css";
 
-function CrearMateria() {
+function ModificarMateria() {
   const navigate = useNavigate();
   const [mostrarModal, setMostrarModal] = useState(false);
   const [file, setFile] = useState(null); // Almacenar el archivo CSV
@@ -21,6 +21,30 @@ function CrearMateria() {
       cupo: '',
       docente: '' // Aquí puedes colocar el ObjectId del docente si es necesario
     });
+
+    const location = useLocation();
+    const materia = location.state?.materia || {};
+
+      // Llenar los campos del formulario con los datos del alumno
+      useEffect(() => {
+        if (materia) {
+          setFormData({
+            nombre: materia.nombre || "",
+            salon: materia.salon || "",
+            grupo: materia.grupo || "",
+            cupo: materia.cupo || "",
+            docente: materia.docente || "",
+            horarios: {
+                lunes: materia.horarios.lunes || "",
+                martes: materia.horarios.martes || "",
+                miercoles: materia.horarios.miercoles || "",
+                jueves: materia.horarios.jueves || "",
+                viernes: materia.horarios.viernes || ""
+            }
+          });
+        }
+      }, [materia]);
+
 
     const handleFileChange = (e) => {
       setFile(e.target.files[0]); // Guarda el archivo CSV seleccionado
@@ -92,31 +116,31 @@ function CrearMateria() {
 
 
     const handleSubmit = async (e) => {
-      e.preventDefault();
-      try {
-        // Reemplaza valores vacíos en horarios con null
+        e.preventDefault();
+      
         const finalData = {
           ...formData,
           horarios: Object.fromEntries(
             Object.entries(formData.horarios).map(([key, value]) => [key, value === "" ? null : value])
           )
         };
-        
-        const response = await axios.post('http://localhost:5000/api/materias', finalData);
-        alert('Materia creada con éxito');
-        setFormData({
-          nombre: '',
-          horarios: { lunes: '', martes: '', miercoles: '', jueves: '', viernes: '' },
-          salon: '',
-          grupo: '',
-          cupo: '',
-          docente: ''
-        });
-      } catch (error) {
-        console.error('Error al crear la materia:', error);
-        alert('Hubo un error al crear la materia');
-      }
-    };
+      
+        try {
+          if (materia._id) {
+            // Si hay un ID, significa que estamos editando
+            await axios.put(`http://localhost:5000/api/materias/${materia._id}`, finalData);
+            alert("Materia actualizada con éxito");
+          } else {
+            // Si no hay ID, significa que estamos creando una nueva materia
+            await axios.post("http://localhost:5000/api/materias", finalData);
+            alert("Materia creada con éxito");
+          }
+          navigate("/"); // Redirigir después de la acción
+        } catch (error) {
+          console.error("Error al guardar la materia:", error);
+          alert("Hubo un error al guardar la materia");
+        }
+      };
     
 
 
@@ -305,4 +329,4 @@ function CrearMateria() {
   );
 }
 
-export default CrearMateria;
+export default ModificarMateria;

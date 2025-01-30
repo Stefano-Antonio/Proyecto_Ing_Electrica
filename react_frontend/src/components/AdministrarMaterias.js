@@ -1,19 +1,42 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import "./AdministrarMaterias.css";
 
 
 const AdministrartMaterias = () => {
   const [materias, setMaterias] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+    
 
   useEffect(() => {
+    // Realiza la solicitud para obtener las materias desde la base de datos
     axios.get('http://localhost:5000/api/materias')
       .then(response => {
         console.log(response.data); // Verificar los datos recibidos
-        setMaterias(response.data);
+        setMaterias(response.data); // Establece los datos de materias en el estado
+        setLoading(false); // Indica que los datos han sido cargados
       })
-      .catch(error => console.error('Error al obtener materias:', error));
-  }, []);
+      .catch(error => {
+        console.error('Error al obtener datos de materias:', error); // Imprimir error en consola
+        setLoading(false); // Asegurarse de cambiar el estado a 'false' en caso de error
+      });
+  }, []); // Solo se ejecuta una vez cuando el componente se monta
+
+  if (loading) {
+    return <div>Loading...</div>; // Mostrar mensaje de carga
+  }
+
+  const handleNavigate = () => {
+    navigate("/crear-materias");
+  };
+
+  const handleModify = (materia) => {
+    navigate("/modificar-materia", { state: { materia } });
+  };
+
+
 
   return (
     <div className="admin-materias">
@@ -51,7 +74,7 @@ const AdministrartMaterias = () => {
                   <td>{materia.nombre}</td>
                   <td>{materia.docente || "-"}</td>
                   <td>
-                    <button className="icon-button">
+                    <button className="icon-button" onClick={() => handleModify(materia)}>
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M12 20h9"></path>
                         <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
@@ -81,7 +104,7 @@ const AdministrartMaterias = () => {
         </div>
 
         <div className="add-delete-buttons">
-          <button>Agregar nueva materia</button>
+          <button onClick={handleNavigate}>Agregar nueva materia</button>
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const MateriaSchema = new Schema({
-    id_materia: {type: Number, required: false},
+    id_materia: {type: Number, required: true},
     nombre: { type: String, required: true },
     horarios: {
         lunes: { type: String, default: null },    // "8:30-10:00" formato opcional

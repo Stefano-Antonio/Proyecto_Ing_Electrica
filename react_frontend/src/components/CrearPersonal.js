@@ -4,6 +4,8 @@ import { Navigate, useNavigate } from "react-router-dom";
 import "./CrearPersonal.css";
 
 function CrearPersonal() {
+  const [mostrarModal, setMostrarModal] = useState(false); // Controlar el modal
+  const [file, setFile] = useState(null); // Almacenar el archivo CSV
   const [form, setForm] = useState({
     nombre: "",
     matricula: "",
@@ -44,6 +46,63 @@ function CrearPersonal() {
       localStorage.removeItem("userType");
       navigate("/");
     };
+
+    //CSV
+    const handleFileChange = (e) => {
+      setFile(e.target.files[0]); // Guarda el archivo CSV seleccionado
+    };
+    
+    const handleSubmitCSV = async (e) => {
+      e.preventDefault();
+      if (!file) {
+        alert("Por favor selecciona un archivo CSV");
+        return;
+      }
+    
+      const formData = new FormData();
+      formData.append("csv", file);
+    
+      try {
+        await axios.post(
+          "http://localhost:5000/api/personal/subir-csv",
+          formData,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+    
+        alert("Base de datos actualizada con éxito desde el archivo CSV");
+        setMostrarModal(false);
+      } catch (error) {
+        console.error("Error al subir el archivo CSV:", error);
+        alert("Hubo un error al actualizar la base de datos");
+      }
+    };
+
+    const handleSumbitDB = async (e) => {
+      setMostrarModal(true);
+        return;
+    };
+    
+    const handleDownloadCSV = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/personal/exportar-csv",
+          { responseType: "blob" } // Asegurar que se reciba como blob
+        );
+    
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "personal.csv");
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } catch (error) {
+        console.error("Error al descargar el archivo CSV:", error);
+        alert("No se pudo descargar el archivo");
+      }
+    };
+    
+    
 
   return (
     <div className="persona1-layout">
@@ -123,9 +182,22 @@ function CrearPersonal() {
                 />
               </div>
             </div>
+            {mostrarModal && (
+              <div className="modal">
+                <div className="modal-content">
+                  <h3>Subir base de datos</h3>
+                  <p>Seleccione el archivo a subir:</p>
+                  <input type="file" accept=".csv" onChange={handleFileChange} />
+                  <button onClick={handleSubmitCSV}>Subir CSV</button>
+                  <button onClick={handleDownloadCSV}>Descargar CSV</button>
+                  <button onClick={() => setMostrarModal(false)}>Cerrar</button>
+                </div>
+              </div>
+            )}
+
             <div className="persona1-buttons">
               <button type="submit" className="button">Agregar</button>
-              <button type="button" className="button">Subir base de datos de personal</button>
+              <button className="button" onClick={handleSumbitDB}>Subir base de datos de personal</button>
             </div>
           </form>
         </div>

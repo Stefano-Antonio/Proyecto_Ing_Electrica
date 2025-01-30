@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
-const path = require('path');
 const materiaController = require('../controllers/materiaController');
-const upload = multer({ dest: 'uploads/' }); // Configura dónde se guardarán los archivos temporales
+
+// Rutas para importar/exportar CSV
+router.post('/subir-csv', materiaController.upload.single('csv'), materiaController.subirMateriasCSV);
+router.get('/exportar-csv', materiaController.exportarMateriasCSV);
 
 // Ruta para crear una nueva materia
 router.post('/', materiaController.createMateria);
@@ -19,8 +20,5 @@ router.put('/:id', materiaController.updateMateria);
 
 // Ruta para eliminar una materia
 router.delete('/:id', materiaController.deleteMateria);
-
-// Ruta para subir archivo csv
-router.post('/upload', upload.single('file'), materiaController.uploadCSV);
 
 module.exports = router;

@@ -4,6 +4,25 @@ const Tutores = require('../models/Tutores');
 const Coordinadores = require('../models/Coordinadores');
 const Administradores = require('../models/Administradores');
 const bcrypt = require('bcryptjs');
+const { Parser } = require('json2csv');
+const multer = require('multer');
+const csv = require('csv-parser');
+const fs = require('fs');
+const path = require('path');
+
+// Configurar multer para manejar el archivo CSV
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, 'uploads/'); // Guardar archivos en "uploads"
+    },
+    filename: (req, file, cb) => {
+      cb(null, Date.now() + path.extname(file.originalname)); // Nombrar el archivo con timestamp
+    },
+  });
+  
+  const upload = multer({ storage: storage });
+
+  exports.upload = upload;
 
 exports.createPersonal = async (req, res) => {
     console.log('Personal:', req.body);
@@ -101,7 +120,7 @@ exports.deletePersonal = async (req, res) => {
     }
 };
 
-// Subir datos desde CSV a la base de datos
+// Subir datos desde CSV
 exports.subirPersonalCSV = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: 'No se ha enviado ningún archivo CSV' });
@@ -116,23 +135,22 @@ exports.subirPersonalCSV = async (req, res) => {
       })
       .on('end', async () => {
         try {
-          const matriculasCSV = results.map((personal) => personal.matricula); // Guardamos solo las matrículas del CSV
+          const matriculasCSV = results.map((personal) => personal.matricula);
   
           for (const personalData of results) {
             const { matricula, nombre, password, roles, correo, telefono } = personalData;
   
-            // Busca y actualiza, si no existe lo crea
             await Personal.findOneAndUpdate(
-              { matricula }, // Busca por matrícula
-              { nombre, telefono, correo, roles }, // Actualiza estos campos
-              { upsert: true, new: true } // upsert: true -> crea si no existe
+              { matricula },
+              { nombre, telefono, correo, roles, password }, 
+              { upsert: true, new: true }
             );
           }
   
-          // Eliminar registros de la BD que ya no estén en el CSV
+          // Eliminar registros que ya no estén en el CSV
           await Personal.deleteMany({ matricula: { $nin: matriculasCSV } });
   
-          fs.unlinkSync(req.file.path); // Eliminar el archivo una vez procesado
+          fs.unlinkSync(req.file.path); // Eliminar el archivo CSV tras procesarlo
           res.status(200).json({ message: 'Base de datos actualizada con éxito desde el archivo CSV' });
   
         } catch (error) {
@@ -146,17 +164,30 @@ exports.subirPersonalCSV = async (req, res) => {
       });
   };
   
+  // 📤 Exportar datos a CSV
   exports.exportarPersonalCSV = async (req, res) => {
     try {
-      const personal = await Personal.find(); // Obtén todos los docentes
-      const fields = ['matricula', 'nombre', 'password', 'roles', 'telefono', 'correo']; // Campos del CSV
-      const json2csvParser = new Parser({ fields });
-      const csv = json2csvParser.parse(personal);
+      const personal = await Personal.find(); // Obtén todos los registros
   
-      res.header('Content-Type', 'text/csv');
-      res.attachment('personal.csv');
+      // Modificar la estructura de los datos antes de convertirlos a CSV
+      const formattedData = personal.map((p) => ({
+        matricula: p.matricula,
+        nombre: p.nombre,
+        password: p.password,
+        roles: p.roles.join(""), // 🔹 Convierte ["D", "T"] en "DT"
+        telefono: p.telefono,
+        correo: p.correo,
+      }));
+  
+      const fields = ["matricula", "nombre", "password", "roles", "telefono", "correo"];
+      const json2csvParser = new Parser({ fields });
+      const csv = json2csvParser.parse(formattedData);
+  
+      res.header("Content-Type", "text/csv");
+      res.attachment("personal.csv");
       res.send(csv);
     } catch (error) {
-      res.status(500).json({ message: 'Error al exportar a CSV', error });
+      res.status(500).json({ message: "Error al exportar a CSV", error });
     }
   };
+  
