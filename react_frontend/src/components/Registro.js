@@ -31,7 +31,7 @@ function Registro() {
       const response = await axios.post(endpoint, payload);
   
       if (response.status === 200) {
-        const { mensaje, roles, token, nombre, id } = response.data;
+        const { mensaje, roles, token, nombre, id, horario } = response.data;
   
         setMensaje(mensaje);
         localStorage.setItem("isAuthenticated", "true");
@@ -40,6 +40,7 @@ function Registro() {
         localStorage.setItem("id", id);
         localStorage.setItem("roles", JSON.stringify(roles));
         localStorage.setItem("userType", tipoUsuario); // Almacena el tipo de usuario
+        localStorage.setItem("horario", JSON.stringify(horario));  // Guardar el horario
 
         // Redirigir según el tipo de usuario
         if (tipoUsuario === "personal") {
@@ -55,7 +56,12 @@ function Registro() {
             setMensaje("Usuario personal desconocido");
           }
         } else if (tipoUsuario === "alumno") {
-          navigate("/horario-seleccion", { state: { nombre, id } });
+          if (horario) {
+            navigate("/validacion-estatus");
+          } else{
+            navigate("/horario-seleccion", { state: { nombre, id } });
+          }
+          
         } else {
           setMensaje("Usuario desconocido");
         }

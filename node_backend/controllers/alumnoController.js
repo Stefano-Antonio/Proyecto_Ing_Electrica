@@ -57,22 +57,19 @@ exports.getAlumnoById = async (req, res) => {
   }
 };
 
-// Obtener un alumno por matrícula
-exports.getAlumnoByMatricula = async (req, res) => {
+// Obtener los datos de un alumno, incluyendo su horario
+exports.getAlumnoByIdWithHorario = async (req, res) => {
   try {
-    const { matricula } = req.params; // Obtener la matrícula desde la URL
-    const alumno = await Alumno.findOne({ matricula }); // Buscar por matrícula
-
+    const alumno = await Alumno.findById(req.params.id).populate('horario');
     if (!alumno) {
-      return res.status(404).json({ message: "Alumno no encontrado" });
+      return res.status(404).json({ message: 'Alumno no encontrado' });
     }
-
-    res.status(200).json(alumno);
+    res.json(alumno);
   } catch (error) {
-    console.error("Error al obtener el alumno:", error);
-    res.status(500).json({ message: "Error al obtener el alumno", error });
+    res.status(500).json({ message: 'Error al obtener el alumno con horario', error });
   }
 };
+
 
 
 // Actualizar un alumno

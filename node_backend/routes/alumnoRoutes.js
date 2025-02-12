@@ -13,6 +13,7 @@ router.post('/subir-csv', upload.single('csv'), alumnoController.subirAlumnosCSV
 router.post('/', alumnoController.createAlumno);
 router.get('/', alumnoController.getAlumnos);
 router.get('/:id', alumnoController.getAlumnoById);
+router.get('/:id', alumnoController.getAlumnoByIdWithHorario);
 router.put('/:id', alumnoController.updateAlumno);
 router.delete('/:id', alumnoController.deleteAlumno);
 

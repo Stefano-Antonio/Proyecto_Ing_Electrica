@@ -9,7 +9,7 @@ const Personal = require('../models/Personal');
 router.post('/alumno/login', async (req, res) => {
   const { matricula } = req.body;
   try {
-    const alumno = await Alumno.findOne({ matricula });
+    const alumno = await Alumno.findOne({ matricula }).populate('horario');  // Asegúrate de hacer el populate;
     if (!alumno) {
       return res.status(400).json({ mensaje: 'Alumno no encontrado' });
     }
@@ -20,7 +20,9 @@ router.post('/alumno/login', async (req, res) => {
       mensaje: 'Inicio de sesión exitoso', 
       nombre: alumno.nombre,
       id: alumno._id,
-      token });
+      token,
+      horario: alumno.horario // Incluye el horario en la respuesta
+    });
   } catch (error) {
     return res.status(500).json({ mensaje: 'Error al iniciar sesión', error });
   }

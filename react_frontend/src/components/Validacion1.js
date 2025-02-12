@@ -1,3 +1,4 @@
+
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
@@ -9,7 +10,6 @@ import "./Validacion1.css";
 function Validacion1() {
   const location = useLocation();
   const navigate = useNavigate();
-
   const [nombreAlumno, setNombreAlumno] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
