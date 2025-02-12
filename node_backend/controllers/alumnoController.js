@@ -1,4 +1,5 @@
 const Alumno = require('../models/Alumno');
+const Horario = require('../models/Horario');
 const { Parser } = require('json2csv');
 const multer = require('multer');
 const csv = require('csv-parser');
@@ -56,18 +57,48 @@ exports.getAlumnoById = async (req, res) => {
   }
 };
 
+// Obtener un alumno por matrícula
+exports.getAlumnoByMatricula = async (req, res) => {
+  try {
+    const { matricula } = req.params; // Obtener la matrícula desde la URL
+    const alumno = await Alumno.findOne({ matricula }); // Buscar por matrícula
+
+    if (!alumno) {
+      return res.status(404).json({ message: "Alumno no encontrado" });
+    }
+
+    res.status(200).json(alumno);
+  } catch (error) {
+    console.error("Error al obtener el alumno:", error);
+    res.status(500).json({ message: "Error al obtener el alumno", error });
+  }
+};
+
+
 // Actualizar un alumno
 exports.updateAlumno = async (req, res) => {
-  const { matricula, nombre } = req.body;
+  const { matricula, nombre, correo, telefono, materiasSeleccionadas } = req.body;
+
   try {
+    // Crear un nuevo documento de Horario con los IDs de las materias seleccionadas
+    const nuevoHorario = new Horario({
+      materias: materiasSeleccionadas.map(materia => materia._id), // Guardamos solo los IDs de las materias
+    });
+
+    // Guardar el horario en la base de datos
+    const horarioGuardado = await nuevoHorario.save();
+
+    // Actualizar el alumno con el nuevo ID de horario
     const alumno = await Alumno.findByIdAndUpdate(
       req.params.id,
-      { matricula, nombre },
+      { matricula, nombre, correo, telefono, horario: horarioGuardado._id }, // Guardamos el ID del horario en el alumno
       { new: true }
     );
+
     if (!alumno) {
       return res.status(404).json({ message: 'Alumno no encontrado' });
     }
+
     res.status(200).json(alumno);
   } catch (error) {
     res.status(500).json({ message: 'Error al actualizar el alumno', error });

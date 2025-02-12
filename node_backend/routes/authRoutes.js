@@ -19,6 +19,7 @@ router.post('/alumno/login', async (req, res) => {
     return res.json({ 
       mensaje: 'Inicio de sesión exitoso', 
       nombre: alumno.nombre,
+      id: alumno._id,
       token });
   } catch (error) {
     return res.status(500).json({ mensaje: 'Error al iniciar sesión', error });

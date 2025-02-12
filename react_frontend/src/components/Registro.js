@@ -31,12 +31,13 @@ function Registro() {
       const response = await axios.post(endpoint, payload);
   
       if (response.status === 200) {
-        const { mensaje, roles, token, nombre } = response.data;
+        const { mensaje, roles, token, nombre, id } = response.data;
   
         setMensaje(mensaje);
         localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("matricula", matricula);
         localStorage.setItem("nombre", nombre);
+        localStorage.setItem("id", id);
         localStorage.setItem("roles", JSON.stringify(roles));
         localStorage.setItem("userType", tipoUsuario); // Almacena el tipo de usuario
 
@@ -54,7 +55,7 @@ function Registro() {
             setMensaje("Usuario personal desconocido");
           }
         } else if (tipoUsuario === "alumno") {
-          navigate("/horario-seleccion", { state: { nombre } });
+          navigate("/horario-seleccion", { state: { nombre, id } });
         } else {
           setMensaje("Usuario desconocido");
         }

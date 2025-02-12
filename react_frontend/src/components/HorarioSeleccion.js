@@ -12,6 +12,7 @@ function HorarioSeleccion() {
   const [conflictos, setConflictos] = useState([]);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [nombreAlumno, setNombreAlumno] = useState(location.state?.nombre || "");
+  const [IDAlumno, setIDAlumno] = useState(location.state?._id || "");
   const [matricula, setMatricula] = useState(localStorage.getItem("matricula")); // Obtener matrícula del localStorage
     
   // Función para obtener las materias desde el backend
@@ -38,6 +39,11 @@ function HorarioSeleccion() {
   useEffect(() => {
     const nombre = location.state?.nombre || localStorage.getItem("nombreAlumno");
     setNombreAlumno(nombre || "Alumno desconocido");
+  }, [location.state]);
+
+  useEffect(() => {
+    const idAlumno = location.state?.id || localStorage.getItem("IDAlumno");
+    setIDAlumno(idAlumno || "ID desconocido");
   }, [location.state]);
 
   const handleDesactivarTodas = () => {
@@ -118,12 +124,14 @@ function HorarioSeleccion() {
     }
   
     // Si no hay conflictos, navegar a la siguiente página
-    navigate("/validacion", { state: { materiasSeleccionadas } });
+    navigate("/validacion", { state: { materiasSeleccionadas, nombreAlumno, matricula, IDAlumno } });
   };
 
   const handleGrupoChange = (e) => {
     setGrupoSeleccionado(e.target.value);
   };
+
+
 
   // Filtrar las materias basadas en el grupo seleccionado
   const materiasFiltradas = grupoSeleccionado
@@ -138,6 +146,7 @@ function HorarioSeleccion() {
       </div>
         <h2>Sistema de selección de horario</h2>
         <p>Bienvenido(a): <strong>{nombreAlumno || "Cargando..."}</strong></p>
+        <p>ID de alumno: <strong>{IDAlumno || "Cargando..."}</strong></p>
         <p>A continuación, seleccione las materias que va a cargar en el semestre</p>
 
         <div className="horario-content">

@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import './InicioAdministrador.css';
+import { useNavigate } from "react-router-dom";
 import AlumnoList from './AlumnoList';
 import AdministrarPersonal from './AdministrarPersonal';
-import AdministrarMaterias from './AdministrarMaterias';
-
+import AdministrarMateriasAdmin from "./AdministrarMateriasAdmin";
 
 
 const InicioAdministrador = () => {
+  const navigate = useNavigate();
     // Estado para controlar qué componente se debe mostrar
     const [componenteActivo, setComponenteActivo] = useState('');
   
@@ -14,9 +15,18 @@ const InicioAdministrador = () => {
     const mostrarComponente = (componente) => {
       setComponenteActivo(componente);
     };
+
+    const handleLogout = () => {
+      localStorage.removeItem("isAuthenticated");
+      localStorage.removeItem("userType");
+      navigate("/");
+    }
   
     return (
       <div className="container">
+        <div className="top-right"> 
+          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
+        </div>
         <h3>Administrador</h3>
         <p>A continuación, seleccione la lista que desee visualizar</p>
   
@@ -29,7 +39,7 @@ const InicioAdministrador = () => {
         {/* Renderizado condicional de componentes */}
         {componenteActivo === 'alumno' && <AlumnoList />}
         {componenteActivo === 'personal' && <AdministrarPersonal />}
-        {componenteActivo === 'materias' && <AdministrarMaterias />}
+        {componenteActivo === 'materias' && <AdministrarMateriasAdmin />}
       </div>
     );
   };

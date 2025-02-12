@@ -33,11 +33,11 @@ import AdministrarMaterias from './components/AdministrarMaterias';
 import './components/AdministrarMaterias.css';
 import AdministrarPersonal from './components/AdministrarPersonal';
 import './components/AdministrarPersonal.css';
+import AdministrarMateriasAdmin from './components/AdministrarMateriasAdmin';
 import CrearAlumno from './components/CrearAlumno';
 import './components/CrearAlumno.css';
 import ModificarAlumno from './components/ModificarAlumno';
 import CrearPersonal from './components/CrearPersonal';
-import CrearPersonal2 from './components/CrearPersonal2';
 import './components/CrearPersonal.css';
 import AdministrarTutorados from './components/AdministrarTutorados';
 import './components/CrearPersonal.css';
@@ -71,6 +71,7 @@ function App() {
               <Route path="/docente-alumnos" element={<PrivateRoute><DocenteAlumnos/></PrivateRoute>}></Route>
               <Route path="/inicio-coordinador" element={<PrivateRoute><InicioCoordinador/></PrivateRoute>}></Route>
               <Route path="/inicio-administrador" element={<InicioAdministrador/>}></Route>
+              <Route path="/administrar-materias-admin" element={<PrivateRoute><AdministrarMateriasAdmin/></PrivateRoute>}></Route>
               <Route path="/administrar-materias" element={<AdministrarMaterias/>}></Route>
               <Route path="/administrar-personal" element={<PrivateRoute><AdministrarPersonal/></PrivateRoute>}></Route>
               <Route path="/crear-alumno" element={<PrivateRoute><CrearAlumno/></PrivateRoute>}></Route>

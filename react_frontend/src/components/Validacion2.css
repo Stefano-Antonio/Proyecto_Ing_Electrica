@@ -12,6 +12,9 @@
     max-width: 800px;
     background-color: white;
     margin: 0 auto;
+    position: relative; /* Agregar esta línea */
+    padding: 20px; /* Agrega un poco de espacio interno para que el botón no se salga */
+
   }
   
   .validacion-container h1{

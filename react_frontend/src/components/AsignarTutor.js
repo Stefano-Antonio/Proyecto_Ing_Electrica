@@ -81,13 +81,23 @@ function AsignarTutor() {
                 </td>
                 <td>{alumno.matricula}</td>
                 <td>{alumno.nombre}</td>
-                <td></td>
+                <td>
+                    <select>
+                        {personal.map((persona) => (
+                        <option key={persona._id} value={persona.nombre}>
+                            {persona.nombre}
+                        </option>
+                        ))}
+                    </select></td>
             </tr>
             ))}
             </tbody>
           </table>
         </div>
         <div className="horario-buttons">
+        <button className="button">
+            Actualizar
+          </button>
           <button className="button">
             Subir base de datos de materias
           </button>

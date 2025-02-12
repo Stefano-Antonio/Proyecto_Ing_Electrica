@@ -1,3 +1,6 @@
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
 const MateriaSchema = new Schema({
     id_materia: { type: Number, required: true },
     nombre: { type: String, required: true },

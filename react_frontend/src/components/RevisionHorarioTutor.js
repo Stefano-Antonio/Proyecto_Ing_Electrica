@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./RevisionHorarioTutor.css";
 
 
 function RevisionHorarioTutor() {
+  const navigate = useNavigate();
 
   const [mostrarModal, setMostrarModal] = useState(false);
 
@@ -10,9 +12,24 @@ function RevisionHorarioTutor() {
     setMostrarModal(true);
   }
 
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("userType");
+    navigate("/");
+  };
+
+  const handleBack = () => {
+    navigate(-1); // Navegar a la página anterior
+  };
+
     return (
         <div className="horario-layout">
-        
+        <div className="top-left">
+          <button className="back-button" onClick={handleBack}>Regresar</button>
+        </div>
+        <div className="top-right">
+          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
+        </div>
         <div className="horario-container">
         <h1>Revisión de horario</h1>
             <div className="horario-header">

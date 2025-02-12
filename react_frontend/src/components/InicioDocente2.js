@@ -61,7 +61,7 @@ function InicioDocente() {
               <tr>
                 <td>1A</td>
                 <td>B1</td>
-                <td className="actions">
+                <td>
                   <button className="icon-button" onClick={handleListaAlumnos}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -80,7 +80,7 @@ function InicioDocente() {
               <tr>
                 <td>1A</td>
                 <td>B1</td>
-                <td className="actions">
+                <td>
                   <button className="icon-button" onClick={handleListaAlumnos}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -99,7 +99,7 @@ function InicioDocente() {
               <tr>
                 <td>1A</td>
                 <td>B1</td>
-                <td className="actions">
+                <td>
                   <button className="icon-button" onClick={handleListaAlumnos}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -119,8 +119,8 @@ function InicioDocente() {
               <tr>
                 <td>2A</td>
                 <td>B2</td>
-                <td className="actions" onClick={handleListaAlumnos}>
-                  <button className="icon-button">
+                <td>
+                  <button className="icon-button" onClick={handleListaAlumnos}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                       <circle cx="12" cy="12" r="3"></circle>
