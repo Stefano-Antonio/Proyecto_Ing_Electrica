@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, NavigationType } from "react-router-dom";
 import axios from "axios";  // Importa axios para hacer la consulta al backend
 
 const RedirectRoute = ({ children, userType }) => {
@@ -7,6 +7,7 @@ const RedirectRoute = ({ children, userType }) => {
     const roles = localStorage.getItem("roles");
     const [horario, setHorario] = useState(null); // Estado para el horario
     const [loading, setLoading] = useState(true); // Estado de carga para asegurarnos de que los datos se hayan cargado
+    const [validacionCompleta, setValidacionCompleta] = useState(false);
 
     const getPersonalRedirectRoute = () => {
         if (roles.includes("D")) {
@@ -24,8 +25,9 @@ const RedirectRoute = ({ children, userType }) => {
         if (isAuthenticated && userType === "alumno") {
             const fetchAlumnoData = async () => {
                 try {
-                    const response = await axios.get(`/api/alumnos/${localStorage.getItem("userId")}`);
+                    const response = await axios.get(`/api/alumnos/${localStorage.getItem("IDAlumno")}`);
                     setHorario(response.data.horario);  // Establecer el horario
+                    setValidacionCompleta(response.data.validacionCompleta); // Nuevo estado
                     setLoading(false); // Datos cargados
                 } catch (error) {
                     console.error("Error al obtener los datos del alumno", error);
@@ -49,8 +51,7 @@ const RedirectRoute = ({ children, userType }) => {
             if (horario) {
                 // Si el alumno ya tiene un horario, redirigir a la página de validación de estatus
                 return <Navigate to="/validacion-estatus" />;
-            } else {
-                // Si no tiene horario, redirigir a la selección de horario
+            }else if(!horario){
                 return <Navigate to="/horario-seleccion" />;
             }
         } else if (userType === "personal" && roles) {

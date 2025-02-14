@@ -1,12 +1,27 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./Validacion2.css";
 
 function Validacion2() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [archivo, setArchivo] = useState(null); // Estado para almacenar el archivo seleccionado
   const [archivoSubido, setArchivoSubido] = useState(false); // Estado para indicar si el archivo fue subido
   const [archivoURL, setArchivoURL] = useState(""); // URL temporal del archivo para previsualización/descarga
+  const [matricula, setMatricula] = useState(localStorage.getItem("matricula"));
+  const [nombreAlumno, setNombreAlumno] = useState(location.state?.nombre || "");
+  const [IDAlumno, setIDAlumno] = useState(location.state?._id || "");
+
+
+    useEffect(() => {
+      const nombre = location.state?.nombre || localStorage.getItem("nombreAlumno");
+      setNombreAlumno(nombre || "Alumno desconocido");
+    }, [location.state]);
+  
+    useEffect(() => {
+      const idAlumno = location.state?.id || localStorage.getItem("IDAlumno");
+      setIDAlumno(idAlumno || "ID desconocido");
+    }, [location.state]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -36,6 +51,8 @@ function Validacion2() {
     <div className="validacion-layout">
       <div className="validacion-container">
         <h2>Validación de horario</h2>
+        <h4><strong>{nombreAlumno || "Cargando..."}</strong></h4>
+        <h4>Matricula: <strong>{matricula || "Cargando..."}</strong></h4>
         <div className="top-right">
           <button className="logout-button" onClick={handleLogout}>
             Cerrar sesión

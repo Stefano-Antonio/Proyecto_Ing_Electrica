@@ -11,10 +11,10 @@ function HorarioSeleccion() {
   const [materiasSeleccionadas, setMateriasSeleccionadas] = useState([]); // Materias seleccionadas
   const [conflictos, setConflictos] = useState([]);
   const [mostrarModal, setMostrarModal] = useState(false);
-  const [nombreAlumno, setNombreAlumno] = useState(location.state?.nombre || "");
-  const [IDAlumno, setIDAlumno] = useState(location.state?._id || "");
+  const [nombreAlumno, setNombreAlumno] = useState(localStorage.getItem("nombreAlumno") || "Alumno desconocido");
+  const [IDAlumno, setIDAlumno] = useState(localStorage.getItem("IDAlumno") || "ID desconocido");
   const [matricula, setMatricula] = useState(localStorage.getItem("matricula")); // Obtener matrícula del localStorage
-    
+
   // Función para obtener las materias desde el backend
   useEffect(() => {
   
@@ -37,13 +37,14 @@ function HorarioSeleccion() {
   }, []);
 
   useEffect(() => {
-    const nombre = location.state?.nombre || localStorage.getItem("nombreAlumno");
-    setNombreAlumno(nombre || "Alumno desconocido");
-  }, [location.state]);
-
-  useEffect(() => {
-    const idAlumno = location.state?.id || localStorage.getItem("IDAlumno");
-    setIDAlumno(idAlumno || "ID desconocido");
+    if (location.state?.nombre) {
+      setNombreAlumno(location.state.nombre);
+      localStorage.setItem("nombreAlumno", location.state.nombre);
+    }
+    if (location.state?.id) {
+      setIDAlumno(location.state.id);
+      localStorage.setItem("IDAlumno", location.state.id);
+    }
   }, [location.state]);
 
   const handleDesactivarTodas = () => {
@@ -146,6 +147,7 @@ function HorarioSeleccion() {
       </div>
         <h2>Sistema de selección de horario</h2>
         <p>Bienvenido(a): <strong>{nombreAlumno || "Cargando..."}</strong></p>
+        <h4>Matricula <strong>{matricula || "Cargando..."}</strong></h4>
         <p>ID de alumno: <strong>{IDAlumno || "Cargando..."}</strong></p>
         <p>A continuación, seleccione las materias que va a cargar en el semestre</p>
 

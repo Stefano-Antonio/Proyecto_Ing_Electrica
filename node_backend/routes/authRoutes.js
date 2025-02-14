@@ -14,6 +14,10 @@ router.post('/alumno/login', async (req, res) => {
       return res.status(400).json({ mensaje: 'Alumno no encontrado' });
     }
 
+    // Verifica si tiene un horario
+    const tieneHorario = alumno.horario !== null;
+    const validacionCompleta = alumno.horario?.validacionCompleta || false;
+
     const token = jwt.sign({ id: alumno._id }, 'tu_secreto', { expiresIn: '10m' });
     
     return res.json({ 
@@ -21,7 +25,9 @@ router.post('/alumno/login', async (req, res) => {
       nombre: alumno.nombre,
       id: alumno._id,
       token,
-      horario: alumno.horario // Incluye el horario en la respuesta
+      horario: alumno.horario, // Incluye el horario en la respuesta
+      //tieneHorario,
+      validacionCompleta // Se envía al frontend para tomar decisiones de redirección
     });
   } catch (error) {
     return res.status(500).json({ mensaje: 'Error al iniciar sesión', error });

@@ -31,16 +31,17 @@ function Registro() {
       const response = await axios.post(endpoint, payload);
   
       if (response.status === 200) {
-        const { mensaje, roles, token, nombre, id, horario } = response.data;
+        const { mensaje, roles, token, nombre, id, horario, validacionCompleta  } = response.data;
   
         setMensaje(mensaje);
         localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("matricula", matricula);
-        localStorage.setItem("nombre", nombre);
-        localStorage.setItem("id", id);
+        localStorage.setItem("nombreAlumno", nombre);
+        localStorage.setItem("IDAlumno", id);
         localStorage.setItem("roles", JSON.stringify(roles));
         localStorage.setItem("userType", tipoUsuario); // Almacena el tipo de usuario
         localStorage.setItem("horario", JSON.stringify(horario));  // Guardar el horario
+        localStorage.setItem("validacionCompleta", validacionCompleta); // Guarda validación
 
         // Redirigir según el tipo de usuario
         if (tipoUsuario === "personal") {
@@ -57,9 +58,9 @@ function Registro() {
           }
         } else if (tipoUsuario === "alumno") {
           if (horario) {
-            navigate("/validacion-estatus");
+            navigate("/validacion-estatus", {state: { nombre, id, horario }});
           } else{
-            navigate("/horario-seleccion", { state: { nombre, id } });
+            navigate("/horario-seleccion/", { state: { nombre, id, horario } });
           }
           
         } else {

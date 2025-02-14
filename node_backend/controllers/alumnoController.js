@@ -77,18 +77,29 @@ exports.updateAlumno = async (req, res) => {
   const { matricula, nombre, correo, telefono, materiasSeleccionadas } = req.body;
 
   try {
-    // Crear un nuevo documento de Horario con los IDs de las materias seleccionadas
-    const nuevoHorario = new Horario({
-      materias: materiasSeleccionadas.map(materia => materia._id), // Guardamos solo los IDs de las materias
-    });
+    let horarioGuardado = null;
 
-    // Guardar el horario en la base de datos
-    const horarioGuardado = await nuevoHorario.save();
+    // Solo se actualizan las materias si están en req.body
+    if (materiasSeleccionadas && Array.isArray(materiasSeleccionadas) && materiasSeleccionadas.length > 0) {
+      // Crear un nuevo documento de Horario con los IDs de las materias seleccionadas
+      const nuevoHorario = new Horario({
+        materias: materiasSeleccionadas.map(materia => materia._id), // Guardamos solo los IDs de las materias
+      });
 
-    // Actualizar el alumno con el nuevo ID de horario
+      // Guardar el horario en la base de datos
+      horarioGuardado = await nuevoHorario.save();
+    }
+
+    // Actualizar el alumno con los nuevos datos y el ID del horario (si se generó)
     const alumno = await Alumno.findByIdAndUpdate(
       req.params.id,
-      { matricula, nombre, correo, telefono, horario: horarioGuardado._id }, // Guardamos el ID del horario en el alumno
+      {
+        matricula,
+        nombre,
+        correo,
+        telefono,
+        ...(horarioGuardado ? { horario: horarioGuardado._id } : {}) // Solo incluye el horario si se guardó uno
+      },
       { new: true }
     );
 
@@ -98,9 +109,12 @@ exports.updateAlumno = async (req, res) => {
 
     res.status(200).json(alumno);
   } catch (error) {
+    console.error('Error al actualizar el alumno:', error);
     res.status(500).json({ message: 'Error al actualizar el alumno', error });
   }
 };
+
+
 
 // Eliminar un alumno
 exports.deleteAlumno = async (req, res) => {
@@ -111,6 +125,7 @@ exports.deleteAlumno = async (req, res) => {
     }
     res.status(204).json({ message: 'Alumno eliminado' });
   } catch (error) {
+    
     res.status(500).json({ message: 'Error al eliminar el alumno', error });
   }
 };

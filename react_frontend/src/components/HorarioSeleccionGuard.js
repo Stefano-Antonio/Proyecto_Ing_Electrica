@@ -1,42 +1,29 @@
-import React, { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
-import axios from "axios";
+import { Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
-const HorarioSelectionGuard = ({ children }) => {
-  const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
-  const [horario, setHorario] = useState(null);
-  const [loading, setLoading] = useState(true);
+const HorarioSeleccionGuard = ({ children }) => {
+    const [horario, setHorario] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      const fetchAlumnoData = async () => {
-        try {
-          // Asegúrate de que "userId" se guarda en localStorage al iniciar sesión
-          const response = await axios.get(`/api/alumnos/${localStorage.getItem("userId")}`);
-          setHorario(response.data.horario);
-        } catch (error) {
-          console.error("Error al obtener el horario del alumno", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchAlumnoData();
-    } else {
-      setLoading(false);
+    useEffect(() => {
+        axios.get('/api/horario')  // Cambia esto por la API real
+            .then(response => {
+                console.log("Horario obtenido:", response.data);
+                setHorario(response.data);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error("Error al obtener horario:", error);
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) {
+        return <p>Cargando...</p>;  // O un spinner de carga
     }
-  }, [isAuthenticated]);
 
-  if (loading) {
-    return <div>Cargando...</div>; // Puedes usar un spinner o similar
-  }
-
-  // Si ya existe un horario, redirige a validacion-estatus
-  if (horario) {
-    return <Navigate to="/validacion-estatus" />;
-  }
-
-  // Si no hay horario, permite el acceso a la ruta
-  return children;
+    return horario ? <Navigate to="/validacion-estatus" /> : children;
 };
 
-export default HorarioSelectionGuard;
+export default HorarioSeleccionGuard;

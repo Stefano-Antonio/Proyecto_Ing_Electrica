@@ -47,16 +47,26 @@ function ModificarAlumno() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Enviar la actualización a la API
-      const response = await axios.put(`http://localhost:5000/api/alumnos/${alumno._id}`, form);
+      // Solo enviamos los datos del alumno SIN modificar las materias
+      const response = await axios.put(
+        `http://localhost:5000/api/alumnos/${alumno._id}`,
+        {
+          nombre: form.nombre,
+          matricula: form.matricula,
+          correo: form.correo,
+          telefono: form.telefono,
+          // NO enviamos materiasSeleccionadas aquí
+        }
+      );
       console.log("Alumno actualizado:", response.data);
       alert("Alumno actualizado con éxito");
-      navigate(-1); // Navegar de regreso a la lista
+      navigate(-1);
     } catch (error) {
       console.error("Error al actualizar el alumno:", error);
       alert("Hubo un error al actualizar el alumno");
     }
   };
+  
 
   return (
     <div className="alumno-layout">

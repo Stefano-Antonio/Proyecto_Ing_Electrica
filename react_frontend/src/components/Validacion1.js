@@ -10,7 +10,9 @@ import "./Validacion1.css";
 function Validacion1() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [nombreAlumno, setNombreAlumno] = useState("");
+  const [nombreAlumno, setNombreAlumno] = useState(localStorage.getItem("nombreAlumno") || "Alumno desconocido");
+  const [IDAlumno, setIDAlumno] = useState(localStorage.getItem("IDAlumno") || "ID desconocido");
+  const [matricula, setMatricula] = useState(localStorage.getItem("matricula")); // Obtener matrícula del localStorage
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const { materiasSeleccionadas = [] } = location.state || {};
@@ -48,6 +50,17 @@ function Validacion1() {
 
     fetchAlumnoData();
   }, []);
+
+    useEffect(() => {
+      if (location.state?.nombre) {
+        setNombreAlumno(location.state.nombre);
+        localStorage.setItem("nombreAlumno", location.state.nombre);
+      }
+      if (location.state?.id) {
+        setIDAlumno(location.state.id);
+        localStorage.setItem("IDAlumno", location.state.id);
+      }
+    }, [location.state]);
 
   // Función de validación
   const validarCampos = () => {
@@ -102,7 +115,7 @@ function Validacion1() {
   };
 
   const handleBack = () => {
-    navigate(-1);
+    navigate(-1, { state: { nombre: nombreAlumno, id: IDAlumno } });
   };
 
   return (

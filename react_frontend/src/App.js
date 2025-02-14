@@ -47,7 +47,7 @@ import CrearMateria from './components/CrearMateria';
 import './components/CrearMateria.css';
 import AsignarTutor from './components/AsignarTutor';
 import ModificarMateria from './components/ModificarMateria';
-import HorarioSelectionGuard from './components/HorarioSeleccionGuard';
+import HorarioSeleccionGuard from './components/HorarioSeleccionGuard';
 
 function App() {
   const userType = localStorage.getItem("userType") || "alumno"; // Puede ser "alumno" o "personal"
@@ -62,9 +62,9 @@ function App() {
             <Routes>
               <Route path="/" element={<RedirectRoute userType={userType}><Registro /></RedirectRoute>} />
               <Route path="/login" element={<RedirectRoute userType={userType}><Registro /></RedirectRoute>} />
-              <Route path="/horario-seleccion" element={<PrivateRoute><HorarioSelectionGuard><HorarioSeleccion /></HorarioSelectionGuard></PrivateRoute>} />
-              <Route path="/validacion" element={<PrivateRoute><Validacion1 /></PrivateRoute>} />
-              <Route path="/validacion-estatus" element={<PrivateRoute><Validacion2 /></PrivateRoute>} />
+              <Route path="/horario-seleccion" element={<PrivateRoute><HorarioSeleccionGuard><HorarioSeleccion /></HorarioSeleccionGuard></PrivateRoute>} />
+              <Route path="/validacion" element={<PrivateRoute><HorarioSeleccionGuard><Validacion1 /></HorarioSeleccionGuard></PrivateRoute>} />
+              <Route path="/validacion-estatus" element={<PrivateRoute><HorarioSeleccionGuard><Validacion2 /></HorarioSeleccionGuard></PrivateRoute>} />
               <Route path="/inicio-tutor" element={<PrivateRoute><InicioTutor /></PrivateRoute>} />
               <Route path="/inicio-docente" element={<PrivateRoute><InicioDocente /></PrivateRoute>} />
               <Route path="/inicio-docente-2" element={<PrivateRoute><InicioDocente2 /></PrivateRoute>} />
