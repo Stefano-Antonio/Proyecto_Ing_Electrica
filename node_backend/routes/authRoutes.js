@@ -14,6 +14,9 @@ router.post('/alumno/login', async (req, res) => {
       return res.status(400).json({ mensaje: 'Alumno no encontrado' });
     }
 
+    // **Console log para verificar los datos**
+    console.log("Alumno encontrado:", alumno);
+
     // Verifica si tiene un horario
     const tieneHorario = alumno.horario !== null;
     const validacionCompleta = alumno.horario?.validacionCompleta || false;

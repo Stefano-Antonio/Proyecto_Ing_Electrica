@@ -12,6 +12,19 @@ function Validacion2() {
   const [nombreAlumno, setNombreAlumno] = useState(location.state?.nombre || "");
   const [IDAlumno, setIDAlumno] = useState(location.state?._id || "");
 
+      // 🔒 Evitar que el usuario regrese a la pantalla anterior con el botón de retroceso
+  useEffect(() => {
+    const bloquearAtras = () => {
+      window.history.pushState(null, null, window.location.href);
+    };
+
+    bloquearAtras();
+    window.addEventListener("popstate", bloquearAtras);
+
+    return () => {
+      window.removeEventListener("popstate", bloquearAtras);
+    };
+  }, []);
 
     useEffect(() => {
       const nombre = location.state?.nombre || localStorage.getItem("nombreAlumno");

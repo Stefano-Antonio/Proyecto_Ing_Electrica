@@ -24,16 +24,11 @@ const AdministratPersonalCoordinador = () => {
       });
   }, []);
 
-  const handleCheckboxChange = (matricula, role) => {
+  const handleRoleChange = (matricula, roles) => {
     setPersonal(prevState => 
       prevState.map(persona => 
         persona.matricula === matricula
-          ? {
-              ...persona,
-              roles: persona.roles.includes(role)
-                ? persona.roles.filter(r => r !== role)
-                : [...persona.roles, role]
-            }
+          ? { ...persona, roles }
           : persona
       )
     );
@@ -93,10 +88,7 @@ const AdministratPersonalCoordinador = () => {
               <th>Programa</th>
               <th>Nombre del docente</th>
               <th>ID Docente</th>
-              <th>Docente</th>
-              <th>Administrador</th>
-              <th>Coordinador</th>
-              <th>Tutor</th>
+              <th>Permisos</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -107,32 +99,15 @@ const AdministratPersonalCoordinador = () => {
                 <td>{persona.nombre}</td>
                 <td>{persona.matricula}</td>
                 <td>
-                  <input
-                    type="checkbox"
-                    checked={persona.roles.includes("D")}
-                    onChange={() => handleCheckboxChange(persona.matricula, "D")}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={persona.roles.includes("A")}
-                    onChange={() => handleCheckboxChange(persona.matricula, "A")}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={persona.roles.includes("C")}
-                    onChange={() => handleCheckboxChange(persona.matricula, "C")}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={persona.roles.includes("T")}
-                    onChange={() => handleCheckboxChange(persona.matricula, "T")}
-                  />
+                <select
+                    value={persona.roles}
+                    onChange={(e) => handleRoleChange(persona.matricula,e.target.value)}
+                  >
+                    <option value="D">Docente</option>
+                    <option value="T">Tutor</option>
+                    <option value="C">Coordinador</option>
+                    <option value="A">Administrador</option>
+                  </select>
                 </td>
                 <td>
                   <div className="action-buttons">

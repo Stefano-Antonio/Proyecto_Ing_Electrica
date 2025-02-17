@@ -24,13 +24,15 @@ function RevisionHorarioTutor() {
 
     return (
         <div className="horario-layout">
+        
+        <div className="horario-container">
+
         <div className="top-left">
           <button className="back-button" onClick={handleBack}>Regresar</button>
         </div>
         <div className="top-right">
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
         </div>
-        <div className="horario-container">
         <h1>Revisión de horario</h1>
             <div className="horario-header">
               

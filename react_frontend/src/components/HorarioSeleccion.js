@@ -15,6 +15,21 @@ function HorarioSeleccion() {
   const [IDAlumno, setIDAlumno] = useState(localStorage.getItem("IDAlumno") || "ID desconocido");
   const [matricula, setMatricula] = useState(localStorage.getItem("matricula")); // Obtener matrícula del localStorage
 
+
+    // 🔒 Evitar que el usuario regrese a la pantalla anterior con el botón de retroceso
+    useEffect(() => {
+      const bloquearAtras = () => {
+        window.history.pushState(null, null, window.location.href);
+      };
+  
+      bloquearAtras();
+      window.addEventListener("popstate", bloquearAtras);
+  
+      return () => {
+        window.removeEventListener("popstate", bloquearAtras);
+      };
+    }, []);
+    
   // Función para obtener las materias desde el backend
   useEffect(() => {
   
