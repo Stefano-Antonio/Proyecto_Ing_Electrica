@@ -53,7 +53,10 @@ function Registro() {
             navigate("/inicio-administrador", { state: { nombre } });
           } else if (roles.includes("T")) {
             navigate("/inicio-tutor", { state: { nombre } });
-          } else {
+          } else if (roles.includes("CG")) {
+            navigate("/inicio-coordinador-gen", { state: { nombre } });
+          }
+           else {
             setMensaje("Usuario personal desconocido");
           }
         } else if (tipoUsuario === "alumno") {

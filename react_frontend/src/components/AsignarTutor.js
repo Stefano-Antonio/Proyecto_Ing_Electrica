@@ -9,7 +9,9 @@ function AsignarTutor() {
   const location = useLocation();
   const [personal, setPersonal] = useState([]);
   const [alumnos, setAlumnos] = useState([]);
-
+  const [tutorSeleccionado, setTutorSeleccionado] = useState("general");
+  const [seleccionados, setSeleccionados] = useState([]);
+  
   useEffect(() => {
     // Fetch de personal desde el servidor
     fetch("http://localhost:5000/api/personal")

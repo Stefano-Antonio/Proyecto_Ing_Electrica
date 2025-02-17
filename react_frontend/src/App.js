@@ -48,6 +48,7 @@ import './components/CrearMateria.css';
 import AsignarTutor from './components/AsignarTutor';
 import ModificarMateria from './components/ModificarMateria';
 import HorarioSeleccionGuard from './components/HorarioSeleccionGuard';
+import InicioCoordGen from './components/InicioCoordGen';
 
 function App() {
   const userType = localStorage.getItem("userType") || "alumno"; // Puede ser "alumno" o "personal"
@@ -83,7 +84,8 @@ function App() {
               <Route path="/modificar-personal" element={<PrivateRoute><ModificarPersonal/></PrivateRoute>}></Route>
               <Route path="/admin-tutor" element={<PrivateRoute><AdministrarTutorados/></PrivateRoute>}></Route>
               <Route path="/asignar-tutor" element={<PrivateRoute><AsignarTutor/></PrivateRoute>}></Route>
-              <Route path="*" element={<Navigate to="/" />} />
+              <Route path="/inicio-coordinador-gen" element={<PrivateRoute><InicioCoordGen/></PrivateRoute>}></Route>
+              <Route path="*" element={<PrivateRoute><InicioCoordinador/></PrivateRoute>} />
             </Routes>
           </div>
           <div className="Lat_derecha"></div> {/* Barra lateral derecha */}

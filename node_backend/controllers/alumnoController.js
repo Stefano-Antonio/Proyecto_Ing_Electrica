@@ -1,4 +1,5 @@
 const Alumno = require('../models/Alumno');
+const Materia = require('../models/Materia');
 const Horario = require('../models/Horario');
 const { Parser } = require('json2csv');
 const multer = require('multer');
@@ -77,42 +78,53 @@ exports.updateAlumno = async (req, res) => {
   const { matricula, nombre, correo, telefono, materiasSeleccionadas } = req.body;
 
   try {
+    const alumnoExistente = await Alumno.findById(req.params.id).populate('horario');
+    if (!alumnoExistente) {
+      return res.status(404).json({ message: 'Alumno no encontrado' });
+    }
+
+    let horarioAnterior = alumnoExistente.horario ? alumnoExistente.horario.materias.map(m => m.toString()) : [];
+    let materiasNuevas = materiasSeleccionadas.map(m => m._id);
+
+    // Identificar materias eliminadas y agregadas
+    let materiasEliminadas = horarioAnterior.filter(m => !materiasNuevas.includes(m));
+    let materiasAgregadas = materiasNuevas.filter(m => !horarioAnterior.includes(m));
+
+    // Reducir el cupo de las materias agregadas
+    for (let idMateria of materiasAgregadas) {
+      await Materia.findByIdAndUpdate(idMateria, { $inc: { cupo: -1 } });
+    }
+
+    // Aumentar el cupo de las materias eliminadas
+    for (let idMateria of materiasEliminadas) {
+      await Materia.findByIdAndUpdate(idMateria, { $inc: { cupo: 1 } });
+    }
+
     let horarioGuardado = null;
-
-    // Solo se actualizan las materias si están en req.body
-    if (materiasSeleccionadas && Array.isArray(materiasSeleccionadas) && materiasSeleccionadas.length > 0) {
-      // Crear un nuevo documento de Horario con los IDs de las materias seleccionadas
-      const nuevoHorario = new Horario({
-        materias: materiasSeleccionadas.map(materia => materia._id), // Guardamos solo los IDs de las materias
-      });
-
-      // Guardar el horario en la base de datos
+    if (materiasNuevas.length > 0) {
+      const nuevoHorario = new Horario({ materias: materiasNuevas });
       horarioGuardado = await nuevoHorario.save();
     }
 
-    // Actualizar el alumno con los nuevos datos y el ID del horario (si se generó)
-    const alumno = await Alumno.findByIdAndUpdate(
+    const alumnoActualizado = await Alumno.findByIdAndUpdate(
       req.params.id,
       {
         matricula,
         nombre,
         correo,
         telefono,
-        ...(horarioGuardado ? { horario: horarioGuardado._id } : {}) // Solo incluye el horario si se guardó uno
+        ...(horarioGuardado ? { horario: horarioGuardado._id } : {})
       },
       { new: true }
     );
 
-    if (!alumno) {
-      return res.status(404).json({ message: 'Alumno no encontrado' });
-    }
-
-    res.status(200).json(alumno);
+    res.status(200).json(alumnoActualizado);
   } catch (error) {
     console.error('Error al actualizar el alumno:', error);
     res.status(500).json({ message: 'Error al actualizar el alumno', error });
   }
 };
+
 
 
 

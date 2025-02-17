@@ -2,6 +2,7 @@ const Personal = require('../models/Personal');
 const Docentes = require('../models/Docentes');
 const Tutores = require('../models/Tutores');
 const Coordinadores = require('../models/Coordinadores');
+const CoordinadGen = require('../models/Coordinador_Gen');
 const Administradores = require('../models/Administradores');
 const bcrypt = require('bcryptjs');
 const { Parser } = require('json2csv');
@@ -9,6 +10,7 @@ const multer = require('multer');
 const csv = require('csv-parser');
 const fs = require('fs');
 const path = require('path');
+const Coordinador_Gen = require('../models/Coordinador_Gen');
 
 // Configurar multer para manejar el archivo CSV
 const storage = multer.diskStorage({
@@ -61,7 +63,14 @@ exports.createPersonal = async (req, res) => {
             });
             const administradorGuardado = await nuevoAdministrador.save();
             console.log('Usuario guardado en Administradores:', administradorGuardado);
-        }
+        } else if (roles.includes('CG')) {
+          const nuevoCoordinadorGen = new Coordinador_Gen({
+              personalMatricula: usuarioGuardado.matricula,
+              // Otros campos específicos de Administrador
+          });
+          const coordinadorGenGuardado = await nuevoCoordinadorGen.save();
+          console.log('Usuario guardado en Coordinador General:', coordinadorGenGuardado);
+      }
 
         res.status(201).json(usuarioGuardado);
     } catch (error) {
