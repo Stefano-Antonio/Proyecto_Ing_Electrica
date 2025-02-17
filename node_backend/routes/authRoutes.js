@@ -25,6 +25,7 @@ router.post('/alumno/login', async (req, res) => {
     
     return res.json({ 
       mensaje: 'Inicio de sesión exitoso', 
+      id_carrera: alumno.id_carrera,
       nombre: alumno.nombre,
       id: alumno._id,
       token,

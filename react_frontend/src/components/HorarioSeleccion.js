@@ -30,14 +30,23 @@ function HorarioSeleccion() {
       };
     }, []);
     
+  
   // Función para obtener las materias desde el backend
   useEffect(() => {
-  
     const fetchMaterias = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/materias");
+        const id_carrera = location.state?.id_carrera; // Obtener el id_carrera desde la navegación
+        console.error("id_carrera:",id_carrera);
+        if (!id_carrera) {
+          console.error("ID de carrera no encontrado");
+          return;
+        }
+        // Usamos la nueva ruta con el parámetro id_carrera
+        const response = await fetch(`http://localhost:5000/api/materias/carrera/${id_carrera}`);
         const data = await response.json();
-        console.log(data); // Log para verificar los datos recibidos
+
+        console.log("Materias recibidas:", data); // Verificar qué datos llegan
+
         const sortedData = data.sort((a, b) => a.grupo.localeCompare(b.grupo));
         setMaterias(sortedData);
 
@@ -52,14 +61,8 @@ function HorarioSeleccion() {
   }, []);
 
   useEffect(() => {
-    if (location.state?.nombre) {
-      setNombreAlumno(location.state.nombre);
-      localStorage.setItem("nombreAlumno", location.state.nombre);
-    }
-    if (location.state?.id) {
-      setIDAlumno(location.state.id);
-      localStorage.setItem("IDAlumno", location.state.id);
-    }
+    const nombre = location.state?.nombre || localStorage.getItem("nombreAlumno");
+    setNombreAlumno(nombre || "Alumno desconocido");
   }, [location.state]);
 
   const handleDesactivarTodas = () => {

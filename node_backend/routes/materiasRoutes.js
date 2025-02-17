@@ -15,6 +15,9 @@ router.get('/', materiaController.getMaterias);
 // Ruta para obtener una materia por su ID
 router.get('/:id', materiaController.getMateriaById);
 
+// Ruta para obtener materias por id_carrera
+router.get('/carrera/:id_carrera', materiaController.getMateriasByCarreraId);
+
 // Ruta para actualizar una materia
 router.put('/:id', materiaController.updateMateria);
 

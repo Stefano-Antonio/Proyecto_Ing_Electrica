@@ -8,6 +8,8 @@ const alumnoRoutes = require('./routes/alumnoRoutes');
 const authRoutes = require('./routes/authRoutes');  // Importa las rutas de autenticación
 const materiasRoutes = require('./routes/materiasRoutes');
 const personalRoutes = require('./routes/personalRoutes');
+const tutorRoutes = require('./routes/tutorRoutes');
+const Alumno = require('./models/Alumno');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -20,15 +22,20 @@ app.use('/api/alumnos', alumnoRoutes);
 app.use('/api/auth', authRoutes);  // Usa las rutas de autenticación
 app.use('/api/materias', materiasRoutes);
 app.use('/api/personal', personalRoutes);
+app.use('/api/tutores', tutorRoutes);
+
+
 
 // Conexión a MongoDB
-mongoose.connect('mongodb+srv://rogerzma500:upiiz_rzm500@dbuaie.mlhfo.mongodb.net/DBUAIE?retryWrites=true&w=majority', {
+mongoose.connect('mongodb+srv://Stefano117:Mixbox360@cluster0.qgw2j.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
 
 }).then(() => {
   console.log('Conectado a MongoDB');
 }).catch(error => {
   console.error('Error al conectar a MongoDB:', error);
 });
+
+
 
 // Iniciar el servidor
 app.listen(PORT, () => {

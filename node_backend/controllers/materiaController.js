@@ -4,6 +4,7 @@ const multer = require('multer');
 const csv = require('csv-parser');
 const fs = require('fs');
 const path = require('path');
+const carrerasPermitidas = ["ISftw", "IDsr", "IEInd", "ICmp", "IRMca", "ISftwS"];
 
 // Configurar multer para manejar el archivo CSV
 const storage = multer.diskStorage({
@@ -50,6 +51,33 @@ exports.getMaterias = async (req, res) => {
   }
 };
 
+// Obtener materias por id_carrera
+exports.getMateriasByCarreraId = async (req, res) => {
+  const { id_carrera } = req.params;
+  console.log("ID de carrera recibido:", id_carrera);
+  // Verificar si el id_carrera está en la lista permitida
+  if (!carrerasPermitidas.includes(id_carrera)) {
+    return res.status(400).json({ message: "ID de carrera no válido" });
+  }
+
+  try {
+    console.log("ID de carrera recibido:", id_carrera);
+    if (!carrerasPermitidas.includes(id_carrera)) {
+      return res.status(400).json({ mensaje: "ID de carrera no válido" });
+    }
+    // Filtra las materias por id_carrera en la base de datos
+    const materias = await Materia.find({ id_carrera: id_carrera });
+    if (!materias.length) {
+      return res.status(404).json({ mensaje: "No se encontraron materias para esta carrera" });
+    }
+
+    res.status(200).json(materias);
+   // console.log(materias);
+  } catch (error) {
+    console.error("Error al obtener materias:", error);
+    res.status(500).json({ mensaje: "Error interno al obtener materias", error });
+  }
+};
 
 // Obtener una materia por ID
 exports.getMateriaById = async (req, res) => {
