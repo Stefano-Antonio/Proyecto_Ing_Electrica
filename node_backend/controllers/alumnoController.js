@@ -125,9 +125,6 @@ exports.updateAlumno = async (req, res) => {
   }
 };
 
-
-
-
 // Eliminar un alumno
 exports.deleteAlumno = async (req, res) => {
   try {
