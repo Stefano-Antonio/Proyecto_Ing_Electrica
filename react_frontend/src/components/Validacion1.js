@@ -10,8 +10,9 @@ import "./Validacion1.css";
 function Validacion1() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [nombreAlumno, setNombreAlumno] = useState(localStorage.getItem("nombreAlumno") || "Alumno desconocido");
-  const [IDAlumno, setIDAlumno] = useState(localStorage.getItem("IDAlumno") || "ID desconocido");
+  const [nombre, setNombreAlumno] = useState(localStorage.getItem("nombreAlumno") || "Alumno desconocido");
+  const [id, setIDAlumno] = useState(localStorage.getItem("IDAlumno") || "ID desconocido");
+  const [id_carrera, setIDCarrera] = useState(localStorage.getItem("id_carrera") || "ID de carrera desconocido");
   const [matricula, setMatricula] = useState(localStorage.getItem("matricula")); // Obtener matrícula del localStorage
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -19,15 +20,15 @@ function Validacion1() {
 
   useEffect(() => {
     const fetchAlumnoData = async () => {
-      const IDAlumno = location.state?.IDAlumno || localStorage.getItem("IDAlumno");
-      if (!IDAlumno) {
+      const id = location.state?.id || localStorage.getItem("IDAlumno");
+      if (!id) {
         toast.error("No se encontró el ID del alumno.");
         return;
       }
 
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/alumnos/${IDAlumno}`
+          `http://localhost:5000/api/alumnos/${id}`
         );
         const { _id, nombre, correo, telefono } = response.data;
         setNombreAlumno(nombre);
@@ -88,14 +89,14 @@ function Validacion1() {
   const handleContinuarValidacion = async () => {
     if (!validarCampos()) return;
 
-    const IDAlumno = location.state?.IDAlumno || localStorage.getItem("IDAlumno");
-      if (!IDAlumno) {
+    const id = location.state?.id || localStorage.getItem("IDAlumno");
+      if (!id) {
         toast.error("No se encontró el ID del alumno.");
         return;
       }
 
     try {
-      await axios.put(`http://localhost:5000/api/alumnos/${IDAlumno}`, {
+      await axios.put(`http://localhost:5000/api/alumnos/${id}`, {
         correo: email,
         telefono: phone,
         materiasSeleccionadas: materiasSeleccionadas, // Enviar las materias seleccionadas
@@ -115,7 +116,7 @@ function Validacion1() {
   };
 
   const handleBack = () => {
-    navigate(-1, { state: { nombre: nombreAlumno, id: IDAlumno } });
+    navigate("/horario-seleccion", { state: { nombre, id , id_carrera } });
   };
 
   return (
@@ -134,7 +135,7 @@ function Validacion1() {
         </div>
         <h2>Verificación de horario</h2>
         <p>
-          Bienvenido(a): <strong>{nombreAlumno || "Cargando..."}</strong>
+          Bienvenido(a): <strong>{nombre || "Cargando..."}</strong>
         </p>
         <p>Verifique que las materias seleccionadas estén correctas.</p>
         <p>

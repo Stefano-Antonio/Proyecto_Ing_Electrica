@@ -55,7 +55,7 @@ function Registro() {
           }
         } else if (tipoUsuario === "alumno") {
           console.error("ID de carrera", id_carrera);
-          navigate("/horario-seleccion", { state: { nombre,id, id_carrera } });
+          navigate("/horario-seleccion", { state: { nombre, id , id_carrera } });
         } else { 
           setMensaje("Usuario desconocido");
         }
