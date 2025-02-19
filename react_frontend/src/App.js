@@ -74,6 +74,7 @@ function App() {
               <Route path="/administrar-materias" element={<AdministrarMaterias/>}></Route>
               <Route path="/administrar-personal" element={<PrivateRoute><AdministrarPersonal/></PrivateRoute>}></Route>
               <Route path="/crear-alumno" element={<PrivateRoute><CrearAlumno/></PrivateRoute>}></Route>
+              <Route path="/crear-materia" element={<PrivateRoute><CrearMateria/></PrivateRoute>}></Route>
               <Route path="/modificar-alumno" element={<PrivateRoute><ModificarAlumno/></PrivateRoute>}></Route>
               <Route path="/modificar-materia" element={<PrivateRoute><ModificarMateria/></PrivateRoute>}></Route>
               <Route path="/crear-personal" element={<PrivateRoute><CrearPersonal/></PrivateRoute>}></Route>
