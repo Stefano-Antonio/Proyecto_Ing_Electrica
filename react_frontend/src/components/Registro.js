@@ -23,40 +23,50 @@ function Registro() {
           ? "http://localhost:5000/api/auth/alumno/login"
           : "http://localhost:5000/api/auth/personal/login";
   
-      const payload = tipoUsuario === "alumno" ? { matricula } : { matricula, password };
+      const payload =
+        tipoUsuario === "alumno"
+          ? { matricula }
+          : { matricula, password };
   
       const response = await axios.post(endpoint, payload);
   
       if (response.status === 200) {
-        const { mensaje, id_carrera = "",id,  nombre, roles } = response.data; // Evita error de undefined
-        console.log("Matricula:", matricula);
-        console.log("El nombre es:", nombre);
-        setMensaje(mensaje);
+        const { mensaje, roles, token, nombre, id, horario, validacionCompleta  } = response.data;
   
-        localStorage.setItem("id_carrera", id_carrera);
+        setMensaje(mensaje);
         localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("matricula", matricula);
+        localStorage.setItem("nombreAlumno", nombre);
         localStorage.setItem("IDAlumno", id);
-        localStorage.setItem("nombre", nombre);
         localStorage.setItem("roles", JSON.stringify(roles));
-        localStorage.setItem("userType", tipoUsuario);
-  
+        localStorage.setItem("userType", tipoUsuario); // Almacena el tipo de usuario
+        localStorage.setItem("horario", JSON.stringify(horario));  // Guardar el horario
+        localStorage.setItem("validacionCompleta", validacionCompleta); // Guarda validación
+
+        // Redirigir según el tipo de usuario
         if (tipoUsuario === "personal") {
           if (roles.includes("D")) {
-            navigate("/inicio-docente", { state: { nombre } });
+            navigate("/inicio-docente", { state: { nombre, matricula } });
           } else if (roles.includes("C")) {
-            navigate("/inicio-coordinador", { state: { nombre } });
+            navigate("/inicio-coordinador", { state: { nombre, matricula } });
           } else if (roles.includes("A")) {
-            navigate("/inicio-administrador", { state: { nombre } });
+            navigate("/inicio-administrador", { state: { nombre, matricula } });
           } else if (roles.includes("T")) {
             navigate("/inicio-tutor", { state: { nombre, matricula } });
-          } else {
+          } else if (roles.includes("CG")) {
+            navigate("/inicio-coordinador-gen", { state: { nombre, matricula } });
+          }
+           else {
             setMensaje("Usuario personal desconocido");
           }
         } else if (tipoUsuario === "alumno") {
-          console.error("ID de carrera", id_carrera);
-          navigate("/horario-seleccion", { state: { nombre, id, id_carrera } });
-        } else { 
+          if (horario) {
+            navigate("/validacion-estatus", {state: { nombre, id, horario }});
+          } else{
+            navigate("/horario-seleccion/", { state: { nombre, id, horario } });
+          }
+          
+        } else {
           setMensaje("Usuario desconocido");
         }
       }
@@ -65,7 +75,6 @@ function Registro() {
       setMensaje("Error al iniciar sesión. Matrícula o contraseña incorrectas.");
     }
   };
-  
 
   return (
     <div className="registro-layout">

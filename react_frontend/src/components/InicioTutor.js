@@ -10,16 +10,41 @@ function InicioTutor() {
 
   const { nombre, matricula: matriculaTutor } = location.state || {};
 
+  // Guardar la matrícula del tutor en localStorage
+  useEffect(() => {
+    if (matriculaTutor) {
+      localStorage.setItem("matriculaTutor", matriculaTutor);
+    }
+  }, [matriculaTutor]);
+
+  // Obtener la matrícula del tutor desde localStorage si no está en location.state
+  const storedMatriculaTutor = localStorage.getItem("matriculaTutor");
+
+  // 🔒 Evitar que el usuario regrese a la pantalla anterior con el botón de retroceso
+  useEffect(() => {
+    const bloquearAtras = () => {
+      window.history.pushState(null, null, window.location.href);
+    };
+
+    bloquearAtras();
+    window.addEventListener("popstate", bloquearAtras);
+
+    return () => {
+      window.removeEventListener("popstate", bloquearAtras);
+    };
+  }, []);
+
   useEffect(() => {
     const fetchAlumnos = async () => {
       try {
-        if (!matriculaTutor) {
+        const matricula = matriculaTutor || storedMatriculaTutor;
+        if (!matricula) {
           console.error("Matrícula del tutor no encontrada");
           setError("Matrícula del tutor no encontrada");
           return;
         }
 
-        const response = await fetch(`http://localhost:5000/api/tutores/${matriculaTutor}`);
+        const response = await fetch(`http://localhost:5000/api/tutores/${matricula}`);
         if (!response.ok) {
           throw new Error("Error al obtener los alumnos");
         }
@@ -50,18 +75,19 @@ function InicioTutor() {
     };
 
     fetchAlumnos();
-  }, [matriculaTutor]);
+  }, [matriculaTutor, storedMatriculaTutor]);
 
   const handleRevisarHorario = (matriculaAlumno) => {
     console.log("Navegando a: ", `/revisar-horario/${matriculaAlumno}`);
-    navigate(`/revisar-horario/${matriculaAlumno}`, { state: { nombre, matricula: matriculaTutor } });
+    navigate(`/revisar-horario/${matriculaAlumno}`, { state: { nombre, matricula: matriculaTutor || storedMatriculaTutor } });
   };
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("userType");
     localStorage.removeItem("tutorId");
-    navigate("/"); // Redirige a la pantalla principal
+    localStorage.removeItem("matriculaTutor"); // Limpiar la matrícula del tutor al cerrar sesión
+    navigate("/");
   };
 
   const getEstatusIcon = (estatus) => {
