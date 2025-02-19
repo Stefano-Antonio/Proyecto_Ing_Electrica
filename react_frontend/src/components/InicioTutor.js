@@ -61,6 +61,7 @@ function InicioTutor() {
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("userType");
     localStorage.removeItem("tutorId");
+    navigate("/"); // Redirige a la pantalla principal
   };
 
   const getEstatusIcon = (estatus) => {
