@@ -8,6 +8,7 @@ import AdministrarMaterias from './AdministrarMaterias';
 
 const InicioCoordinador = () => {
     const navigate = useNavigate();
+    const id_carrera = localStorage.getItem("id_carrera");
     // Estado para controlar qué componente se debe mostrar
     const [componenteActivo, setComponenteActivo] = useState('');
   
@@ -17,6 +18,7 @@ const InicioCoordinador = () => {
     };
 
     const handleLogout = () => {
+      localStorage.setItem("id_carrera", id_carrera);
       localStorage.removeItem("isAuthenticated");
       localStorage.removeItem("userType");
       navigate("/");
@@ -38,9 +40,9 @@ const InicioCoordinador = () => {
         </div>
   
         {/* Renderizado condicional de componentes */}
-        {componenteActivo === 'alumno' && <AlumnoListCoord />}
-        {componenteActivo === 'personal' && <AdministrarPersonalCoordinador />}
-        {componenteActivo === 'materias' && <AdministrarMaterias />}
+        {componenteActivo === 'alumno' && <AlumnoListCoord id_carrera={id_carrera} />}
+        {componenteActivo === 'personal' && <AdministrarPersonalCoordinador id_carrera={id_carrera} />}
+        {componenteActivo === 'materias' && <AdministrarMaterias id_carrera={id_carrera} />}
       </div>
     );
   };

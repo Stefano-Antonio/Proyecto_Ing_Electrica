@@ -4,6 +4,10 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const Alumno = require('../models/Alumno');
 const Personal = require('../models/Personal');
+const Coordinador = require('../models/Coordinadores');
+const Docente = require('../models/Docentes');
+const Tutor = require('../models/Tutores');
+const Administrador = require('../models/Administradores');
 
 // Ruta de inicio de sesión para alumnos
 router.post('/alumno/login', async (req, res) => {
@@ -56,17 +60,43 @@ router.post('/personal/login', async (req, res) => {
     // Verifica la contraseña
     const passwordValido = password === personal.password; // Comparación directa
     // Si usas hashing, utiliza:
-     //const passwordValido = await bcrypt.compare(password, personal.password);
+    // const passwordValido = await bcrypt.compare(password, personal.password);
 
     if (!passwordValido) {
       return res.status(401).json({ mensaje: 'Contraseña incorrecta' });
     }
+
+    // Buscar en los diferentes modelos para obtener el id_carrera
+    let id_carrera = null;
+
+    const coordinador = await Coordinador.findOne({ personalMatricula: matricula });
+    if (coordinador) {
+      id_carrera = coordinador.id_carrera;
+    } else {
+      const docente = await Docente.findOne({ personalMatricula: matricula });
+      if (docente) {
+        id_carrera = docente.id_carrera;
+      } else {
+        const tutor = await Tutor.findOne({ personalMatricula: matricula });
+        if (tutor) {
+          id_carrera = tutor.id_carrera;
+        } else {
+          const administrador = await Administrador.findOne({ personalMatricula: matricula });
+          if (administrador) {
+            id_carrera = administrador.id_carrera;
+          }
+        }
+      }
+    }
+
+    console.log('ID de carrera:', id_carrera);
 
     // Respuesta exitosa
     return res.status(200).json({
       mensaje: 'Inicio de sesión exitoso',
       nombre: personal.nombre,
       roles: personal.roles,
+      id_carrera: id_carrera,
       token: 'mock-token', // Genera un token real si usas JWT
     });
   } catch (error) {

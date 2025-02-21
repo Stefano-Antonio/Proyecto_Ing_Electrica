@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import "./AdministrarMaterias.css";
 
 
-const AdministrarMaterias = () => {
+const AdministrarMaterias = ({id_carrera}) => {
   const [materias, setMaterias] = useState([]);
   const [docentes, setDocentes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,7 +15,7 @@ const AdministrarMaterias = () => {
     // Realiza la solicitud para obtener las materias desde la base de datos
     const fetchMaterias = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/materias');
+        const response = await axios.get(`http://localhost:5000/api/materias/carrera/${id_carrera}`);
         setMaterias(response.data); // Establece los datos de materias en el estado
       } catch (error) {
         console.error('Error al obtener datos de materias:', error);

@@ -3,10 +3,9 @@ const Schema = mongoose.Schema;
 
 const AdministradorMdl = new Schema({
     id_carrera:{type: String, required: true},
-    nombre: { type: String, required: true },
-    matricula: { type: String, required: true, unique: true },
-    password:{ type: String, required: true },
+    personalMatricula: { type: String, ref: 'Personal', required: true, unique: true }, // Relación con Personal por matrícula 
     });
+
 
 
 module.exports = mongoose.model('Administrador', AdministradorMdl);

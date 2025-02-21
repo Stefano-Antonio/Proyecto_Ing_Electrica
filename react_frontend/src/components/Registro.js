@@ -31,9 +31,10 @@ function Registro() {
       const response = await axios.post(endpoint, payload);
   
       if (response.status === 200) {
-        const { mensaje, roles, token, nombre, id, horario, validacionCompleta  } = response.data;
+        const { mensaje, roles, token, nombre, id, id_carrera, horario, validacionCompleta  } = response.data;
   
         setMensaje(mensaje);
+        localStorage.setItem("id_carrera", id_carrera);
         localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("matricula", matricula);
         localStorage.setItem("nombreAlumno", nombre);
@@ -48,9 +49,9 @@ function Registro() {
           if (roles.includes("D")) {
             navigate("/inicio-docente", { state: { nombre, matricula } });
           } else if (roles.includes("C")) {
-            navigate("/inicio-coordinador", { state: { nombre, matricula } });
+            navigate("/inicio-coordinador", { state: { nombre, matricula, id_carrera } });
           } else if (roles.includes("A")) {
-            navigate("/inicio-administrador", { state: { nombre, matricula } });
+            navigate("/inicio-administrador", { state: { nombre, matricula, id_carrera } });
           } else if (roles.includes("T")) {
             navigate("/inicio-tutor", { state: { nombre, matricula } });
           } else if (roles.includes("CG")) {
