@@ -77,6 +77,21 @@ function InicioTutor() {
     }
   };
 
+  useEffect(() => {
+    const handlePopState = (event) => {
+      // Aquí puedes manejar la navegación hacia atrás
+      console.log("Navegación hacia atrás detectada");
+      // Redirigir a la pantalla deseada
+      navigate("/login");
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [navigate]);
+
   return (
     <div className="tutor-layout">
       <div className="tutor-container">
