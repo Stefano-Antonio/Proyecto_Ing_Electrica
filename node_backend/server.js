@@ -9,6 +9,7 @@ const authRoutes = require('./routes/authRoutes');  // Importa las rutas de aute
 const materiasRoutes = require('./routes/materiasRoutes');
 const personalRoutes = require('./routes/personalRoutes');
 const tutorRoutes = require('./routes/tutorRoutes');
+const Coordinador = require('./models/Coordinadores');
 const Alumno = require('./models/Alumno');
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -34,8 +35,6 @@ mongoose.connect('mongodb+srv://Stefano117:Mixbox360@cluster0.qgw2j.mongodb.net/
 }).catch(error => {
   console.error('Error al conectar a MongoDB:', error);
 });
-
-
 
 // Iniciar el servidor
 app.listen(PORT, () => {

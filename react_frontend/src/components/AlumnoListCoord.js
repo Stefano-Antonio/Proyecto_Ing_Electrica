@@ -7,11 +7,12 @@ const AlumnoListCoord = () => {
   const [alumnos, setAlumnos] = useState([]);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [AlumnoAEliminar, setAlumnoAEliminar] = useState(null);
-
+  
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/alumnos')
+    const matricula = localStorage.getItem("matricula");
+    axios.get(`http://localhost:5000/api/alumnos/matricula/${matricula}`)
       .then(response => {
         console.log(response.data); // Verificar los datos recibidos
         setAlumnos(response.data);

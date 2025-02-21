@@ -1,5 +1,9 @@
 const Alumno = require('../models/Alumno');
 const Horario = require('../models/Horario');
+const Personal = require('../models/Personal');
+const Tutor = require('../models/Tutores');
+const Docente = require('../models/Docentes');
+const Coordinador = require('../models/Coordinadores');
 const { Parser } = require('json2csv');
 const multer = require('multer');
 const csv = require('csv-parser');
@@ -41,6 +45,65 @@ exports.getAlumnos = async (req, res) => {
     res.status(200).json(alumnos);
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener alumnos', error });
+  }
+};
+
+// Ruta para obtener los alumnos de un tutor específico
+exports.getAlumnosAsignados = async (req, res) => {
+  console.log('Obteniendo alumnos asignados a un tutor');
+  const { matricula } = req.params;
+  try {
+    console.log('Matrícula del tutor:', matricula);
+
+    // Buscar al tutor directamente por matrícula
+    const personal = await Personal.findOne({ matricula: matricula });
+
+    if (!personal) {
+      console.log('personal no encontrado');
+      return res.status(404).json({ message: "personal no encontrado" });
+    }
+
+    let alumnosIds = [];
+
+    if (personal.roles == 'T') {
+      console.log('personal es tutor');
+      const tutor = await Tutor.findOne({ personalMatricula: matricula });
+      if (!tutor) {
+        console.log('Tutor no encontrado');
+        return res.status(404).json({ message: "Tutor no encontrado" });
+      }
+      alumnosIds = tutor.alumnos;
+
+    } else if (personal.roles == 'D') {
+      console.log('personal es docente');
+      const docente = await Docente.findOne({ personal: matricula });
+      if (!docente) {
+        console.log('Docente no encontrado');
+        return res.status(404).json({ message: "Docente no encontrado" });
+      }
+      alumnosIds = docente.alumnos;
+
+    } else if (personal.roles == 'C') {
+      console.log('personal es coordinador');
+      const coordinador = await Coordinador.findOne({ personalMatricula: matricula });
+      if (!coordinador) {
+        console.log('Coordinador no encontrado');
+        return res.status(404).json({ message: "Coordinador no encontrado" });
+      }
+      alumnosIds = coordinador.alumnos;
+
+    } else {
+      console.log('Rol no válido');
+      return res.status(400).json({ message: "Rol no válido" });
+    }
+
+    // Obtener los detalles completos de los alumnos
+    const alumnos = await Alumno.find({ _id: { $in: alumnosIds } });
+
+    res.status(200).json(alumnos);
+  } catch (error) {
+    console.error("Error al obtener los alumnos del tutor:", error);
+    res.status(500).json({ message: "Error al obtener los alumnos del tutor" });
   }
 };
 
