@@ -9,8 +9,7 @@ const authRoutes = require('./routes/authRoutes');  // Importa las rutas de aute
 const materiasRoutes = require('./routes/materiasRoutes');
 const personalRoutes = require('./routes/personalRoutes');
 const tutorRoutes = require('./routes/tutorRoutes');
-const Coordinador = require('./models/Coordinadores');
-const Alumno = require('./models/Alumno');
+const docenteRoutes = require('./routes/docenteRoutes');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -24,6 +23,7 @@ app.use('/api/auth', authRoutes);  // Usa las rutas de autenticación
 app.use('/api/materias', materiasRoutes);
 app.use('/api/personal', personalRoutes);
 app.use('/api/tutores', tutorRoutes);
+app.use('/api/docentes', docenteRoutes);
 
 
 
