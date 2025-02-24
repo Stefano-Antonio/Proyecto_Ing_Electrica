@@ -93,6 +93,40 @@ exports.getHorarioAlumno = async (req, res) => {
         res.status(500).json({ message: 'Error interno del servidor' });
     }
 };
+
+exports.getAlumnosInscritosEnMateria = async (req, res) => {
+    console.log('Obteniendo alumnos inscritos en una materia');
+    try {
+        const { materiaId } = req.params;
+        console.log('ID de la materia:', materiaId);
+
+        // Buscar alumnos que tengan la materia en su horario
+        const alumnos = await Alumno.find().populate({
+            path: 'horario',
+            populate: {
+                path: 'materias',
+                match: { _id: materiaId }
+            }
+        });
+
+        // Filtrar alumnos que tienen la materia en su horario
+        const alumnosInscritos = alumnos.filter(alumno => 
+            alumno.horario && alumno.horario.materias.some(materia => materia._id.toString() === materiaId)
+        );
+
+        if (!alumnosInscritos || alumnosInscritos.length === 0) {
+            console.log('No se encontraron alumnos inscritos en esta materia');
+            return res.status(404).json({ message: 'No se encontraron alumnos inscritos en esta materia' });
+        }
+
+        // Devolver la lista de alumnos inscritos en la materia
+        res.status(200).json({ alumnos: alumnosInscritos });
+    } catch (error) {
+        console.error('Error al obtener los alumnos inscritos en la materia:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
+    }
+};
+
 exports.getEstatusHorario = async (req, res) => {
     try {
         const { matricula } = req.params;

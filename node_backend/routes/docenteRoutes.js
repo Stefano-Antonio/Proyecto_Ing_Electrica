@@ -22,4 +22,9 @@ router.delete('/eliminar/:matricula', docenteController.deleteHorarioAlumno);
 //Ruta para enviar correo con comentario a alumno
 router.post('/enviarCorreo', docenteController.enviarComentarioAlumno);
 
+
+// Nueva ruta para obtener los alumnos inscritos en una materia específica
+router.get('/materia/:materiaId/alumnos', docenteController.getAlumnosInscritosEnMateria);
+
+
 module.exports = router;

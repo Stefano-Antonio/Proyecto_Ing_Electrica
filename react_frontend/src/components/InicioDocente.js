@@ -14,7 +14,7 @@ function InicioDocente() {
     // Guardar la matrícula del tutor en localStorage
     useEffect(() => {
       if (matriculaDocente) {
-        localStorage.setItem("matriculaTutor", matriculaDocente);
+        localStorage.setItem("matriculaDocente", matriculaDocente);
       }
     }, [matriculaDocente]);
   

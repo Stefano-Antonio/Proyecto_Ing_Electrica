@@ -3,105 +3,107 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "./InicioDocente2.css";
 
 function InicioDocente2() {
+  const [materias, setMaterias] = useState([]);
+  const [error, setError] = useState(null);
+  const location = useLocation();
+  const navigate = useNavigate();
 
-    const [materias, setMaterias] = useState([]);
-    const [error, setError] = useState(null);
-    const location = useLocation();
-    const navigate = useNavigate();
-  
-    const { nombre, matricula: matriculaDocente } = location.state || {};
+  const { nombre: nombreDocente, matricula: matriculaDocente } = location.state || {};
 
-        // Guardar la matrícula del tutor en localStorage
-        useEffect(() => {
-          if (matriculaDocente) {
-            localStorage.setItem("matriculaTutor", matriculaDocente);
-          }
-        }, [matriculaDocente]);
-      
-        // Obtener la matrícula del tutor desde localStorage si no está en location.state
-        const storedMatriculaDocente = localStorage.getItem("matriculaDocente");
+  // Guardar la matrícula y el nombre del docente en localStorage
+  useEffect(() => {
+    if (matriculaDocente) {
+      localStorage.setItem("matriculaDocente", matriculaDocente);
+    }
+    if (nombreDocente) {
+      localStorage.setItem("nombreDocente", nombreDocente);
+    }
+  }, [matriculaDocente, nombreDocente]);
 
-    // 🔒 Evitar que el usuario regrese a la pantalla anterior con el botón de retroceso
-        useEffect(() => {
-          const bloquearAtras = () => {
-            window.history.pushState(null, null, window.location.href);
-          };
-      
-          bloquearAtras();
-          window.addEventListener("popstate", bloquearAtras);
-      
-          return () => {
-            window.removeEventListener("popstate", bloquearAtras);
-          };
-        }, []);
+  // Obtener la matrícula y el nombre del docente desde localStorage si no están en location.state
+  const storedMatriculaDocente = localStorage.getItem("matriculaDocente");
+  const storedNombreDocente = localStorage.getItem("nombreDocente");
 
+  // 🔒 Evitar que el usuario regrese a la pantalla anterior con el botón de retroceso
+  useEffect(() => {
+    const bloquearAtras = () => {
+      window.history.pushState(null, null, window.location.href);
+    };
 
-      useEffect(() => {
-            const fetchMaterias = async () => {
-              try {
-                const matricula = matriculaDocente || storedMatriculaDocente;
-                if (!matricula) {
-                  console.error("Matrícula del docente no encontrada");
-                  setError("Matrícula del docente no encontrada");
-                  return;
-                }
-        
-                const response = await fetch(`http://localhost:5000/api/docentes/materias/${matricula}`);
-                if (!response.ok) {
-                  throw new Error("Error al obtener las materias");
-                }
-        
-                const data = await response.json();
-                console.log("Materias recibidas:", data.materias);
+    bloquearAtras();
+    window.addEventListener("popstate", bloquearAtras);
 
-                 // 🔹 GUARDAR MATERIAS EN EL ESTADO
-                 setMaterias(data.materias);
-              } catch (error) {
-                console.error("Error al obtener las materias:", error);
-                setError("Error al cargar las materias. Por favor, inténtalo de nuevo.");
-              }
-            };
-        
-            fetchMaterias();
-          }, [matriculaDocente, storedMatriculaDocente]);
+    return () => {
+      window.removeEventListener("popstate", bloquearAtras);
+    };
+  }, []);
 
-  const handleListaAlumnos = () => {
-    navigate(`/docente-alumnos`, {state: {nombre, matricula: matriculaDocente || storedMatriculaDocente}});
+  useEffect(() => {
+    const fetchMaterias = async () => {
+      try {
+        const matricula = matriculaDocente || storedMatriculaDocente;
+        if (!matricula) {
+          console.error("Matrícula del docente no encontrada");
+          setError("Matrícula del docente no encontrada");
+          return;
+        }
+
+        const response = await fetch(`http://localhost:5000/api/docentes/materias/${matricula}`);
+        if (!response.ok) {
+          throw new Error("Error al obtener las materias");
+        }
+
+        const data = await response.json();
+        console.log("Materias recibidas:", data.materias);
+
+        // 🔹 GUARDAR MATERIAS EN EL ESTADO
+        setMaterias(data.materias);
+      } catch (error) {
+        console.error("Error al obtener las materias:", error);
+        setError("Error al cargar las materias. Por favor, inténtalo de nuevo.");
+      }
+    };
+
+    fetchMaterias();
+  }, [matriculaDocente, storedMatriculaDocente]);
+
+  const handleListaAlumnos = (materia) => {
+    navigate(`/docente-alumnos`, { state: { nombre: nombreDocente || storedNombreDocente, matricula: matriculaDocente || storedMatriculaDocente, materiaId: materia._id, materiaNombre: materia.nombre } });
   };
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("userType");
+    localStorage.removeItem("matriculaDocente");
+    localStorage.removeItem("nombreDocente");
     navigate("/");
-  }
+  };
 
   const handleChangeView = () => {
-    navigate('/inicio-docente', {state: { nombre, matricula: matriculaDocente || storedMatriculaDocente } });
-  }
+    navigate('/inicio-docente', { state: { nombre: nombreDocente || storedNombreDocente, matricula: matriculaDocente || storedMatriculaDocente } });
+  };
 
-  const handleBack = () => { 
-    navigate(-1); // Navegar a la página anterior 
-    }
+  const handleBack = () => {
+    navigate(-1); // Navegar a la página anterior
+  };
 
   return (
     <div className="docente-layout">
       <div className="docente-container">
-        
-        <div className="top-right"> 
-          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
+        <div className="top-right">
+          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
         </div>
 
         <h2>Docente</h2>
-        <h4>{`Bienvenido, ${nombre}`}</h4>
-        <p>A continuacion, seleccione la lista que desee visualizar</p>
+        <h4>{`Bienvenido, ${nombreDocente || storedNombreDocente}`}</h4>
+        <p>A continuación, seleccione la lista que desee visualizar</p>
 
         <div className="docente-buttons">
-            <button className="button" onClick={handleChangeView}>Lista de alumnos</button>
-            <button className="button">Lista de materias</button>
+          <button className="button" onClick={handleChangeView}>Lista de alumnos</button>
+          <button className="button">Lista de materias</button>
         </div>
         {error && <p className="error-message">{error}</p>}
         <div className="docente-content-2">
-          <div className="docente-scrollable-table">
           <table className="docente-table-2">
             <thead>
               <tr>
@@ -118,11 +120,11 @@ function InicioDocente2() {
               </tr>
             </thead>
             <tbody>
-            {materias.map((materia) => (
+              {materias.map((materia) => (
                 <tr key={materia._id}>
                   <td>{materia.grupo}</td>
                   <td>{materia.salon}</td>
-                  <td><button className="icon-button" onClick={handleListaAlumnos}>
+                  <td><button className="icon-button" onClick={() => handleListaAlumnos(materia)}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                       <circle cx="12" cy="12" r="3"></circle>
@@ -139,11 +141,6 @@ function InicioDocente2() {
               ))}
             </tbody>
           </table>
-          </div>
-          
-        </div>
-        <div className="horario-buttons">
-          
         </div>
       </div>
     </div>
