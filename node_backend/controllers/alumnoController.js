@@ -1,4 +1,9 @@
 const Alumno = require('../models/Alumno');
+const Horario = require('../models/Horario');
+const Personal = require('../models/Personal');
+const Tutor = require('../models/Tutores');
+const Docente = require('../models/Docentes');
+const Coordinador = require('../models/Coordinadores');
 const { Parser } = require('json2csv');
 const multer = require('multer');
 const csv = require('csv-parser');
@@ -43,6 +48,65 @@ exports.getAlumnos = async (req, res) => {
   }
 };
 
+// Ruta para obtener los alumnos de un tutor específico
+exports.getAlumnosAsignados = async (req, res) => {
+  console.log('Obteniendo alumnos asignados a un tutor');
+  const { matricula } = req.params;
+  try {
+    console.log('Matrícula del tutor:', matricula);
+
+    // Buscar al tutor directamente por matrícula
+    const personal = await Personal.findOne({ matricula: matricula });
+
+    if (!personal) {
+      console.log('personal no encontrado');
+      return res.status(404).json({ message: "personal no encontrado" });
+    }
+
+    let alumnosIds = [];
+
+    if (personal.roles == 'T') {
+      console.log('personal es tutor');
+      const tutor = await Tutor.findOne({ personalMatricula: matricula });
+      if (!tutor) {
+        console.log('Tutor no encontrado');
+        return res.status(404).json({ message: "Tutor no encontrado" });
+      }
+      alumnosIds = tutor.alumnos;
+
+    } else if (personal.roles == 'D') {
+      console.log('personal es docente');
+      const docente = await Docente.findOne({ personal: matricula });
+      if (!docente) {
+        console.log('Docente no encontrado');
+        return res.status(404).json({ message: "Docente no encontrado" });
+      }
+      alumnosIds = docente.alumnos;
+
+    } else if (personal.roles == 'C') {
+      console.log('personal es coordinador');
+      const coordinador = await Coordinador.findOne({ personalMatricula: matricula });
+      if (!coordinador) {
+        console.log('Coordinador no encontrado');
+        return res.status(404).json({ message: "Coordinador no encontrado" });
+      }
+      alumnosIds = coordinador.alumnos;
+
+    } else {
+      console.log('Rol no válido');
+      return res.status(400).json({ message: "Rol no válido" });
+    }
+
+    // Obtener los detalles completos de los alumnos
+    const alumnos = await Alumno.find({ _id: { $in: alumnosIds } });
+
+    res.status(200).json(alumnos);
+  } catch (error) {
+    console.error("Error al obtener los alumnos del tutor:", error);
+    res.status(500).json({ message: "Error al obtener los alumnos del tutor" });
+  }
+};
+
 // Obtener un alumno por ID
 exports.getAlumnoById = async (req, res) => {
   try {
@@ -56,23 +120,64 @@ exports.getAlumnoById = async (req, res) => {
   }
 };
 
-// Actualizar un alumno
-exports.updateAlumno = async (req, res) => {
-  const { matricula, nombre } = req.body;
+// Obtener los datos de un alumno, incluyendo su horario
+exports.getAlumnoByIdWithHorario = async (req, res) => {
   try {
-    const alumno = await Alumno.findByIdAndUpdate(
-      req.params.id,
-      { matricula, nombre },
-      { new: true }
-    );
+    const alumno = await Alumno.findById(req.params.id).populate('horario');
     if (!alumno) {
       return res.status(404).json({ message: 'Alumno no encontrado' });
     }
+    res.json(alumno);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener el alumno con horario', error });
+  }
+};
+
+
+
+// Actualizar un alumno
+exports.updateAlumno = async (req, res) => {
+  const { matricula, nombre, correo, telefono, materiasSeleccionadas } = req.body;
+
+  try {
+    let horarioGuardado = null;
+
+    // Solo se actualizan las materias si están en req.body
+    if (materiasSeleccionadas && Array.isArray(materiasSeleccionadas) && materiasSeleccionadas.length > 0) {
+      // Crear un nuevo documento de Horario con los IDs de las materias seleccionadas
+      const nuevoHorario = new Horario({
+        materias: materiasSeleccionadas.map(materia => materia._id), // Guardamos solo los IDs de las materias
+      });
+
+      // Guardar el horario en la base de datos
+      horarioGuardado = await nuevoHorario.save();
+    }
+
+    // Actualizar el alumno con los nuevos datos y el ID del horario (si se generó)
+    const alumno = await Alumno.findByIdAndUpdate(
+      req.params.id,
+      {
+        matricula,
+        nombre,
+        correo,
+        telefono,
+        ...(horarioGuardado ? { horario: horarioGuardado._id } : {}) // Solo incluye el horario si se guardó uno
+      },
+      { new: true }
+    );
+
+    if (!alumno) {
+      return res.status(404).json({ message: 'Alumno no encontrado' });
+    }
+
     res.status(200).json(alumno);
   } catch (error) {
+    console.error('Error al actualizar el alumno:', error);
     res.status(500).json({ message: 'Error al actualizar el alumno', error });
   }
 };
+
+
 
 // Eliminar un alumno
 exports.deleteAlumno = async (req, res) => {
@@ -83,6 +188,7 @@ exports.deleteAlumno = async (req, res) => {
     }
     res.status(204).json({ message: 'Alumno eliminado' });
   } catch (error) {
+    
     res.status(500).json({ message: 'Error al eliminar el alumno', error });
   }
 };

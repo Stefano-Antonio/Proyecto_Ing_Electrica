@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import "./AdministrarMaterias.css";
 
 
-const AdministrarMaterias = () => {
+const AdministrarMaterias = ({id_carrera}) => {
   const [materias, setMaterias] = useState([]);
   const [docentes, setDocentes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,7 +15,7 @@ const AdministrarMaterias = () => {
     // Realiza la solicitud para obtener las materias desde la base de datos
     const fetchMaterias = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/materias');
+        const response = await axios.get(`http://localhost:5000/api/materias/carrera/${id_carrera}`);
         setMaterias(response.data); // Establece los datos de materias en el estado
       } catch (error) {
         console.error('Error al obtener datos de materias:', error);
@@ -52,6 +52,19 @@ const AdministrarMaterias = () => {
 
   const handleModify = (materia) => {
     navigate("/modificar-materia", { state: { materia } });
+  };
+
+  
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar esta materia?");
+    if (confirmDelete) {
+      try {
+        await axios.delete(`http://localhost:5000/api/materias/${id}`);
+        setMaterias(materias.filter(materia => materia._id !== id));
+      } catch (error) {
+        console.error('Error al eliminar la materia:', error);
+      }
+    }
   };
 
   // Mapea la matrícula del docente al nombre del docente
@@ -102,8 +115,8 @@ const AdministrarMaterias = () => {
                     </button>
                   </td>
                   <td>
-                    <button className="icon-button">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="red" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                     <button className="icon-button" onClick={() => handleDelete(materia._id)}>
+                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="red" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="3 6 5 6 21 6"></polyline>
                         <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
                         <path d="M10 11v6"></path>

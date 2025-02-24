@@ -11,17 +11,43 @@ function HorarioSeleccion() {
   const [materiasSeleccionadas, setMateriasSeleccionadas] = useState([]); // Materias seleccionadas
   const [conflictos, setConflictos] = useState([]);
   const [mostrarModal, setMostrarModal] = useState(false);
-  const [nombreAlumno, setNombreAlumno] = useState(location.state?.nombre || "");
+  const [nombre, setNombreAlumno] = useState(localStorage.getItem("nombreAlumno") || "Alumno desconocido");
+  const [id, setIDAlumno] = useState(localStorage.getItem("IDAlumno") || "ID desconocido");
   const [matricula, setMatricula] = useState(localStorage.getItem("matricula")); // Obtener matrícula del localStorage
+  const [id_carrera, setIDCarrera] = useState(localStorage.getItem("id_carrera") || "ID de carrera desconocido");
+
+
+    // 🔒 Evitar que el usuario regrese a la pantalla anterior con el botón de retroceso
+    useEffect(() => {
+      const bloquearAtras = () => {
+        window.history.pushState(null, null, window.location.href);
+      };
+  
+      bloquearAtras();
+      window.addEventListener("popstate", bloquearAtras);
+  
+      return () => {
+        window.removeEventListener("popstate", bloquearAtras);
+      };
+    }, []);
     
+  
   // Función para obtener las materias desde el backend
   useEffect(() => {
-  
     const fetchMaterias = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/materias");
+        const id_carrera = location.state?.id_carrera; // Obtener el id_carrera desde la navegación
+        console.error("id_carrera:",id_carrera);
+        if (!id_carrera) {
+          console.error("ID de carrera no encontrado");
+          return;
+        }
+        // Usamos la nueva ruta con el parámetro id_carrera
+        const response = await fetch(`http://localhost:5000/api/materias/carrera/${id_carrera}`);
         const data = await response.json();
-        console.log(data); // Log para verificar los datos recibidos
+
+        console.log("Materias recibidas:", data); // Verificar qué datos llegan
+
         const sortedData = data.sort((a, b) => a.grupo.localeCompare(b.grupo));
         setMaterias(sortedData);
 
@@ -118,12 +144,14 @@ function HorarioSeleccion() {
     }
   
     // Si no hay conflictos, navegar a la siguiente página
-    navigate("/validacion", { state: { materiasSeleccionadas } });
+    navigate("/validacion", { state: { materiasSeleccionadas, nombre, matricula, id ,id_carrera } });
   };
 
   const handleGrupoChange = (e) => {
     setGrupoSeleccionado(e.target.value);
   };
+
+
 
   // Filtrar las materias basadas en el grupo seleccionado
   const materiasFiltradas = grupoSeleccionado
@@ -137,7 +165,8 @@ function HorarioSeleccion() {
         <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
       </div>
         <h2>Sistema de selección de horario</h2>
-        <p>Bienvenido(a): <strong>{nombreAlumno || "Cargando..."}</strong></p>
+        <p>Bienvenido(a): <strong>{nombre || "Cargando..."}</strong></p>
+        <h4>Matricula <strong>{matricula || "Cargando..."}</strong></h4>
         <p>A continuación, seleccione las materias que va a cargar en el semestre</p>
 
         <div className="horario-content">

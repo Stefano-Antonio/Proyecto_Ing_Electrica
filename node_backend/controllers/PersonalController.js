@@ -3,6 +3,8 @@ const Docentes = require('../models/Docentes');
 const Tutores = require('../models/Tutores');
 const Coordinadores = require('../models/Coordinadores');
 const Administradores = require('../models/Administradores');
+const Alumno = require('../models/Alumno');
+const Materia = require('../models/Materia');
 const bcrypt = require('bcryptjs');
 const { Parser } = require('json2csv');
 const multer = require('multer');
@@ -78,6 +80,89 @@ exports.getPersonal = async (req, res) => {
         res.status(500).json({ message: 'Error al obtener personal', error });
     }
 };
+
+exports.getPersonalByCarrera = async (req, res) => {
+  try {
+    const { matricula } = req.params;
+    console.log("Matrícula del coordinador:", matricula);
+
+    // Buscar el coordinador y obtener el id_carrera
+    const coordinador = await Coordinadores.findOne({ personalMatricula: matricula }).select("id_carrera");
+    if (!coordinador) {
+      return res.status(404).json({ message: "Coordinador no encontrado" });
+    }
+
+    console.log("ID de carrera del coordinador:", coordinador.id_carrera);
+
+    // Obtener alumnos de la carrera
+    const alumnos = await Alumno.find({ id_carrera: coordinador.id_carrera }).select("_id");
+    const alumnosIds = alumnos.map(alumno => alumno._id);
+
+    console.log("Alumnos en la carrera:", alumnosIds);
+
+    // Obtener materias de la carrera
+    const materias = await Materia.find({ id_carrera: coordinador.id_carrera }).select("_id");
+    const materiasIds = materias.map(materia => materia._id);
+
+    console.log("Materias en la carrera:", materiasIds);
+
+    // Buscar docentes que tengan alumnos de la carrera o impartan materias de la carrera
+    const docentesPorAlumnos = await Docentes.find({ alumnos: { $in: alumnosIds } }).select("personalMatricula");
+    const docentesPorMaterias = await Docentes.find({ materias: { $in: materiasIds } }).select("personalMatricula");
+
+    console.log("Docentes por alumnos:", docentesPorAlumnos.map(d => d.personalMatricula));
+    console.log("Docentes por materias:", docentesPorMaterias.map(d => d.personalMatricula));
+    console.log("Docentes por alumnos y materias:", [...docentesPorAlumnos, ...docentesPorMaterias]);
+    // Combinar docentes sin duplicados
+    const docentes = [...docentesPorAlumnos, ...docentesPorMaterias].reduce((acc, docente) => {
+      if (!acc.some(d => d.personalMatricula === docente.personalMatricula)) {
+        acc.push(docente);
+      }
+      return acc;
+    }, []);
+
+    console.log("Docentes encontrados:", docentes.map(d => d.personalMatricula));
+
+    // Buscar tutores que tengan alumnos de la carrera
+    const tutores = await Tutores.find({ alumnos: { $in: alumnosIds } }).select("personalMatricula");
+
+    console.log("Tutores encontrados:", tutores.map(t => t.personalMatricula));
+
+    // Buscar coordinadores y administradores de la carrera
+    const [coordinadores, administradores] = await Promise.all([
+      Coordinadores.find({ id_carrera: coordinador.id_carrera }).select("personalMatricula"),
+      Administradores.find({ id_carrera: coordinador.id_carrera }).select("personalMatricula")
+    ]);
+
+    console.log("Coordinadores encontrados:", coordinadores.map(c => c.personalMatricula));
+    console.log("Administradores encontrados:", administradores.map(a => a.personalMatricula));
+
+    // Unir todas las matrículas en un Set para evitar duplicados
+    const personalMatriculasSet = new Set([
+      ...docentes.map(d => d.personalMatricula),
+      ...tutores.map(t => t.personalMatricula),
+      ...coordinadores.map(c => c.personalMatricula),
+      ...administradores.map(a => a.personalMatricula)
+    ]);
+
+    // Convertir el Set a Array y buscar los datos completos del personal
+    const personalMatriculas = Array.from(personalMatriculasSet);
+
+    if (personalMatriculas.length === 0) {
+      return res.status(404).json({ message: "No hay personal en esta carrera" });
+    }
+
+    console.log("Personal encontrado (sin duplicados):", personalMatriculas);
+
+    const personal = await Personal.find({ matricula: { $in: personalMatriculas } });
+
+    res.status(200).json(personal);
+  } catch (error) {
+    console.error("Error en getPersonalByCarrera:", error);
+    res.status(500).json({ message: "Error al obtener personal", error: error.message });
+  }
+};
+
 
 exports.getPersonalById = async (req, res) => {
     try {

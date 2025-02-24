@@ -2,12 +2,24 @@ const express = require('express');
 const router = express.Router();
 const docenteController = require('../controllers/docenteController');
 
-router.post('/', docenteController.createDocente);
+// Nueva ruta para obtener los alumnos asignados a un tutor
+router.get('/alumnos/:matricula', docenteController.getAlumnosAsignados);
 
-router.get('/', docenteController.getDocentes);
+router.get('/materias/:matricula', docenteController.getMateriasAsignadas);
 
-router.get('/:id', docenteController.getDocenteById);
+// Traer el horario del alumno
+router.get('/horario/:matricula', docenteController.getHorarioAlumno);
 
-router.put('/:id', docenteController.updateDocente);
+// Ruta para obtener el estatus del horario
+router.get('/estatus/:matricula', docenteController.getEstatusHorario);
 
-router.delete('/:id', docenteController.deleteDocente);
+//Ruta para actualizar el estatud de un horario
+router.put('/estatus/actualizar/:matricula', docenteController.updateEstatusHorario);
+
+//Ruta para eliminar horario de un alumno
+router.delete('/eliminar/:matricula', docenteController.deleteHorarioAlumno);
+
+//Ruta para enviar correo con comentario a alumno
+router.post('/enviarCorreo', docenteController.enviarComentarioAlumno);
+
+module.exports = router;

@@ -31,7 +31,6 @@ function ModificarPersonal() {
       const response = await axios.put(`http://localhost:5000/api/personal/${persona._id}`, form);
       console.log("Usuario actualizado:", response.data);
       alert("Usuario actualizado con éxito");
-      setForm({ nombre: "", matricula: "", correo: "", telefono: "", roles: "", password: "" }); // Reset form
     } catch (error) {
       console.error("Error al actualizar el usuario:", error);
       alert("Hubo un error al actualizar el usuario");

@@ -176,3 +176,21 @@
 .logout-button:hover {
   background-color: #d32f2f; /* Color de fondo al pasar el cursor */
 }
+.status-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.yellow {
+  background-color: yellow;
+}
+
+.gray {
+  background-color: gray;
+}
+
+.green {
+  background-color: green;
+}

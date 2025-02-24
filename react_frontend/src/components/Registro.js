@@ -31,30 +31,42 @@ function Registro() {
       const response = await axios.post(endpoint, payload);
   
       if (response.status === 200) {
-        const { mensaje, roles, token, nombre } = response.data;
+        const { mensaje, roles, token, nombre, id, id_carrera, horario, validacionCompleta  } = response.data;
   
         setMensaje(mensaje);
+        localStorage.setItem("id_carrera", id_carrera);
         localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("matricula", matricula);
-        localStorage.setItem("nombre", nombre);
+        localStorage.setItem("nombreAlumno", nombre);
+        localStorage.setItem("IDAlumno", id);
         localStorage.setItem("roles", JSON.stringify(roles));
         localStorage.setItem("userType", tipoUsuario); // Almacena el tipo de usuario
+        localStorage.setItem("horario", JSON.stringify(horario));  // Guardar el horario
+        localStorage.setItem("validacionCompleta", validacionCompleta); // Guarda validación
 
         // Redirigir según el tipo de usuario
         if (tipoUsuario === "personal") {
           if (roles.includes("D")) {
-            navigate("/inicio-docente", { state: { nombre } });
+            navigate("/inicio-docente", { state: { nombre, matricula } });
           } else if (roles.includes("C")) {
-            navigate("/inicio-coordinador", { state: { nombre } });
+            navigate("/inicio-coordinador", { state: { nombre, matricula, id_carrera } });
           } else if (roles.includes("A")) {
-            navigate("/inicio-administrador", { state: { nombre } });
+            navigate("/inicio-administrador", { state: { nombre, matricula, id_carrera } });
           } else if (roles.includes("T")) {
-            navigate("/inicio-tutor", { state: { nombre } });
-          } else {
+            navigate("/inicio-tutor", { state: { nombre, matricula } });
+          } else if (roles.includes("CG")) {
+            navigate("/inicio-coordinador-gen", { state: { nombre, matricula } });
+          }
+           else {
             setMensaje("Usuario personal desconocido");
           }
         } else if (tipoUsuario === "alumno") {
-          navigate("/horario-seleccion", { state: { nombre } });
+          if (horario) {
+            navigate("/validacion-estatus", {state: { nombre, id, horario }});
+          } else{
+            navigate("/horario-seleccion/", { state: { nombre, id, horario } });
+          }
+          
         } else {
           setMensaje("Usuario desconocido");
         }

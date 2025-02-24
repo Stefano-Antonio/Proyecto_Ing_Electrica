@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const HorarioSchema = new Schema({
-    docente: { type: Schema.Types.ObjectId, ref: 'Docente', required: false, default: null },
-    materias: { type: Schema.Types.ObjectId, ref: 'Materias', required: false, default: null }
+    materias: [{ type: Schema.Types.ObjectId, ref: 'Materia', default: [] }],
+    estatus: { type: Number, default: 0 },
+    comentario: { type: String, default: '' }
 });
-
 module.exports = mongoose.model('Horario', HorarioSchema);

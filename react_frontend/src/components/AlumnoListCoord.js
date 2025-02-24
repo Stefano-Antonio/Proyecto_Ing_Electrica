@@ -7,11 +7,12 @@ const AlumnoListCoord = () => {
   const [alumnos, setAlumnos] = useState([]);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [AlumnoAEliminar, setAlumnoAEliminar] = useState(null);
-
+  
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/alumnos')
+    const matricula = localStorage.getItem("matricula");
+    axios.get(`http://localhost:5000/api/alumnos/matricula/${matricula}`)
       .then(response => {
         console.log(response.data); // Verificar los datos recibidos
         setAlumnos(response.data);
@@ -25,6 +26,10 @@ const AlumnoListCoord = () => {
 
   const handleNavigate2 = () => {
     navigate("/admin-tutor");
+  };
+
+  const handleNavigate3 = () => {
+    navigate("/revisar-horario");
   };
 
   const handleModify = (alumno) => {
@@ -73,7 +78,7 @@ const AlumnoListCoord = () => {
             <td></td>
             <td></td>
             <td className="actions">
-                  <button className="icon-button">
+                  <button className="icon-button" onClick={handleNavigate3}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                       <circle cx="12" cy="12" r="3"></circle>
