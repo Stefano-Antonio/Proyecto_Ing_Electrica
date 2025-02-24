@@ -99,9 +99,27 @@ function RevisionHorarioTutor() {
     }
   };
 
+  const handleBack = () => { 
+    navigate(-1); // Navegar a la página anterior 
+    }
+
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("userType");
+    localStorage.removeItem("tutorId");
+    localStorage.removeItem("matriculaTutor"); // Limpiar la matrícula del tutor al cerrar sesión
+    navigate("/");
+  };
+
   return (
     <div className="horario-layout">
       <div className="horario-container">
+      <div className="top-left">
+          <button className="back-button" onClick={handleBack}>Regresar</button>
+        </div>
+      <div className="top-right">
+          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
+        </div>
         <h1>Revisión de horario</h1>
         <div className="horario-header">
           <h3>Nombre del alumno: {alumno.nombre}</h3>

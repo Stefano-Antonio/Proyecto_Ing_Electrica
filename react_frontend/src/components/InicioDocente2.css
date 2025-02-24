@@ -19,6 +19,7 @@
     text-align: center;
     background-color: white;
     position: relative; /* Permite el posicionamiento relativo del botón */
+    
   }
   
   .docente-container h2 {
@@ -31,15 +32,24 @@
     color: #555;
   }
   
-  .docente-content {
-    margin: 0 auto;
+  .docente-content-2 {
+    overflow-x: auto; /* Permite el desplazamiento lateral si es necesario */
+    white-space: nowrap; /* Evita que el contenido de las celdas se divida en múltiples líneas */
+  }
+
+  .docente-scrollable-table {
+    max-height: 280px;
+    max-width: 100%;
+    overflow-y: auto;
+    overflow-x: auto;
   }
   
-  .docente-table {
-    width: 100%;
-    table-layout: fixed; /* Hace que las columnas tengan un ancho fijo */
+  /* Tabla con ancho mayor para que active el scroll si es necesario */
+  .docente-table-2 {
+    min-width: 130%; /* Ajusta este valor según el contenido */
+    border-collapse: collapse;
+    margin: 20px 0;
   }
-  
   .docente-table th,
   .docente-table td {
     width: 33.33%; /* Asegura que cada columna tenga el mismo ancho */

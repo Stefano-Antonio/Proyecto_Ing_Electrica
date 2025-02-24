@@ -1,48 +1,110 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import "./InicioDocente.css";
+import "./InicioDocente2.css";
 
-function InicioDocente() {
-
+function InicioDocente2() {
+  const [materias, setMaterias] = useState([]);
+  const [error, setError] = useState(null);
+  const location = useLocation();
   const navigate = useNavigate();
 
-  const location = useLocation();
+  const { nombre: nombreDocente, matricula: matriculaDocente } = location.state || {};
 
-  const nombre = location.state?.nombre || "Docente";
+  // Guardar la matrícula y el nombre del docente en localStorage
+  useEffect(() => {
+    if (matriculaDocente) {
+      localStorage.setItem("matriculaDocente", matriculaDocente);
+    }
+    if (nombreDocente) {
+      localStorage.setItem("nombreDocente", nombreDocente);
+    }
+  }, [matriculaDocente, nombreDocente]);
 
-  const handleListaAlumnos = () => {
-    navigate(`/docente-alumnos`, {state: {nombre}});
+  // Obtener la matrícula y el nombre del docente desde localStorage si no están en location.state
+  const storedMatriculaDocente = localStorage.getItem("matriculaDocente");
+  const storedNombreDocente = localStorage.getItem("nombreDocente");
+
+  // 🔒 Evitar que el usuario regrese a la pantalla anterior con el botón de retroceso
+  useEffect(() => {
+    const bloquearAtras = () => {
+      window.history.pushState(null, null, window.location.href);
+    };
+
+    bloquearAtras();
+    window.addEventListener("popstate", bloquearAtras);
+
+    return () => {
+      window.removeEventListener("popstate", bloquearAtras);
+    };
+  }, []);
+
+  useEffect(() => {
+    const fetchMaterias = async () => {
+      try {
+        const matricula = matriculaDocente || storedMatriculaDocente;
+        if (!matricula) {
+          console.error("Matrícula del docente no encontrada");
+          setError("Matrícula del docente no encontrada");
+          return;
+        }
+
+        const response = await fetch(`http://localhost:5000/api/docentes/materias/${matricula}`);
+        if (!response.ok) {
+          throw new Error("Error al obtener las materias");
+        }
+
+        const data = await response.json();
+        console.log("Materias recibidas:", data.materias);
+
+        // 🔹 GUARDAR MATERIAS EN EL ESTADO
+        setMaterias(data.materias);
+      } catch (error) {
+        console.error("Error al obtener las materias:", error);
+        setError("Error al cargar las materias. Por favor, inténtalo de nuevo.");
+      }
+    };
+
+    fetchMaterias();
+  }, [matriculaDocente, storedMatriculaDocente]);
+
+  const handleListaAlumnos = (materia) => {
+    navigate(`/docente-alumnos`, { state: { nombre: nombreDocente || storedNombreDocente, matricula: matriculaDocente || storedMatriculaDocente, materiaId: materia._id, materiaNombre: materia.nombre } });
   };
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("userType");
+    localStorage.removeItem("matriculaDocente");
+    localStorage.removeItem("nombreDocente");
     navigate("/");
-  }
+  };
 
   const handleChangeView = () => {
-    navigate('/inicio-docente', {state: {nombre}});
-  }
+    navigate('/inicio-docente', { state: { nombre: nombreDocente || storedNombreDocente, matricula: matriculaDocente || storedMatriculaDocente } });
+  };
+
+  const handleBack = () => {
+    navigate(-1); // Navegar a la página anterior
+  };
 
   return (
     <div className="docente-layout">
       <div className="docente-container">
-        
-        <div className="top-right"> 
-          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
+        <div className="top-right">
+          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
         </div>
 
         <h2>Docente</h2>
-        <h4>{`Bienvenido, ${nombre}`}</h4>
-        <p>A continuacion, seleccione la lista que desee visualizar</p>
+        <h4>{`Bienvenido, ${nombreDocente || storedNombreDocente}`}</h4>
+        <p>A continuación, seleccione la lista que desee visualizar</p>
 
         <div className="docente-buttons">
-            <button className="button" onClick={handleChangeView}>Lista de alumnos</button>
-            <button className="button">Lista de materias</button>
+          <button className="button" onClick={handleChangeView}>Lista de alumnos</button>
+          <button className="button">Lista de materias</button>
         </div>
-
-        <div className="docente-content">
-          <table className="docente-table">
+        {error && <p className="error-message">{error}</p>}
+        <div className="docente-content-2">
+          <table className="docente-table-2">
             <thead>
               <tr>
                 <th>Grupo</th>
@@ -58,96 +120,31 @@ function InicioDocente() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1A</td>
-                <td>B1</td>
-                <td>
-                  <button className="icon-button" onClick={handleListaAlumnos}>
+              {materias.map((materia) => (
+                <tr key={materia._id}>
+                  <td>{materia.grupo}</td>
+                  <td>{materia.salon}</td>
+                  <td><button className="icon-button" onClick={() => handleListaAlumnos(materia)}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                       <circle cx="12" cy="12" r="3"></circle>
                     </svg>
-                  </button>
-                </td>
-                <td>Algebra Lineal</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-              </tr>
-              <tr>
-                <td>1A</td>
-                <td>B1</td>
-                <td>
-                  <button className="icon-button" onClick={handleListaAlumnos}>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                      <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
-                  </button>
-                </td>
-                <td>Algebra Superior</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-              </tr>
-              <tr>
-                <td>1A</td>
-                <td>B1</td>
-                <td>
-                  <button className="icon-button" onClick={handleListaAlumnos}>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                      <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
-                  </button>
-                </td>
-                <td>Estadística</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                
-              </tr>
-              <tr>
-                <td>2A</td>
-                <td>B2</td>
-                <td>
-                  <button className="icon-button" onClick={handleListaAlumnos}>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                      <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
-                  </button>
-                </td>
-                <td>Estadística aplicada</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-              </tr>
-              
+                  </button></td>
+                  <td>{materia.nombre}</td>
+                  <td>{materia.horarios.lunes || "-"}</td>
+                  <td>{materia.horarios.martes || "-"}</td>
+                  <td>{materia.horarios.miercoles || "-"}</td>
+                  <td>{materia.horarios.jueves || "-"}</td>
+                  <td>{materia.horarios.viernes || "-"}</td>
+                  <td>{materia.horarios.sabado || "-"}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
-        </div>
-        <div className="horario-buttons">
-          <button className="button">
-            Subir base de datos de materias
-          </button>
-          
         </div>
       </div>
     </div>
   );
 }
 
-export default InicioDocente;
+export default InicioDocente2;
