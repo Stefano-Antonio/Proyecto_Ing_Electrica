@@ -42,7 +42,7 @@ const InicioCoordinador = () => {
   
         {/* Renderizado condicional de componentes */}
         {componenteActivo === 'alumno' && <AlumnoListCoord matricula={matricula} />}
-        {componenteActivo === 'personal' && <AdministrarPersonalCoordinador id_carrera={id_carrera} />}
+        {componenteActivo === 'personal' && <AdministrarPersonalCoordinador id_carrera={matricula} />}
         {componenteActivo === 'materias' && <AdministrarMaterias id_carrera={id_carrera} />}
       </div>
     );
