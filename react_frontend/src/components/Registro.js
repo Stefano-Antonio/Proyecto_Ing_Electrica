@@ -62,9 +62,9 @@ function Registro() {
           }
         } else if (tipoUsuario === "alumno") {
           if (horario) {
-            navigate("/validacion-estatus", {state: { nombre, id, horario }});
+            navigate("/validacion-estatus", {state: { nombre, id, id_carrera,  horario }});
           } else{
-            navigate("/horario-seleccion/", { state: { nombre, id, horario } });
+            navigate("/horario-seleccion/", { state: { nombre, id, id_carrera, horario } });
           }
           
         } else {
