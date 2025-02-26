@@ -48,6 +48,29 @@ function DocenteAlumnos() {
     navigate("/");
   };
 
+  const handleDownloadCSV = (materiaNombre) => {
+    if (alumnos.length === 0) return;
+  
+    const headers = ["Matrícula", "Nombre", "Teléfono"];
+    const csvRows = [
+      headers.join(","), 
+      ...alumnos.map(alumno => [alumno.matricula, alumno.nombre, alumno.telefono].join(","))
+    ];
+  
+    const csvString = "\uFEFF" + csvRows.join("\n"); // Agregar BOM para compatibilidad con Excel
+    const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+  
+    const nombreArchivo = `${materiaNombre.replace(/\s+/g, "_")}.csv`; // Reemplaza espacios con guiones bajos
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = nombreArchivo;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+  
+  
   const handleBack = () => {
     navigate(-1, { state: { nombre, matricula: matriculaDocente || storedMatriculaDocente } });
   };
@@ -92,8 +115,8 @@ function DocenteAlumnos() {
           </table>
         </div>
         <div className="horario-buttons">
-          <button className="button">
-            Descargar base de datos de alumnos
+          <button className="button" onClick={() => handleDownloadCSV(materiaNombre)} disabled={alumnos.length === 0}>
+            Descargar lista de alumnos
           </button>
         </div>
       </div>

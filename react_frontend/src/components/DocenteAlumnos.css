@@ -102,6 +102,11 @@
   .button:hover {
     background-color: #003a8c;
   }
+
+  .button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
   
   .field-group {
     display: flex;

@@ -11,9 +11,10 @@ function HorarioSeleccion() {
   const [materiasSeleccionadas, setMateriasSeleccionadas] = useState([]); // Materias seleccionadas
   const [conflictos, setConflictos] = useState([]);
   const [mostrarModal, setMostrarModal] = useState(false);
-  const [nombreAlumno, setNombreAlumno] = useState(localStorage.getItem("nombreAlumno") || "Alumno desconocido");
-  const [IDAlumno, setIDAlumno] = useState(localStorage.getItem("IDAlumno") || "ID desconocido");
+  const [nombre, setNombreAlumno] = useState(localStorage.getItem("nombreAlumno") || "Alumno desconocido");
+  const [id, setIDAlumno] = useState(localStorage.getItem("IDAlumno") || "ID desconocido");
   const [matricula, setMatricula] = useState(localStorage.getItem("matricula")); // Obtener matrícula del localStorage
+  const [id_carrera, setIDCarrera] = useState(localStorage.getItem("id_carrera") || "ID de carrera desconocido");
 
 
     // 🔒 Evitar que el usuario regrese a la pantalla anterior con el botón de retroceso
@@ -143,7 +144,7 @@ function HorarioSeleccion() {
     }
   
     // Si no hay conflictos, navegar a la siguiente página
-    navigate("/validacion", { state: { materiasSeleccionadas, nombreAlumno, matricula, IDAlumno } });
+    navigate("/validacion", { state: { materiasSeleccionadas, nombre, matricula, id ,id_carrera } });
   };
 
   const handleGrupoChange = (e) => {
@@ -164,9 +165,8 @@ function HorarioSeleccion() {
         <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
       </div>
         <h2>Sistema de selección de horario</h2>
-        <p>Bienvenido(a): <strong>{nombreAlumno || "Cargando..."}</strong></p>
+        <p>Bienvenido(a): <strong>{nombre || "Cargando..."}</strong></p>
         <h4>Matricula <strong>{matricula || "Cargando..."}</strong></h4>
-        <p>ID de alumno: <strong>{IDAlumno || "Cargando..."}</strong></p>
         <p>A continuación, seleccione las materias que va a cargar en el semestre</p>
 
         <div className="horario-content">
