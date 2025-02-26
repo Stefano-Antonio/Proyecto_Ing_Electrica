@@ -47,7 +47,7 @@ function InicioDocente() {
             return;
           }
   
-          const response = await fetch(`http://localhost:5000/api/docentes/${matricula}`);
+          const response = await fetch(`http://localhost:5000/api/docentes/alumnos/${matricula}`);
           if (!response.ok) {
             throw new Error("Error al obtener los alumnos");
           }

@@ -20,7 +20,7 @@ function InicioTutor() {
   // Obtener la matrícula del tutor desde localStorage si no está en location.state
   const storedMatriculaTutor = localStorage.getItem("matriculaTutor");
 
-  // 🔒 Evitar que el usuario regrese a la pantalla anterior con el botón de retroceso
+  // Evitar que el usuario regrese a la pantalla anterior con el botón de retroceso
   useEffect(() => {
     const bloquearAtras = () => {
       window.history.pushState(null, null, window.location.href);

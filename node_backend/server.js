@@ -34,7 +34,7 @@ mongoose.connect('mongodb+srv://Stefano117:Mixbox360@cluster0.qgw2j.mongodb.net/
 
 }).then(() => {
   console.log('Conectado a MongoDB');
-
+  
 }).catch(error => {
   console.error('Error al conectar a MongoDB:', error);
 });
