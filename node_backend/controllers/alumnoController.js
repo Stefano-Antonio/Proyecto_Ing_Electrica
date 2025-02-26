@@ -1,14 +1,15 @@
+const { Parser } = require('json2csv');
+const multer = require('multer');
+const csv = require('csv-parser');
+const fs = require('fs');
+const path = require('path');
 const Alumno = require('../models/Alumno');
 const Horario = require('../models/Horario');
 const Personal = require('../models/Personal');
 const Tutor = require('../models/Tutores');
 const Docente = require('../models/Docentes');
 const Coordinador = require('../models/Coordinadores');
-const { Parser } = require('json2csv');
-const multer = require('multer');
-const csv = require('csv-parser');
-const fs = require('fs');
-const path = require('path');
+
 
 // Configurar multer para manejar el archivo CSV
 const storage = multer.diskStorage({

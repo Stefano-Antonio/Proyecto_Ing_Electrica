@@ -5,20 +5,37 @@ import "./AlumnoList.css";
 
 const AlumnoListCoord = () => {
   const [alumnos, setAlumnos] = useState([]);
+  const [tutoresNombres, setTutoresNombres] = useState({});
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [nombre, setNombreAlumno] = ("");
   const [matricula, setMatriculaAlumno] = useState("");
-  const [nombre, setNombre] = useState("");
   const [AlumnoAEliminar, setAlumnoAEliminar] = useState(null);
   const matriculaTutor = localStorage.getItem("matricula");
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/api/alumnos/matricula/${matriculaTutor}`)
-      .then(response => {
-        console.log(response.data); // Verificar los datos recibidos
-        setAlumnos(response.data);
-      })
-      .catch(error => console.error('Error al obtener alumnos:', error));
+    const fetchAlumnos = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/alumnos/matricula/${matriculaTutor}`);
+        const alumnosData = response.data;
+
+        // Obtener los detalles del tutor para cada alumno
+        const tutoresNombresTemp = {};
+        await Promise.all(alumnosData.map(async (alumno) => {
+          if (alumno.tutor) {
+            const tutorResponse = await axios.get(`http://localhost:5000/api/coordinadores/alumnos/${alumno.tutor}`);
+            tutoresNombresTemp[alumno._id] = tutorResponse.data.nombre; // Extraer el nombre del tutor
+          }
+        }));
+
+        setAlumnos(alumnosData);
+        setTutoresNombres(tutoresNombresTemp);
+      } catch (error) {
+        console.error('Error al obtener alumnos:', error);
+      }
+    };
+
+    fetchAlumnos();
   }, [matriculaTutor]);
 
   const handleNavigate1 = () => {
@@ -36,6 +53,10 @@ const AlumnoListCoord = () => {
 
   const handleModify = (alumno) => {
     navigate("/modificar-alumno", { state: { alumno } });
+  };
+
+  const handleAssignTutor = (alumno) => {
+    navigate("/asignar_tutor", { state: { alumno } });
   };
 
   const setModal = (id) => {
@@ -65,7 +86,6 @@ const AlumnoListCoord = () => {
             <tr>
               <th>Matricula</th>
               <th>Nombre del alumno</th>
-              <th>Asignar Tutor</th>
               <th>Tutor asignado</th>
               <th>Horario</th>
               <th>Estatus de horario</th>
@@ -77,8 +97,7 @@ const AlumnoListCoord = () => {
               <tr key={alumno._id}>
                 <td>{alumno.matricula}</td>
                 <td>{alumno.nombre}</td>
-                <td></td>
-                <td></td>
+                <td>{tutoresNombres[alumno._id] ? tutoresNombres[alumno._id] : "Sin asignar"}</td>
                 <td className="actions">
                   <button className="icon-button" onClick={() => handleNavigate3(alumno)}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
