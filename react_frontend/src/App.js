@@ -73,6 +73,7 @@ function App() {
               <Route path="/inicio-coordinador" element={<PrivateRoute><InicioCoordinador/></PrivateRoute>}></Route>
               <Route path="/inicio-administrador" element={<InicioAdministrador/>}></Route>
               <Route path="/administrar-materias" element={<AdministrarMaterias/>}></Route>
+              <Route path="/crear-materia" element={<CrearMateria />} />
               <Route path="/administrar-personal" element={<PrivateRoute><AdministrarPersonal/></PrivateRoute>}></Route>
               <Route path="/crear-alumno" element={<PrivateRoute><CrearAlumno/></PrivateRoute>}></Route>
               <Route path="/modificar-alumno" element={<PrivateRoute><ModificarAlumno/></PrivateRoute>}></Route>

@@ -7,7 +7,7 @@ function RevisionHorarioTutor() {
   const [horario, setHorario] = useState([]);
   const [comentario, setComentario] = useState("");
   const [estatus, setEstatus] = useState(null);
-  const [alumno, setAlumno] = useState({});
+  const [alumno, setAlumno] = useState(null); // Inicializar como null
   const { matricula } = useParams();
   const navigate = useNavigate();
 
@@ -59,7 +59,6 @@ function RevisionHorarioTutor() {
     }
   };
 
-  
   const actualizarEstatus = async () => {
     if (estatus === null) {
       alert("Por favor, seleccione una opción antes de guardar.");
@@ -101,7 +100,7 @@ function RevisionHorarioTutor() {
 
   const handleBack = () => { 
     navigate(-1); // Navegar a la página anterior 
-    }
+  }
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
@@ -114,48 +113,54 @@ function RevisionHorarioTutor() {
   return (
     <div className="horario-layout">
       <div className="horario-container">
-      <div className="top-left">
+        <div className="top-left">
           <button className="back-button" onClick={handleBack}>Regresar</button>
         </div>
-      <div className="top-right">
+        <div className="top-right">
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
         </div>
         <h1>Revisión de horario</h1>
-        <div className="horario-header">
-          <h3>Nombre del alumno: {alumno.nombre}</h3>
-          <h3>Carrera: {alumno.id_carrera}</h3>
-        </div>
+        {alumno ? (
+          <>
+            <div className="horario-header">
+              <h3>Nombre del alumno: {alumno.nombre}</h3>
+              <h3>Carrera: {alumno.id_carrera}</h3>
+            </div>
 
-        <div className="horario-content">
-          <table className="horario-table">
-            <thead>
-              <tr>
-                <th>Grupo</th>
-                <th>Salón</th>
-                <th>Materia</th>
-                <th>Lunes</th>
-                <th>Martes</th>
-                <th>Miércoles</th>
-                <th>Jueves</th>
-                <th>Viernes</th>
-              </tr>
-            </thead>
-            <tbody>
-              {horario.map((materia, index) => (
-                <tr key={index}>
-                  <td>{materia.grupo}</td>
-                  <td>{materia.salon}</td>
-                  <td>{materia.materia}</td>
-                  <td>{materia.horarios.lunes || "-"}</td>
-                  <td>{materia.horarios.martes || "-"}</td>
-                  <td>{materia.horarios.miercoles || "-"}</td>
-                  <td>{materia.horarios.jueves || "-"}</td>
-                  <td>{materia.horarios.viernes || "-"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            <div className="horario-content">
+              <table className="horario-table">
+                <thead>
+                  <tr>
+                    <th>Grupo</th>
+                    <th>Salón</th>
+                    <th>Materia</th>
+                    <th>Lunes</th>
+                    <th>Martes</th>
+                    <th>Miércoles</th>
+                    <th>Jueves</th>
+                    <th>Viernes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {horario.map((materia, index) => (
+                    <tr key={index}>
+                      <td>{materia.grupo}</td>
+                      <td>{materia.salon}</td>
+                      <td>{materia.materia}</td>
+                      <td>{materia.horarios.lunes || "-"}</td>
+                      <td>{materia.horarios.martes || "-"}</td>
+                      <td>{materia.horarios.miercoles || "-"}</td>
+                      <td>{materia.horarios.jueves || "-"}</td>
+                      <td>{materia.horarios.viernes || "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        ) : (
+          <p>Cargando datos del alumno...</p>
+        )}
 
         {mostrarModal && (
           <div className="modal">
