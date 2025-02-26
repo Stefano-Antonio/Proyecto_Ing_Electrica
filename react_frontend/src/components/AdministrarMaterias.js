@@ -84,7 +84,6 @@ const AdministrarMaterias = ({id_carrera}) => {
           <table className='materia-table'>
             <thead>
               <tr>
-                <th>Inscrito</th>
                 <th>Grupo</th>
                 <th>Salón</th>
                 <th>Materia</th>
@@ -101,7 +100,6 @@ const AdministrarMaterias = ({id_carrera}) => {
             <tbody>
               {materias.map((materia) => (
                 <tr key={materia._id}>
-                  <td><input type="checkbox" /></td>
                   <td>{materia.grupo}</td>
                   <td>{materia.salon}</td>
                   <td>{materia.nombre}</td>
