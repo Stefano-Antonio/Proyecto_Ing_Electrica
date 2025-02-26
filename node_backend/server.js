@@ -39,8 +39,16 @@ mongoose.connect('mongodb+srv://Stefano117:Mixbox360@cluster0.qgw2j.mongodb.net/
   console.error('Error al conectar a MongoDB:', error);
 });
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9ca17b73091d3222c0937678c2fbfc2313e541a2
 // Iniciar el servidor
 app.listen(PORT, () => {
   console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
 });
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 9ca17b73091d3222c0937678c2fbfc2313e541a2
