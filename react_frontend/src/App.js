@@ -59,7 +59,8 @@ function App() {
           <div className="Lat_iazquierda"></div> {/* Barra lateral izquierda */}
           <div className="Contenido">
             <Routes>
-              <Route path="/" element={<RedirectRoute userType={userType}><Registro /></RedirectRoute>} />
+              
+              <Route path="/" element={<PrivateRoute><Registro /></PrivateRoute>} />
               <Route path="/login" element={<RedirectRoute userType={userType}><Registro /></RedirectRoute>} />
               <Route path="/horario-seleccion" element={<PrivateRoute><HorarioSeleccion /></PrivateRoute>} />
               <Route path="/validacion" element={<PrivateRoute><Validacion1 /></PrivateRoute>} />
