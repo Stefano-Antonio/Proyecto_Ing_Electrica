@@ -8,5 +8,8 @@ router.get('/alumnos/:id', coordinadorController.getAlumnosAsignados);
 // Ruta para obtener el estatus del horario
 router.get('/estatus/:matricula', coordinadorController.getEstatusHorario);
 
+//Ruta para traer lista de tutores disponibles
+router.get('/tutores/:matricula', coordinadorController.getTutores);
+
 
 module.exports = router;

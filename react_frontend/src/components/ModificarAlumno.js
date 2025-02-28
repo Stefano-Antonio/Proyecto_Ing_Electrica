@@ -5,15 +5,19 @@ import "./CrearAlumno.css";
 
 function ModificarAlumno() {
   const navigate = useNavigate();
-  const location = useLocation(); // Obtén el estado pasado desde el componente anterior
-  const alumno = location.state?.alumno; // Asegúrate de manejar casos donde el estado sea nulo
+  const location = useLocation();
+  const alumno = location.state?.alumno;
+  const { matriculaTutor } = location.state || {};
 
   const [form, setForm] = useState({
     nombre: "",
     matricula: "",
     correo: "",
-    telefono: ""
+    telefono: "",
+    tutor: "" // Nuevo campo para el tutor
   });
+
+  const [tutores, setTutores] = useState([]); // Lista de tutores
 
   // Llenar los campos del formulario con los datos del alumno
   useEffect(() => {
@@ -22,10 +26,25 @@ function ModificarAlumno() {
         nombre: alumno.nombre || "",
         matricula: alumno.matricula || "",
         correo: alumno.correo || "",
-        telefono: alumno.telefono || ""
+        telefono: alumno.telefono || "",
+        tutor: alumno.tutor || "" // Preseleccionar el tutor si ya tiene uno
       });
     }
   }, [alumno]);
+
+  // Obtener la lista de tutores desde la API
+  useEffect(() => {
+    const fetchTutores = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/coordinadores/tutores/${matriculaTutor}`);
+        setTutores(response.data); // Suponiendo que la API regresa un array de objetos [{_id, nombre}]
+      } catch (error) {
+        console.error("Error al obtener tutores:", error);
+      }
+    };
+
+    fetchTutores();
+  }, []);
 
   const handleChange = (e) => {
     setForm({
@@ -41,13 +60,12 @@ function ModificarAlumno() {
   };
 
   const handleBack = () => {
-    navigate(-1); // Navegar a la página anterior
+    navigate(-1);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Solo enviamos los datos del alumno SIN modificar las materias
       const response = await axios.put(
         `http://localhost:5000/api/alumnos/${alumno._id}`,
         {
@@ -55,7 +73,7 @@ function ModificarAlumno() {
           matricula: form.matricula,
           correo: form.correo,
           telefono: form.telefono,
-          // NO enviamos materiasSeleccionadas aquí
+          tutor: form.tutor // Enviar el tutor seleccionado
         }
       );
       console.log("Alumno actualizado:", response.data);
@@ -66,7 +84,6 @@ function ModificarAlumno() {
       alert("Hubo un error al actualizar el alumno");
     }
   };
-  
 
   return (
     <div className="alumno-layout">
@@ -99,7 +116,6 @@ function ModificarAlumno() {
                   placeholder="Ingresar la matricula"
                   value={form.matricula}
                   onChange={handleChange}
-                  //readOnly // Solo lectura si no se puede modificar la matrícula
                 />
               </div>
             </div>
@@ -115,7 +131,7 @@ function ModificarAlumno() {
                 />
               </div>
               <div className="input-wrapper short-field2">
-                <label htmlFor="telefono">Telefono</label>
+                <label htmlFor="telefono">Teléfono</label>
                 <input
                   type="text"
                   id="telefono"
@@ -123,6 +139,20 @@ function ModificarAlumno() {
                   value={form.telefono}
                   onChange={handleChange}
                 />
+              </div>
+            </div>
+            {/* Nuevo campo para seleccionar el tutor */}
+            <div className="form-group">
+              <div className="input-wrapper">
+                <label htmlFor="tutor">Tutor</label>
+                <select id="tutor" value={form.tutor} onChange={handleChange}>
+                  <option value="">Selecciona un tutor</option>
+                  {tutores.map((tutor) => (
+                    <option key={tutor._id} value={tutor._id}>
+                      {tutor.nombre}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
             <div className="alumno-buttons">
@@ -136,3 +166,4 @@ function ModificarAlumno() {
 }
 
 export default ModificarAlumno;
+

@@ -73,7 +73,7 @@ const AlumnoListCoord = () => {
   };
 
   const handleModify = (alumno) => {
-    navigate("/modificar-alumno", { state: { alumno } });
+    navigate("/modificar-alumno", { state: { alumno, matriculaTutor: matriculaTutor } });
   };
 
   const handleAssignTutor = (alumno) => {
