@@ -8,13 +8,13 @@ function RevisionHorarioTutor() {
   const [comentario, setComentario] = useState("");
   const [estatus, setEstatus] = useState(null);
   const [alumno, setAlumno] = useState(null); // Inicializar como null
-  const { matricula } = useParams();
   const navigate = useNavigate();
 
   // Recuperar el estado (nombre y matricula) desde la navegación
   const location = useLocation();
-  const { nombre, matricula: matriculaTutor } = location.state || {};
-
+  const id_carrera = localStorage.getItem("id_carrera");
+  const { nombre , matricula, matriculaTutor } = location.state || {};
+  console.log("Nombre y matrícula del tutor:", nombre,matricula, matriculaTutor, id_carrera);
   useEffect(() => {
     fetch(`http://localhost:5000/api/tutores/horario/${matricula}`)
       .then(response => response.json())
@@ -89,9 +89,18 @@ function RevisionHorarioTutor() {
         console.log("Comentario enviado.");
       }
 
-      setMostrarModal(false);
-      console.log("Navegando a inicio-tutor...");
-      navigate("/inicio-tutor", { state: { nombre, matricula: matriculaTutor } });
+      
+    setMostrarModal(false);
+    console.log("Navegando a la página correspondiente...");
+    if (matriculaTutor) {
+      if (matriculaTutor.startsWith("C")) {
+        navigate("/inicio-coordinador", { state: { id_carrera, matricula: matriculaTutor } });
+      } else if (matriculaTutor.startsWith("T")) {
+        navigate("/inicio-tutor", { state: { nombre, matricula: matriculaTutor } });
+      } else if (matriculaTutor.startsWith("D")) {
+        navigate("/inicio-docente", { state: { nombre, matricula: matriculaTutor } });
+      }
+    }
     } catch (error) {
       console.error("Error al actualizar el estatus:", error);
       alert("Hubo un error al actualizar el estatus.");

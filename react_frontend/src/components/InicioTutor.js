@@ -16,7 +16,7 @@ function InicioTutor() {
       localStorage.setItem("matriculaTutor", matriculaTutor);
     }
   }, [matriculaTutor]);
-
+  console.log("Matrícula del tutor:", nombre, matriculaTutor);
   // Obtener la matrícula del tutor desde localStorage si no está en location.state
   const storedMatriculaTutor = localStorage.getItem("matriculaTutor");
 

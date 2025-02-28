@@ -38,6 +38,9 @@ const AlumnoListCoord = () => {
     fetchAlumnos();
   }, [matriculaTutor]);
 
+  console.log("matriculaTutor:", matriculaTutor);
+
+
   const handleNavigate1 = () => {
     navigate("/crear-alumno");
   };
@@ -48,7 +51,7 @@ const AlumnoListCoord = () => {
 
   const handleNavigate3 = (alumno) => {
     console.log("Navegando a: ", `/revisar-horario/${alumno.matricula}`);
-    navigate(`/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula } });
+    navigate(`/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaTutor: matriculaTutor} });
   };
 
   const handleModify = (alumno) => {
@@ -73,6 +76,20 @@ const AlumnoListCoord = () => {
     } catch (error) {
       console.error('Error al eliminar alumno:', error);
       alert("Hubo un error al eliminar el alumno");
+    }
+  };
+
+  
+  const getEstatusIcon = (estatus) => {
+    switch (estatus) {
+      case "Sin revisar":
+        return <span className="status-icon yellow"></span>; 
+      case "En espera":
+        return <span className="status-icon gray"></span>; 
+      case "Revisado":
+        return <span className="status-icon green"></span>; 
+      default:
+        return <span className="status-icon yellow"></span>; 
     }
   };
 
@@ -106,7 +123,7 @@ const AlumnoListCoord = () => {
                     </svg>
                   </button>
                 </td>
-                <td></td>
+                <td>{getEstatusIcon(alumno.estatus)}</td>
                 <td>
                   <div className="action-buttons">
                     <button className="icon-button" onClick={() => handleModify(alumno)}>
