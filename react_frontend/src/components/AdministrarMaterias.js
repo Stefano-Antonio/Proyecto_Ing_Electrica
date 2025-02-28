@@ -10,12 +10,32 @@ const AdministrarMaterias = ({id_carrera}) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
     
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const materiasResponse = await axios.get(`http://localhost:5000/api/materias/carrera/${id_carrera}`);
+        const docentesResponse = await axios.get('http://localhost:5000/api/docentes');
+        
+        console.log("Materias:", materiasResponse.data);
+        console.log("Docentes:", docentesResponse.data);
+  
+        setMaterias(materiasResponse.data);
+        setDocentes(docentesResponse.data);
+      } catch (error) {
+        console.error("Error al obtener datos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
+  }, []);
 
   useEffect(() => {
     // Realiza la solicitud para obtener las materias desde la base de datos
     const fetchMaterias = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/materias/carrera/${id_carrera}`);
+        const response = await axios.get(`http://localhost:5000/api/materias/carrera/${id_carrera}`); //Falta que se muestre el docente en el ID de carrera
         setMaterias(response.data); // Establece los datos de materias en el estado
       } catch (error) {
         console.error('Error al obtener datos de materias:', error);
@@ -23,15 +43,16 @@ const AdministrarMaterias = ({id_carrera}) => {
     };
 
     // Realiza la solicitud para obtener los docentes desde la base de datos
+
     const fetchDocentes = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/personal');
-        const docentesData = response.data.filter(personal => personal.roles.includes('D'));
-        setDocentes(docentesData); // Establece los datos de docentes en el estado
+        const response = await axios.get('http://localhost:5000/api/docentes');
+        setDocentes(response.data);
       } catch (error) {
         console.error('Error al obtener datos de docentes:', error);
       }
     };
+
 
     const fetchData = async () => {
       await fetchMaterias();
@@ -54,24 +75,11 @@ const AdministrarMaterias = ({id_carrera}) => {
     navigate("/modificar-materia", { state: { materia } });
   };
 
+  const getDocenteNombre = (materia) => {
+    return materia && materia.docenteNombre ? materia.docenteNombre : "Sin asignar";
+  };
   
-  const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar esta materia?");
-    if (confirmDelete) {
-      try {
-        await axios.delete(`http://localhost:5000/api/materias/${id}`);
-        setMaterias(materias.filter(materia => materia._id !== id));
-      } catch (error) {
-        console.error('Error al eliminar la materia:', error);
-      }
-    }
-  };
 
-  // Mapea la matrícula del docente al nombre del docente
-  const getDocenteNombre = (matricula) => {
-    const docente = docentes.find(docente => docente.matricula === matricula);
-    return docente ? docente.nombre : "Sin asignar";
-  };
 
   return (
     <div className="admin-materias">
@@ -84,6 +92,7 @@ const AdministrarMaterias = ({id_carrera}) => {
           <table className='materia-table'>
             <thead>
               <tr>
+                <th>Inscrito</th>
                 <th>Grupo</th>
                 <th>Salón</th>
                 <th>Materia</th>
@@ -100,10 +109,12 @@ const AdministrarMaterias = ({id_carrera}) => {
             <tbody>
               {materias.map((materia) => (
                 <tr key={materia._id}>
+                  <td><input type="checkbox" /></td>
                   <td>{materia.grupo}</td>
                   <td>{materia.salon}</td>
                   <td>{materia.nombre}</td>
-                  <td>{getDocenteNombre(materia.docente)}</td> {/* Muestra el nombre del docente */}
+                  <td>{getDocenteNombre(materia)}</td> {/* Muestra el nombre del docente o "Sin asignar" */}
+
                   <td>
                     <button className="icon-button" onClick={() => handleModify(materia)}>
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -113,8 +124,8 @@ const AdministrarMaterias = ({id_carrera}) => {
                     </button>
                   </td>
                   <td>
-                     <button className="icon-button" onClick={() => handleDelete(materia._id)}>
-                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="red" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <button className="icon-button">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="red" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="3 6 5 6 21 6"></polyline>
                         <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
                         <path d="M10 11v6"></path>

@@ -29,6 +29,38 @@ exports.getAlumnosAsignados = async (req, res) => {
     }
 };
 
+exports.getDocentes = async (req, res) => {
+    try {
+        const docentes = await Docentes.find();
+        const docentesConNombre = await Promise.all(docentes.map(async (docente) => {
+            const personal = await Personal.findOne({ matricula: docente.personalMatricula });
+            return {
+                ...docente.toObject(),
+                nombre: personal ? personal.nombre : "Sin asignar"
+            };
+        }));
+
+        res.status(200).json(docentesConNombre);
+    } catch (error) {
+        console.error("Error al obtener docentes:", error);
+        res.status(500).json({ message: "Error al obtener docentes", error });
+    }
+};
+
+
+
+exports.getDocenteById = async (req, res) => {
+    try {
+        const docente = await Docentes.findById(req.params.id);
+        if (!docente) {
+            return res.status(404).json({ message: 'docente no encontrado' });
+        }
+        res.status(200).json(docente);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener el personal', error });
+    }
+};
+
 // Ruta para obtener las materias asignadas al docente
 exports.getMateriasAsignadas = async (req, res) => {
     console.log('Obteniendo materias asignadas a un docente');

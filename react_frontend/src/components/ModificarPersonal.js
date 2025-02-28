@@ -102,18 +102,6 @@ function ModificarPersonal() {
                   onChange={handleChange}
                 />
               </div>
-            </div>
-            <div className="form-group">
-              <div className="input-wrapper short-field">
-                <label htmlFor="roles">Permisos</label>
-                <select id="roles" value={form.roles} onChange={handleChange} required>
-                  <option value="" disabled hidden>Seleccione...</option>
-                  <option value="D">Docente</option>
-                  <option value="T">Tutor</option>
-                  <option value="C">Coordinador</option>
-                  <option value="A">Administrador</option>
-                </select>
-              </div>
               <div className="input-wrapper short-field2">
                 <label htmlFor="password">Contraseña</label>
                 <input
@@ -124,6 +112,9 @@ function ModificarPersonal() {
                   onChange={handleChange}
                 />
               </div>
+            </div>
+            <div className="form-group">
+
             </div>
             <div className="persona1-buttons">
               <button type="submit" className="button">Actualizar</button>

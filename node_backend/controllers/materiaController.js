@@ -1,4 +1,7 @@
 const Materia = require('../models/Materia');
+const Docentes = require('../models/Docentes');
+const mongoose = require('mongoose');
+const Personal = require('../models/Personal');
 const { Parser } = require('json2csv');
 const multer = require('multer');
 const csv = require('csv-parser');
@@ -22,17 +25,45 @@ const storage = multer.diskStorage({
 
 // Crear una nueva materia
 exports.createMateria = async (req, res) => {
-  const { id_materia, nombre, horarios, salon, grupo, cupo, docente } = req.body;
+  const { id_materia, id_carrera, nombre, horarios, salon, grupo, cupo, docente } = req.body;
   console.log('Datos recibidos para crear la materia:', req.body);
+
   try {
+    // Validar que `id_carrera` esté presente
+    if (!id_carrera) {
+      return res.status(400).json({ message: "El campo id_carrera es obligatorio." });
+    }
 
-    const docenteFinal = docente.trim() === "" ? null : docente;
+    let docenteObjectId = null;
 
-    const newMateria = new Materia({ id_materia, nombre, horarios, salon, grupo, cupo, docente: docenteFinal  });
+    if (docente) {
+      // Buscar en Docentes usando personalMatricula
+      const docenteEncontrado = await Docentes.findOne({ personalMatricula: docente });
+
+      if (!docenteEncontrado) {
+        return res.status(400).json({ message: "Docente no encontrado" });
+      }
+
+      docenteObjectId = docenteEncontrado._id; // Usar el ObjectId del docente
+    }
+
+    // Crear la materia con el ObjectId del docente (o null si no hay docente)
+    const newMateria = new Materia({ id_materia, id_carrera, nombre, horarios, salon, grupo, cupo, docente: docenteObjectId });
+
     await newMateria.save();
-
     console.log('Materia creada:', newMateria);
-    res.status(201).json(newMateria);  // Responde con la materia creada
+
+    // Si hay un docente, agregar la materia a su lista de materias
+    if (docenteObjectId) {
+      await Docentes.findByIdAndUpdate(
+        docenteObjectId,
+        { $push: { materias: newMateria._id } }, // Agregar la materia al array de materias
+        { new: true }
+      );
+      console.log(`Materia ${newMateria._id} agregada al docente ${docenteObjectId}`);
+    }
+
+    res.status(201).json(newMateria);
   } catch (error) {
     console.error('Error al crear la materia:', error);
     res.status(500).json({ message: 'Error al crear la materia', error });
@@ -42,12 +73,36 @@ exports.createMateria = async (req, res) => {
 // Obtener todas las materias
 exports.getMaterias = async (req, res) => {
   try {
-    const materias = await Materia.find();  // Si necesitas mostrar información del docente
-    console.log(materias);  // Agrega esto para ver la respuesta
-    res.status(200).json(materias);
+    const materias = await Materia.find();
+
+    const materiasConDocente = await Promise.all(
+      materias.map(async (materia) => {
+        if (!materia.docente) {
+          return { ...materia.toObject(), docenteNombre: "Sin asignar" };
+        }
+
+        // Buscar el docente en la colección Docentes usando el ObjectId
+        const docente = await Docentes.findById(materia.docente);
+
+        if (!docente) {
+          return { ...materia.toObject(), docenteNombre: "Sin asignar" };
+        }
+
+        // Buscar el nombre del personal en la colección Personal usando personalMatricula
+        const personal = await Personal.findOne({ matricula: docente.personalMatricula });
+
+        return {
+          ...materia.toObject(),
+          docenteNombre: personal ? personal.nombre : "Sin asignar",
+        };
+      })
+    );
+
+    console.log(materiasConDocente); // Para depuración
+    res.status(200).json(materiasConDocente);
   } catch (error) {
-    console.error('Error al obtener materias:', error);
-    res.status(500).json({ message: 'Error al obtener materias', error });
+    console.error("Error al obtener materias:", error);
+    res.status(500).json({ message: "Error al obtener materias", error });
   }
 };
 
@@ -92,23 +147,75 @@ exports.getMateriaById = async (req, res) => {
   }
 };
 
-// Actualizar una materia
+//Actualizar materia
 exports.updateMateria = async (req, res) => {
   const { nombre, horarios, salon, grupo, cupo, docente } = req.body;
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "ID de materia no válido" });
+  }
+
   try {
+    // Buscar la materia antes de actualizarla
+    const materiaAnterior = await Materia.findById(id);
+    if (!materiaAnterior) {
+      return res.status(404).json({ message: "Materia no encontrada" });
+    }
+
+    let docenteObjectId = null;
+
+    if (docente) {
+      // Buscar el nuevo docente por personalMatricula
+      const docenteEncontrado = await Docentes.findOne({ personalMatricula: docente });
+
+      if (!docenteEncontrado) {
+        return res.status(400).json({ message: "Docente no encontrado" });
+      }
+
+      docenteObjectId = docenteEncontrado._id; // Obtener ObjectId del docente
+    }
+
+    // Actualizar la materia con el nuevo docente (si hay)
     const materia = await Materia.findByIdAndUpdate(
-      req.params.id,
-      { nombre, horarios, salon, grupo, cupo, docente },
+      id,
+      { nombre, horarios, salon, grupo, cupo, docente: docenteObjectId },
       { new: true }
     );
+
     if (!materia) {
-      return res.status(404).json({ message: 'Materia no encontrada' });
+      return res.status(404).json({ message: "Materia no encontrada" });
     }
+
+    // 🔴 Si la materia tenía un docente anterior diferente, eliminarla de su lista de materias
+    if (materiaAnterior.docente && (!docenteObjectId || !materiaAnterior.docente.equals(docenteObjectId))) {
+      await Docentes.findByIdAndUpdate(
+        materiaAnterior.docente,
+        { $pull: { materias: materiaAnterior._id } } // Remueve la materia de la lista del docente anterior
+      );
+      console.log(`Materia ${id} eliminada de docente anterior`);
+    }
+
+    // 🟢 Si hay un nuevo docente, agregar la materia a su lista
+    if (docenteObjectId) {
+      await Docentes.findByIdAndUpdate(
+        docenteObjectId,
+        { $addToSet: { materias: materia._id } }, // Asegura que no se duplique
+        { new: true }
+      );
+      console.log(`Materia ${id} agregada a docente ${docenteObjectId}`);
+    }
+
+    console.log("Materia actualizada correctamente:", materia);
     res.status(200).json(materia);
   } catch (error) {
-    res.status(500).json({ message: 'Error al actualizar la materia', error });
+    console.error("Error en updateMateria:", error);
+    res.status(500).json({ message: "Error al actualizar la materia", error });
   }
 };
+
+
+
 
 // Eliminar una materia
 exports.deleteMateria = async (req, res) => {
