@@ -18,17 +18,36 @@ const AlumnoListCoord = () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/alumnos/matricula/${matriculaTutor}`);
         const alumnosData = response.data;
+        console.log("Alumnos:", response.data);
 
         // Obtener los detalles del tutor para cada alumno
         const tutoresNombresTemp = {};
         await Promise.all(alumnosData.map(async (alumno) => {
           if (alumno.tutor) {
             const tutorResponse = await axios.get(`http://localhost:5000/api/coordinadores/alumnos/${alumno.tutor}`);
+            console.log("Tutor response:", tutorResponse);
             tutoresNombresTemp[alumno._id] = tutorResponse.data.nombre; // Extraer el nombre del tutor
           }
         }));
 
-        setAlumnos(alumnosData);
+
+        const fetchEstatus = async (alumno) => {
+          try {
+            const estatusResponse = await fetch(`http://localhost:5000/api/tutores/estatus/${alumno.matricula}`);
+            if (!estatusResponse.ok) {
+              throw new Error("Error al obtener el estatus del horario");
+            }
+            const estatusData = await estatusResponse.json();
+            return { ...alumno, estatus: estatusData.estatus };
+          } catch (error) {
+            console.error("Error al obtener el estatus del horario para", alumno.matricula, error);
+            return { ...alumno, estatus: "Desconocido" };
+          }
+        };
+
+        const alumnosConEstatus = await Promise.all(alumnosData.map(fetchEstatus));
+
+        setAlumnos(alumnosConEstatus);
         setTutoresNombres(tutoresNombresTemp);
       } catch (error) {
         console.error('Error al obtener alumnos:', error);
@@ -39,7 +58,6 @@ const AlumnoListCoord = () => {
   }, [matriculaTutor]);
 
   console.log("matriculaTutor:", matriculaTutor);
-
 
   const handleNavigate1 = () => {
     navigate("/crear-alumno");
@@ -79,8 +97,8 @@ const AlumnoListCoord = () => {
     }
   };
 
-  
   const getEstatusIcon = (estatus) => {
+    console.log("Estatus:", estatus);
     switch (estatus) {
       case "Sin revisar":
         return <span className="status-icon yellow"></span>; 
@@ -110,7 +128,7 @@ const AlumnoListCoord = () => {
             </tr>
           </thead>
           <tbody>
-            {alumnos.map(alumno => (
+            {alumnos.map((alumno) => (
               <tr key={alumno._id}>
                 <td>{alumno.matricula}</td>
                 <td>{alumno.nombre}</td>
