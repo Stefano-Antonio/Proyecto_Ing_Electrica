@@ -5,7 +5,7 @@ import "./ModificarPersonal.css";
 
 function ModificarPersonal() {
   const location = useLocation();
-  const persona = location.state ? location.state.persona : null;
+  const persona = location.state ? location.state.personal : null;
 
   const [form, setForm] = useState({
     nombre: persona ? persona.nombre : "",

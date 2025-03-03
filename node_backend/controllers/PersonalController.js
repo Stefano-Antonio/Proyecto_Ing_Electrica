@@ -177,21 +177,21 @@ exports.getPersonalById = async (req, res) => {
 };
 
 exports.updatePersonal = async (req, res) => {
-    const { roles } = req.body;
-    try {
-        const personal = await Personal.findByIdAndUpdate(
-            req.params.id,
-            { roles },
-            { new: true }
-        );
-        if (!personal) {
-            return res.status(404).json({ message: 'Personal no encontrado' });
-        }
-        res.status(200).json(personal);
-    } catch (error) {
-        res.status(500).json({ message: 'Error al actualizar el personal', error });
-    }
+  try {
+      const personal = await Personal.findByIdAndUpdate(
+          req.params.id,
+          { $set: req.body }, // Actualiza todos los campos enviados en la solicitud
+          { new: true } // Devuelve el documento actualizado
+      );
+      if (!personal) {
+          return res.status(404).json({ message: 'Personal no encontrado' });
+      }
+      res.status(200).json(personal);
+  } catch (error) {
+      res.status(500).json({ message: 'Error al actualizar el personal', error });
+  }
 };
+
 
 exports.deletePersonal = async (req, res) => {
     try {
