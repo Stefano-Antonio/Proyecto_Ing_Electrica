@@ -5,6 +5,12 @@ const docenteController = require('../controllers/docenteController');
 // Nueva ruta para obtener los alumnos asignados a un tutor
 router.get('/alumnos/:matricula', docenteController.getAlumnosAsignados);
 
+//obtener docentes
+router.get('/', docenteController.getDocentes);
+
+//obtener docentes
+router.get('/:id', docenteController.getDocenteById);
+
 router.get('/materias/:matricula', docenteController.getMateriasAsignadas);
 
 // Traer el horario del alumno
