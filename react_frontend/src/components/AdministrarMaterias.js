@@ -10,6 +10,26 @@ const AdministrarMaterias = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
     
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const materiasResponse = await axios.get('http://localhost:5000/api/materias');
+        const docentesResponse = await axios.get('http://localhost:5000/api/docentes');
+        
+        console.log("Materias:", materiasResponse.data);
+        console.log("Docentes:", docentesResponse.data);
+  
+        setMaterias(materiasResponse.data);
+        setDocentes(docentesResponse.data);
+      } catch (error) {
+        console.error("Error al obtener datos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
+  }, []);
 
   useEffect(() => {
     // Realiza la solicitud para obtener las materias desde la base de datos
@@ -23,15 +43,16 @@ const AdministrarMaterias = () => {
     };
 
     // Realiza la solicitud para obtener los docentes desde la base de datos
+
     const fetchDocentes = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/personal');
-        const docentesData = response.data.filter(personal => personal.roles.includes('D'));
-        setDocentes(docentesData); // Establece los datos de docentes en el estado
+        const response = await axios.get('http://localhost:5000/api/docentes');
+        setDocentes(response.data);
       } catch (error) {
         console.error('Error al obtener datos de docentes:', error);
       }
     };
+
 
     const fetchData = async () => {
       await fetchMaterias();
@@ -54,11 +75,11 @@ const AdministrarMaterias = () => {
     navigate("/modificar-materia", { state: { materia } });
   };
 
-  // Mapea la matrícula del docente al nombre del docente
-  const getDocenteNombre = (matricula) => {
-    const docente = docentes.find(docente => docente.matricula === matricula);
-    return docente ? docente.nombre : "Sin asignar";
+  const getDocenteNombre = (materia) => {
+    return materia && materia.docenteNombre ? materia.docenteNombre : "Sin asignar";
   };
+  
+
 
   return (
     <div className="admin-materias">
@@ -92,7 +113,8 @@ const AdministrarMaterias = () => {
                   <td>{materia.grupo}</td>
                   <td>{materia.salon}</td>
                   <td>{materia.nombre}</td>
-                  <td>{getDocenteNombre(materia.docente)}</td> {/* Muestra el nombre del docente */}
+                  <td>{getDocenteNombre(materia)}</td> {/* Muestra el nombre del docente o "Sin asignar" */}
+
                   <td>
                     <button className="icon-button" onClick={() => handleModify(materia)}>
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

@@ -24,15 +24,27 @@ const AdministratPersonalCoordinador = () => {
       });
   }, []);
 
-  const handleRoleChange = (matricula, roles) => {
-    setPersonal(prevState => 
-      prevState.map(persona => 
-        persona.matricula === matricula
-          ? { ...persona, roles }
-          : persona
-      )
-    );
+  const getRoleName = (roles) => {
+    if (!roles) return "Sin rol"; // Si no tiene roles asignados
+  
+    const roleMap = {
+      D: "Docente",
+      T: "Tutor",
+      C: "Coordinador",
+      A: "Administrador"
+    };
+  
+    if (Array.isArray(roles)) {
+      // Si `roles` es un array, mapear cada valor
+      return roles.map(role => roleMap[role] || role).join(", ");
+    } else if (typeof roles === "string") {
+      // Si `roles` es un string, dividir y mapear
+      return roles.split("").map(role => roleMap[role] || role).join(", ");
+    } else {
+      return "Rol desconocido"; // Si `roles` tiene otro tipo inesperado
+    }
   };
+  
 
   const handleUpdateRoles = async () => {
     try {
@@ -98,18 +110,9 @@ const AdministratPersonalCoordinador = () => {
                 <td>{persona.programa}</td>
                 <td>{persona.nombre}</td>
                 <td>{persona.matricula}</td>
-                <td>
-                <select
-                    value={persona.roles}
-                    onChange={(e) => handleRoleChange(persona.matricula,e.target.value)}
-                  >
-                    <option value="D">Docente</option>
-                    <option value="T">Tutor</option>
-                    <option value="C">Coordinador</option>
-                    <option value="A">Administrador</option>
-                  </select>
-                </td>
-                <td>
+                <td>{getRoleName(persona.roles)}</td>
+
+                 <td>
                   <div className="action-buttons">
                       <button className="icon-button" onClick={() => handleModify(persona)}>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

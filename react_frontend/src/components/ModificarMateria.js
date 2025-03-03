@@ -53,16 +53,16 @@ function ModificarMateria() {
     useEffect(() => {
       const fetchDocentes = async () => {
         try {
-          const response = await axios.get("http://localhost:5000/api/personal"); // Cambia la URL según tu configuración
-          const docentesData = response.data.filter(personal => personal.roles.includes('D'));
-          setDocentes(docentesData);
+          const response = await axios.get("http://localhost:5000/api/docentes"); 
+          setDocentes(response.data); // Guardamos la lista de docentes con el nombre incluido
         } catch (error) {
           console.error("Error al obtener los docentes:", error);
         }
       };
-
+    
       fetchDocentes();
     }, []);
+    
 
 
     const handleFileChange = (e) => {
@@ -135,31 +135,27 @@ function ModificarMateria() {
 
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-      
-        const finalData = {
-          ...formData,
-          horarios: Object.fromEntries(
-            Object.entries(formData.horarios).map(([key, value]) => [key, value === "" ? null : value])
-          )
+      e.preventDefault();
+      try {
+        const materiaActualizada = {
+          nombre: formData.nombre,
+          horarios: formData.horarios,
+          salon: formData.salon,
+          grupo: formData.grupo,
+          cupo: formData.cupo,
+          docente: formData.docente // Aquí debe ir "P001", "P002", etc.
         };
-      
-        try {
-          if (materia._id) {
-            // Si hay un ID, significa que estamos editando
-            await axios.put(`http://localhost:5000/api/materias/${materia._id}`, finalData);
-            alert("Materia actualizada con éxito");
-          } else {
-            // Si no hay ID, significa que estamos creando una nueva materia
-            await axios.post("http://localhost:5000/api/materias", finalData);
-            alert("Materia creada con éxito");
-          }
-          navigate("/"); // Redirigir después de la acción
-        } catch (error) {
-          console.error("Error al guardar la materia:", error);
-          alert("Hubo un error al guardar la materia");
-        }
-      };
+    
+        const response = await axios.put(`http://localhost:5000/api/materias/${materia._id}`, materiaActualizada);
+        console.log("Materia actualizada:", response.data);
+        alert("Materia actualizada con éxito");
+      } catch (error) {
+        console.error("Error al actualizar la materia:", error);
+        alert("Hubo un error al actualizar la materia");
+      }
+    };
+    
+
     
 
 
@@ -172,7 +168,7 @@ function ModificarMateria() {
       <div className="top-right"> 
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
         </div>
-        <h1>Agregar materia</h1>
+        <h1>Modificar materia</h1>
         <div className="materia-content">
           <form onSubmit={handleSubmit}>
             <div className="form-group">
@@ -238,9 +234,12 @@ function ModificarMateria() {
                 <select id="docente" value={formData.docente} onChange={handleChange} required>
                   <option value="" disabled hidden>Seleccione un docente</option>
                   {docentes.map(docente => (
-                    <option key={docente.matricula} value={docente.matricula}>{docente.nombre}</option>
+                    <option key={docente._id} value={docente.personalMatricula}>
+                      {docente.nombre} {/* Mostramos el nombre obtenido del backend */}
+                    </option>
                   ))}
                 </select>
+
               </div>
               
             </div>
@@ -341,16 +340,23 @@ function ModificarMateria() {
                   <h3>Subir base de datos</h3>
                   <p>Seleccione el archivo a subir:</p>
                   <input type="file" accept=".csv" onChange={handleFileChange} />
-                  <button onClick={handleSubmitCSV}>Subir CSV</button>
-                  <button onClick={handleDownloadCSV}>Descargar CSV</button>
+                  <button onClick={() => handleSubmitCSV}>Subir CSV</button>
+                  <button onClick={() => handleDownloadCSV}>Descargar CSV</button>
                   <button onClick={() => setMostrarModal(false)}>Cerrar</button>
                 </div>
               </div>
             )}
             <div className="materia-buttons">
-              <button type="submit" className="button">Agregar</button>
-              <button className="button" onClick={() => setMostrarModal(true)}>Subir base de datos de materias</button>
-            </div>
+                <button type="submit" className="button">Agregar</button>
+                <button 
+                  type="button"  // Se agrega este atributo para evitar que dispare el submit
+                  className="button" 
+                  onClick={() => setMostrarModal(true)}
+                >
+                  Subir base de datos de materias
+                </button>
+              </div>
+
           </form>
         </div>
       </div>
