@@ -29,7 +29,7 @@ exports.upload = upload;
 // Crear un nuevo alumno
 exports.createAlumno = async (req, res) => {
   console.log('Alumno:', req.body);
-  const { matricula, nombre, telefono, correo } = req.body;
+  const { matricula, nombre, telefono, correo, tutor } = req.body;
   try {
     const newAlumno = new Alumno({ matricula, nombre, telefono, correo });
     await newAlumno.save();
@@ -48,6 +48,41 @@ exports.getAlumnos = async (req, res) => {
     res.status(500).json({ message: 'Error al obtener alumnos', error });
   }
 };
+// Obtener los alumnos de una carrera específica
+exports.getAlumnosCarrera = async (req, res) => {
+  console.log('Obteniendo alumnos de una carrera');
+
+  try {
+    const { matricula } = req.params;
+    console.log('Matrícula recibida:', matricula);
+
+
+      const personal = await Coordinador.findOne({ personalMatricula: matricula });
+      if (personal) {
+        console.log('Coordinador encontrado');
+      } else {
+        console.log('No se encontró un coordinador con la matrícula proporcionada.');
+        return res.status(404).json({ message: 'No se encontró un coordinador con esa matrícula.' });
+      }
+    
+    
+
+      // Obtener el id_carrera del personal encontrado
+      const carrera = personal.id_carrera;
+      console.log('ID de carrera:', carrera);
+
+      // Buscar alumnos por la carrera obtenida
+      const alumnos = await Alumno.find({ id_carrera: carrera });
+
+      console.log('Alumnos encontrados:', alumnos);
+      res.status(200).json(alumnos);
+
+    } catch (error) {
+      console.error('Error al obtener alumnos de la carrera:', error);
+      res.status(500).json({ message: 'Error al obtener alumnos de la carrera', error });
+    }
+  };
+
 
 // Ruta para obtener los alumnos de un tutor específico
 exports.getAlumnosAsignados = async (req, res) => {
@@ -135,49 +170,113 @@ exports.getAlumnoByIdWithHorario = async (req, res) => {
   }
 };
 
-
-
 // Actualizar un alumno
 exports.updateAlumno = async (req, res) => {
-  const { matricula, nombre, correo, telefono, materiasSeleccionadas } = req.body;
+  const { matricula, nombre, correo, telefono, materiasSeleccionadas, tutor } = req.body;
+  console.log('Datos:', matricula, nombre, correo, telefono, tutor);
 
   try {
     let horarioGuardado = null;
 
     // Solo se actualizan las materias si están en req.body
     if (materiasSeleccionadas && Array.isArray(materiasSeleccionadas) && materiasSeleccionadas.length > 0) {
-      // Crear un nuevo documento de Horario con los IDs de las materias seleccionadas
       const nuevoHorario = new Horario({
-        materias: materiasSeleccionadas.map(materia => materia._id), // Guardamos solo los IDs de las materias
+        materias: materiasSeleccionadas.map(materia => materia._id),
       });
 
-      // Guardar el horario en la base de datos
       horarioGuardado = await nuevoHorario.save();
     }
 
-    // Actualizar el alumno con los nuevos datos y el ID del horario (si se generó)
-    const alumno = await Alumno.findByIdAndUpdate(
+    let alumno = await Alumno.findById(req.params.id);
+    if (!alumno) {
+      console.log('Alumno no encontrado');
+      return res.status(404).json({ message: 'Alumno no encontrado' });
+    }
+
+    // Eliminar al alumno del tutor anterior
+    if (alumno.tutor) {
+      const tutorAnteriorAsignado = await Personal.findById(alumno.tutor);
+      if (tutorAnteriorAsignado) {
+        const TutorModel = await Tutor.findOne({ personalMatricula: tutorAnteriorAsignado.matricula });
+        const DocenteModel = await Docente.findOne({ personal: tutorAnteriorAsignado.matricula });
+        const CoordinadorModel = await Coordinador.findOne({ personalMatricula: tutorAnteriorAsignado.matricula });
+
+        if (TutorModel) {
+          TutorModel.alumnos = TutorModel.alumnos.filter(alumnoId => alumnoId.toString() !== alumno._id.toString());
+          await TutorModel.save();
+          console.log('Alumno eliminado de la lista del tutor anterior');
+        } else if (DocenteModel) {
+          DocenteModel.alumnos = DocenteModel.alumnos.filter(alumnoId => alumnoId.toString() !== alumno._id.toString());
+          await DocenteModel.save();
+          console.log('Alumno eliminado de la lista del docente anterior');
+        } else if (CoordinadorModel) {
+          CoordinadorModel.alumnos = CoordinadorModel.alumnos.filter(alumnoId => alumnoId.toString() !== alumno._id.toString());
+          await CoordinadorModel.save();
+          console.log('Alumno eliminado de la lista del coordinador anterior');
+        }
+      }
+    }
+
+    // Buscar el nuevo tutor
+    const tutorAsignado = await Personal.findById(tutor);
+    if (!tutorAsignado) {
+      console.log('Tutor no encontrado');
+      return res.status(404).json({ message: 'Tutor no encontrado' });
+    }
+
+    // Buscar el tutor en las colecciones Tutor, Docente y Coordinador
+    const TutorModel = await Tutor.findOne({ personalMatricula: tutorAsignado.matricula });
+    const DocenteModel = await Docente.findOne({ personalMatricula: tutorAsignado.matricula });
+    const CoordinadorModel = await Coordinador.findOne({ personalMatricula: tutorAsignado.matricula });
+
+    if (!TutorModel && !DocenteModel && !CoordinadorModel) {
+      console.log('No se encontró un tutor en la base de datos con matrícula:', tutorAsignado.matricula);
+      return res.status(404).json({ message: 'Tutor no encontrado en la base de datos' });
+    }
+
+    // Agregar el alumno al nuevo tutor
+    if (TutorModel) {
+      TutorModel.alumnos.push(alumno._id);
+      await TutorModel.save();
+      console.log('Alumno agregado a la lista de alumnos del tutor');
+    }
+    if (DocenteModel) {
+      DocenteModel.alumnos.push(alumno._id);
+      await DocenteModel.save();
+      console.log('Alumno agregado a la lista de alumnos del docente');
+    }
+    if (CoordinadorModel) {
+      CoordinadorModel.alumnos.push(alumno._id);
+      await CoordinadorModel.save();
+      console.log('Alumno agregado a la lista de alumnos del coordinador');
+    }
+
+    // Actualizar el alumno con los nuevos datos
+    const alumnoActualizado = await Alumno.findByIdAndUpdate(
       req.params.id,
       {
         matricula,
         nombre,
         correo,
         telefono,
-        ...(horarioGuardado ? { horario: horarioGuardado._id } : {}) // Solo incluye el horario si se guardó uno
+        ...(horarioGuardado ? { horario: horarioGuardado._id } : {}),
+        tutor: tutorAsignado.personalMatricula,
       },
       { new: true }
     );
 
-    if (!alumno) {
+    if (!alumnoActualizado) {
+      console.log('Alumno no encontrado');
       return res.status(404).json({ message: 'Alumno no encontrado' });
     }
 
-    res.status(200).json(alumno);
+    return res.status(200).json(alumnoActualizado);
   } catch (error) {
     console.error('Error al actualizar el alumno:', error);
-    res.status(500).json({ message: 'Error al actualizar el alumno', error });
+    return res.status(500).json({ message: 'Error al actualizar el alumno', error });
   }
 };
+
 
 
 

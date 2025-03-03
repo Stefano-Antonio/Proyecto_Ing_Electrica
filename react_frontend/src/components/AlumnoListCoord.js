@@ -16,7 +16,7 @@ const AlumnoListCoord = () => {
   useEffect(() => {
     const fetchAlumnos = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/alumnos/matricula/${matriculaTutor}`);
+        const response = await axios.get(`http://localhost:5000/api/alumnos/carrera/${matriculaTutor}`);
         const alumnosData = response.data;
         console.log("Alumnos:", response.data);
 
@@ -60,7 +60,7 @@ const AlumnoListCoord = () => {
   console.log("matriculaTutor:", matriculaTutor);
 
   const handleNavigate1 = () => {
-    navigate("/crear-alumno");
+    navigate("/crear-alumno", { state: { matriculaTutor: matriculaTutor } });
   };
 
   const handleNavigate2 = () => {
@@ -74,10 +74,6 @@ const AlumnoListCoord = () => {
 
   const handleModify = (alumno) => {
     navigate("/modificar-alumno", { state: { alumno, matriculaTutor: matriculaTutor } });
-  };
-
-  const handleAssignTutor = (alumno) => {
-    navigate("/asignar_tutor", { state: { alumno } });
   };
 
   const setModal = (id) => {

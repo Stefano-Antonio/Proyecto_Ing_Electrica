@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-//user
+
+const matriculaTutor = localStorage.getItem("matriculaTutor");
+console.log("matriculaTutor:", matriculaTutor);
+
 const CreateAlumno = () => {
   const [formData, setFormData] = useState({
     nombre: '',
-    matricula: ''
+    matricula: '',
   });
 
   const handleChange = (e) => {
@@ -17,7 +20,8 @@ const CreateAlumno = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/alumnos', formData);
+      const newFormData = { ...formData, tutor: matriculaTutor };
+      const response = await axios.post('http://localhost:5000/api/alumnos', newFormData);
       alert('Alumno creado con éxito');
       setFormData({ nombre: '', matricula: '' });
     } catch (error) {
