@@ -10,13 +10,13 @@ const AlumnoListCoord = () => {
   const [nombre, setNombreAlumno] = ("");
   const [matricula, setMatriculaAlumno] = useState("");
   const [AlumnoAEliminar, setAlumnoAEliminar] = useState(null);
-  const matriculaTutor = localStorage.getItem("matricula");
+  const matriculaCord = localStorage.getItem("matricula");
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAlumnos = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/alumnos/carrera/${matriculaTutor}`);
+        const response = await axios.get(`http://localhost:5000/api/alumnos/carrera/${matriculaCord}`);
         const alumnosData = response.data;
         console.log("Alumnos:", response.data);
 
@@ -29,7 +29,6 @@ const AlumnoListCoord = () => {
             tutoresNombresTemp[alumno._id] = tutorResponse.data.nombre; // Extraer el nombre del tutor
           }
         }));
-
 
         const fetchEstatus = async (alumno) => {
           try {
@@ -55,25 +54,26 @@ const AlumnoListCoord = () => {
     };
 
     fetchAlumnos();
-  }, [matriculaTutor]);
+  }, [matriculaCord]);
 
-  console.log("matriculaTutor:", matriculaTutor);
+  console.log("matriculaCord:", matriculaCord);
 
   const handleNavigate1 = () => {
-    navigate("/crear-alumno", { state: { matriculaTutor: matriculaTutor } });
+    navigate("/crear-alumno", { state: { matriculaCord: matriculaCord } });
   };
 
   const handleNavigate2 = () => {
-    navigate("/admin-tutor");
+    console.log("Navegando a: ", `/coordinador-tutor`);
+    navigate("/admin-tutor", { state: { matriculaCord: matriculaCord } });
   };
 
   const handleNavigate3 = (alumno) => {
     console.log("Navegando a: ", `/revisar-horario/${alumno.matricula}`);
-    navigate(`/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaTutor: matriculaTutor} });
+    navigate(`/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
   };
 
   const handleModify = (alumno) => {
-    navigate("/modificar-alumno", { state: { alumno, matriculaTutor: matriculaTutor } });
+    navigate("/modificar-alumno", { state: { alumno, matriculaCord: matriculaCord } });
   };
 
   const setModal = (id) => {
@@ -130,7 +130,11 @@ const AlumnoListCoord = () => {
                 <td>{alumno.nombre}</td>
                 <td>{tutoresNombres[alumno._id] ? tutoresNombres[alumno._id] : "Sin asignar"}</td>
                 <td className="actions">
-                  <button className="icon-button" onClick={() => handleNavigate3(alumno)}>
+                  <button
+                    className="icon-button"
+                    onClick={() => handleNavigate3(alumno)}
+                    disabled={alumno.estatus === "En espera"} // Deshabilitar el botón si el estatus es "En espera"
+                  >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                       <circle cx="12" cy="12" r="3"></circle>

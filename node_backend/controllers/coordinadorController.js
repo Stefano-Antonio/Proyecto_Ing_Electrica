@@ -5,8 +5,8 @@ const Personal = require('../models/Personal');
 const Alumno = require('../models/Alumno');
 const Materia = require('../models/Materia');
 
-// Ruta para obtener los alumnos de un tutor específico
-exports.getAlumnosAsignados = async (req, res) => {
+// Ruta para obtener el nombre del tutor con el id 
+exports.getDatosTutor = async (req, res) => {
   const { id } = req.params;
   console.log('ID de la persona:', id);
   try {
@@ -145,5 +145,33 @@ exports.getTutores = async (req, res) => {
     res.status(500).json({ message: "Error al obtener personal", error: error.message });
   }
 
+};
+exports.getAlumnos = async (req, res) => {
+  try {
+    const { matricula } = req.params;
+    console.log("Matrícula del coordinador:", matricula);
+
+    // Buscar al coordinador
+    const coordinador = await Coordinadores.findOne({ personalMatricula: matricula });
+    if (!coordinador) {
+      console.log("Coordinador no encontrado");
+      return res.status(404).json({ message: "Coordinador no encontrado" });
+    }
+
+    // Verificar si tiene alumnos asignados
+    if (!coordinador.alumnos || coordinador.alumnos.length === 0) {
+      return res.status(200).json({ alumnos: [] });
+    }
+
+    // Obtener la información detallada de los alumnos
+    const alumnos = await Alumnos.find({ _id: { $in: coordinador.alumnos } }).select("nombre matricula");
+    
+    console.log("Alumnos del coordinador:", alumnos);
+    res.status(200).json({ alumnos });
+
+  } catch (error) {
+    console.error("Error al obtener los alumnos:", error);
+    res.status(500).json({ message: "Error al obtener los alumnos", error: error.message });
+  }
 };
 

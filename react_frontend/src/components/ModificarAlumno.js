@@ -7,8 +7,9 @@ function ModificarAlumno() {
   const navigate = useNavigate();
   const location = useLocation();
   const alumno = location.state?.alumno;
-  const { matriculaTutor } = location.state || {};
-
+  const { matriculaCord } = location.state || {};
+  const [tutores, setTutores] = useState([]); // Lista de tutores
+  const matriculaTutor = matriculaCord;
   const [form, setForm] = useState({
     nombre: "",
     matricula: "",
@@ -17,8 +18,7 @@ function ModificarAlumno() {
     tutor: "" // Nuevo campo para el tutor
   });
 
-  const [tutores, setTutores] = useState([]); // Lista de tutores
-
+  
   // Llenar los campos del formulario con los datos del alumno
   useEffect(() => {
     if (alumno) {
@@ -36,7 +36,7 @@ function ModificarAlumno() {
   useEffect(() => {
     const fetchTutores = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/coordinadores/tutores/${matriculaTutor}`);
+        const response = await axios.get(`http://localhost:5000/api/coordinadores/tutores/${matriculaCord}`);
         setTutores(response.data); // Suponiendo que la API regresa un array de objetos [{_id, nombre}]
       } catch (error) {
         console.error("Error al obtener tutores:", error);
@@ -44,7 +44,7 @@ function ModificarAlumno() {
     };
 
     fetchTutores();
-  }, []);
+  }, [matriculaTutor]);
 
   const handleChange = (e) => {
     setForm({
@@ -166,4 +166,3 @@ function ModificarAlumno() {
 }
 
 export default ModificarAlumno;
-
