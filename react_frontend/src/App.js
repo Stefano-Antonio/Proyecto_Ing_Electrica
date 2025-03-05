@@ -50,7 +50,14 @@ import './components/ModificarMateria.css';
 import CoordinadorTutor from './components/CoordinadorTutor';
 import './components/CoordinadorTutor.css';
 import ModificarMateria from './components/ModificarMateria';
+<<<<<<< HEAD
 import './components/ModificarMateria.css';
+=======
+import AlumnoListCoord from "./components/AlumnoListCoord";
+import './components/AlumnoList.css';
+import AdministrarPersonalCoordinador from "./components/AdministrarPersonalCoordinador";
+
+>>>>>>> f949cdf4e7fd3da41eeccfeb473956cd2f88239f
 function App() {
   const userType = localStorage.getItem("userType") || "alumno"; // Puede ser "alumno" o "personal"
 
@@ -69,11 +76,15 @@ function App() {
               <Route path="/validacion" element={<PrivateRoute><Validacion1 /></PrivateRoute>} />
               <Route path="/validacion-estatus" element={<PrivateRoute><Validacion2 /></PrivateRoute>} />
               <Route path="/inicio-tutor" element={<PrivateRoute><InicioTutor /></PrivateRoute>} />
-              <Route path="/inicio-docente" element={<PrivateRoute><InicioDocente /></PrivateRoute>} />
-              <Route path="/inicio-docente-2" element={<PrivateRoute><InicioDocente2 /></PrivateRoute>} />
+              <Route path="/docente/alumnos" element={<PrivateRoute><InicioDocente /></PrivateRoute>} />
+              <Route path="/docente/materias" element={<PrivateRoute><InicioDocente2 /></PrivateRoute>} />
               <Route path="/revisar-horario/:matricula" element={<PrivateRoute><RevisionHorarioTutor /></PrivateRoute>} />
-              <Route path="/docente-alumnos" element={<PrivateRoute><DocenteAlumnos/></PrivateRoute>}></Route>
-              <Route path="/inicio-coordinador" element={<PrivateRoute><InicioCoordinador/></PrivateRoute>}></Route>
+              <Route path="/docente/materias/:materia/lista-alumnos" element={<PrivateRoute><DocenteAlumnos/></PrivateRoute>}></Route>
+              <Route path="/inicio-coordinador" element={<PrivateRoute><InicioCoordinador/></PrivateRoute>}>
+                  <Route path="alumnos" element={<AlumnoListCoord/>}></Route>
+                  <Route path="personal" element={<AdministrarPersonalCoordinador/>}></Route>;
+                  <Route path="materias" element={<AdministrarMaterias/>}></Route>;
+                  </Route>
               <Route path="/inicio-administrador" element={<InicioAdministrador/>}></Route>
               <Route path="/administrar-materias" element={<AdministrarMaterias/>}></Route>
               <Route path="/crear-materia" element={<CrearMateria />} />

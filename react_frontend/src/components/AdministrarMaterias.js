@@ -4,32 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import "./AdministrarMaterias.css";
 
 
-const AdministrarMaterias = ({id_carrera}) => {
+const AdministrarMaterias = () => {
   const [materias, setMaterias] = useState([]);
   const [docentes, setDocentes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const id_carrera = localStorage.getItem("id_carrera");
   const navigate = useNavigate();
-    
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const materiasResponse = await axios.get(`http://localhost:5000/api/materias/carrera/${id_carrera}`);
-        const docentesResponse = await axios.get('http://localhost:5000/api/docentes');
-        
-        console.log("Materias:", materiasResponse.data);
-        console.log("Docentes:", docentesResponse.data);
-  
-        setMaterias(materiasResponse.data);
-        setDocentes(docentesResponse.data);
-      } catch (error) {
-        console.error("Error al obtener datos:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    fetchData();
-  }, []);
 
   useEffect(() => {
     // Realiza la solicitud para obtener las materias desde la base de datos
@@ -97,13 +77,13 @@ const AdministrarMaterias = ({id_carrera}) => {
                 <th>Salón</th>
                 <th>Materia</th>
                 <th>Docente</th>
-                <th>Modificar Horario</th>
-                <th>Eliminar</th>
+                
                 <th>Lunes</th>
                 <th>Martes</th>
                 <th>Miércoles</th>
                 <th>Jueves</th>
                 <th>Viernes</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -115,6 +95,11 @@ const AdministrarMaterias = ({id_carrera}) => {
                   <td>{materia.nombre}</td>
                   <td>{getDocenteNombre(materia)}</td> {/* Muestra el nombre del docente o "Sin asignar" */}
 
+                  <td>{materia.horarios.lunes || "-"}</td>
+                  <td>{materia.horarios.martes || "-"}</td>
+                  <td>{materia.horarios.miercoles || "-"}</td>
+                  <td>{materia.horarios.jueves || "-"}</td>
+                  <td>{materia.horarios.viernes || "-"}</td>
                   <td>
                     <button className="icon-button" onClick={() => handleModify(materia)}>
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -122,8 +107,6 @@ const AdministrarMaterias = ({id_carrera}) => {
                         <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                       </svg>
                     </button>
-                  </td>
-                  <td>
                     <button className="icon-button">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="red" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="3 6 5 6 21 6"></polyline>
@@ -134,11 +117,6 @@ const AdministrarMaterias = ({id_carrera}) => {
                       </svg>
                     </button>
                   </td>
-                  <td>{materia.horarios.lunes || "-"}</td>
-                  <td>{materia.horarios.martes || "-"}</td>
-                  <td>{materia.horarios.miercoles || "-"}</td>
-                  <td>{materia.horarios.jueves || "-"}</td>
-                  <td>{materia.horarios.viernes || "-"}</td>
                 </tr>
               ))}
             </tbody>

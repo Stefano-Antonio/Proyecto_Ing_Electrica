@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import { Navigate, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./ModificarPersonal.css";
 
 function ModificarPersonal() {
@@ -27,18 +29,24 @@ function ModificarPersonal() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Verificar si hay campos vacíos
+    if (!form.nombre || !form.matricula || !form.correo || !form.telefono || !form.password) {
+      toast.error("Todos los campos son obligatorios");
+      return;
+    }
+
     try {
       const response = await axios.put(`http://localhost:5000/api/personal/${persona._id}`, form);
-      console.log("Usuario actualizado:", response.data);
-      alert("Usuario actualizado con éxito");
+      toast.success("Usuario actualizado con éxito");
     } catch (error) {
       console.error("Error al actualizar el usuario:", error);
-      alert("Hubo un error al actualizar el usuario");
+      toast.error("Hubo un error al actualizar el usuario");
     }
   };
 
-  const handleBack = () => { 
-    navigate(-1); // Navegar a la página anterior 
+  const handleBack = () => {
+    navigate(-1); // Navegar a la página anterior
   };
 
   const handleLogout = () => {
@@ -49,12 +57,13 @@ function ModificarPersonal() {
 
   return (
     <div className="persona1-layout">
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="persona1-container">
-        <div className="top-left"> 
-          <button className="back-button" onClick={handleBack}>Regresar</button> 
+        <div className="top-left">
+          <button className="back-button" onClick={handleBack}>Regresar</button>
         </div>
-        <div className="top-right"> 
-          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
+        <div className="top-right">
+          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
         </div>
         <h1>Modificar personal</h1>
         <div className="persona1-content">
@@ -112,9 +121,6 @@ function ModificarPersonal() {
                   onChange={handleChange}
                 />
               </div>
-            </div>
-            <div className="form-group">
-
             </div>
             <div className="persona1-buttons">
               <button type="submit" className="button">Actualizar</button>

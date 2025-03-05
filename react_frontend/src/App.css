@@ -10,7 +10,7 @@
 
 .Main-layout {
   display: grid;
-  grid-template-columns: 220px 1fr 220px; 
+  grid-template-columns: 120px 1fr 120px; 
   box-sizing: border-box;
   flex: 1;
   max-width: 100%; /* Asegura que el ancho sea completo */
