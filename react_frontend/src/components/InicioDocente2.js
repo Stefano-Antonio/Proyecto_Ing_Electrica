@@ -68,7 +68,7 @@ function InicioDocente2() {
   }, [matriculaDocente, storedMatriculaDocente]);
 
   const handleListaAlumnos = (materia) => {
-    navigate(`/docente-alumnos`, { state: { nombre: nombreDocente || storedNombreDocente, matricula: matriculaDocente || storedMatriculaDocente, materiaId: materia._id, materiaNombre: materia.nombre } });
+    navigate(`/docente/materias/${materia.nombre}/lista-alumnos`, { state: { nombre: nombreDocente || storedNombreDocente, matricula: matriculaDocente || storedMatriculaDocente, materiaId: materia._id, materiaNombre: materia.nombre } });
   };
 
   const handleLogout = () => {
@@ -80,7 +80,7 @@ function InicioDocente2() {
   };
 
   const handleChangeView = () => {
-    navigate('/inicio-docente', { state: { nombre: nombreDocente || storedNombreDocente, matricula: matriculaDocente || storedMatriculaDocente } });
+    navigate('/docente/alumnos', { state: { nombre: nombreDocente || storedNombreDocente, matricula: matriculaDocente || storedMatriculaDocente } });
   };
 
   const handleBack = () => {

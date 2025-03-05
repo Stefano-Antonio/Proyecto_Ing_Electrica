@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./CrearMateria.css";
 
 function ModificarMateria() {
@@ -29,6 +31,7 @@ function ModificarMateria() {
       // Llenar los campos del formulario con los datos del alumno
       useEffect(() => {
         if (materia) {
+          console.log("Datos de la materia recibidos:", materia); // Agregar console.log aquí
           setFormData({
             id_materia: materia.id_materia || "",
             nombre: materia.nombre || "",
@@ -122,16 +125,36 @@ function ModificarMateria() {
     navigate("/");
   }
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value
-    });
+    const getDocenteNombre = (materia) => {
+    return materia && materia.docenteNombre ? materia.docenteNombre : "Sin asignar";
   };
+
+
 
   const handleBack = () => { 
     navigate(-1); // Navegar a la página anterior 
     }
+
+    const handleChange = (e) => {
+      const { id, value } = e.target;
+
+      if (id.startsWith("horarios-")) {
+    const dia = id.split("-")[1]; // Extrae el día del ID (ejemplo: horarios-lunes → lunes)
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      horarios: {
+        ...prevFormData.horarios,
+        [dia]: value,
+      },
+    }));
+      } else {
+        // Si es otro campo, actualiza normalmente
+        setFormData((prevState) => ({
+          ...prevState,
+          [id]: value,
+        }));
+      }
+    };
 
 
     const handleSubmit = async (e) => {
@@ -143,15 +166,15 @@ function ModificarMateria() {
           salon: formData.salon,
           grupo: formData.grupo,
           cupo: formData.cupo,
-          docente: formData.docente // Aquí debe ir "P001", "P002", etc.
+          docente: formData.docente 
         };
     
         const response = await axios.put(`http://localhost:5000/api/materias/${materia._id}`, materiaActualizada);
         console.log("Materia actualizada:", response.data);
-        alert("Materia actualizada con éxito");
+        toast.success("Materia actualizada con éxito");
       } catch (error) {
         console.error("Error al actualizar la materia:", error);
-        alert("Hubo un error al actualizar la materia");
+        toast.error("Hubo un error al actualizar la materia");
       }
     };
     
@@ -161,6 +184,7 @@ function ModificarMateria() {
 
   return (
     <div className="materia-layout">
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="materia-container">
       <div className="top-left"> 
           <button className="back-button" onClick={handleBack}>Regresar</button> 
@@ -233,13 +257,13 @@ function ModificarMateria() {
                 <label htmlFor="docente">Docente</label>
                 <select id="docente" value={formData.docente} onChange={handleChange} required>
                   <option value="" disabled hidden>Seleccione un docente</option>
+                  <option value="">-</option>
                   {docentes.map(docente => (
                     <option key={docente._id} value={docente.personalMatricula}>
-                      {docente.nombre} {/* Mostramos el nombre obtenido del backend */}
+                      {docente.nombre}  {/* Mostramos nombre + matrícula */}
                     </option>
                   ))}
                 </select>
-
               </div>
               
             </div>

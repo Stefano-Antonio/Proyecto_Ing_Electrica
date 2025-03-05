@@ -47,7 +47,7 @@ function Registro() {
         // Redirigir según el tipo de usuario
         if (tipoUsuario === "personal") {
           if (roles.includes("D")) {
-            navigate("/inicio-docente", { state: { nombre, matricula } });
+            navigate("/docente/alumnos", { state: { nombre, matricula } });
           } else if (roles.includes("C")) {
             navigate("/inicio-coordinador", { state: { nombre, matricula, id_carrera } });
           } else if (roles.includes("A")) {

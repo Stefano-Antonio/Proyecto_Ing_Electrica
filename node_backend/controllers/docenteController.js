@@ -1,6 +1,7 @@
 const nodemailer = require("nodemailer");
 const Alumno = require('../models/Alumno');
 const Docentes = require('../models/Docentes');
+const Tutores = require('../models/Tutores');
 const Personal = require('../models/Personal');
 const Horario = require('../models/Horario');
 const Materia = require('../models/Materia');

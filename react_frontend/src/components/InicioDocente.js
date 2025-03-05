@@ -93,7 +93,7 @@ function InicioDocente() {
   };
 
   const handleChangeView = () => {
-    navigate('/inicio-docente-2', { state: { nombre, matricula: matriculaDocente || storedMatriculaDocente } });
+    navigate('/docente/materias', { state: { nombre, matricula: matriculaDocente || storedMatriculaDocente } });
   }
 
   const getEstatusIcon = (estatus) => {
