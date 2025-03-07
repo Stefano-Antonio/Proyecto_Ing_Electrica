@@ -29,7 +29,6 @@ exports.createMateria = async (req, res) => {
   console.log('Datos recibidos para crear la materia:', req.body);
 
   try {
-    // Validar que `id_carrera` esté presente
     if (!id_carrera) {
       return res.status(400).json({ message: "El campo id_carrera es obligatorio." });
     }
@@ -37,27 +36,39 @@ exports.createMateria = async (req, res) => {
     let docenteObjectId = null;
 
     if (docente) {
-      // Buscar en Docentes usando personalMatricula
+      // Buscar el docente por matrícula en la colección 'Docentes'
       const docenteEncontrado = await Docentes.findOne({ personalMatricula: docente });
 
       if (!docenteEncontrado) {
         return res.status(400).json({ message: "Docente no encontrado" });
       }
 
-      docenteObjectId = docenteEncontrado._id; // Usar el ObjectId del docente
+      docenteObjectId = docenteEncontrado._id;  // Usar el ObjectId del docente
+
+      console.log('Docente encontrado, matrícula:', docenteObjectId);
+    } else {
+      console.error('Docente no encontrado:', docenteObjectId);
     }
 
-    // Crear la materia con el ObjectId del docente (o null si no hay docente)
-    const newMateria = new Materia({ id_materia, id_carrera, nombre, horarios, salon, grupo, cupo, docente: docenteObjectId });
+    // Crear la materia con la matrícula del docente
+    const newMateria = new Materia({ 
+      id_materia, 
+      id_carrera, 
+      nombre, 
+      horarios, 
+      salon, 
+      grupo, 
+      cupo, 
+      docente: docenteObjectId  // Guardamos la matrícula en lugar de ObjectId
+    });
 
     await newMateria.save();
     console.log('Materia creada:', newMateria);
 
-    // Si hay un docente, agregar la materia a su lista de materias
     if (docenteObjectId) {
       await Docentes.findByIdAndUpdate(
         docenteObjectId,
-        { $push: { materias: newMateria._id } }, // Agregar la materia al array de materias
+        { $addToSet: { materias: newMateria._id } }, // Evita duplicados
         { new: true }
       );
       console.log(`Materia ${newMateria._id} agregada al docente ${docenteObjectId}`);
@@ -66,9 +77,11 @@ exports.createMateria = async (req, res) => {
     res.status(201).json(newMateria);
   } catch (error) {
     console.error('Error al crear la materia:', error);
-    res.status(500).json({ message: 'Error al crear la materia', error });
+    res.status(500).json({ message: 'Error al crear la materia', error: error.message });
   }
 };
+
+
 
 // Obtener todas las materias
 exports.getMaterias = async (req, res) => {
@@ -106,33 +119,57 @@ exports.getMaterias = async (req, res) => {
   }
 };
 
-// Obtener materias por id_carrera
+// Obtener materias por id_carrera e incluir el nombre del docente
 exports.getMateriasByCarreraId = async (req, res) => {
   const { id_carrera } = req.params;
   console.log("ID de carrera recibido:", id_carrera);
+
   // Verificar si el id_carrera está en la lista permitida
   if (!carrerasPermitidas.includes(id_carrera)) {
     return res.status(400).json({ message: "ID de carrera no válido" });
   }
 
   try {
-    console.log("ID de carrera recibido:", id_carrera);
-    if (!carrerasPermitidas.includes(id_carrera)) {
-      return res.status(400).json({ mensaje: "ID de carrera no válido" });
-    }
     // Filtra las materias por id_carrera en la base de datos
     const materias = await Materia.find({ id_carrera: id_carrera });
+
     if (!materias.length) {
       return res.status(404).json({ mensaje: "No se encontraron materias para esta carrera" });
     }
 
-    res.status(200).json(materias);
-   // console.log(materias);
+    // Obtener el nombre del docente asociado a cada materia
+    const materiasConDocente = await Promise.all(
+      materias.map(async (materia) => {
+        if (!materia.docente) {
+          return { ...materia.toObject(), docenteNombre: "Sin asignar" };
+        }
+
+        // Buscar el docente en la colección Docentes usando el ObjectId
+        const docente = await Docentes.findById(materia.docente);
+
+        if (!docente) {
+          return { ...materia.toObject(), docenteNombre: "Sin asignar" };
+        }
+
+        // Buscar el nombre del personal en la colección Personal usando personalMatricula
+        const personal = await Personal.findOne({ matricula: docente.personalMatricula });
+
+        return {
+          ...materia.toObject(),
+          docenteNombre: personal ? personal.nombre : "Sin asignar",
+        };
+      })
+    );
+
+    console.log(materiasConDocente); // Para depuración
+    res.status(200).json(materiasConDocente);
   } catch (error) {
     console.error("Error al obtener materias:", error);
     res.status(500).json({ mensaje: "Error interno al obtener materias", error });
+    
   }
 };
+
 
 // Obtener una materia por ID
 exports.getMateriaById = async (req, res) => {
@@ -149,7 +186,8 @@ exports.getMateriaById = async (req, res) => {
 
 //Actualizar materia
 exports.updateMateria = async (req, res) => {
-  const { nombre, horarios, salon, grupo, cupo, docente } = req.body;
+  const { nombre, horarios, salon, grupo, cupo, docente, id_materia } = req.body;
+  console.log('Datos recibidos para crear la materia:', req.body);
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {

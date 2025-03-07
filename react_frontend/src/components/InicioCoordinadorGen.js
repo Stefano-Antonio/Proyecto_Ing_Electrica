@@ -2,7 +2,7 @@ import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import "./InicioCoordinador.css";
 
-const InicioCoordinador = () => {
+const InicioCoordinadorGen = () => {
     const navigate = useNavigate();
     const id_carrera = localStorage.getItem("id_carrera");
     const nombre = localStorage.getItem("nombre");
@@ -36,4 +36,4 @@ const InicioCoordinador = () => {
     );
 };
 
-export default InicioCoordinador;
+export default InicioCoordinadorGen;

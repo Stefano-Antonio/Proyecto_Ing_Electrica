@@ -45,7 +45,7 @@ exports.createPersonal = async (req, res) => {
         } else if (roles.includes('T')) {
             const nuevoTutor = new Tutores({
                 personalMatricula: usuarioGuardado.matricula,
-                // Otros campos específicos de Tutor
+                alumnos: []
             });
             const tutorGuardado = await nuevoTutor.save();
             console.log('Usuario guardado en Tutores:', tutorGuardado);

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./Registro.css";
 
 function Registro() {
@@ -31,23 +33,21 @@ function Registro() {
       const response = await axios.post(endpoint, payload);
   
       if (response.status === 200) {
-        const { mensaje, roles, token, nombre, id, id_carrera, horario, validacionCompleta  } = response.data;
+        const { mensaje, roles, token, nombre, id, id_carrera, horario, validacionCompleta } = response.data;
   
-        setMensaje(mensaje);
         localStorage.setItem("id_carrera", id_carrera);
         localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("matricula", matricula);
         localStorage.setItem("nombreAlumno", nombre);
         localStorage.setItem("IDAlumno", id);
         localStorage.setItem("roles", JSON.stringify(roles));
-        localStorage.setItem("userType", tipoUsuario); // Almacena el tipo de usuario
-        localStorage.setItem("horario", JSON.stringify(horario));  // Guardar el horario
-        localStorage.setItem("validacionCompleta", validacionCompleta); // Guarda validación
-
-        // Redirigir según el tipo de usuario
+        localStorage.setItem("userType", tipoUsuario);
+        localStorage.setItem("horario", JSON.stringify(horario));
+        localStorage.setItem("validacionCompleta", validacionCompleta);
+  
         if (tipoUsuario === "personal") {
           if (roles.includes("D")) {
-            navigate("/inicio-docente", { state: { nombre, matricula } });
+            navigate("/docente/alumnos", { state: { nombre, matricula } });
           } else if (roles.includes("C")) {
             navigate("/inicio-coordinador", { state: { nombre, matricula, id_carrera } });
           } else if (roles.includes("A")) {
@@ -56,29 +56,37 @@ function Registro() {
             navigate("/inicio-tutor", { state: { nombre, matricula } });
           } else if (roles.includes("CG")) {
             navigate("/inicio-coordinador-gen", { state: { nombre, matricula } });
-          }
-           else {
-            setMensaje("Usuario personal desconocido");
+          } else {
+            toast.error("Usuario personal desconocido", { position: "top-right" });
           }
         } else if (tipoUsuario === "alumno") {
           if (horario) {
-            navigate("/validacion-estatus", {state: { nombre, id, id_carrera,  horario }});
-          } else{
+            navigate("/validacion-estatus", { state: { nombre, id, id_carrera, horario } });
+          } else {
             navigate("/horario-seleccion/", { state: { nombre, id, id_carrera, horario } });
           }
-          
         } else {
-          setMensaje("Usuario desconocido");
+          toast.error("Usuario desconocido", { position: "top-right" });
         }
       }
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
-      setMensaje("Error al iniciar sesión. Matrícula o contraseña incorrectas.");
+      toast.error("Error al iniciar sesión. Matrícula o contraseña incorrectas.", {
+        position: "top-right",
+        autoClose: 3000, // Cierra el toast automáticamente en 3 segundos
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
   };
+  
 
   return (
     <div className="registro-layout">
+      <ToastContainer/>
       <div className="registro-container">
         <h1>¡Bienvenido!</h1>
         <p>A continuación, seleccione el tipo de sesión</p>
