@@ -13,4 +13,5 @@ router.get('/tutores/:matricula', coordinadorController.getTutores);
 
 //Ruta para obtener alumnos asignados de tutor al coordinador
 router.get('/matricula/:matricula', coordinadorController.getAlumnos);
+
 module.exports = router;

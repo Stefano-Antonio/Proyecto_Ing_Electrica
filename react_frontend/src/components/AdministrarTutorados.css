@@ -13,6 +13,13 @@
     right: 10px;
     z-index: 1; /* Asegura que se mantenga en la parte superior */
   }
+  
+  .top-left {
+    position: relative;
+    top: 10px;
+    left: 10px;
+  }
+
   .tutorados-container {
     flex: 1; /* Hace que el contenido principal ocupe el espacio restante */
     padding: 20px;

@@ -10,8 +10,10 @@ import "./Validacion1.css";
 function Validacion1() {
   const location = useLocation();
   const navigate = useNavigate();
+  const tutor = localStorage.getItem("matricula") || "Tutor desconocido";
   const [nombre, setNombreAlumno] = useState(localStorage.getItem("nombreAlumno") || "Alumno desconocido");
-  const [id, setIDAlumno] = useState(localStorage.getItem("IDAlumno") || "ID desconocido");
+  const id = localStorage.getItem("id") || "ID desconocido";
+  const [idAlumno, setIDAlumno] = useState(localStorage.getItem("IDAlumno") || "ID de alumno desconocido");
   const [id_carrera, setIDCarrera] = useState(localStorage.getItem("id_carrera") || "ID de carrera desconocido");
   const [matricula, setMatricula] = useState(localStorage.getItem("matricula")); // Obtener matrícula del localStorage
   const [email, setEmail] = useState("");
@@ -20,7 +22,8 @@ function Validacion1() {
 
   useEffect(() => {
     const fetchAlumnoData = async () => {
-      const id = location.state?.id || localStorage.getItem("IDAlumno");
+      const id = location.state?.id || localStorage.getItem("id");
+      console.log("ID del alumno:", id,nombre,matricula,email,phone);
       if (!id) {
         toast.error("No se encontró el ID del alumno.");
         return;
@@ -35,14 +38,14 @@ function Validacion1() {
         setEmail(correo);
         setPhone(telefono);
         console.log("Datos del alumno obtenidos:", response.data);
-            if (_id) {
-              localStorage.setItem("IDAlumno", _id);
-            } else {
-              console.error("Error: El ID del alumno no está en la respuesta del backend.");
-            }
+        if (_id) {
+          localStorage.setItem("IDAlumno", _id);
+        } else {
+          console.error("Error: El ID del alumno no está en la respuesta del backend.");
+        }
 
-         // Guardamos el ID del alumno en localStorage
-      localStorage.setItem("IDAlumno", _id);
+        // Guardamos el ID del alumno en localStorage
+        localStorage.setItem("IDAlumno", _id);
       } catch (error) {
         console.error("Error al obtener los datos del alumno:", error);
         toast.error("Error al obtener los datos del alumno.");
@@ -50,18 +53,18 @@ function Validacion1() {
     };
 
     fetchAlumnoData();
-  }, []);
+  }, [location.state]);
 
-    useEffect(() => {
-      if (location.state?.nombre) {
-        setNombreAlumno(location.state.nombre);
-        localStorage.setItem("nombreAlumno", location.state.nombre);
-      }
-      if (location.state?.id) {
-        setIDAlumno(location.state.id);
-        localStorage.setItem("IDAlumno", location.state.id);
-      }
-    }, [location.state]);
+  useEffect(() => {
+    if (location.state?.nombre) {
+      setNombreAlumno(location.state.nombre);
+      localStorage.setItem("nombreAlumno", location.state.nombre);
+    }
+    if (location.state?.id) {
+      setIDAlumno(location.state.id);
+      localStorage.setItem("IDAlumno", location.state.id);
+    }
+  }, [location.state]);
 
   // Función de validación
   const validarCampos = () => {
@@ -90,21 +93,23 @@ function Validacion1() {
     if (!validarCampos()) return;
 
     const id = location.state?.id || localStorage.getItem("IDAlumno");
-      if (!id) {
-        toast.error("No se encontró el ID del alumno.");
-        return;
-      }
+    if (!id) {
+      toast.error("No se encontró el ID del alumno.");
+      return;
+    }
 
     try {
       await axios.put(`http://localhost:5000/api/alumnos/${id}`, {
+        nombre: nombre,
         correo: email,
         telefono: phone,
-        materiasSeleccionadas: materiasSeleccionadas, // Enviar las materias seleccionadas
+        materiasSeleccionadas: materiasSeleccionadas,
+        tutor: null // Enviar las materias seleccionadas
       });
       toast.success("Datos actualizados correctamente.");
       navigate("/validacion-estatus");
     } catch (error) {
-      console.error("Error al actualizar los datos del alumno:", error);
+      console.error("Error al actualizar los datos del alumno:", error, id);
       toast.error("Error al actualizar los datos del alumno.");
     }
   };
@@ -116,7 +121,7 @@ function Validacion1() {
   };
 
   const handleBack = () => {
-    navigate("/horario-seleccion", { state: { nombre, id , id_carrera } });
+    navigate("/horario-seleccion", { state: { nombre, id, id_carrera } });
   };
 
   return (

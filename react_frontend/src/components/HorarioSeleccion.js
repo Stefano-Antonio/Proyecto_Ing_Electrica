@@ -86,6 +86,10 @@ function HorarioSeleccion() {
     }
   };
 
+  const handleBack = () => { 
+    navigate(-1); // Navegar a la página anterior 
+  }
+
   // Función que determina si una materia está seleccionada
   const isMateriaSeleccionada = (materia) => {
     return materiasSeleccionadas.includes(materia);
@@ -144,6 +148,7 @@ function HorarioSeleccion() {
     }
   
     // Si no hay conflictos, navegar a la siguiente página
+    console.log("Datos",id_carrera,nombre,matricula,id,);
     navigate("/validacion", { state: { materiasSeleccionadas, nombre, matricula, id ,id_carrera } });
   };
 
@@ -161,9 +166,12 @@ function HorarioSeleccion() {
   return (
     <div className="horario-layout">
       <div className="horario-container">
-      <div className="top-right"> 
-        <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
-      </div>
+      <div className="top-left">
+          <button className="back-button" onClick={handleBack}>Regresar</button>
+        </div>
+        <div className="top-right">
+          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
+        </div>
         <h2>Sistema de selección de horario</h2>
         <p>Bienvenido(a): <strong>{nombre || "Cargando..."}</strong></p>
         <h4>Matricula <strong>{matricula || "Cargando..."}</strong></h4>

@@ -50,14 +50,11 @@ import './components/ModificarMateria.css';
 import CoordinadorTutor from './components/CoordinadorTutor';
 import './components/CoordinadorTutor.css';
 import ModificarMateria from './components/ModificarMateria';
-<<<<<<< HEAD
 import './components/ModificarMateria.css';
-=======
 import AlumnoListCoord from "./components/AlumnoListCoord";
 import './components/AlumnoList.css';
 import AdministrarPersonalCoordinador from "./components/AdministrarPersonalCoordinador";
 
->>>>>>> f949cdf4e7fd3da41eeccfeb473956cd2f88239f
 function App() {
   const userType = localStorage.getItem("userType") || "alumno"; // Puede ser "alumno" o "personal"
 

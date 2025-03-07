@@ -224,7 +224,6 @@ exports.updateAlumno = async (req, res) => {
     const tutorAsignado = await Personal.findById(tutor);
     if (!tutorAsignado) {
       console.log('Tutor no encontrado');
-      return res.status(404).json({ message: 'Tutor no encontrado' });
     }
 
     // Buscar el tutor en las colecciones Tutor, Docente y Coordinador
@@ -235,7 +234,6 @@ exports.updateAlumno = async (req, res) => {
 
     if (!TutorModel && !DocenteModel && !CoordinadorModel) {
       console.log('No se encontró un tutor en la base de datos con matrícula:', tutorAsignado.matricula);
-      return res.status(404).json({ message: 'Tutor no encontrado en la base de datos' });
     }
 
     // Agregar el alumno al nuevo tutor
@@ -280,9 +278,40 @@ exports.updateAlumno = async (req, res) => {
     return res.status(500).json({ message: 'Error al actualizar el alumno', error });
   }
 };
+// Actualizar un alumno con horario
+exports.updateAlumnoHorario = async (req, res) => {
+  const { correo, telefono, materiasSeleccionadas } = req.body;
+  console.log('Datos:', nombre, correo, telefono, materiasSeleccionadas);
 
+  try {
+    let alumno = await Alumno.findById(req.params.id);
+    if (!alumno) {
+      console.log('Alumno no encontrado');
+      return res.status(404).json({ message: 'Alumno no encontrado' });
+    }
 
+    // Crear un nuevo horario con la lista de materias seleccionadas
+    const nuevoHorario = new Horario({
+      materias: materiasSeleccionadas
+    });
 
+    // Guardar el nuevo horario en la base de datos
+    const horarioGuardado = await nuevoHorario.save();
+    console.log('Horario guardado:', horarioGuardado);
+
+    // Actualizar el alumno con los nuevos datos
+    alumno.correo = correo || alumno.correo;
+    alumno.telefono = telefono || alumno.telefono;
+    alumno.horario = horarioGuardado._id;
+
+    const alumnoActualizado = await alumno.save();
+
+    return res.status(200).json(alumnoActualizado);
+  } catch (error) {
+    console.error('Error al actualizar el alumno con horario:', error);
+    return res.status(500).json({ message: 'Error al actualizar el alumno con horario', error });
+  }
+};
 
 // Eliminar un alumno
 exports.deleteAlumno = async (req, res) => {

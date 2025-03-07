@@ -54,6 +54,7 @@ function AdministrarTutorados() {
         // Obtener los detalles de cada alumno utilizando sus IDs
         const fetchAlumnoDetails = async (alumnoId) => {
           try {
+            console.log("Obteniendo detalles del alumno con ID:", alumnoId);
             const alumnoResponse = await fetch(`http://localhost:5000/api/alumnos/${alumnoId}`);
             if (!alumnoResponse.ok) {
               throw new Error("Error al obtener los detalles del alumno");
@@ -65,7 +66,7 @@ function AdministrarTutorados() {
           }
         };
 
-        const alumnosDetails = await Promise.all(data.alumnos.map(fetchAlumnoDetails));
+        const alumnosDetails = await Promise.all(data.alumnos.map(alumno => fetchAlumnoDetails(alumno._id)));
         const validAlumnos = alumnosDetails.filter(alumno => alumno !== null);
 
         const fetchEstatus = async (alumno) => {
@@ -93,8 +94,9 @@ function AdministrarTutorados() {
     fetchAlumnos();
   }, [matriculaCord, storedMatriculaTutor]);
 
-  const handleRevisarHorario = (matriculaAlumno) => {
-    navigate(`/revisar-horario/${matriculaAlumno}`, { state: { nombre, matricula: matriculaCord || storedMatriculaTutor } });
+  const handleRevisarHorario = (alumno) => {
+    console.log("Revisar horario para el alumno:", alumno);
+    navigate(`/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord } });
   };
 
   const handleLogout = () => {
@@ -105,9 +107,9 @@ function AdministrarTutorados() {
     navigate("/");
   };
 
-  const handleBack = (event) => {
-    navigate("/inicio-tutor", { state: { matricula: matriculaCord} });
-  };
+  const handleBack = () => { 
+    navigate("/inicio-coordinador/alumnos", { state: { matriculaCord: matriculaCord || storedMatriculaTutor } }); // Navegar a la página anterior 
+  }
 
   const getEstatusIcon = (estatus) => {
     switch (estatus) {
@@ -125,9 +127,11 @@ function AdministrarTutorados() {
   return (
     <div className="tutorados-layout">
       <div className="tutorados-container">
+        <div className="top-left">
+          <button className="back-button" onClick={handleBack}>Regresar</button>
+        </div>
         <div className="top-right">
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
-          <button className="back-button" onClick={handleBack}>Regresar</button> 
         </div>
         <h2>Tutor</h2>
         <p>A continuación, se muestra una lista de alumnos asignados.</p>
@@ -148,7 +152,7 @@ function AdministrarTutorados() {
                   <td>
                     <button
                       className="icon-button"
-                      onClick={() => handleRevisarHorario(alumno.matricula)}
+                      onClick={() => handleRevisarHorario(alumno)}
                       disabled={alumno.estatus === "En espera"}
                     >
                       <svg

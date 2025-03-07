@@ -90,18 +90,7 @@ function RevisionHorarioTutor() {
       }
 
       
-    setMostrarModal(false);
-    console.log("Navegando a la página correspondiente...");
-    if (matriculaTutor) {
-      if (matriculaTutor.startsWith("C")) {
-        navigate("/inicio-coordinador", { state: { id_carrera, matricula: matriculaTutor } });
-      } else if (matriculaTutor.startsWith("T")) {
-        navigate("/inicio-tutor", { state: { nombre, matricula: matriculaTutor } });
-      } else if (matriculaTutor.startsWith("D")) {
-        navigate("/inicio-docente", { state: { nombre, matricula: matriculaTutor } });
-      }
-    }
-    } catch (error) {
+    setMostrarModal(false);    } catch (error) {
       console.error("Error al actualizar el estatus:", error);
       alert("Hubo un error al actualizar el estatus.");
     }

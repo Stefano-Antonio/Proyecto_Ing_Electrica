@@ -152,7 +152,8 @@ exports.getAlumnos = async (req, res) => {
     console.log("Matrícula del coordinador:", matricula);
 
     // Buscar al coordinador
-    const coordinador = await Coordinadores.findOne({ personalMatricula: matricula });
+    const coordinador = await Coordinadores.findOne({ personalMatricula: matricula }).populate("alumnos");
+
     if (!coordinador) {
       console.log("Coordinador no encontrado");
       return res.status(404).json({ message: "Coordinador no encontrado" });
@@ -163,9 +164,13 @@ exports.getAlumnos = async (req, res) => {
       return res.status(200).json({ alumnos: [] });
     }
 
-    // Obtener la información detallada de los alumnos
-    const alumnos = await Alumnos.find({ _id: { $in: coordinador.alumnos } }).select("nombre matricula");
-    
+    // Obtener los detalles de los alumnos
+    const alumnos = coordinador.alumnos.map(alumno => ({
+      _id: alumno._id,
+      nombre: alumno.nombre,
+      matricula: alumno.matricula
+    }));
+
     console.log("Alumnos del coordinador:", alumnos);
     res.status(200).json({ alumnos });
 
@@ -174,4 +179,3 @@ exports.getAlumnos = async (req, res) => {
     res.status(500).json({ message: "Error al obtener los alumnos", error: error.message });
   }
 };
-
