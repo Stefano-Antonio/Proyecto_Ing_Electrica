@@ -99,7 +99,7 @@ function Validacion1() {
     }
 
     try {
-      await axios.put(`http://localhost:5000/api/alumnos/${id}`, {
+      await axios.put(`http://localhost:5000/api/alumnos/horario/${id}`, {
         nombre: nombre,
         correo: email,
         telefono: phone,

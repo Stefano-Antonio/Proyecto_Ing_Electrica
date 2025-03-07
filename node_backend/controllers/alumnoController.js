@@ -281,7 +281,7 @@ exports.updateAlumno = async (req, res) => {
 // Actualizar un alumno con horario
 exports.updateAlumnoHorario = async (req, res) => {
   const { correo, telefono, materiasSeleccionadas } = req.body;
-  console.log('Datos:', nombre, correo, telefono, materiasSeleccionadas);
+  console.log('Datos:', correo, telefono, materiasSeleccionadas);
 
   try {
     let alumno = await Alumno.findById(req.params.id);
