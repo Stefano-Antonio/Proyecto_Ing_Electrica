@@ -48,7 +48,6 @@ import './components/CrearMateria.css';
 import AsignarTutor from './components/AsignarTutor';
 import './components/ModificarMateria.css';
 import CoordinadorTutor from './components/CoordinadorTutor';
-import './components/CoordinadorTutor.css';
 import ModificarMateria from './components/ModificarMateria';
 import './components/ModificarMateria.css';
 import AlumnoListCoord from "./components/AlumnoListCoord";

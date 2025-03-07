@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./Registro.css";
 
 function Registro() {
@@ -73,12 +75,21 @@ function Registro() {
       }
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
-      setMensaje("Error al iniciar sesión. Matrícula o contraseña incorrectas.");
+      toast.error("Error al iniciar sesión. Matrícula o contraseña incorrectas.", {
+        position: "top-right",
+        autoClose: 3000, // Cierra el toast automáticamente en 3 segundos
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
   };
 
   return (
     <div className="registro-layout">
+      <ToastContainer />
       <div className="registro-container">
         <h1>¡Bienvenido!</h1>
         <p>A continuación, seleccione el tipo de sesión</p>

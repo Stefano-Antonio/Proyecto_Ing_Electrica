@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom"; // Importar useLocation y useNavigate
-import "./CoordinadorTutor.css";
+import "./AdministrarTutorados.css";
 
 function CoordinadorTutor() {
     const [alumnos, setAlumnos] = useState([]);

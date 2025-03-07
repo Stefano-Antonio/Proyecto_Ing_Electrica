@@ -1,12 +1,15 @@
 import React, { useState, useEffect  } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./CrearMateria.css";
 
 function CrearMateria() {
   const navigate = useNavigate();
   const [mostrarModal, setMostrarModal] = useState(false);
   const [file, setFile] = useState(null); // Almacenar el archivo CSV
+  const id_carrera = localStorage.getItem("id_carrera");
   const [formData, setFormData] = useState({
       nombre: '',
       horarios: {
@@ -24,18 +27,18 @@ function CrearMateria() {
 
     // Dentro del componente CrearMateria
     const [docentes, setDocentes] = useState([]);
+    
 
     useEffect(() => {
       const fetchDocentes = async () => {
         try {
-          const response = await axios.get("http://localhost:5000/api/personal"); // Cambia la URL según tu configuración
-          const docentesData = response.data.filter(personal => personal.roles.includes('D'));
-          setDocentes(docentesData);
+          const response = await axios.get("http://localhost:5000/api/docentes"); 
+          setDocentes(response.data); // Guardamos la lista de docentes con el nombre incluido
         } catch (error) {
           console.error("Error al obtener los docentes:", error);
         }
       };
-
+    
       fetchDocentes();
     }, []);
 
@@ -126,16 +129,24 @@ function CrearMateria() {
     const handleSubmit = async (e) => {
       e.preventDefault();
       try {
+
+        if (!id_carrera) {
+          alert("Error: No se encontró el ID de la carrera.");
+          return;
+        }
+
         // Reemplaza valores vacíos en horarios con null
         const finalData = {
           ...formData,
+          id_carrera, // Incluir el ID de carrera
           horarios: Object.fromEntries(
             Object.entries(formData.horarios).map(([key, value]) => [key, value === "" ? null : value])
           )
         };
         
         const response = await axios.post('http://localhost:5000/api/materias', finalData);
-        alert('Materia creada con éxito');
+        console.log("Materia actualizada:", response.data);
+        toast.success('Materia creada con éxito');
         setFormData({
           id_materia: '',
           nombre: '',
@@ -147,7 +158,7 @@ function CrearMateria() {
         });
       } catch (error) {
         console.error('Error al crear la materia:', error);
-        alert('Hubo un error al crear la materia');
+        toast.error('Hubo un error al crear la materia');
       }
     };
     
@@ -155,6 +166,7 @@ function CrearMateria() {
 
   return (
     <div className="materia-layout">
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="materia-container">
       <div className="top-left"> 
           <button className="back-button" onClick={handleBack}>Regresar</button> 
@@ -228,10 +240,13 @@ function CrearMateria() {
                 <select id="docente" value={formData.docente} onChange={handleChange} required>
                   <option value="" disabled hidden>Seleccione un docente</option>
                   {docentes.map(docente => (
-                    <option key={docente.matricula} value={docente.matricula}>{docente.nombre}</option>
+                    <option key={docente.personalMatricula} value={docente.personalMatricula}>
+                      {docente.nombre}  {/* Mostramos nombre + matrícula */}
+                    </option>
                   ))}
                 </select>
               </div>
+
 
               
             </div>
