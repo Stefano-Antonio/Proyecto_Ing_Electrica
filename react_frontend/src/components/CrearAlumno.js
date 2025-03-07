@@ -89,6 +89,7 @@ function CrearAlumno() {
       console.log("Alumno agregado:", response.data);
       alert("Alumno agregado con éxito");
       setForm({ nombre: "", matricula: "", correo: "", telefono: "", tutor: "" }); // Reset form
+      navigate(-1); // Regresar a la página anterior
     } catch (error) {
       console.error("Error al agregar el alumno:", error);
       alert("Hubo un error al agregar el alumno");

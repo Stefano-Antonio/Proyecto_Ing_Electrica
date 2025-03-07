@@ -27,7 +27,7 @@ exports.upload = upload;
 
 // Crear un nuevo alumno
 exports.createAlumno = async (req, res) => {
-  console.log('Alumno:', req.body);
+  console.log('----Alumno:', req.body);
   const { matricula, nombre, telefono, correo, tutor, matriculaCord } = req.body;
 
   try {
@@ -42,8 +42,16 @@ exports.createAlumno = async (req, res) => {
     console.log('ID de carrera:', id_carrera);
     const horario = null;
 
+
     const newAlumno = new Alumno({ id_carrera, matricula, nombre, telefono, correo, horario, tutor });
     await newAlumno.save();
+
+    
+    //Agregar alumno a la lista del coordinador
+    coordinador.alumnos.push(newAlumno._id);
+    await coordinador.save();
+    console.log('Alumno agregado a la lista de alumnos del coordinador');
+
     res.status(201).json(newAlumno);
   } catch (error) {
     console.error('Error al crear el alumno:', error);
