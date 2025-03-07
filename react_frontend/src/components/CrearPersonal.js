@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Navigate, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./CrearPersonal.css";
 
 function CrearPersonal() {
@@ -29,11 +31,11 @@ function CrearPersonal() {
     try {
       const response = await axios.post("http://localhost:5000/api/personal", form);
       console.log("Usuario agregado:", response.data);
-      alert("Usuario agregado con éxito");
+      toast.success("Usuario agregado con éxito");
       setForm({ nombre: "", matricula: "", correo: "", telefono: "", roles: "", password: "" }); // Reset form
     } catch (error) {
       console.error("Error al agregar el usuario:", error);
-      alert("Hubo un error al agregar el usuario");
+      toast.error("Hubo un error al agregar el usuario");
     }
   };
 
@@ -106,6 +108,7 @@ function CrearPersonal() {
 
   return (
     <div className="persona1-layout">
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="persona1-container">
       <div className="top-left"> 
           <button className="back-button" onClick={handleBack}>Regresar</button> 

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./CrearAlumno.css";
 
 function CrearAlumno() {
@@ -87,12 +89,12 @@ function CrearAlumno() {
     try {
       const response = await axios.post("http://localhost:5000/api/alumnos", form);
       console.log("Alumno agregado:", response.data);
-      alert("Alumno agregado con éxito");
+      toast.success("Alumno agregado con éxito");
       setForm({ nombre: "", matricula: "", correo: "", telefono: "", tutor: "" }); // Reset form
       navigate(-1); // Regresar a la página anterior
     } catch (error) {
       console.error("Error al agregar el alumno:", error);
-      alert("Hubo un error al agregar el alumno");
+      toast.error("Hubo un error al agregar el alumno");
     }
   };
 
@@ -125,6 +127,7 @@ function CrearAlumno() {
 
   return (
     <div className="alumno-layout">
+      <ToastContainer />
       <div className="alumno-container">
         <div className="top-left"> 
           <button className="back-button" onClick={handleBack}>Regresar</button> 

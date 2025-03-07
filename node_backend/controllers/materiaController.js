@@ -65,6 +65,16 @@ exports.createMateria = async (req, res) => {
     await newMateria.save();
     console.log('Materia creada:', newMateria);
 
+    //Guarda el ID de materia como referencia en la colección Docentes
+    if (docenteObjectId) {
+      await Docentes.findByIdAndUpdate(
+        docenteObjectId,
+        { $addToSet: { materias: newMateria._id } }, // Evita duplicados
+        { new: true }
+      );
+      console.log(`Materia ${newMateria._id} agregada al docente ${docenteObjectId}`);
+    }
+
     res.status(201).json(newMateria);
   } catch (error) {
     console.error('Error al crear la materia:', error);
