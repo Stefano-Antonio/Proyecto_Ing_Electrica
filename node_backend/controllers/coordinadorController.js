@@ -5,8 +5,8 @@ const Personal = require('../models/Personal');
 const Alumno = require('../models/Alumno');
 const Materia = require('../models/Materia');
 
-// Ruta para obtener el nombre del tutor con el id 
-exports.getDatosTutor = async (req, res) => {
+// Ruta para obtener los alumnos de un tutor específico
+exports.getAlumnosAsignados = async (req, res) => {
   const { id } = req.params;
   console.log('ID de la persona:', id);
   try {
@@ -24,6 +24,25 @@ exports.getDatosTutor = async (req, res) => {
     res.status(500).json({ message: 'Error al buscar el ID', error: error.message });
   }
 };
+
+exports.getCoordinadores = async (req, res) => {
+    try {
+        const coordinadores = await Coordinadores.find();
+        const coordinadoresConNombre = await Promise.all(coordinadores.map(async (coordinador) => {
+            const personal = await Personal.findOne({ matricula: coordinador.personalMatricula });
+            return {
+                ...coordinador.toObject(),
+                nombre: personal ? personal.nombre : "Sin asignar"
+            };
+        }));
+
+        res.status(200).json(coordinadoresConNombre);
+    } catch (error) {
+        console.error("Error al obtener coordinadores:", error);
+        res.status(500).json({ message: "Error al obtener coordinadores", error });
+    }
+};
+
 
 // Ruta para obtener el estatus del horario
 exports.getEstatusHorario = async (req, res) => {
@@ -146,36 +165,5 @@ exports.getTutores = async (req, res) => {
   }
 
 };
-exports.getAlumnos = async (req, res) => {
-  try {
-    const { matricula } = req.params;
-    console.log("Matrícula del coordinador:", matricula);
 
-    // Buscar al coordinador
-    const coordinador = await Coordinadores.findOne({ personalMatricula: matricula }).populate("alumnos");
 
-    if (!coordinador) {
-      console.log("Coordinador no encontrado");
-      return res.status(404).json({ message: "Coordinador no encontrado" });
-    }
-
-    // Verificar si tiene alumnos asignados
-    if (!coordinador.alumnos || coordinador.alumnos.length === 0) {
-      return res.status(200).json({ alumnos: [] });
-    }
-
-    // Obtener los detalles de los alumnos
-    const alumnos = coordinador.alumnos.map(alumno => ({
-      _id: alumno._id,
-      nombre: alumno.nombre,
-      matricula: alumno.matricula
-    }));
-
-    console.log("Alumnos del coordinador:", alumnos);
-    res.status(200).json({ alumnos });
-
-  } catch (error) {
-    console.error("Error al obtener los alumnos:", error);
-    res.status(500).json({ message: "Error al obtener los alumnos", error: error.message });
-  }
-};

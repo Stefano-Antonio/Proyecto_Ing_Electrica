@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./CrearPersonal.css";
@@ -16,6 +16,8 @@ function CrearPersonal() {
     roles: [],
     password: ""
   });
+  const id_carrera = localStorage.getItem("id_carrera");
+  console.log("ID de la carrera:", id_carrera); // Agregar console.log aquí
 
   const navigate = useNavigate();
 
@@ -29,7 +31,8 @@ function CrearPersonal() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/api/personal", form);
+      const formData = { ...form, id_carrera }; // Incluir id_carrera en los datos del formulario
+      const response = await axios.post("http://localhost:5000/api/personal", formData);
       console.log("Usuario agregado:", response.data);
       toast.success("Usuario agregado con éxito");
       setForm({ nombre: "", matricula: "", correo: "", telefono: "", roles: "", password: "" }); // Reset form
@@ -41,79 +44,77 @@ function CrearPersonal() {
 
   const handleBack = () => { 
     navigate(-1); // Navegar a la página anterior 
-    };
+  };
 
-    const handleLogout = () => {
-      localStorage.removeItem("isAuthenticated");
-      localStorage.removeItem("userType");
-      navigate("/");
-    };
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("userType");
+    navigate("/");
+  };
 
-    //CSV
-    const handleFileChange = (e) => {
-      setFile(e.target.files[0]); // Guarda el archivo CSV seleccionado
-    };
-    
-    const handleSubmitCSV = async (e) => {
-      e.preventDefault();
-      if (!file) {
-        alert("Por favor selecciona un archivo CSV");
-        return;
-      }
-    
-      const formData = new FormData();
-      formData.append("csv", file);
-    
-      try {
-        await axios.post(
-          "http://localhost:5000/api/personal/subir-csv",
-          formData,
-          { headers: { "Content-Type": "multipart/form-data" } }
-        );
-    
-        alert("Base de datos actualizada con éxito desde el archivo CSV");
-        setMostrarModal(false);
-      } catch (error) {
-        console.error("Error al subir el archivo CSV:", error);
-        alert("Hubo un error al actualizar la base de datos");
-      }
-    };
+  //CSV
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]); // Guarda el archivo CSV seleccionado
+  };
+  
+  const handleSubmitCSV = async (e) => {
+    e.preventDefault();
+    if (!file) {
+      alert("Por favor selecciona un archivo CSV");
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append("csv", file);
+  
+    try {
+      await axios.post(
+        "http://localhost:5000/api/personal/subir-csv",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+  
+      alert("Base de datos actualizada con éxito desde el archivo CSV");
+      setMostrarModal(false);
+    } catch (error) {
+      console.error("Error al subir el archivo CSV:", error);
+      alert("Hubo un error al actualizar la base de datos");
+    }
+  };
 
-    const handleSumbitDB = async (e) => {
-      setMostrarModal(true);
-        return;
-    };
-    
-    const handleDownloadCSV = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:5000/api/personal/exportar-csv",
-          { responseType: "blob" } // Asegurar que se reciba como blob
-        );
-    
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", "personal.csv");
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-      } catch (error) {
-        console.error("Error al descargar el archivo CSV:", error);
-        alert("No se pudo descargar el archivo");
-      }
-    };
-    
-    
+  const handleSumbitDB = async (e) => {
+    setMostrarModal(true);
+    return;
+  };
+  
+  const handleDownloadCSV = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/personal/exportar-csv",
+        { responseType: "blob" } // Asegurar que se reciba como blob
+      );
+  
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "personal.csv");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Error al descargar el archivo CSV:", error);
+      alert("No se pudo descargar el archivo");
+    }
+  };
 
   return (
     <div className="persona1-layout">
       <ToastContainer position="top-right" autoClose={3000} />
       <div className="persona1-container">
-      <div className="top-left"> 
+        <div className="top-left"> 
           <button className="back-button" onClick={handleBack}>Regresar</button> 
         </div>
-      <div className="top-right"> 
+        <div className="top-right"> 
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
         </div>
         <h1>Agregar personal</h1>
@@ -167,11 +168,11 @@ function CrearPersonal() {
               <div className="input-wrapper short-field">
                 <label htmlFor="roles">Permisos</label>
                 <select id="roles" value={form.roles} onChange={handleChange} required>
-                    <option value="" disabled hidden>Seleccione...</option>
-                    <option value="D">Docente</option>
-                    <option value="T">Tutor</option>
-                    <option value="C">Coordinador</option>
-                    <option value="A">Administrador</option>
+                  <option value="" disabled hidden>Seleccione...</option>
+                  <option value="D">Docente</option>
+                  <option value="T">Tutor</option>
+                  <option value="C">Coordinador</option>
+                  <option value="A">Administrador</option>
                 </select>
               </div>
               <div className="input-wrapper short-field2">

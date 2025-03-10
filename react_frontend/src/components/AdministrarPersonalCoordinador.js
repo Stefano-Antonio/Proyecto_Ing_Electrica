@@ -2,6 +2,8 @@ import "./AdministrarPersonal.css";
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const AdministratPersonalCoordinador = () => {
   const [personal, setPersonal] = useState([]);
@@ -43,28 +45,14 @@ const AdministratPersonalCoordinador = () => {
     );
   };
 
-  const handleUpdateRoles = async () => {
-    try {
-      await Promise.all(
-        personal.map(persona =>
-          axios.put(`http://localhost:5000/api/personal/${persona._id}, { roles: persona.roles }`)
-        )
-      );
-      alert("Roles actualizados con éxito");
-    } catch (error) {
-      console.error("Error al actualizar roles:", error.message);
-      alert("Hubo un error al actualizar los roles");
-    }
-  };
-
   const handleDelete = async () => {
     try {
       await axios.delete(`http://localhost:5000/api/personal/${usuarioAEliminar}`);
       setPersonal(prevState => prevState.filter(persona => persona._id !== usuarioAEliminar));
-      alert("Personal eliminado con éxito");
+      toast.success("Personal eliminado con éxito");
     } catch (error) {
       console.error("Error al eliminar personal:", error.message);
-      alert("Hubo un error al eliminar el personal");
+      toast.error("Hubo un error al eliminar el personal");
     } finally {
       setMostrarModal(false);
     }
@@ -97,66 +85,69 @@ const AdministratPersonalCoordinador = () => {
   }
 
   return (
-    <div className="personal-container">
-      <h3>Administrar personal</h3>
-      <p className="info">Lista de docentes asociados al programa académico:</p>
+    <div className="personal-layout">
+      <ToastContainer position="top-right" autoClose={3000} />
+      <div className="personal-container">
+        <h3>Administrar personal</h3>
+        <p className="info">Lista de docentes asociados al programa académico:</p>
 
-      <div className="personal-scrollable-1">
-        <table className="personal-table">
-          <thead>
-            <tr>
-              <th>Programa</th>
-              <th>Nombre del docente</th>
-              <th>ID Docente</th>
-              <th>Permisos</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-          {personal.length > 0 ? (
-            personal.map(personal => (
-              <tr key={personal.matricula}>
-                <td>{id_carrera}</td> {/* Muestra el nombre del programa */}
-                <td>{personal.nombre}</td> {/* Muestra el nombre del docente */}
-                <td>{personal.matricula}</td> {/* Muestra el ID del docente */}
-                <td>{getRoleText(personal.roles)}</td> {/* Muestra el rol del docente */}
-                <td>
-                  <div className="action-buttons">
-                    <button className="icon-button" onClick={() => navigate("/modificar-personal", { state: { personal } })}>
-                      ✏️
-                    </button>
-                    <button className="icon-button" onClick={() => { setUsuarioAEliminar(personal._id); setMostrarModal(true); }}>
-                      🗑️
-                    </button>
-                  </div>
-                </td>
+        <div className="personal-scrollable-1">
+          <table className="personal-table">
+            <thead>
+              <tr>
+                <th>Programa</th>
+                <th>Nombre del docente</th>
+                <th>ID Docente</th>
+                <th>Permisos</th>
+                <th>Acciones</th>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5">No hay personal disponible.</td>
-            </tr>
-          )}
-        </tbody>
-        </table>
-      </div>
-      {mostrarModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <h3>AVISO</h3>
-            <p>¿Está seguro que desea eliminar este usuario?</p>
-            <p>Esta acción no se puede revertir.</p>
-            <button onClick={handleDelete}>Eliminar</button>
-            <button onClick={() => setMostrarModal(false)}>Cancelar</button>
-          </div>
+            </thead>
+            <tbody>
+            {personal.length > 0 ? (
+              personal.map(personal => (
+                <tr key={personal.matricula}>
+                  <td>{id_carrera}</td> {/* Muestra el nombre del programa */}
+                  <td>{personal.nombre}</td> {/* Muestra el nombre del docente */}
+                  <td>{personal.matricula}</td> {/* Muestra el ID del docente */}
+                  <td>{getRoleText(personal.roles)}</td> {/* Muestra el rol del docente */}
+                  <td>
+                    <div className="action-buttons">
+                      <button className="icon-button" onClick={() => navigate("/modificar-personal", { state: { personal } })}>
+                        ✏️
+                      </button>
+                      <button className="icon-button" onClick={() => { setUsuarioAEliminar(personal._id); setMostrarModal(true); }}>
+                        🗑️
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5">No hay personal disponible.</td>
+              </tr>
+            )}
+          </tbody>
+          </table>
         </div>
-      )}
+        {mostrarModal && (
+          <div className="modal">
+            <div className="modal-content">
+              <h3>AVISO</h3>
+              <p>¿Está seguro que desea eliminar este usuario?</p>
+              <p>Esta acción no se puede revertir.</p>
+              <button onClick={handleDelete}>Eliminar</button>
+              <button onClick={() => setMostrarModal(false)}>Cancelar</button>
+            </div>
+          </div>
+        )}
 
-      <div className="add-delete-buttons">
-        <button onClick={handleUpdateRoles}>Actualizar roles</button>
-        <button onClick={() => navigate("/crear-personal")}>Agregar personal</button>
+        <div className="add-delete-buttons">
+          <button onClick={() => navigate("/crear-personal")}>Agregar personal</button>
+        </div>
       </div>
     </div>
+    
   );
 };
 

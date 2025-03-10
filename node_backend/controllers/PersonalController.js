@@ -26,13 +26,16 @@ const storage = multer.diskStorage({
 
   exports.upload = upload;
 
-exports.createPersonal = async (req, res) => {
+  exports.createPersonal = async (req, res) => {
     console.log('Personal:', req.body);
-    const { matricula, nombre, password, roles, correo, telefono } = req.body;
+    const { matricula, nombre, password, roles, correo, telefono, id_carrera } = req.body; // Asegúrate de que id_carrera esté en el cuerpo de la solicitud
+    console.log('ID de la carrera recibido:', id_carrera); // Verificar que id_carrera se recibe correctamente
     try {
         const newPersonal = new Personal({ matricula, nombre, password, roles, correo, telefono });
         const usuarioGuardado = await newPersonal.save();
         console.log('Usuario guardado en Personal:', usuarioGuardado);
+        console.log('PersonalMatricula antes de guardar:', usuarioGuardado.matricula);
+
 
         if (roles.includes('D')) {
             const newDocente = new Docentes({
@@ -50,14 +53,22 @@ exports.createPersonal = async (req, res) => {
             const tutorGuardado = await nuevoTutor.save();
             console.log('Usuario guardado en Tutores:', tutorGuardado);
         } else if (roles.includes('C')) {
+            console.log('Creando coordinador con id_carrera:', id_carrera, 'y personalMatricula:', usuarioGuardado.matricula); // Verificar valores antes de guardar
             const nuevoCoordinador = new Coordinadores({
-                personalMatricula: usuarioGuardado.matricula,
-                // Otros campos específicos de Coordinador
+                id_carrera,
+                personalMatricula: usuarioGuardado.matricula, // Asegura que sea un string
+                alumnos: []
             });
+              if (!usuarioGuardado.matricula) {
+                console.error("Error: personalMatricula está vacío o es null antes de guardar.");
+                return res.status(400).json({ message: "personalMatricula no puede ser null" });
+              }
+            console.log("Coordinador antes de guardar: ", nuevoCoordinador); // Verificar el objeto antes de guardarlo
             const coordinadorGuardado = await nuevoCoordinador.save();
             console.log('Usuario guardado en Coordinadores:', coordinadorGuardado);
         } else if (roles.includes('A')) {
             const nuevoAdministrador = new Administradores({
+                id_carrera: id_carrera, // Agregar el id_carrera aquí
                 personalMatricula: usuarioGuardado.matricula,
                 // Otros campos específicos de Administrador
             });
