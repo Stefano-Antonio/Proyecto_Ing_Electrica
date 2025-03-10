@@ -11,14 +11,40 @@ function Registro() {
   const [nombre, setNombre] = useState("");
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
+  const [id_carrera, setIdCarrera] = useState("");
   const navigate = useNavigate();
+
+  const carrerasPermitidas = {
+    ISftw: "Ing. en Software",
+    IDsr: "Ing. en Desarrollo",
+    IEInd: "Ing. Electrónica Industrial",
+    ICmp: "Ing. Computación",
+    IRMca: "Ing. Robótica y Mecatrónica",
+    IElec: "Ing. Electricista",
+    ISftwS: "Ing. en Software (Semiescolarizado)"
+  };
 
   const handleTipoUsuarioChange = (event) => {
     setTipoUsuario(event.target.value);
   };
 
+
+  const handleCarreraChange = (event) => {
+    setIdCarrera(event.target.value);
+  };
+  
   const handleLogin = async (event) => {
     event.preventDefault();
+  
+    // Validar si la carrera fue seleccionada
+    if (!id_carrera) {
+      toast.error("Por favor, selecciona una carrera antes de continuar.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+  
     try {
       const endpoint =
         tipoUsuario === "alumno"
@@ -27,25 +53,34 @@ function Registro() {
   
       const payload =
         tipoUsuario === "alumno"
-          ? { matricula }
+          ? { matricula, id_carrera } // Se envía id_carrera junto con matrícula
           : { matricula, password };
   
       const response = await axios.post(endpoint, payload);
   
       if (response.status === 200) {
-        const { mensaje, roles, token, nombre, id, id_carrera, horario, validacionCompleta  } = response.data;
+        const { mensaje, roles, token, nombre, id, id_carrera: idCarreraBD, horario, validacionCompleta } = response.data;
+  
+        // Verificar si la carrera del alumno coincide con la seleccionada
+        if (tipoUsuario === "alumno" && idCarreraBD !== id_carrera) {
+          toast.error("La matrícula no corresponde a la carrera seleccionada.", {
+            position: "top-right",
+            autoClose: 3000,
+          });
+          return;
+        }
   
         setMensaje(mensaje);
-        localStorage.setItem("id_carrera", id_carrera);
+        localStorage.setItem("id_carrera", idCarreraBD);
         localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("matricula", matricula);
         localStorage.setItem("nombreAlumno", nombre);
         localStorage.setItem("IDAlumno", id);
         localStorage.setItem("roles", JSON.stringify(roles));
-        localStorage.setItem("userType", tipoUsuario); // Almacena el tipo de usuario
-        localStorage.setItem("horario", JSON.stringify(horario));  // Guardar el horario
-        localStorage.setItem("validacionCompleta", validacionCompleta); // Guarda validación
-
+        localStorage.setItem("userType", tipoUsuario);
+        localStorage.setItem("horario", JSON.stringify(horario));
+        localStorage.setItem("validacionCompleta", validacionCompleta);
+  
         // Redirigir según el tipo de usuario
         if (tipoUsuario === "personal") {
           if (roles.includes("D")) {
@@ -58,17 +93,17 @@ function Registro() {
             navigate("/inicio-tutor", { state: { nombre, matricula } });
           } else if (roles.includes("CG")) {
             navigate("/inicio-coordinador-gen", { state: { nombre, matricula } });
-          }
-           else {
+          } else {
             setMensaje("Usuario personal desconocido");
           }
         } else if (tipoUsuario === "alumno") {
           if (horario) {
-            navigate("/validacion-estatus", {state: { nombre, id, id_carrera,  horario }});
-          } else{
+            navigate("/validacion-estatus", { state: { nombre, id, id_carrera, horario } });
+          } else if (carrerasPermitidas.hasOwnProperty(idCarreraBD)) {
             navigate("/horario-seleccion/", { state: { nombre, id, id_carrera, horario } });
+          } else {
+            setMensaje("Usuario no encontrado");
           }
-          
         } else {
           setMensaje("Usuario desconocido");
         }
@@ -77,15 +112,11 @@ function Registro() {
       console.error("Error al iniciar sesión:", error);
       toast.error("Error al iniciar sesión. Matrícula o contraseña incorrectas.", {
         position: "top-right",
-        autoClose: 3000, // Cierra el toast automáticamente en 3 segundos
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
+        autoClose: 3000,
       });
     }
   };
+  
 
   return (
     <div className="registro-layout">
@@ -122,14 +153,14 @@ function Registro() {
             </div>
           </div>
 
+         
           <div className="field-group">
             <label>Carrera </label>
-            <select>
+            <select value={id_carrera} onChange={handleCarreraChange} required>
               <option value="">Seleccione una carrera...</option>
-              <option value="Ingenieria en software">Ingenieria en software</option>
-              <option value="Ingenieria electronica">Ingenieria electronica</option>
-              <option value="Ingenieria automotriz">Ingenieria automotriz</option>
-              {/* Agrega más opciones según tus necesidades */}
+              {Object.entries(carrerasPermitidas).map(([key, value]) => (
+                <option key={key} value={key}>{value}</option>
+              ))}
             </select>
           </div>
         </div>
