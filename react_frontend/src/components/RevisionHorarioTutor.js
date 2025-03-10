@@ -36,7 +36,7 @@ function RevisionHorarioTutor() {
       }
 
       console.log("Horario eliminado correctamente.");
-      navigate(-1); // Regresar a la página anterior
+      //navigate(-1); // Regresar a la página anterior
     } catch (error) {
       console.error("Error al eliminar el horario:", error);
     }
@@ -55,7 +55,7 @@ function RevisionHorarioTutor() {
       }
 
       console.log("Comentario enviado por correo correctamente.");
-      navigate(-1); // Regresar a la página anterior
+      //navigate(-1); // Regresar a la página anterior
     } catch (error) {
       console.error("Error al enviar comentario:", error);
     }

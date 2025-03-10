@@ -194,7 +194,7 @@ function Validacion1() {
           <input
             type="tel"
             id="phone"
-            placeholder="000-000-0000"
+            placeholder='000-000-0000'
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
           />

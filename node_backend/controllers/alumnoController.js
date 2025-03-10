@@ -25,6 +25,41 @@ const upload = multer({ storage: storage });
 
 exports.upload = upload;
 
+
+// Función para asignar un alumno a un tutor
+const asignarAlumnoATutor = async (tutorId, alumnoId) => {
+  try {
+    const tutorAsignado = await Personal.findById(tutorId);
+    if (!tutorAsignado) {
+      console.log('Tutor no encontrado');
+      return;
+    }
+
+    const TutorModel = await Tutor.findOne({ personalMatricula: tutorAsignado.matricula });
+    const DocenteModel = await Docente.findOne({ personalMatricula: tutorAsignado.matricula });
+    const CoordinadorModel = await Coordinador.findOne({ personalMatricula: tutorAsignado.matricula });
+
+    if (TutorModel) {
+      TutorModel.alumnos.push(alumnoId);
+      await TutorModel.save();
+      console.log('Alumno agregado a la lista de alumnos del tutor');
+    }
+    if (DocenteModel) {
+      DocenteModel.alumnos.push(alumnoId);
+      await DocenteModel.save();
+      console.log('Alumno agregado a la lista de alumnos del docente');
+    }
+    if (CoordinadorModel) {
+      CoordinadorModel.alumnos.push(alumnoId);
+      await CoordinadorModel.save();
+      console.log('Alumno agregado a la lista de alumnos del coordinador');
+    }
+  } catch (error) {
+    console.error('Error al asignar el alumno al tutor:', error);
+  }
+};
+
+
 // Crear un nuevo alumno
 exports.createAlumno = async (req, res) => {
   console.log('----Alumno:', req.body);
@@ -38,19 +73,17 @@ exports.createAlumno = async (req, res) => {
       return res.status(404).json({ message: 'Tutor no encontrado' });
     }
 
+    // Crear un nuevo alumno
     const id_carrera = coordinador.id_carrera;
     console.log('ID de carrera:', id_carrera);
-    const horario = null;
-
-
+    const horario = null; // El horario se asignará después
     const newAlumno = new Alumno({ id_carrera, matricula, nombre, telefono, correo, horario, tutor });
     await newAlumno.save();
 
-    
-    //Agregar alumno a la lista del coordinador
-    coordinador.alumnos.push(newAlumno._id);
-    await coordinador.save();
-    console.log('Alumno agregado a la lista de alumnos del coordinador');
+      
+    // Asignar el alumno al tutor
+    await asignarAlumnoATutor(tutor, newAlumno._id);
+
 
     res.status(201).json(newAlumno);
   } catch (error) {
