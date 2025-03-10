@@ -19,5 +19,6 @@ router.get('/horario/:id', alumnoController.getAlumnoByIdWithHorario);
 router.put('/:id', alumnoController.updateAlumno);
 router.put('/horario/:id', alumnoController.updateAlumnoHorario);
 router.delete('/:id', alumnoController.deleteAlumno);
+router.get('/estatus/:matricula', alumnoController.getEstatusHorario);
 
 module.exports = router;

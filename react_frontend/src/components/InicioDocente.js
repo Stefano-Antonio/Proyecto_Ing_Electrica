@@ -170,7 +170,7 @@ function InicioDocente() {
         </div>
         <div className="horario-buttons">
           <button className="button">
-            Subir base de datos de materias
+            Descargar Lista de alumnos
           </button>
           
         </div>

@@ -142,6 +142,12 @@ function InicioDocente2() {
             </tbody>
           </table>
         </div>
+        <div className="horario-buttons">
+          <button className="button">
+            Descargar Lista de materias
+          </button>
+          
+        </div>
       </div>
     </div>
   );

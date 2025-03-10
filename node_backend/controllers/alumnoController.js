@@ -428,3 +428,23 @@ exports.exportarAlumnosCSV = async (req, res) => {
     res.status(500).json({ message: 'Error al exportar a CSV', error });
   }
 };
+
+//Obtener el estatus del horario del alumno
+exports.getEstatusHorario = async (req, res) => {
+  try {
+    const { matricula } = req.params;
+    const alumno = await Alumno.findOne({ matricula }); 
+    if (!alumno) {
+      return res.status(404).json({ message: 'Alumno no encontrado' });
+    }
+    const horario = await Horario.findById(alumno.horario);
+    if (!horario) {
+      return res.status(404).json({ message: 'Horario no encontrado' });
+    }
+    res.status(200).json(horario.estatus);
+  }
+  catch (error) {
+    console.error('Error al obtener el estatus del horario:', error);
+    res.status(500).json({ message: 'Error al obtener el estatus del horario', error });
+  }
+}

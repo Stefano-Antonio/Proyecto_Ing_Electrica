@@ -9,6 +9,7 @@ const AlumnoListCoord = () => {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [nombre, setNombreAlumno] = ("");
   const [matricula, setMatriculaAlumno] = useState("");
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const [AlumnoAEliminar, setAlumnoAEliminar] = useState(null);
   const matriculaCord = localStorage.getItem("matricula");
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ const AlumnoListCoord = () => {
 
         const fetchEstatus = async (alumno) => {
           try {
-            // Obtener el estatus del horario para cada alumno
+            //
             const estatusResponse = await fetch(`http://localhost:5000/api/tutores/estatus/${alumno.matricula}`);
             if (!estatusResponse.ok) {
               throw new Error("Error al obtener el estatus del horario");
@@ -109,10 +110,29 @@ const AlumnoListCoord = () => {
     }
   };
 
+  
+  // Filtrar alumnos por búsqueda
+  const alumnosFiltrados = alumnos.filter(alumno => 
+    alumno.matricula.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    alumno.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (tutoresNombres[alumno._id] && tutoresNombres[alumno._id].toLowerCase().includes(searchTerm.toLowerCase())) ||
+    alumno.estatus.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="alumno-container">
       <h3>Administrar alumnos</h3>
       <p>Lista de alumnos asociados al programa académico</p>
+      
+        {/* Input de búsqueda */}
+        <input
+          type="text"
+          placeholder="Buscar por matrícula, nombre, tutor o estatus..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-bar"
+        />
+
       <div className="alumno-scrollable-table">
         <table className="alumnos-table">
           <thead>
@@ -126,7 +146,7 @@ const AlumnoListCoord = () => {
             </tr>
           </thead>
           <tbody>
-            {alumnos.map((alumno) => (
+          {alumnosFiltrados.map((alumno) => (
               <tr key={alumno._id}>
                 <td>{alumno.matricula}</td>
                 <td>{alumno.nombre}</td>

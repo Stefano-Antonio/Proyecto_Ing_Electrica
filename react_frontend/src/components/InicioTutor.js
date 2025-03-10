@@ -152,6 +152,12 @@ function InicioTutor() {
             </tbody>
           </table>
         </div>
+        <div className="horario-buttons">
+          <button className="button">
+            Descargar Lista de alumnos
+          </button>
+          
+        </div>
       </div>
     </div>
   );
