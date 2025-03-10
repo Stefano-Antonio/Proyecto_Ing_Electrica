@@ -7,8 +7,8 @@ function InicioTutor() {
   const [error, setError] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
-
-  const { nombre, matricula: matriculaTutor } = location.state || {};
+  const { nombre, matricula, id_carrea } = location.state || {};
+  const matriculaTutor = localStorage.getItem("matricula");
 
   // Guardar la matrícula del tutor en localStorage
   useEffect(() => {
@@ -77,10 +77,11 @@ function InicioTutor() {
     fetchAlumnos();
   }, [matriculaTutor, storedMatriculaTutor]);
 
-  const handleRevisarHorario = (matriculaAlumno) => {
-    console.log("Navegando a: ", `/revisar-horario/${matriculaAlumno}`);
-    navigate(`/revisar-horario/${matriculaAlumno}`, { state: { nombre, matricula: matriculaTutor || storedMatriculaTutor } });
+  const handleRevisarHorario = (alumno) => {
+    console.log("alumno:", alumno);
+    navigate(`/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaTutor , id_carrea: alumno.id_carrera } });
   };
+  
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
@@ -128,7 +129,7 @@ function InicioTutor() {
                   <td>
                     <button
                       className="icon-button"
-                      onClick={() => handleRevisarHorario(alumno.matricula)}
+                      onClick={() => handleRevisarHorario(alumno)}
                       disabled={alumno.estatus === "En espera"} // Deshabilitar botón si el estatus es "En espera"
                     >
                       <svg

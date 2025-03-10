@@ -81,9 +81,9 @@ function InicioDocente() {
     }, [matriculaDocente, storedMatriculaDocente]);
 
 
-  const handleRevisarHorario = (matriculaAlumno) => {
-    console.log("Navegando a: ", `/revisar-horario/${matriculaAlumno}`);
-    navigate(`/revisar-horario/${matriculaAlumno}`, { state: { nombre, matricula: matriculaDocente || storedMatriculaDocente } });
+  const handleRevisarHorario = (alumno) => {
+    console.log("Navegando a: ", `/revisar-horario/${alumno.matricula}`);
+    navigate(`/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaDocente, id_carrera: alumno.id_carrer} });
   };
 
   const handleLogout = () => {
@@ -143,7 +143,7 @@ function InicioDocente() {
                   <td>
                     <button
                       className="icon-button"
-                      onClick={() => handleRevisarHorario(alumno.matricula)}
+                      onClick={() => handleRevisarHorario(alumno)}
                       disabled={alumno.estatus === "En espera"} // Deshabilitar botón si el estatus es "En espera"
                     >
                       <svg

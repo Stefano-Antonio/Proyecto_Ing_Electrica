@@ -14,7 +14,7 @@ function RevisionHorarioTutor() {
   const location = useLocation();
   const id_carrera = localStorage.getItem("id_carrera");
   const { nombre , matricula, matriculaTutor } = location.state || {};
-  console.log("Nombre y matrícula del tutor:", nombre,matricula, matriculaTutor, id_carrera);
+  console.log("Nombre y matrícula del tutor:", nombre, matricula, matriculaTutor, id_carrera);
   useEffect(() => {
     fetch(`http://localhost:5000/api/tutores/horario/${matricula}`)
       .then(response => response.json())

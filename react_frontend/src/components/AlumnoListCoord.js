@@ -16,6 +16,7 @@ const AlumnoListCoord = () => {
   useEffect(() => {
     const fetchAlumnos = async () => {
       try {
+        // Obtener los alumnos asociados al coordinador
         const response = await axios.get(`http://localhost:5000/api/alumnos/carrera/${matriculaCord}`);
         const alumnosData = response.data;
         console.log("Alumnos:", response.data);
@@ -32,6 +33,7 @@ const AlumnoListCoord = () => {
 
         const fetchEstatus = async (alumno) => {
           try {
+            // Obtener el estatus del horario para cada alumno
             const estatusResponse = await fetch(`http://localhost:5000/api/tutores/estatus/${alumno.matricula}`);
             if (!estatusResponse.ok) {
               throw new Error("Error al obtener el estatus del horario");
