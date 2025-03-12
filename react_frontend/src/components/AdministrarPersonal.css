@@ -77,3 +77,33 @@ button:hover, input[type="button"]:hover {
   border-radius: 50%;
   cursor: pointer;
 }
+
+
+.icon-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.icon-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.add-delete-buttons {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.add-delete-buttons button {
+  background-color: #002060;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-delete-buttons button:hover {
+  background-color: #00308f;
+}

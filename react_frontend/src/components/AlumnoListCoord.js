@@ -10,6 +10,7 @@ const AlumnoListCoord = () => {
   const [nombre, setNombreAlumno] = ("");
   const [matricula, setMatriculaAlumno] = useState("");
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
+  const [loading, setLoading] = useState(true);
   const [AlumnoAEliminar, setAlumnoAEliminar] = useState(null);
   const matriculaCord = localStorage.getItem("matricula");
   const navigate = useNavigate();
@@ -56,6 +57,12 @@ const AlumnoListCoord = () => {
       }
     };
 
+    const fetchData = async () => {
+      await fetchAlumnos();
+      setLoading(false); // Indica que los datos han sido cargados
+    };
+
+    fetchData();
     fetchAlumnos();
   }, [matriculaCord]);
 
@@ -110,6 +117,10 @@ const AlumnoListCoord = () => {
     }
   };
 
+  
+  if (loading) {
+    return <div className="loading">Cargando información de alumnos...</div>;
+  }
   
   // Filtrar alumnos por búsqueda
   const alumnosFiltrados = alumnos.filter(alumno => 

@@ -7,6 +7,7 @@ import "./AdministrarMaterias.css";
 const AdministrarMaterias = () => {
   const [materias, setMaterias] = useState([]);
   const [docentes, setDocentes] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const [loading, setLoading] = useState(true);
   const id_carrera = localStorage.getItem("id_carrera");
   const navigate = useNavigate();
@@ -43,8 +44,9 @@ const AdministrarMaterias = () => {
     fetchData();
   }, []); // Solo se ejecuta una vez cuando el componente se monta
 
+  
   if (loading) {
-    return <div>Loading...</div>; // Mostrar mensaje de carga
+    return <div className="loading">Cargando información de materias...</div>;
   }
 
   const handleNavigate = () => {
@@ -59,6 +61,14 @@ const AdministrarMaterias = () => {
     return materia && materia.docenteNombre ? materia.docenteNombre : "Sin asignar";
   };
   
+  
+  // Filtrar materias por búsqueda
+  const materiasFiltradas = materias.filter(materia => 
+    materia.salon.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    materia.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    materia.grupo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    getDocenteNombre(materia).toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
 
   return (
@@ -68,11 +78,19 @@ const AdministrarMaterias = () => {
         <h4>A continuación, se muestran las siguientes opciones:</h4>
         <p className="info">Lista de materias activas:</p>
         
+        {/* Input de búsqueda */}
+        <input
+          type="text"
+          placeholder="Buscar por  nombre, grupo, salon o doscente..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-bar"
+        />
+
         <div className="scrollable-table">
           <table className='materia-table'>
             <thead>
               <tr>
-                <th>Inscrito</th>
                 <th>Grupo</th>
                 <th>Salón</th>
                 <th>Materia</th>
@@ -87,9 +105,8 @@ const AdministrarMaterias = () => {
               </tr>
             </thead>
             <tbody>
-              {materias.map((materia) => (
+              {materiasFiltradas.map((materia) => (
                 <tr key={materia._id}>
-                  <td><input type="checkbox" /></td>
                   <td>{materia.grupo}</td>
                   <td>{materia.salon}</td>
                   <td>{materia.nombre}</td>

@@ -5,6 +5,9 @@ const coordinadorController = require('../controllers/coordinadorController');
 // Ruta para obtener los alumnos de un tutor específico
 router.get('/alumnos/:id', coordinadorController.getAlumnosAsignados); 
 
+//Ruta para obtener alumnos del coordinador
+router.get('/matricula/:matricula', coordinadorController.getAlumnosAsignadosCord);
+
 //obtener coordinadores
 router.get('/', coordinadorController.getCoordinadores);
 

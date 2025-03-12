@@ -24,6 +24,29 @@ exports.getAlumnosAsignados = async (req, res) => {
     res.status(500).json({ message: 'Error al buscar el ID', error: error.message });
   }
 };
+exports.getAlumnosAsignadosCord = async (req, res) => {
+  const { matricula } = req.params;
+  console.log("Matrícula del coordinador:", matricula);
+  try {
+    // Buscar en la colección de Coordinadores
+    const coordinador = await Coordinadores.findOne({ personalMatricula: matricula });
+
+    if (!coordinador) {
+      return res.status(404).json({ message: "Coordinador no encontrado" });
+    }
+
+    // Buscar alumnos de la carrera del coordinador
+    const alumnos = coordinador.alumnos || []; // Evitar que sea undefined
+    console.log("Alumnos encontrados:", alumnos);
+
+    // Enviar como objeto con la clave "alumnos"
+    res.status(200).json({ alumnos });
+  } catch (error) {
+    console.error("Error al obtener alumnos:", error);
+    res.status(500).json({ message: "Error al obtener alumnos", error: error.message });
+  }
+};
+
 
 exports.getCoordinadores = async (req, res) => {
     try {

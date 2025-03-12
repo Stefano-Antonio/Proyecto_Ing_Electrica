@@ -7,9 +7,9 @@ function AdministrarTutorados() {
   const [error, setError] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const nombre = null;
   const { matriculaCord } = location.state || {};
   console.log("Matrícula del tutor:", matriculaCord);
+
   useEffect(() => {
     if (matriculaCord) {
       localStorage.setItem("matriculaTutor", matriculaCord);
@@ -31,6 +31,23 @@ function AdministrarTutorados() {
     };
   }, []);
 
+  const fetchAlumnoDetails = async (alumnoId) => {
+    try {
+      console.log("Obteniendo detalles del alumno con ID:", alumnoId);
+      const alumnoResponse = await fetch(`http://localhost:5000/api/alumnos/${alumnoId}`);
+      
+      if (!alumnoResponse.ok) {
+        throw new Error(`Error al obtener detalles del alumno con ID ${alumnoId}`);
+      }
+      
+      return await alumnoResponse.json();
+    } catch (error) {
+      console.error("Error al obtener los detalles del alumno:", error);
+      return null; // Retorna null si hay un error para evitar que el frontend falle
+    }
+  };
+
+  
   useEffect(() => {
     const fetchAlumnos = async () => {
       try {
@@ -40,35 +57,26 @@ function AdministrarTutorados() {
           setError("Matrícula del tutor no encontrada");
           return;
         }
-
+  
         const response = await fetch(`http://localhost:5000/api/coordinadores/matricula/${matricula}`);
         if (!response.ok) {
           throw new Error("Error al obtener los alumnos");
         }
-
+  
         const data = await response.json();
         if (!data.alumnos || !Array.isArray(data.alumnos)) {
           throw new Error("La respuesta de la API no contiene la lista de alumnos");
         }
-
-        // Obtener los detalles de cada alumno utilizando sus IDs
-        const fetchAlumnoDetails = async (alumnoId) => {
-          try {
-            console.log("Obteniendo detalles del alumno con ID:", alumnoId);
-            const alumnoResponse = await fetch(`http://localhost:5000/api/alumnos/${alumnoId}`);
-            if (!alumnoResponse.ok) {
-              throw new Error("Error al obtener los detalles del alumno");
-            }
-            return await alumnoResponse.json();
-          } catch (error) {
-            console.error("Error al obtener los detalles del alumno:", error);
-            return null;
-          }
-        };
-
-        const alumnosDetails = await Promise.all(data.alumnos.map(alumno => fetchAlumnoDetails(alumno._id)));
+  
+        // Mapear y obtener los detalles de cada alumno por su ID
+        const alumnosDetails = await Promise.all(
+          data.alumnos.map(alumnoId => fetchAlumnoDetails(alumnoId)) // Enviar ID correctamente
+        );
+  
+        // Filtrar alumnos que no se pudieron obtener
         const validAlumnos = alumnosDetails.filter(alumno => alumno !== null);
-
+  
+        // Obtener el estatus de cada alumno
         const fetchEstatus = async (alumno) => {
           try {
             const estatusResponse = await fetch(`http://localhost:5000/api/tutores/estatus/${alumno.matricula}`);
@@ -82,17 +90,19 @@ function AdministrarTutorados() {
             return { ...alumno, estatus: "Desconocido" };
           }
         };
-
+  
         const alumnosConEstatus = await Promise.all(validAlumnos.map(fetchEstatus));
         setAlumnos(alumnosConEstatus);
+  
       } catch (error) {
         console.error("Error al obtener los alumnos:", error);
-        setError("Error al cargar los alumnos. Por favor, inténtalo de nuevo.");
+        setError("Error al cargar los alumnos, no hay alumnos asignados");
       }
     };
-
+  
     fetchAlumnos();
   }, [matriculaCord, storedMatriculaTutor]);
+  
 
   const handleRevisarHorario = (alumno) => {
     console.log("Revisar horario para el alumno:", alumno);

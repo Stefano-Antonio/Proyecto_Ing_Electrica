@@ -59,11 +59,6 @@ const storage = multer.diskStorage({
                 personalMatricula: usuarioGuardado.matricula, // Asegura que sea un string
                 alumnos: []
             });
-              if (!usuarioGuardado.matricula) {
-                console.error("Error: personalMatricula está vacío o es null antes de guardar.");
-                return res.status(400).json({ message: "personalMatricula no puede ser null" });
-              }
-            console.log("Coordinador antes de guardar: ", nuevoCoordinador); // Verificar el objeto antes de guardarlo
             const coordinadorGuardado = await nuevoCoordinador.save();
             console.log('Usuario guardado en Coordinadores:', coordinadorGuardado);
         } else if (roles.includes('A')) {
