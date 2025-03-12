@@ -1,8 +1,8 @@
 .header {
   background-color: #002060;
   color: white;
-  padding: 10px;
   text-align: center;
+  padding: 10px;
 }
 
 .header img {
@@ -13,17 +13,13 @@
 
 .header h1 {
   display: inline-block;
-  color: #C3943A;
   margin: 0;
   font-size: 24px;
   vertical-align: middle;
 }
 
 .header h2 {
-  margin: 0;
-  color: white;
-  font-size: 22px;
-  font-weight: normal;
+  margin: 5px 0 0 0;
 }
 
 .materia-container {
@@ -31,7 +27,8 @@
   padding: 20px;
   text-align: center;
   background-color: white;
-  position: relative;
+  margin: 20px auto;
+  max-width: 1500px;
 }
 
 h3, h4 {
@@ -45,10 +42,13 @@ h3, h4 {
 }
 
 .materia-table {
-  width: 100%;
+  width: 100%; /* Cambia el ancho de la tabla al 100% del contenedor */
   border-collapse: collapse;
-  table-layout: fixed; /* Hace que las columnas tengan el mismo ancho */
+  margin-bottom: 10px;
+  text-align: left;
+  table-layout: fixed; /* Hace que las columnas tengan un ancho fijo */
 }
+
 .materia-table th, 
 .materia-table td {
   padding: 10px;
@@ -58,14 +58,14 @@ h3, h4 {
   text-overflow: ellipsis; /* Agrega "..." si el contenido es muy largo */
 }
 
-
 .materia-table th {
   background-color: #002060;
   color: white;
 }
 
-.materia-table td {
-  word-wrap: break-word;
+.materia-table th:last-child, 
+.materia-table td:last-child {
+  width: 180px; /* Ajusta el ancho de la columna de "Acciones" */
 }
 
 .close-session {
@@ -85,10 +85,9 @@ h3, h4 {
 }
 
 .scrollable-table {
-  max-height: 500px; /* Altura máxima con scroll vertical */
-  overflow-y: auto; /* Solo scroll vertical */
-  overflow-x: hidden; /* Oculta el scroll lateral */
-  width: 100%;
+  max-height: 500px;
+  overflow-y: auto;
+  width: 100%; /* Asegura que el contenedor ocupe todo el ancho disponible */
 }
 
 .icon-button {
@@ -98,8 +97,8 @@ h3, h4 {
 }
 
 .icon-button svg {
-  width: 20px;
-  height: 20px;
+  width: 8px; /* Ajusta el tamaño de los íconos a 16px */
+  height: 8px; /* Ajusta el tamaño de los íconos a 16px */
 }
 
 .add-delete-buttons {
