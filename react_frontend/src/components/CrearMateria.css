@@ -1,245 +1,244 @@
 .materias-layout {
-    display: flex;
-    width: 100%;
-  }
-  
-  .sidebar {
-    width: 200px; /* Ajusta el ancho de las barras laterales */
-    background-color: #e0e0e0; /* Color de fondo de las barras laterales */
-  }
-  
-  .materias-container {
-    flex: 1; /* Hace que el contenido principal ocupe el espacio restante */
-    padding: 20px;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .materias-header {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 1200px; /* Limita el ancho del header */
-    margin-bottom: 20px; /* Añade espacio inferior */
-  }
-  
-  .materias-container h2 {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #002a5c;
-  }
-  
-  .materias-container p {
-    color: #555;
-  }
-  
-  .materias-content {
-    width: 100%;
-    max-width: 1200px; /* Limita el ancho del contenido */
-    margin: 0 auto;
-  }
-  
-  .table-responsive {
-    overflow-x: auto;
-    width: 100%;
-  }
-  
-  .materias-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-  }
-  
-  .materias-table th,
-  .materias-table td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: center;
-  }
-  
-  .materias-table th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-  }
-  
-  .materias-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 20px;
-  }
-  
-  .button {
-    padding: 10px 20px;
-    font-size: 1rem;
-    background-color: #002a5c;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .button:hover {
-    background-color: #003a8c;
-  }
+  display: flex;
+  width: 100%;
+}
 
-  .top-right {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-  }
-  
-  .logout-button {
-    background-color: #f44336; /* Color de fondo del botón */
-    color: white; /* Color del texto */
-    border: none; /* Sin borde */
-    padding: 10px 20px; /* Espaciado interno */
-    text-align: center; /* Alineación del texto */
-    text-decoration: none; /* Sin subrayado */
-    display: inline-block; /* Mostrar en línea */
-    font-size: 16px; /* Tamaño de la fuente */
-    margin: 4px 2px; /* Margen */
-    cursor: pointer; /* Cambiar el cursor al pasar sobre el botón */
-    border-radius: 12px; /* Bordes redondeados */
-  }
+.sidebar {
+  width: 200px; /* Ajusta el ancho de las barras laterales */
+  background-color: #e0e0e0; /* Color de fondo de las barras laterales */
+}
 
-  .top-left {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-  }
-  
-  .back-button {
-    background-color: #1900ff; /* Color de fondo del botón */
-    color: white; /* Color del texto */
-    border: none; /* Sin borde */
-    padding: 10px 20px; /* Espaciado interno */
-    text-align: center; /* Alineación del texto */
-    text-decoration: none; /* Sin subrayado */
-    display: inline-block; /* Mostrar en línea */
-    font-size: 16px; /* Tamaño de la fuente */
-    margin: 4px 2px; /* Margen */
-    cursor: pointer; /* Cambiar el cursor al pasar sobre el botón */
-    border-radius: 12px; /* Bordes redondeados */
-  }
-  
-  .materias-layout {
-    display: flex;
-    width: 100%;
-  }
-  
-  .materias-container {
-    flex: 1;
-    padding: 20px;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .materias-content {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  .form-group {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-  }
-  
-  .input-wrapper {
-    flex: 1;
-    margin: 0 10px;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .input-wrapper label {
-    margin-bottom: 5px;
-    text-align: left; /* Alinea el texto a la izquierda */
-    font-size: 1.2rem; /* Aumenta el tamaño de la fuente de las etiquetas */
-  }
-  
-  .input-wrapper input {
-    width: 90%; /* Asegura que los inputs ocupen todo el ancho disponible */
-    padding: 9px; /* Aumenta el padding para hacer los campos de texto más anchos */
-    font-size: 0.9rem; /* Aumenta el tamaño de la fuente de los inputs */
-  }
-  
-  .short-field, .short-field2 {
-    flex: 1;
-  }
-  
-  button {
-    padding: 10px 20px;
-    font-size: 1rem;
-    background-color: #002a5c;
-    color: white;
-    border: none;
-    cursor: pointer;
-    margin: 10px;
-  }
-  
-  button:hover {
-    background-color: #003a8c;
-  }
-  
-  .comments-validation-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: 1200px; /* Limita el ancho del contenedor */
-  }
-  
-  .comments-section {
-    flex: 1;
-    max-width: 600px; /* Limita el ancho de la sección de comentarios */
-    text-align: left; /* Alinea el texto a la izquierda */
-    margin-top: 20px;
-  }
-  
-  textarea {
-    width: 100%;
-    height: 100px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .validation-section {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin: 20px 0;
-    max-width: 300px; /* Ajusta el ancho de la sección de validación */
-  }
-  
-  .validation-section input[type="checkbox"] {
-    margin-right: 10px;
-  }
-  
-  .validation-section label {
-    font-size: 16px;
-    margin-right: 20px;
-  }
-  
-  .submit-btn {
-    padding: 10px 20px;
-    font-size: 1rem;
-    background-color: #002a5c;
-    color: white;
-    border: none;
-    cursor: pointer;
-    margin-top: 20px;
-  }
-  
-  .submit-btn:hover {
-    background-color: #003a8c;
-  }
-  
+.materias-container {
+  flex: 1; /* Hace que el contenido principal ocupe el espacio restante */
+  padding: 20px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.materias-header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px; /* Limita el ancho del header */
+  margin-bottom: 20px; /* Añade espacio inferior */
+}
+
+.materias-container h2 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #002a5c;
+}
+
+.materias-container p {
+  color: #555;
+}
+
+.materias-content {
+  width: 100%;
+  max-width: 1200px; /* Limita el ancho del contenido */
+  margin: 0 auto;
+}
+
+.table-responsive {
+  overflow-x: hidden; /* Elimina el scroll horizontal */
+  width: 100%;
+}
+
+.materias-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+.materias-table th,
+.materias-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+.materias-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.materias-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #002a5c;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #003a8c;
+}
+
+.top-right {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.logout-button {
+  background-color: #f44336; /* Color de fondo del botón */
+  color: white; /* Color del texto */
+  border: none; /* Sin borde */
+  padding: 10px 20px; /* Espaciado interno */
+  text-align: center; /* Alineación del texto */
+  text-decoration: none; /* Sin subrayado */
+  display: inline-block; /* Mostrar en línea */
+  font-size: 16px; /* Tamaño de la fuente */
+  margin: 4px 2px; /* Margen */
+  cursor: pointer; /* Cambiar el cursor al pasar sobre el botón */
+  border-radius: 12px; /* Bordes redondeados */
+}
+
+.top-left {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.back-button {
+  background-color: #1900ff; /* Color de fondo del botón */
+  color: white; /* Color del texto */
+  border: none; /* Sin borde */
+  padding: 10px 20px; /* Espaciado interno */
+  text-align: center; /* Alineación del texto */
+  text-decoration: none; /* Sin subrayado */
+  display: inline-block; /* Mostrar en línea */
+  font-size: 16px; /* Tamaño de la fuente */
+  margin: 4px 2px; /* Margen */
+  cursor: pointer; /* Cambiar el cursor al pasar sobre el botón */
+  border-radius: 12px; /* Bordes redondeados */
+}
+
+.materias-layout {
+  display: flex;
+  width: 100%;
+}
+
+.materias-container {
+  flex: 1;
+  padding: 20px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.materias-content {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.form-group {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.input-wrapper {
+  flex: 1;
+  margin: 0 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-wrapper label {
+  margin-bottom: 5px;
+  text-align: left; /* Alinea el texto a la izquierda */
+  font-size: 1.2rem; /* Aumenta el tamaño de la fuente de las etiquetas */
+}
+
+.input-wrapper input {
+  width: 90%; /* Asegura que los inputs ocupen todo el ancho disponible */
+  padding: 9px; /* Aumenta el padding para hacer los campos de texto más anchos */
+  font-size: 0.9rem; /* Aumenta el tamaño de la fuente de los inputs */
+}
+
+.short-field, .short-field2 {
+  flex: 1;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #002a5c;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin: 10px;
+}
+
+button:hover {
+  background-color: #003a8c;
+}
+
+.comments-validation-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px; /* Limita el ancho del contenedor */
+}
+
+.comments-section {
+  flex: 1;
+  max-width: 600px; /* Limita el ancho de la sección de comentarios */
+  text-align: left; /* Alinea el texto a la izquierda */
+  margin-top: 20px;
+}
+
+textarea {
+  width: 100%;
+  height: 100px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.validation-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 20px 0;
+  max-width: 300px; /* Ajusta el ancho de la sección de validación */
+}
+
+.validation-section input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+.validation-section label {
+  font-size: 16px;
+  margin-right: 20px;
+}
+
+.submit-btn {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #002a5c;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.submit-btn:hover {
+  background-color: #003a8c;
+}

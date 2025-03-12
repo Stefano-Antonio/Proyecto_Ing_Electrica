@@ -5,13 +5,13 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./CrearMateria.css";
 
-function CrearMateria() {
+function CrearMateriaGral() {
   const navigate = useNavigate();
   const [mostrarModal, setMostrarModal] = useState(false);
   const [file, setFile] = useState(null); // Almacenar el archivo CSV
-  const id_carrera = localStorage.getItem("id_carrera");
   const [formData, setFormData] = useState({
     id_materia: '',
+    id_carrera: '', // Incluir el ID de la carrera en el formulario
     nombre: '',
     horarios: {
       lunes: '',
@@ -48,50 +48,47 @@ function CrearMateria() {
   const handleSubmitCSV = async (e) => {
     e.preventDefault();
     if (!file) {
-      toast.warn("Por favor selecciona un archivo CSV");
+      alert("Por favor selecciona un archivo CSV");
       return;
     }
-  
+
     const formData = new FormData();
     formData.append("csv", file);
-  
+
     try {
       await axios.post(
-        `http://localhost:5000/api/materias/subir-csv-por-carrera?id_carrera=${id_carrera}`, // Solo actualiza materias de la carrera
+        "http://localhost:5000/api/materias/subir-csv", // Cambiar la URL a 'materias'
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
-  
-      toast.success("Base de datos de materias actualizada con éxito desde el archivo CSV");
+
+      alert("Base de datos de materias actualizada con éxito desde el archivo CSV");
       setMostrarModal(false);
     } catch (error) {
       console.error("Error al subir el archivo CSV:", error);
-      toast.error("Hubo un error al actualizar la base de datos");
+      alert("Hubo un error al actualizar la base de datos");
     }
   };
-  
 
   const handleDownloadCSV = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/materias/exportar-csv-por-carrera?id_carrera=${id_carrera}`, // Solo descarga materias de la carrera
+        "http://localhost:5000/api/materias/exportar-csv", // Cambiar la URL a 'materias'
         { responseType: "blob" }
       );
-  
+
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `materias_${id_carrera}.csv`);
+      link.setAttribute("download", "materias.csv");
       document.body.appendChild(link);
       link.click();
       link.remove();
     } catch (error) {
       console.error("Error al descargar el archivo CSV:", error);
-      toast.error("No se pudo descargar el archivo");
+      alert("No se pudo descargar el archivo");
     }
   };
-
-  
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
@@ -127,15 +124,9 @@ function CrearMateria() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (!id_carrera) {
-        alert("Error: No se encontró el ID de la carrera.");
-        return;
-      }
-
       // Reemplaza valores vacíos en horarios con null
       const finalData = {
         ...formData,
-        id_carrera, // Incluir el ID de carrera
         horarios: Object.fromEntries(
           Object.entries(formData.horarios).map(([key, value]) => [key, value === "" ? null : value])
         )
@@ -146,6 +137,7 @@ function CrearMateria() {
       toast.success('Materia creada con éxito');
       setFormData({
         id_materia: '',
+        id_carrera: '',
         nombre: '',
         horarios: { lunes: '', martes: '', miercoles: '', jueves: '', viernes: '' },
         salon: '',
@@ -180,6 +172,17 @@ function CrearMateria() {
                   id="id_materia"
                   placeholder="ID de la materia"
                   value={formData.id_materia}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="input-wrapper short-field">
+                <label htmlFor="id_carrera">ID de carrera</label>
+                <input
+                  type="text"
+                  id="id_carrera"
+                  placeholder="ID de la carrera"
+                  value={formData.id_carrera}
                   onChange={handleChange}
                   required
                 />
@@ -232,8 +235,9 @@ function CrearMateria() {
               </div>
               <div className="input-wrapper short-field2">
                 <label htmlFor="docente">Docente</label>
-                <select id="docente" value={formData.docente} onChange={handleChange} required>
+                <select id="docente" value={formData.docente} onChange={handleChange}>
                   <option value="" disabled hidden>Seleccione un docente</option>
+                  <option value="">-</option>
                   {docentes.map(docente => (
                     <option key={docente.personalMatricula} value={docente.personalMatricula}>
                       {docente.nombre}  {/* Mostramos nombre + matrícula */}
@@ -358,4 +362,4 @@ function CrearMateria() {
   );
 }
 
-export default CrearMateria;
+export default CrearMateriaGral;

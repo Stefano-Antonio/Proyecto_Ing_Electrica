@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const AdministradorMdl = new Schema({
     id_carrera:{type: String, required: true},
-    personalMatricula: { type: String, ref: 'Personal', required: true, unique: true }, // Relación con Personal por matrícula 
+    personalMatricula: { type: String, ref: 'Personal', required: true}, // Relación con Personal por matrícula 
     });
 
 
