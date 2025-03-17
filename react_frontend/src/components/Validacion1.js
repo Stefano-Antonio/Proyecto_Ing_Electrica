@@ -99,6 +99,7 @@ function Validacion1() {
     }
 
     try {
+      // Actualizar los datos del alumno
       await axios.put(`http://localhost:5000/api/alumnos/horario/${id}`, {
         nombre: nombre,
         correo: email,

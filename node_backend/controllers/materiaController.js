@@ -1,5 +1,6 @@
 const Materia = require('../models/Materia');
 const Docentes = require('../models/Docentes');
+const Horario = require('../models/Horario');
 const mongoose = require('mongoose');
 const Personal = require('../models/Personal');
 const { Parser } = require('json2csv');
@@ -87,7 +88,6 @@ exports.createMateria = async (req, res) => {
 exports.getMaterias = async (req, res) => {
   try {
     const materias = await Materia.find();
-
     const materiasConDocente = await Promise.all(
       materias.map(async (materia) => {
         if (!materia.docente) {
@@ -111,7 +111,7 @@ exports.getMaterias = async (req, res) => {
       })
     );
 
-    console.log(materiasConDocente); // Para depuración
+    
     res.status(200).json(materiasConDocente);
   } catch (error) {
     console.error("Error al obtener materias:", error);
@@ -161,7 +161,6 @@ exports.getMateriasByCarreraId = async (req, res) => {
       })
     );
 
-    console.log(materiasConDocente); // Para depuración
     res.status(200).json(materiasConDocente);
   } catch (error) {
     console.error("Error al obtener materias:", error);
@@ -189,6 +188,7 @@ exports.updateMateria = async (req, res) => {
   const { nombre, horarios, salon, grupo, cupo, docente, id_materia } = req.body;
   console.log('Datos recibidos para crear la materia:', req.body);
   const { id } = req.params;
+  
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: "ID de materia no válido" });
@@ -197,15 +197,17 @@ exports.updateMateria = async (req, res) => {
   try {
     // Buscar la materia antes de actualizarla
     const materiaAnterior = await Materia.findById(id);
+
     if (!materiaAnterior) {
       return res.status(404).json({ message: "Materia no encontrada" });
     }
 
     let docenteObjectId = null;
 
+    
     if (docente) {
       // Buscar el nuevo docente por personalMatricula
-      const docenteEncontrado = await Docentes.findOne({ personalMatricula: docente });
+      const docenteEncontrado = await Docentes.findById(docente);
 
       if (!docenteEncontrado) {
         return res.status(400).json({ message: "Docente no encontrado" });
@@ -215,9 +217,8 @@ exports.updateMateria = async (req, res) => {
     }
 
     // Actualizar la materia con el nuevo docente (si hay)
-    const materia = await Materia.findByIdAndUpdate(
-      id,
-      { nombre, horarios, salon, grupo, cupo, docente: docenteObjectId },
+    const materia = await Materia.findByIdAndUpdate(id,
+      { id_materia, nombre, horarios, salon, grupo, cupo, docente: docenteObjectId },
       { new: true }
     );
 
@@ -225,23 +226,23 @@ exports.updateMateria = async (req, res) => {
       return res.status(404).json({ message: "Materia no encontrada" });
     }
 
-    // 🔴 Si la materia tenía un docente anterior diferente, eliminarla de su lista de materias
+    // Si la materia tenía un docente anterior diferente, eliminarla de su lista de materias
     if (materiaAnterior.docente && (!docenteObjectId || !materiaAnterior.docente.equals(docenteObjectId))) {
       await Docentes.findByIdAndUpdate(
         materiaAnterior.docente,
         { $pull: { materias: materiaAnterior._id } } // Remueve la materia de la lista del docente anterior
       );
-      console.log(`Materia ${id} eliminada de docente anterior`);
+      
     }
 
-    // 🟢 Si hay un nuevo docente, agregar la materia a su lista
+    // Si hay un nuevo docente, agregar la materia a su lista
     if (docenteObjectId) {
       await Docentes.findByIdAndUpdate(
         docenteObjectId,
         { $addToSet: { materias: materia._id } }, // Asegura que no se duplique
         { new: true }
       );
-      console.log(`Materia ${id} agregada a docente ${docenteObjectId}`);
+      
     }
 
     console.log("Materia actualizada correctamente:", materia);
@@ -257,11 +258,28 @@ exports.updateMateria = async (req, res) => {
 
 // Eliminar una materia
 exports.deleteMateria = async (req, res) => {
+  
   try {
-    const materia = await Materia.findByIdAndDelete(req.params.id);
+    const materia = await Materia.findById(req.params.id);
     if (!materia) {
       return res.status(404).json({ message: 'Materia no encontrada' });
     }
+    // Eliminar la materia de los horarios
+    await Horario.updateMany(
+      { materias: materia._id },
+      { $pull: { materias: materia._id } }
+    );
+    console.log('Materia eliminada de los horarios');
+
+    // Eliminar la materia de la lista de materias de los docentes
+    await Docentes.updateMany(
+      { materias: materia._id },
+      { $pull: { materias: materia._id } }
+    );
+    console.log('Materia eliminada de la lista de materias de los docentes');
+
+    // Eliminar la materia
+    await Materia.findByIdAndDelete(req.params.id);
     res.status(204).json({ message: 'Materia eliminada' });
   } catch (error) {
     res.status(500).json({ message: 'Error al eliminar la materia', error });
@@ -294,7 +312,6 @@ exports.subirMateriasCSV = async (req, res) => {
           return res.status(400).json({ message: "El archivo CSV está vacío" });
         }
 
-        console.log("✅ Datos obtenidos del CSV después de limpiar:", results);
 
         const idsCSV = results.map((materia) => materia.id_materia?.toString().trim()).filter(Boolean); // Asegurar que sean Strings y no null
 
@@ -306,7 +323,7 @@ exports.subirMateriasCSV = async (req, res) => {
             id_materia = id_materia ? id_materia.toString().trim() : null; // 🔹 Convertir a String y limpiar
 
             if (!id_materia) {
-              console.warn("⚠ Materia sin id_materia:", materiaData);
+              console.warn(" Materia sin id_materia:", materiaData);
               return; // Evita insertar datos sin id_materia
             }
 
@@ -339,7 +356,7 @@ exports.subirMateriasCSV = async (req, res) => {
               { upsert: true, new: true }
             );
 
-            // 🔥 Si la materia ya tenía un docente y ha cambiado, eliminarla del docente anterior
+            //  Si la materia ya tenía un docente y ha cambiado, eliminarla del docente anterior
             if (materiaActual && materiaActual.docente && (!docenteObjectId || !materiaActual.docente.equals(docenteObjectId))) {
               await Docentes.findByIdAndUpdate(
                 materiaActual.docente,
@@ -348,7 +365,7 @@ exports.subirMateriasCSV = async (req, res) => {
               console.log(`Materia ${id_materia} eliminada del docente anterior.`);
             }
 
-            // 🔥 Si hay un nuevo docente, agregar la materia a su lista
+            //  Si hay un nuevo docente, agregar la materia a su lista
             if (docenteObjectId) {
               await Docentes.findByIdAndUpdate(
                 docenteObjectId,
@@ -360,9 +377,9 @@ exports.subirMateriasCSV = async (req, res) => {
           })
         );
 
-        // 🔥 Solo eliminar materias si hay materias en el CSV
+        // Solo eliminar materias si hay materias en el CSV
         if (idsCSV.length > 0) {
-          console.log("✅ Eliminando materias no incluidas en el CSV.");
+          console.log(" Eliminando materias no incluidas en el CSV.");
           await Materia.deleteMany({ id_materia: { $nin: idsCSV } });
         }
 
@@ -370,12 +387,12 @@ exports.subirMateriasCSV = async (req, res) => {
         res.status(200).json({ message: "Base de datos de materias actualizada con éxito desde el archivo CSV" });
 
       } catch (error) {
-        console.error("❌ Error al procesar el CSV:", error);
+        console.error(" Error al procesar el CSV:", error);
         res.status(500).json({ message: "Error al actualizar la base de datos de materias desde el CSV", error });
       }
     })
     .on("error", (err) => {
-      console.error("❌ Error al leer el CSV:", err);
+      console.error(" Error al leer el CSV:", err);
       res.status(500).json({ message: "Error al procesar el archivo CSV", error: err });
     });
 };

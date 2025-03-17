@@ -200,24 +200,45 @@ exports.updatePersonal = async (req, res) => {
 
 
 exports.deletePersonal = async (req, res) => {
-  try {
-      const personal = await Personal.findByIdAndDelete(req.params.id);
-      if (!personal) {
-          return res.status(404).json({ message: 'Personal no encontrado' });
-      }
 
-      // Eliminar registros relacionados en otras colecciones
-      await Promise.all([
-          Docentes.findOneAndDelete({ personalMatricula: personal.matricula }),
-          Coordinadores.findOneAndDelete({ personalMatricula: personal.matricula }),
-          Tutores.findOneAndDelete({ personalMatricula: personal.matricula }),
-          Administradores.findOneAndDelete({ personalMatricula: personal.matricula })
-      ]);
+    try {
+        const personal = await Personal.findById(req.params.id);
+        if (!personal) {
+            return res.status(404).json({ message: 'Personal no encontrado' });
+        }
 
-      res.status(204).json({ message: 'Personal y registros relacionados eliminados' });
-  } catch (error) {
-      res.status(500).json({ message: 'Error al eliminar el personal y los registros relacionados', error });
-  }
+        // Eliminar el personal de los alumnos que lo tienen como tutor
+    await Alumno.updateMany(
+      { tutor: personal._id },
+      { $unset: { tutor: "" } }
+    );
+    console.log('Personal eliminado de los alumnos que lo tienen como tutor');
+
+    // Eliminar el personal de las colecciones específicas (Docentes, Tutores, Coordinadores, Administradores)
+    if (personal.roles.includes('D')) {
+      await Docentes.findOneAndDelete({ personalMatricula: personal.matricula });
+      console.log('Personal eliminado de Docentes');
+    }
+    if (personal.roles.includes('T')) {
+      await Tutores.findOneAndDelete({ personalMatricula: personal.matricula });
+      console.log('Personal eliminado de Tutores');
+    }
+    if (personal.roles.includes('C')) {
+      await Coordinadores.findOneAndDelete({ personalMatricula: personal.matricula });
+      console.log('Personal eliminado de Coordinadores');
+    }
+    if (personal.roles.includes('A')) {
+      await Administradores.findOneAndDelete({ personalMatricula: personal.matricula });
+      console.log('Personal eliminado de Administradores');
+    }
+
+    // Eliminar el personal
+    await Personal.findByIdAndDelete(req.params.id);
+        res.status(204).json({ message: 'Personal eliminado' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al eliminar el personal', error });
+    }
+
 };
 
 // Subir datos desde CSV

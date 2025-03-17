@@ -5,6 +5,7 @@ import "./InicioDocente.css";
 function DocenteAlumnos() {
   const [alumnos, setAlumnos] = useState([]); // Definir el estado alumnos
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const location = useLocation();
 
   const { nombre, matricula: matriculaDocente, materiaId, materiaNombre } = location.state || {};
@@ -26,7 +27,7 @@ function DocenteAlumnos() {
           console.error("ID de la materia no encontrado");
           return;
         }
-  
+        // Obtener los alumnos de la materia
         const response = await fetch(`http://localhost:5000/api/docentes/materia/${materiaId}/alumnos`);
         if (!response.ok) {
           throw new Error("Error al obtener los alumnos");
@@ -80,6 +81,12 @@ function DocenteAlumnos() {
     navigate(-1, { state: { nombre, matricula: matriculaDocente || storedMatriculaDocente } });
   };
 
+  // Filtrar alumnos por búsqueda
+  const alumnosFiltrados = alumnos.filter(alumno => 
+    alumno.matricula.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    alumno.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="docente-layout">
       <div className="docente-container">
@@ -97,6 +104,16 @@ function DocenteAlumnos() {
           <h3>Materia: {materiaNombre}</h3>
         </div>
 
+          {/* Input de búsqueda */}
+          <input
+          type="text"
+          placeholder="Buscar por matrícula o nombre..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-bar"
+        />
+
+        {alumnosFiltrados.length > 0 ? (
         <div className="docente-content">
           <table className="docente-table">
             <thead>
@@ -108,7 +125,7 @@ function DocenteAlumnos() {
               </tr>
             </thead>
             <tbody>
-              {alumnos.map((alumno) => (
+              {alumnosFiltrados.map((alumno) => (
                 <tr key={alumno._id}>
                   <td>{alumno.matricula}</td>
                   <td>{alumno.nombre}</td>
@@ -119,8 +136,11 @@ function DocenteAlumnos() {
             </tbody>
           </table>
         </div>
+      ) : (
+        <p className="no-alumnos-message">No se encontraron resultados.</p>
+      )}
         <div className="horario-buttons">
-          <button className="button" onClick={() => handleDownloadCSV(materiaNombre)} disabled={alumnos.length === 0}>
+          <button className="button" onClick={() => handleDownloadCSV(materiaNombre)} disabled={alumnosFiltrados.length === 0}>
             Descargar lista de alumnos
           </button>
         </div>

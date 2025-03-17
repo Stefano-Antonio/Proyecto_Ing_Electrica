@@ -70,6 +70,8 @@ exports.getHorarioAlumno = async (req, res) => {
         res.status(500).json({ message: 'Error interno del servidor' });
     }
 };
+
+// Ruta para obtener los tutores disponibles para un coordinador
 exports.getEstatusHorario = async (req, res) => {
     try {
         const { matricula } = req.params;

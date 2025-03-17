@@ -3,12 +3,14 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "./CrearMateria.css";
+import "./ModificarMateria.css";
 
 function ModificarMateria() {
   const navigate = useNavigate();
   const [mostrarModal, setMostrarModal] = useState(false);
   const [file, setFile] = useState(null); // Almacenar el archivo CSV
+  const docenteNombre = localStorage.getItem("docenteNombre");
+  console.log("nombre:", docenteNombre);
   const [formData, setFormData] = useState({
     id_materia: '',
     nombre: '',
@@ -32,6 +34,8 @@ function ModificarMateria() {
   useEffect(() => {
     if (materia) {
       console.log("Datos de la materia recibidos:", materia); // Agregar console.log aquí
+      
+      
       setFormData({
         id_materia: materia.id_materia || "",
         nombre: materia.nombre || "",
@@ -82,8 +86,7 @@ function ModificarMateria() {
     formData.append("csv", file);
 
     try {
-      await axios.post(
-        "http://localhost:5000/api/materias/subir-csv", // Cambiar la URL a 'materias'
+      await axios.post( "http://localhost:5000/api/materias/subir-csv", 
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -99,7 +102,7 @@ function ModificarMateria() {
   const handleDownloadCSV = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/materias/exportar-csv", // Cambiar la URL a 'materias'
+        "http://localhost:5000/api/materias/exportar-csv", 
         { responseType: "blob" }
       );
 
@@ -155,6 +158,7 @@ function ModificarMateria() {
     e.preventDefault();
     try {
       const materiaActualizada = {
+        id_materia: formData.id_materia,
         nombre: formData.nombre,
         horarios: formData.horarios,
         salon: formData.salon,
@@ -170,6 +174,7 @@ function ModificarMateria() {
       console.error("Error al actualizar la materia:", error);
       toast.error("Hubo un error al actualizar la materia");
     }
+    navigate(-1); // Navegar a la página anterior
   };
 
   return (
@@ -247,10 +252,9 @@ function ModificarMateria() {
                 <label htmlFor="docente">Docente</label>
                 <select id="docente" value={formData.docente} onChange={handleChange} required>
                   <option value="" disabled hidden>Seleccione un docente</option>
-                  <option value="">-</option>
-                  {docentes.map(docente => (
-                    <option key={docente._id} value={docente.personalMatricula}>
-                      {docente.nombre}  {/* Mostramos nombre + matrícula */}
+                  {docentes.map((docente) => (
+                    <option key={docente._id} value={docente._id}>
+                      {docente.nombre}  {/* Muestra el nombre del docente */}
                     </option>
                   ))}
                 </select>
@@ -360,7 +364,7 @@ function ModificarMateria() {
               </div>
             )}
             <div className="materia-buttons">
-              <button type="submit" className="button">Agregar</button>
+              <button type="submit" className="button">Actualizar</button>
               <button
                 type="button"  // Se agrega este atributo para evitar que dispare el submit
                 className="button"

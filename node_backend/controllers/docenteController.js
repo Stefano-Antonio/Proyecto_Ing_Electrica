@@ -8,10 +8,10 @@ const Materia = require('../models/Materia');
 
 // Ruta para obtener los alumnos de un tutor específico
 exports.getAlumnosAsignados = async (req, res) => {
-    console.log('Obteniendo alumnos asignados a un docente');
+    
     try {
         const { matricula } = req.params;
-        console.log('Matrícula del docente:', matricula);
+        
 
         // Buscar al tutor directamente por matrícula
         const docente = await Docentes.findOne({ personalMatricula: matricula }).populate('alumnos');
@@ -21,7 +21,7 @@ exports.getAlumnosAsignados = async (req, res) => {
             return res.status(404).json({ message: "Docente no encontrado" });
         }
 
-        console.log('Alumnos:', docente.alumnos);
+        
         // Devolver la lista de alumnos asociados al tutor
         res.status(200).json({ alumnos: docente.alumnos });
     } catch (error) {

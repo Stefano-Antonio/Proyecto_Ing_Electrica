@@ -25,7 +25,7 @@ function InicioDocente2() {
   const storedMatriculaDocente = localStorage.getItem("matriculaDocente");
   const storedNombreDocente = localStorage.getItem("nombreDocente");
 
-  // 🔒 Evitar que el usuario regrese a la pantalla anterior con el botón de retroceso
+  // Evitar que el usuario regrese a la pantalla anterior con el botón de retroceso
   useEffect(() => {
     const bloquearAtras = () => {
       window.history.pushState(null, null, window.location.href);

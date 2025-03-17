@@ -61,42 +61,37 @@ function RevisionHorarioTutor() {
     }
   };
 
-  const actualizarEstatus = async () => {
-    if (estatus === null) {
-      alert("Por favor, seleccione una opción antes de guardar.");
-      return;
-    }
-
+  const actualizarEstatus = async (nuevoEstatus) => {
     try {
       console.log("Actualizando estatus...");
       const response = await fetch(`http://localhost:5000/api/tutores/estatus/actualizar/${matricula}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ estatus, comentario }),
+        body: JSON.stringify({ estatus: nuevoEstatus, comentario }),
       });
-
+  
       if (!response.ok) {
         throw new Error("Error al actualizar el estatus");
       }
-
+  
       console.log("Estatus actualizado correctamente.");
       navigate(-1); // Regresar a la página anterior
-      if (estatus === 0) { // Si está rechazado
+  
+      if (nuevoEstatus === 0) { // Si está rechazado
         console.log("Eliminando horario...");
         await eliminarHorario(); // Esperar a que se complete
         console.log("Horario eliminado.");
-
+  
         console.log("Enviando comentario por correo...");
         await enviarComentarioCorreo(); // Esperar a que se complete
         console.log("Comentario enviado.");
       }
-
-      
-    setMostrarModal(false);    } catch (error) {
+    } catch (error) {
       console.error("Error al actualizar el estatus:", error);
       alert("Hubo un error al actualizar el estatus.");
     }
   };
+  
 
   const handleBack = () => { 
     navigate(-1); // Navegar a la página anterior 
@@ -185,30 +180,28 @@ function RevisionHorarioTutor() {
           </div>
           <div className="validation-section">
             <h3>Validación</h3>
-            <div className="checkbox-group">
-              <input
-                type="radio"
-                id="accepted"
-                name="validation"
-                value="1"
-                onChange={() => setEstatus(1)}
-              />
-              <label htmlFor="accepted">Aceptado</label>
-            </div>
-            <div className="checkbox-group">
-              <input
-                type="radio"
-                id="rejected"
-                name="validation"
-                value="0"
-                onChange={() => setEstatus(0)}
-              />
-              <label htmlFor="rejected">Rechazado</label>
-            </div>
-            <button className="submit-btn" onClick={() => setMostrarModal(true)} 
-                    disabled={estatus === null}>
-              Guardar
+            <div className="button-group">
+            <button
+              className="accept-button"
+              style={{ backgroundColor: "green", color: "white" }}
+              onClick={() => {
+                setEstatus(1);
+                actualizarEstatus(1);
+              }}
+            >
+              Aceptado
             </button>
+            <button
+              className="reject-button"
+              style={{ backgroundColor: "red", color: "white" }}
+              onClick={() => {
+                setEstatus(0);
+                actualizarEstatus(0);
+              }}
+            >
+              Rechazado
+            </button>
+            </div>
           </div>
         </div>
       </div>

@@ -357,10 +357,44 @@ exports.updateAlumnoHorario = async (req, res) => {
 // Eliminar un alumno
 exports.deleteAlumno = async (req, res) => {
   try {
-    const alumno = await Alumno.findByIdAndDelete(req.params.id);
+    const alumno = await Alumno.findById(req.params.id);
     if (!alumno) {
       return res.status(404).json({ message: 'Alumno no encontrado' });
     }
+    // Eliminar el horario del alumno si no es nulo
+    if (alumno.horario) {
+      await Horario.findByIdAndDelete(alumno.horario);
+      console.log('Horario del alumno eliminado');
+    }
+
+    // Eliminar el ID del alumno de la lista de alumnos del tutor asignado
+    if (alumno.tutor) {
+      const tutorAsignado = await Personal.findById(alumno.tutor);
+      if (tutorAsignado) {
+        const TutorModel = await Tutor.findOne({ personalMatricula: tutorAsignado.matricula });
+        const DocenteModel = await Docente.findOne({ personalMatricula: tutorAsignado.matricula });
+        const CoordinadorModel = await Coordinador.findOne({ personalMatricula: tutorAsignado.matricula });
+
+        if (TutorModel) {
+          TutorModel.alumnos = TutorModel.alumnos.filter(alumnoId => alumnoId.toString() !== alumno._id.toString());
+          await TutorModel.save();
+          console.log('Alumno eliminado de la lista del tutor');
+        }
+        if (DocenteModel) {
+          DocenteModel.alumnos = DocenteModel.alumnos.filter(alumnoId => alumnoId.toString() !== alumno._id.toString());
+          await DocenteModel.save();
+          console.log('Alumno eliminado de la lista del docente');
+        }
+        if (CoordinadorModel) {
+          CoordinadorModel.alumnos = CoordinadorModel.alumnos.filter(alumnoId => alumnoId.toString() !== alumno._id.toString());
+          await CoordinadorModel.save();
+          console.log('Alumno eliminado de la lista del coordinador');
+        }
+      }
+    }
+
+    // Eliminar el alumno
+    await Alumno.findByIdAndDelete(req.params.id);
     res.status(204).json({ message: 'Alumno eliminado' });
   } catch (error) {
     

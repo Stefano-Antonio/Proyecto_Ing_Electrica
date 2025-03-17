@@ -108,32 +108,38 @@
 .comments-validation-wrapper {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start; /* Alinea los elementos en la parte superior */
   width: 100%;
-  max-width: 1200px; /* Limita el ancho del contenedor */
+  max-width: 1000px;
+  flex-wrap: wrap;
 }
 
-.comments-section {
-  flex: 1;
-  max-width: 600px; /* Limita el ancho de la sección de comentarios */
-  text-align: left; /* Alinea el texto a la izquierda */
-  margin-top: 20px;
-}
-
-textarea {
-  width: 100%;
-  height: 100px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
+.comments-section,
 .validation-section {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  margin: 20px 0;
-  max-width: 300px; /* Ajusta el ancho de la sección de validación */
+  justify-content: flex-start; /* Asegura que los títulos queden alineados arriba */
+  flex: 1;
+  min-height: 150px; /* Define una altura mínima para ambos */
+}
+
+.comments-section {
+  max-width: 400px;
+  text-align: left;
+  margin-top: 20px;
+  margin-right: 20px;
+}
+
+.validation-section {
+  max-width: 300px;
+  margin-top: 20px;
+}
+
+.comments-section h3,
+.validation-section h3 {
+  margin: 0;
+  padding: 15px 0;
+  font-size: 18px;
 }
 
 .validation-section input[type="checkbox"] {

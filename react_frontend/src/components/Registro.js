@@ -10,6 +10,7 @@ function Registro() {
   const [matricula, setMatricula] = useState("");
   const [nombre, setNombre] = useState("");
   const [password, setPassword] = useState("");
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const [mensaje, setMensaje] = useState("");
   const [id_carrera, setIdCarrera] = useState("");
   const navigate = useNavigate();
@@ -71,8 +72,8 @@ function Registro() {
         }
 
         // Verificar si la carrera del alumno coincide con la seleccionada
-        if (tipoUsuario === "personal" && idCarreraBD !== id_carrera) {
-          if (roles.includes("C")){
+        if (tipoUsuario === "personal") {
+          if (roles.includes("C") && idCarreraBD !== id_carrera){
           toast.error("La matrícula no corresponde a la carrera seleccionada.", {
             position: "top-right",
             autoClose: 3000,
