@@ -10,6 +10,7 @@ function HorarioSeleccion() {
   const [grupoSeleccionado, setGrupoSeleccionado] = useState(""); // Estado para almacenar el grupo seleccionado
   const [materiasSeleccionadas, setMateriasSeleccionadas] = useState([]); // Materias seleccionadas
   const [conflictos, setConflictos] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const [mostrarModal, setMostrarModal] = useState(false);
   const [nombre, setNombreAlumno] = useState(localStorage.getItem("nombreAlumno") || "Alumno desconocido");
   const [id, setIDAlumno] = useState(localStorage.getItem("IDAlumno") || "ID desconocido");
@@ -158,11 +159,14 @@ function HorarioSeleccion() {
 
 
 
-  // Filtrar las materias basadas en el grupo seleccionado
-  const materiasFiltradas = grupoSeleccionado
-    ? materias.filter((materia) => materia.grupo === grupoSeleccionado)
-    : materias;
+  // Filtrar materias por búsqueda
+  const materiasFiltradas = materias.filter(materias => 
+    materias.grupo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    materias.salon.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    materias.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
+    
   return (
     <div className="horario-layout">
       <div className="horario-container">
@@ -174,18 +178,16 @@ function HorarioSeleccion() {
         <h4>Matricula <strong>{matricula || "Cargando..."}</strong></h4>
         <p>A continuación, seleccione las materias que va a cargar en el semestre</p>
 
+        {/* Input de búsqueda */}
+        <input
+                  type="text"
+                  placeholder="Buscar por nombre, salon o grupo..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="search-bar"
+                />
+
         <div className="horario-content">
-          <div className="field-group two-columns">
-            <label>Grupo: </label>
-            <select value={grupoSeleccionado} onChange={handleGrupoChange}>
-              <option value="">Seleccionar grupo...</option>
-              {grupos.map((grupo, index) => (
-                <option key={index} value={grupo}>
-                  {grupo}
-                </option>
-              ))}
-            </select>
-          </div>
           <table className="horario-table">
             <thead>
               <tr>

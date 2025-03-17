@@ -83,6 +83,7 @@ const AdministrarMateriasAdmin = () => {
         <h4>A continuación, se muestran las siguientes opciones:</h4>
         <p className="info">Lista de materias activas:</p>
         
+        {materias.length > 0 ? (
         <div className="scrollable-table">
           <table className='materia-table'>
             <thead>
@@ -116,7 +117,9 @@ const AdministrarMateriasAdmin = () => {
             </tbody>
           </table>
         </div>
-
+      ) : (
+        <p className="no-alumnos-message">No se encontraron resultados.</p>
+      )}
         <div className="add-delete-buttons">
           <button onClick={handleDownloadCSV}>Descargar CSV</button>
         </div>

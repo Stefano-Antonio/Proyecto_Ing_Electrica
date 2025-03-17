@@ -7,6 +7,7 @@ function InicioDocente() {
   const [alumnos, setAlumnos] = useState([]);
   const [error, setError] = useState(null);
   const location = useLocation();
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const navigate = useNavigate();
 
   const { nombre, matricula: matriculaDocente } = location.state || {};
@@ -109,70 +110,92 @@ function InicioDocente() {
     }
   };
 
+
+  
+  // Filtrar alumnos por búsqueda
+  const alumnosFiltrados = alumnos.filter(alumno => 
+    alumno.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    alumno.estatus.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+
   return (
     <div className="docente-layout">
       <div className="docente-container">
-
         <div className="top-right"> 
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
         </div>
 
         <h2>Docente</h2>
         <h4>{`Bienvenido, ${nombre}`}</h4>
-        <h4>A continuacion, seleccione la lista que desee visualizar</h4>
+        <h4>A continuación, seleccione la lista que desee visualizar</h4>
 
         <div className="docente-buttons">
-            <button className="button">Lista de alumnos</button>
-            <button className="button" onClick={handleChangeView}>Lista de materias</button>
+          <button className="button">Lista de alumnos</button>
+          <button className="button" onClick={handleChangeView}>Lista de materias</button>
         </div>
+
+        {/* Input de búsqueda */}
+        <input
+          type="text"
+          placeholder="Buscar por nombre o estatus..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-bar"
+        />
+        
         {error && <p className="error-message">{error}</p>}
-        <div className="docente-content">
-          <div className="docente-scrollable-table">
-            <table className="docente-tabla">
-              <thead>
-                <tr>
-                  <th>Nombre del alumno</th>
-                  <th>Revisar horario</th>
-                  <th>Estatus</th>
-                </tr>
-              </thead>
-              <tbody>
-              {alumnos.map((alumno) => (
-                <tr key={alumno._id}>
-                  <td>{alumno.nombre}</td>
-                  <td>
-                    <button
-                      className="icon-button"
-                      onClick={() => handleRevisarHorario(alumno)}
-                      disabled={alumno.estatus === "En espera"} // Deshabilitar botón si el estatus es "En espera"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="blue"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                      </svg>
-                    </button>
-                  </td>
-                  <td>{getEstatusIcon(alumno.estatus)}</td>
-                </tr>
-              ))}
-              </tbody>
-            </table>
+        
+        {alumnosFiltrados.length > 0 ? (
+          <div className="docente-content">
+            <div className="docente-scrollable-table">
+              <table className="docente-tabla">
+                <thead>
+                  <tr>
+                    <th>Nombre del alumno</th>
+                    <th>Revisar horario</th>
+                    <th>Estatus</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {alumnosFiltrados.map((alumno) => (
+                    <tr key={alumno._id}>
+                      <td>{alumno.nombre}</td>
+                      <td>
+                        <button
+                          className="icon-button"
+                          onClick={() => handleRevisarHorario(alumno)}
+                          disabled={alumno.estatus === "En espera"} // Deshabilitar botón si el estatus es "En espera"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="blue"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                          </svg>
+                        </button>
+                      </td>
+                      <td>{getEstatusIcon(alumno.estatus)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-          
-        </div>
+        ) : (
+          <p className="no-alumnos-message">No se encontraron resultados.</p>
+        )}
+
         <div className="horario-buttons">
           <button className="button">
             Descargar Lista de alumnos
           </button>
-          
         </div>
       </div>
     </div>

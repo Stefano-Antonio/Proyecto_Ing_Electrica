@@ -69,7 +69,19 @@ function Registro() {
           });
           return;
         }
-  
+
+        // Verificar si la carrera del alumno coincide con la seleccionada
+        if (tipoUsuario === "personal" && idCarreraBD !== id_carrera) {
+          if (roles.includes("C")){
+          toast.error("La matrícula no corresponde a la carrera seleccionada.", {
+            position: "top-right",
+            autoClose: 3000,
+          });
+          return;
+          }
+        }
+        
+
         setMensaje(mensaje);
         localStorage.setItem("id_carrera", idCarreraBD);
         localStorage.setItem("isAuthenticated", "true");
@@ -117,7 +129,7 @@ function Registro() {
     }
   };
   
-
+  
   return (
     <div className="registro-layout">
       <ToastContainer />

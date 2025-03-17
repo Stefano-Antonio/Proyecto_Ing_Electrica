@@ -81,12 +81,13 @@ const AdministrarMaterias = () => {
         {/* Input de búsqueda */}
         <input
           type="text"
-          placeholder="Buscar por  nombre, grupo, salon o doscente..."
+          placeholder="Buscar por  nombre, grupo, salon o docente..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="search-bar"
         />
 
+      {materiasFiltradas.length > 0 ? (
         <div className="scrollable-table">
           <table className='materia-table'>
             <thead>
@@ -139,7 +140,9 @@ const AdministrarMaterias = () => {
             </tbody>
           </table>
         </div>
-
+        ) : (
+          <p className="no-alumnos-message">No se encontraron resultados.</p>
+        )}
         <div className="add-delete-buttons">
           <button onClick={handleNavigate}>Agregar nueva materia</button>
         </div>

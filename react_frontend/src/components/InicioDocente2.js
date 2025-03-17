@@ -5,6 +5,7 @@ import "./InicioDocente2.css";
 function InicioDocente2() {
   const [materias, setMaterias] = useState([]);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -87,6 +88,13 @@ function InicioDocente2() {
     navigate(-1); // Navegar a la página anterior
   };
 
+   // Filtrar materias por búsqueda
+   const materiasFiltradas = materias.filter(materias => 
+    materias.grupo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    materias.salon.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    materias.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="docente-layout">
       <div className="docente-container">
@@ -96,13 +104,24 @@ function InicioDocente2() {
 
         <h2>Docente</h2>
         <h4>{`Bienvenido, ${nombreDocente || storedNombreDocente}`}</h4>
-        <p>A continuación, seleccione la lista que desee visualizar</p>
+        <h4>A continuación, seleccione la lista que desee visualizar</h4>
 
         <div className="docente-buttons">
           <button className="button" onClick={handleChangeView}>Lista de alumnos</button>
           <button className="button">Lista de materias</button>
         </div>
+
+        {/* Input de búsqueda */}
+        <input
+          type="text"
+          placeholder="Buscar por nombre o grupo o salon..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-bar"
+        />
+
         {error && <p className="error-message">{error}</p>}
+        {materiasFiltradas.length > 0 ? (
         <div className="docente-content-2">
           <table className="docente-table-2">
             <thead>
@@ -120,7 +139,7 @@ function InicioDocente2() {
               </tr>
             </thead>
             <tbody>
-              {materias.map((materia) => (
+              {materiasFiltradas.map((materia) => (
                 <tr key={materia._id}>
                   <td>{materia.grupo}</td>
                   <td>{materia.salon}</td>
@@ -142,6 +161,9 @@ function InicioDocente2() {
             </tbody>
           </table>
         </div>
+      ) : (
+          <p className="no-alumnos-message">No se encontraron resultados.</p>
+        )}
         <div className="horario-buttons">
           <button className="button">
             Descargar Lista de materias

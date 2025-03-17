@@ -111,6 +111,7 @@ const AdministratPersonalCoordinador = () => {
           className="search-bar"
         />
 
+        {personalFiltrado.length > 0 ? (
         <div className="personal-scrollable-1">
           <table className="personal-table">
             <thead>
@@ -159,6 +160,9 @@ const AdministratPersonalCoordinador = () => {
           </tbody>
           </table>
         </div>
+      ) : (
+        <p className="no-alumnos-message">No se encontraron resultados.</p>
+      )}
         {mostrarModal && (
           <div className="modal">
             <div className="modal-content">

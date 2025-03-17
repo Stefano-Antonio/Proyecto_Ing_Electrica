@@ -144,6 +144,7 @@ const AlumnoListCoord = () => {
           className="search-bar"
         />
 
+      {alumnosFiltrados.length > 0 ? (
       <div className="alumno-scrollable-table">
         <table className="alumnos-table">
           <thead>
@@ -199,6 +200,9 @@ const AlumnoListCoord = () => {
           </tbody>
         </table>
       </div>
+      ) : (
+        <p className="no-alumnos-message">No se encontraron resultados.</p>
+      )}
       {mostrarModal && (
         <div className="modal">
           <div className="modal-content">

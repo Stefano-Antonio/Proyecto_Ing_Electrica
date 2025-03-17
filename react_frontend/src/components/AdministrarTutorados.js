@@ -6,6 +6,7 @@ function AdministrarTutorados() {
   const [alumnos, setAlumnos] = useState([]);
   const [error, setError] = useState(null);
   const location = useLocation();
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const navigate = useNavigate();
   const { matriculaCord } = location.state || {};
   console.log("Matrícula del tutor:", matriculaCord);
@@ -134,6 +135,12 @@ function AdministrarTutorados() {
     }
   };
 
+  // Filtrar alumnos por búsqueda
+  const alumnosFiltrados = alumnos.filter(alumno => 
+    alumno.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    alumno.estatus.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="tutorados-layout">
       <div className="tutorados-container">
@@ -144,7 +151,17 @@ function AdministrarTutorados() {
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
         </div>
         <h2>Tutor</h2>
-        <p>A continuación, se muestra una lista de alumnos asignados.</p>
+        <h4>A continuación, se muestra una lista de alumnos asignados.</h4>
+
+         {/* Input de búsqueda */}
+         <input
+          type="text"
+          placeholder="Buscar por nombre o estatus..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-bar"
+        />
+
         {error && <p className="error-message">{error}</p>}
         <div className="tutorados-content">
           <table className="tutorados-table">
@@ -156,7 +173,7 @@ function AdministrarTutorados() {
               </tr>
             </thead>
             <tbody>
-              {alumnos.map((alumno) => (
+              {alumnosFiltrados.map((alumno) => (
                 <tr key={alumno._id}>
                   <td>{alumno.nombre}</td>
                   <td>

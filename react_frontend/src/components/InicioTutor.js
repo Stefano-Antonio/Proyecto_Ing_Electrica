@@ -6,6 +6,7 @@ function InicioTutor() {
   const [alumnos, setAlumnos] = useState([]);
   const [error, setError] = useState(null);
   const location = useLocation();
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const navigate = useNavigate();
   const { nombre, matricula, id_carrea } = location.state || {};
   const matriculaTutor = localStorage.getItem("matricula");
@@ -104,6 +105,13 @@ function InicioTutor() {
     }
   };
 
+  // Filtrar alumnos por búsqueda
+  const alumnosFiltrados = alumnos.filter(alumno => 
+    alumno.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    alumno.estatus.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+
   return (
     <div className="tutor-layout">
       <div className="tutor-container">
@@ -111,8 +119,19 @@ function InicioTutor() {
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
         </div>
         <h2>Tutor</h2>
-        <p>A continuación, se muestra una lista de alumnos asignados.</p>
+        <h4>A continuación, se muestra una lista de alumnos asignados.</h4>
+
+        {/* Input de búsqueda */}
+        <input
+          type="text"
+          placeholder="Buscar por nombre o estatus..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-bar"
+        />
+
         {error && <p className="error-message">{error}</p>}
+        {alumnosFiltrados.length > 0 ? (
         <div className="tutor-content">
           <table className="tutor-table">
             <thead>
@@ -123,7 +142,7 @@ function InicioTutor() {
               </tr>
             </thead>
             <tbody>
-              {alumnos.map((alumno) => (
+              {alumnosFiltrados.map((alumno) => (
                 <tr key={alumno._id}>
                   <td>{alumno.nombre}</td>
                   <td>
@@ -152,6 +171,9 @@ function InicioTutor() {
             </tbody>
           </table>
         </div>
+        ) : (
+          <p className="no-alumnos-message">No se encontraron resultados.</p>
+        )}
         <div className="horario-buttons">
           <button className="button">
             Descargar Lista de alumnos
