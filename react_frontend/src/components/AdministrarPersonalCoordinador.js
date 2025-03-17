@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
-const AdministratPersonalCoordinador = () => {
+const AdministrarPersonalCoordinador = () => {
   const [personal, setPersonal] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
@@ -183,4 +183,4 @@ const AdministratPersonalCoordinador = () => {
   );
 };
 
-export default AdministratPersonalCoordinador;
+export default AdministrarPersonalCoordinador;

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import "./AlumnoList.css";
 
 const AlumnoListCoord = () => {
@@ -95,11 +97,11 @@ const AlumnoListCoord = () => {
     try {
       await axios.delete(`http://localhost:5000/api/alumnos/${AlumnoAEliminar}`);
       setAlumnos(prevState => prevState.filter(alumno => alumno._id !== AlumnoAEliminar));
-      alert("Alumno eliminado con éxito");
+      toast.success("Alumno eliminado con éxito");
       setMostrarModal(false);
     } catch (error) {
       console.error('Error al eliminar alumno:', error);
-      alert("Hubo un error al eliminar el alumno");
+      toast.error("Hubo un error al eliminar el alumno");
     }
   };
 
@@ -131,7 +133,9 @@ const AlumnoListCoord = () => {
   );
 
   return (
-    <div className="alumno-container">
+    <div className="alumno-layout">
+      <ToastContainer position="top-right" autoClose={3000} />
+      <div className="alumno-container">
       <h3>Administrar alumnos</h3>
       <p>Lista de alumnos asociados al programa académico</p>
       
@@ -226,6 +230,8 @@ const AlumnoListCoord = () => {
         
       </ul>
     </div>
+    </div>
+    
   );
 };
 
