@@ -38,6 +38,7 @@ import CrearAlumno from './components/CrearAlumno';
 import './components/CrearAlumno.css';
 import ModificarAlumno from './components/ModificarAlumno';
 import CrearPersonal from './components/CrearPersonal';
+import CrearPersonalCG from './components/CrearPersonalCG';
 import './components/CrearPersonal.css';
 import AdministrarTutorados from './components/AdministrarTutorados';
 import './components/CrearPersonal.css';
@@ -53,6 +54,9 @@ import './components/ModificarMateria.css';
 import AlumnoListCoord from "./components/AlumnoListCoord";
 import './components/AlumnoList.css';
 import AdministrarPersonalCoordinador from "./components/AdministrarPersonalCoordinador";
+import './components/InicioCoordinadorGen.css';
+import InicioCoordinadorGeneral from "./components/InicioCoordinadorGeneral";
+
 
 function App() {
   const userType = localStorage.getItem("userType") || "alumno"; // Puede ser "alumno" o "personal"
@@ -89,11 +93,13 @@ function App() {
               <Route path="/modificar-alumno" element={<PrivateRoute><ModificarAlumno/></PrivateRoute>}></Route>
               <Route path="/modificar-materia" element={<PrivateRoute><ModificarMateria/></PrivateRoute>}></Route>
               <Route path="/crear-personal" element={<PrivateRoute><CrearPersonal/></PrivateRoute>}></Route>
+              <Route path="/crear-personal-cg" element={<PrivateRoute><CrearPersonalCG/></PrivateRoute>}></Route>
               <Route path="/modificar-personal" element={<PrivateRoute><ModificarPersonal/></PrivateRoute>}></Route>
               <Route path="/admin-tutor" element={<PrivateRoute><AdministrarTutorados/></PrivateRoute>}></Route>
               <Route path="/coordinador-tutor" element={<PrivateRoute><CoordinadorTutor/></PrivateRoute>}></Route>
               <Route path="/administrar-tutorados" element={<PrivateRoute><AdministrarTutorados /></PrivateRoute>} />
               <Route path="/asignar-tutor" element={<PrivateRoute><AsignarTutor/></PrivateRoute>}></Route>
+              <Route path="/inicio-coordinador-gen" element={<PrivateRoute><InicioCoordinadorGeneral/></PrivateRoute>}></Route>
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </div>

@@ -14,4 +14,4 @@ router.delete('/:id', personalController.deletePersonal);
 
 
 
-export default router;
+module.exports = router;

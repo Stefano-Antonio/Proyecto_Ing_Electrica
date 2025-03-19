@@ -9,12 +9,12 @@ const authRoutes = require('./routes/authRoutes');  // Importa las rutas de aute
 const materiasRoutes = require('./routes/materiasRoutes');
 const personalRoutes = require('./routes/personalRoutes');
 const coordinadorRoutes = require('./routes/coordinadorRoutes');
-const Materia = require('./models/Materia');
-const Docente = require('./models/Docentes');
 const tutorRoutes = require('./routes/tutorRoutes');
 const docenteRoutes = require('./routes/docenteRoutes');
 const app = express();
 const PORT = process.env.PORT || 5000;
+const coordinadorGenRoutes = require('./routes/coordinadorGenRoutes');
+
 
 // Middleware
 app.use(cors());
@@ -27,12 +27,13 @@ app.use('/api/personal', personalRoutes);
 app.use('/api/tutores', tutorRoutes);
 app.use('/api/docentes', docenteRoutes);
 app.use('/api/coordinadores', coordinadorRoutes);
+app.use('api/cord_gen', coordinadorGenRoutes);
 
 
 // Conexión a MongoDB
 mongoose.connect('mongodb+srv://Stefano117:Mixbox360@cluster0.qgw2j.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
 
-}).then(() => {
+}).then(async () => {
   console.log('Conectado a MongoDB');
 
 }).catch(error => {
