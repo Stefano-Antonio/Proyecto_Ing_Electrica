@@ -9,6 +9,7 @@ function ModificarMateria() {
   const navigate = useNavigate();
   const [mostrarModal, setMostrarModal] = useState(false);
   const [file, setFile] = useState(null); // Almacenar el archivo CSV
+  const id_carrera = localStorage.getItem("id_carrera");
   const [formData, setFormData] = useState({
     id_materia: '',
     nombre: '',
@@ -74,45 +75,46 @@ function ModificarMateria() {
   const handleSubmitCSV = async (e) => {
     e.preventDefault();
     if (!file) {
-      alert("Por favor selecciona un archivo CSV");
+      toast.warn("Por favor selecciona un archivo CSV");
       return;
     }
-
+  
     const formData = new FormData();
     formData.append("csv", file);
-
+  
     try {
       await axios.post(
-        "http://localhost:5000/api/materias/subir-csv", // Cambiar la URL a 'materias'
+        `http://localhost:5000/api/materias/subir-csv-por-carrera?id_carrera=${id_carrera}`, // Solo actualiza materias de la carrera
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
-
-      alert("Base de datos de materias actualizada con éxito desde el archivo CSV");
+  
+      toast.success("Base de datos de materias actualizada con éxito desde el archivo CSV");
       setMostrarModal(false);
     } catch (error) {
       console.error("Error al subir el archivo CSV:", error);
-      alert("Hubo un error al actualizar la base de datos");
+      toast.error("Hubo un error al actualizar la base de datos");
     }
   };
+  
 
   const handleDownloadCSV = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/materias/exportar-csv", // Cambiar la URL a 'materias'
+        `http://localhost:5000/api/materias/exportar-csv-por-carrera?id_carrera=${id_carrera}`, // Solo descarga materias de la carrera
         { responseType: "blob" }
       );
-
+  
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "materias.csv");
+      link.setAttribute("download", `materias_${id_carrera}.csv`);
       document.body.appendChild(link);
       link.click();
       link.remove();
     } catch (error) {
       console.error("Error al descargar el archivo CSV:", error);
-      alert("No se pudo descargar el archivo");
+      toast.error("No se pudo descargar el archivo");
     }
   };
 
@@ -347,7 +349,22 @@ function ModificarMateria() {
                 </select>
               </div>
             </div>
-            {mostrarModal && (
+            <div className="materia-buttons">
+              <button type="submit" className="button">Agregar</button>
+            </div>
+          </form>
+          <div className="materia-buttons">
+              <button
+                type="button"  // Se agrega este atributo para evitar que dispare el submit
+                className="button"
+                onClick={() => setMostrarModal(true)}
+              >
+                Subir base de datos de materias
+              </button>
+            </div>
+        </div>
+      </div>
+          {mostrarModal && (
               <div className="modal">
                 <div className="modal-content">
                   <h3>Subir base de datos</h3>
@@ -359,19 +376,6 @@ function ModificarMateria() {
                 </div>
               </div>
             )}
-            <div className="materia-buttons">
-              <button type="submit" className="button">Agregar</button>
-              <button
-                type="button"  // Se agrega este atributo para evitar que dispare el submit
-                className="button"
-                onClick={() => setMostrarModal(true)}
-              >
-                Subir base de datos de materias
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
     </div>
   );
 }

@@ -60,7 +60,13 @@ function CrearPersonal() {
   const handleSubmitCSV = async (e) => {
     e.preventDefault();
     if (!file) {
-      alert("Por favor selecciona un archivo CSV");
+      toast.error("Por favor selecciona un archivo CSV.");
+      return;
+    }
+  
+    const id_carrera = localStorage.getItem("id_carrera");
+    if (!id_carrera) {
+      toast.error("ID de carrera no encontrado.");
       return;
     }
   
@@ -69,18 +75,19 @@ function CrearPersonal() {
   
     try {
       await axios.post(
-        "http://localhost:5000/api/personal/subir-csv",
+        `http://localhost:5000/api/personal/subir-csv/carrera/${id_carrera}`, // ✅ Ahora se pasa en la URL
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
   
-      alert("Base de datos actualizada con éxito desde el archivo CSV");
+      toast.success("Base de datos actualizada con éxito desde el archivo CSV");
       setMostrarModal(false);
     } catch (error) {
       console.error("Error al subir el archivo CSV:", error);
-      alert("Hubo un error al actualizar la base de datos");
+      toast.error("Hubo un error al actualizar la base de datos");
     }
   };
+
 
   const handleSumbitDB = async (e) => {
     setMostrarModal(true);
@@ -88,10 +95,16 @@ function CrearPersonal() {
   };
   
   const handleDownloadCSV = async () => {
+    const id_carrera = localStorage.getItem("id_carrera");
+    if (!id_carrera) {
+      toast.error("ID de carrera no encontrado.");
+      return;
+    }
+  
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/personal/exportar-csv",
-        { responseType: "blob" } // Asegurar que se reciba como blob
+        `http://localhost:5000/api/personal/exportar-csv/carrera/${id_carrera}`,
+        { responseType: "blob" } // Recibir como blob para descarga
       );
   
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -103,9 +116,10 @@ function CrearPersonal() {
       link.remove();
     } catch (error) {
       console.error("Error al descargar el archivo CSV:", error);
-      alert("No se pudo descargar el archivo");
+      toast.error("No se pudo descargar el archivo.");
     }
   };
+  
 
   return (
     <div className="persona1-layout">
@@ -186,7 +200,16 @@ function CrearPersonal() {
                 />
               </div>
             </div>
-            {mostrarModal && (
+            <div className="persona1-buttons">
+              <button type="submit" className="button">Agregar</button>
+            </div>
+          </form>
+            <div className="persona1-buttons">
+              <button className="button" onClick={handleSumbitDB}>Subir base de datos de personal</button>
+            </div>
+        </div>
+      </div>
+      {mostrarModal && (
               <div className="modal">
                 <div className="modal-content">
                   <h3>Subir base de datos</h3>
@@ -198,14 +221,6 @@ function CrearPersonal() {
                 </div>
               </div>
             )}
-
-            <div className="persona1-buttons">
-              <button type="submit" className="button">Agregar</button>
-              <button className="button" onClick={handleSumbitDB}>Subir base de datos de personal</button>
-            </div>
-          </form>
-        </div>
-      </div>
     </div>
   );
 }

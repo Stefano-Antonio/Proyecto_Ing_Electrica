@@ -1,0 +1,5 @@
+﻿matricula,nombre,password,roles,telefono,correo
+C001,Coord,segura123,C,4921455566,correo@personal.com
+P001,Maria Lopez,pass123,D,4921455566,maria@lopez.com
+P002,Sofia Del Muro,segura123,D,4921455566,sofiamuro@gmail.com
+COO025,Coord2,segura123,C,4921455566,correo@personal.com
