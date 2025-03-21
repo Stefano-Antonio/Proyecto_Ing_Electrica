@@ -19,8 +19,4 @@ router.delete('/:id', personalController.deletePersonal);
 
 
 
-<<<<<<< HEAD
 module.exports = router;
-=======
-module.exports = router;
->>>>>>> 2b2ab2f1f5517e5d53dc79fb0e77c2f049fa8f84
