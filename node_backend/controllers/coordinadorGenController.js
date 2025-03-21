@@ -1,8 +1,12 @@
 // Ruta para obtener el id_carrera de coordinadores, administradores y personal
 const Coordinadores = require('../models/Coordinadores');
+const Alumnos = require('../models/Alumno');
 const Administradores = require('../models/Administradores');
 const Personal = require('../models/Personal');
+const Tutores = require('../models/Tutores');
 
+
+// obtener el id_carrera del personal
 module.exports.getIdCarrera = async (req, res) => {
     const { matricula } = req.params;
     console.log("Matrícula:", matricula);
@@ -27,6 +31,41 @@ module.exports.getIdCarrera = async (req, res) => {
 
         return res.status(404).json({ message: "No se encontró el usuario" });
     } catch (error) {
+        return res.status(500).json({ message: "Error del servidor", error });
+    }
+};
+
+
+// Ruta para crear un alumno 
+module.exports.createAlumno = async (req, res) => {
+    const { matricula, nombre, correo, telefono, tutor, id_carrera } = req.body;
+    console.log("Datos del alumno:", req.body);
+    try {
+        // Crear el alumno
+        const alumno = new Alumnos({ matricula, nombre, correo, telefono, tutor, id_carrera });
+        await alumno.save();
+        return res.status(201).json({ message: "Alumno creado", alumno });
+    } catch (error) {
+        console.error("Error al crear el alumno:", error);
+        return res.status(500).json({ message: "Error del servidor", error });
+    }
+};
+
+// Ruta para obtener tutores
+module.exports.getTutores = async (req, res) => {
+    console.log("Obteniendo tutores");
+    try {
+        const personal = await Personal.find({});
+        
+        // Filtrar los perfiles que solo tengan roles T (Tutores), D (Directores), C (Coordinadores), A (Administradores) o CG (Coordinadores Generales)
+        const filteredTutors = personal.filter(p => 
+            p.roles.some(role => ['T', 'D', 'C', 'A', 'CG'].includes(role))
+        );
+        
+        console.log("Tutores encontrados:", filteredTutors);
+        return res.json({ tutors: filteredTutors }); // Devolver un objeto con la propiedad 'tutors'
+    } catch (error) {
+        console.error("Error al obtener tutores:", error);
         return res.status(500).json({ message: "Error del servidor", error });
     }
 };

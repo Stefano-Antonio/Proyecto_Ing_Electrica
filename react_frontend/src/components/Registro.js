@@ -37,15 +37,7 @@ function Registro() {
   const handleLogin = async (event) => {
     event.preventDefault();
   
-    // Validar si la carrera fue seleccionada
-    if (!id_carrera) {
-      toast.error("Por favor, selecciona una carrera antes de continuar.", {
-        position: "top-right",
-        autoClose: 3000,
-      });
-      return;
-    }
-  
+   
     try {
       const endpoint =
         tipoUsuario === "alumno"
@@ -97,22 +89,73 @@ function Registro() {
         // Redirigir según el tipo de usuario
         if (tipoUsuario === "personal") {
           if (roles.includes("D")) {
+
+            // Validar si la carrera fue seleccionada
+          if (!id_carrera) {
+            toast.error("Por favor, selecciona una carrera antes de continuar.", {
+            position: "top-right",
+            autoClose: 3000,
+            });
+            return;
+          }
             navigate("/docente/alumnos", { state: { nombre, matricula } });
           } else if (roles.includes("C")) {
+
+
+            // Validar si la carrera fue seleccionada
+            if (!id_carrera) {
+              toast.error("Por favor, selecciona una carrera antes de continuar.", {
+              position: "top-right",
+              autoClose: 3000,
+              });
+              return;
+            }
+
             navigate("/inicio-coordinador", { state: { nombre, matricula, id_carrera } });
           } else if (roles.includes("A")) {
+
+
+            // Validar si la carrera fue seleccionada
+              if (!id_carrera) {
+                toast.error("Por favor, selecciona una carrera antes de continuar.", {
+                position: "top-right",
+                autoClose: 3000,
+                });
+                return;
+              }
+
             navigate("/inicio-administrador", { state: { nombre, matricula, id_carrera } });
           } else if (roles.includes("T")) {
+
+
             navigate("/inicio-tutor", { state: { nombre, matricula } });
           } else if (roles.includes("CG")) {
+
+
             navigate("/inicio-coordinador-gen", { state: { nombre, matricula } });
           } else {
             setMensaje("Usuario personal desconocido");
           }
         } else if (tipoUsuario === "alumno") {
           if (horario) {
+            // Validar si la carrera fue seleccionada
+            if (!id_carrera) {
+              toast.error("Por favor, selecciona una carrera antes de continuar.", {
+              position: "top-right",
+              autoClose: 3000,
+              });
+              return;
+            }
             navigate("/validacion-estatus", { state: { nombre, id, id_carrera, horario } });
           } else if (carrerasPermitidas.hasOwnProperty(idCarreraBD)) {
+            // Validar si la carrera fue seleccionada
+            if (!id_carrera) {
+              toast.error("Por favor, selecciona una carrera antes de continuar.", {
+              position: "top-right",
+              autoClose: 3000,
+              });
+              return;
+            }
             navigate("/horario-seleccion/", { state: { nombre, id, id_carrera, horario } });
           } else {
             setMensaje("Usuario no encontrado");
@@ -130,6 +173,8 @@ function Registro() {
     }
   };
   
+   
+
   
   return (
     <div className="registro-layout">

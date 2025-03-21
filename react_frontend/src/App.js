@@ -35,8 +35,10 @@ import AdministrarPersonal from './components/AdministrarPersonal';
 import './components/AdministrarPersonal.css';
 import AdministrarMateriasAdmin from './components/AdministrarMateriasAdmin';
 import CrearAlumno from './components/CrearAlumno';
+import CrearAlumnoCG from './components/CrearAlumnoCG';
 import './components/CrearAlumno.css';
 import ModificarAlumno from './components/ModificarAlumno';
+import ModificarAlumnoCG from './components/ModificarAlumnoCG';
 import CrearPersonal from './components/CrearPersonal';
 import CrearPersonalCG from './components/CrearPersonalCG';
 import './components/CrearPersonal.css';
@@ -90,7 +92,9 @@ function App() {
               <Route path="/crear-materia" element={<CrearMateria />} />
               <Route path="/administrar-personal" element={<PrivateRoute><AdministrarPersonal/></PrivateRoute>}></Route>
               <Route path="/crear-alumno" element={<PrivateRoute><CrearAlumno/></PrivateRoute>}></Route>
+              <Route path="/crear-alumno-cg" element={<PrivateRoute><CrearAlumnoCG/></PrivateRoute>}></Route>
               <Route path="/modificar-alumno" element={<PrivateRoute><ModificarAlumno/></PrivateRoute>}></Route>
+              <Route path="/modificar-alumno-cg" element={<PrivateRoute><ModificarAlumnoCG/></PrivateRoute>}></Route>
               <Route path="/modificar-materia" element={<PrivateRoute><ModificarMateria/></PrivateRoute>}></Route>
               <Route path="/crear-personal" element={<PrivateRoute><CrearPersonal/></PrivateRoute>}></Route>
               <Route path="/crear-personal-cg" element={<PrivateRoute><CrearPersonalCG/></PrivateRoute>}></Route>

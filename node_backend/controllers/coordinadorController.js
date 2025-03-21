@@ -1,6 +1,7 @@
 const Docentes = require('../models/Docentes');
 const Tutores = require('../models/Tutores');
 const Coordinadores = require('../models/Coordinadores');
+
 const Personal = require('../models/Personal');
 const Alumno = require('../models/Alumno');
 const Materia = require('../models/Materia');
@@ -24,6 +25,7 @@ exports.getAlumnosAsignados = async (req, res) => {
     res.status(500).json({ message: 'Error al buscar el ID', error: error.message });
   }
 };
+
 exports.getAlumnosAsignadosCord = async (req, res) => {
   const { matricula } = req.params;
   console.log("Matrícula del coordinador:", matricula);
@@ -107,9 +109,8 @@ exports.getEstatusHorario = async (req, res) => {
     }
 };
 
-// Ruta para traer lista de tutores disponibles
+// Ruta para traer lista de tutores, docentes, coordinadores y administradores disponibles
 exports.getTutores = async (req, res) => {
-    
   try {
     const { matricula } = req.params;
     console.log("Matrícula del coordinador:", matricula);
@@ -134,30 +135,17 @@ exports.getTutores = async (req, res) => {
 
     console.log("Materias en la carrera:", materiasIds);
 
-    // Buscar docentes que tengan alumnos de la carrera o impartan materias de la carrera
-    const docentesPorAlumnos = await Docentes.find({ alumnos: { $in: alumnosIds } }).select("personalMatricula");
-    const docentesPorMaterias = await Docentes.find({ materias: { $in: materiasIds } }).select("personalMatricula");
-
-    console.log("Docentes por alumnos:", docentesPorAlumnos.map(d => d.personalMatricula));
-    console.log("Docentes por materias:", docentesPorMaterias.map(d => d.personalMatricula));
-    console.log("Docentes por alumnos y materias:", [...docentesPorAlumnos, ...docentesPorMaterias]);
-    // Combinar docentes sin duplicados
-    const docentes = [...docentesPorAlumnos, ...docentesPorMaterias].reduce((acc, docente) => {
-      if (!acc.some(d => d.personalMatricula === docente.personalMatricula)) {
-        acc.push(docente);
-      }
-      return acc;
-    }, []);
+    // Buscar todos los docentes existentes
+    const docentes = await Docentes.find().select("personalMatricula");
 
     console.log("Docentes encontrados:", docentes.map(d => d.personalMatricula));
-
-    // Buscar tutores que tengan alumnos de la carrera
-    const tutores = await Tutores.find({ alumnos: { $in: alumnosIds } }).select("personalMatricula");
+    // Buscar todos los tutores existentes
+    const tutores = await Tutores.find().select("personalMatricula");
 
     console.log("Tutores encontrados:", tutores.map(t => t.personalMatricula));
 
     // Buscar coordinadores y administradores de la carrera
-    const [coordinadores] = await Promise.all([
+    const [coordinadores,] = await Promise.all([
       Coordinadores.find({ id_carrera: coordinador.id_carrera }).select("personalMatricula")
     ]);
 
@@ -186,7 +174,5 @@ exports.getTutores = async (req, res) => {
     console.error("Error en getPersonalByCarrera:", error);
     res.status(500).json({ message: "Error al obtener personal", error: error.message });
   }
-
 };
-
 
