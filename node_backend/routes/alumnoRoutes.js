@@ -8,6 +8,11 @@ router.get('/exportar-csv', alumnoController.exportarAlumnosCSV);
 
 router.post('/subir-csv', upload.single('csv'), alumnoController.subirAlumnosCSV);
 
+// Ruta para exportar alumnos por carrera a CSV
+router.get('/exportar-csv/carrera/:id_carrera', alumnoController.exportarAlumnosCSVPorCarrera);
+
+// Ruta para subir alumnos por carrera desde CSV
+router.post('/subir-csv/carrera/:id_carrera', upload.single('csv'), alumnoController.subirAlumnosCSVPorCarrera);
 
 // Rutas para las operaciones CRUD
 router.post('/', alumnoController.createAlumno);

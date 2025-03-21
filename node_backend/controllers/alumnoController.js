@@ -482,3 +482,121 @@ exports.getEstatusHorario = async (req, res) => {
     res.status(500).json({ message: 'Error al obtener el estatus del horario', error });
   }
 }
+
+
+//Exporta alumnos por carrera
+
+exports.exportarAlumnosCSVPorCarrera = async (req, res) => {
+  try {
+    const { id_carrera } = req.params; // Obtener el id_carrera desde la URL
+
+    if (!id_carrera) {
+      return res.status(400).json({ message: "Se requiere el id_carrera" });
+    }
+
+    const alumnos = await Alumno.find({ id_carrera }); // Filtrar solo por la carrera
+
+    if (alumnos.length === 0) {
+      return res.status(404).json({ message: "No hay alumnos registrados para esta carrera" });
+    }
+
+    const formattedData = alumnos.map((a) => ({
+      matricula: a.matricula,
+      nombre: a.nombre,
+      telefono: a.telefono,
+      correo: a.correo,
+      id_carrera: a.id_carrera
+    }));
+
+    const fields = ["matricula", "nombre", "telefono", "correo", "id_carrera"];
+    const json2csvParser = new Parser({ fields });
+    let csv = json2csvParser.parse(formattedData);
+
+    // Agregar BOM para compatibilidad con Excel
+    csv = "\ufeff" + csv;
+
+    res.header("Content-Type", "text/csv; charset=utf-8");
+    res.attachment(`alumnos_carrera_${id_carrera}.csv`);
+    res.send(csv);
+  } catch (error) {
+    console.error("❌ Error al exportar CSV por carrera:", error);
+    res.status(500).json({ message: "Error al exportar CSV", error });
+  }
+};
+
+//Subir csv de alumnos por carrera
+exports.subirAlumnosCSVPorCarrera = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No se ha enviado ningún archivo CSV" });
+  }
+
+  const results = [];
+
+  fs.createReadStream(req.file.path, { encoding: "utf-8" })
+    .pipe(csv())
+    .on("data", (data) => {
+      const cleanedData = {};
+      Object.keys(data).forEach((key) => {
+        const cleanKey = key.replace(/"/g, "").trim(); // Elimina comillas dobles
+        cleanedData[cleanKey] = data[key];
+      });
+
+      results.push(cleanedData);
+    })
+    .on("end", async () => {
+      try {
+        if (results.length === 0) {
+          return res.status(400).json({ message: "El archivo CSV está vacío" });
+        }
+
+        console.log("✅ Datos obtenidos del CSV después de limpiar:", results);
+
+        // 📌 Obtener la carrera del CSV (de la primera alumno)
+        const id_carrera = results[0].id_carrera;
+
+        if (!id_carrera) {
+          return res.status(400).json({ message: "No se encontró el ID de la carrera en el archivo CSV" });
+        }
+
+        const matriculasCSV = results.map((alumno) => alumno.matricula?.toString().trim()).filter(Boolean);
+
+        await Promise.all(
+          results.map(async (alumnoData) => {
+            let { matricula, nombre, telefono, correo } = alumnoData;
+            matricula = matricula ? matricula.toString().trim() : null;
+
+            if (!matricula) {
+              console.warn("⚠ Alumno sin matrícula:", alumnoData);
+              return;
+            }
+
+            // 🔹 Insertar o actualizar alumno
+            const alumnoActualizado = await Alumno.findOneAndUpdate(
+              { matricula, id_carrera }, // Filtrar por matrícula y carrera
+              { nombre, telefono, correo, id_carrera },
+              { upsert: true, new: true }
+            );
+
+            console.log(`🔄 Alumno actualizado/insertado: ${matricula}`);
+          })
+        );
+
+        // 🔥 Solo eliminar alumnos que sean de la misma carrera y no estén en el CSV
+        if (matriculasCSV.length > 0) {
+          console.log("✅ Eliminando alumnos no incluidos en el CSV de esta carrera.");
+          await Alumno.deleteMany({ id_carrera, matricula: { $nin: matriculasCSV } });
+        }
+
+        fs.unlinkSync(req.file.path); // Eliminar archivo después de procesarlo
+        res.status(200).json({ message: `Base de datos de alumnos de la carrera ${id_carrera} actualizada con éxito desde el CSV` });
+
+      } catch (error) {
+        console.error("❌ Error al procesar el CSV:", error);
+        res.status(500).json({ message: "Error al actualizar la base de datos de alumnos desde el CSV", error });
+      }
+    })
+    .on("error", (err) => {
+      console.error("❌ Error al leer el CSV:", err);
+      res.status(500).json({ message: "Error al procesar el archivo CSV", error: err });
+    });
+};

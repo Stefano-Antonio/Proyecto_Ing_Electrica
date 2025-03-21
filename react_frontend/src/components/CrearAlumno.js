@@ -10,6 +10,7 @@ function CrearAlumno() {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [tutores, setTutores] = useState([]); // Lista de tutores
   const location = useLocation();
+  const id_carrera = localStorage.getItem("id_carrera");
   const { matriculaCord } = location.state || {};
   const [file, setFile] = useState(null); // Estado para el archivo
   const [form, setForm] = useState({
@@ -20,6 +21,7 @@ function CrearAlumno() {
     tutor: "", // Nuevo campo para el tutor
     matriculaCord: matriculaCord
   });
+
 
   console.log("Matricula del tutor:", matriculaCord);
 
@@ -44,28 +46,29 @@ function CrearAlumno() {
   const handleSubmitCSV = async (e) => {
     e.preventDefault();
     if (!file) {
-      alert("Por favor selecciona un archivo CSV");
+      toast.warn("Por favor selecciona un archivo CSV");
       return;
     }
-
+  
     const formData = new FormData();
     formData.append("csv", file);
-
+  
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/alumnos/subir-csv",
+        `http://localhost:5000/api/alumnos/subir-csv/carrera/${id_carrera}`, // <-- Ahora incluye id_carrera
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
-
-      alert("Base de datos actualizada con éxito desde el archivo CSV");
-
+  
+      toast.success("Base de datos actualizada con éxito desde el archivo CSV");
+  
       setMostrarModal(false); // Cierra el modal después de subir el archivo
     } catch (error) {
       console.error("Error al subir el archivo CSV:", error);
-      alert("Hubo un error al actualizar la base de datos");
+      toast.error("Hubo un error al actualizar la base de datos");
     }
   };
+  
 
   const handleChange = (e) => {
     setForm({
@@ -91,6 +94,7 @@ function CrearAlumno() {
       console.log("Alumno agregado:", response.data);
       toast.success("Alumno agregado con éxito");
       setForm({ nombre: "", matricula: "", correo: "", telefono: "", tutor: "" }); // Reset form
+      toast.success("Alumno creado con exito");
       navigate(-1); // Regresar a la página anterior
     } catch (error) {
       console.error("Error al agregar el alumno:", error);
@@ -101,7 +105,7 @@ function CrearAlumno() {
   const handleDownloadCSV = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/alumnos/exportar-csv",
+        `http://localhost:5000/api/alumnos/exportar-csv/carrera/${id_carrera}`,
         {
           responseType: "blob", // Asegúrate de recibir el archivo como blob
         }
@@ -110,13 +114,13 @@ function CrearAlumno() {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "alumnos.csv");
+      link.setAttribute("download", `alumnos_carrera_${id_carrera}.csv`);
       document.body.appendChild(link);
       link.click();
       link.remove();
     } catch (error) {
       console.error("Error al descargar el archivo CSV:", error);
-      alert("No se pudo descargar el archivo");
+      toast.error("No se pudo descargar el archivo");
     }
   };
 
@@ -127,7 +131,7 @@ function CrearAlumno() {
 
   return (
     <div className="alumno-layout">
-      <ToastContainer />
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="alumno-container">
         <div className="top-left"> 
           <button className="back-button" onClick={handleBack}>Regresar</button> 
@@ -196,6 +200,15 @@ function CrearAlumno() {
                 </select>
               </div>
             </div>
+            <div className="alumno-buttons">
+              <button type="submit" className="button">Agregar</button>
+            </div>
+          </form>
+          <div className="alumno-buttons">
+              <button type="button" className="button" onClick={handleSumbitDB}>Subir base de datos de alumnos</button>
+            </div>
+        </div>
+      </div>
             {mostrarModal && (
               <div className="modal">
                 <div className="modal-content">
@@ -212,13 +225,6 @@ function CrearAlumno() {
                 </div>
               </div>
             )}
-            <div className="alumno-buttons">
-              <button type="submit" className="button">Agregar</button>
-              <button type="button" className="button" onClick={handleSumbitDB}>Subir base de datos de alumnos</button>
-            </div>
-          </form>
-        </div>
-      </div>
     </div>
   );
 }
