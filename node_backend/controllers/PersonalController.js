@@ -80,7 +80,7 @@ const storage = multer.diskStorage({
 
 exports.getPersonal = async (req, res) => {
     try {
-        const personal = await Personal.find();
+        const personal = await Personal.find({ roles: { $nin: ['CG', 'AG'] } });
         res.status(200).json(personal);
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener personal', error });
@@ -112,26 +112,12 @@ exports.getPersonalByCarrera = async (req, res) => {
 
     console.log("Materias en la carrera:", materiasIds);
 
-    // Buscar docentes que tengan alumnos de la carrera o impartan materias de la carrera
-    const docentesPorAlumnos = await Docentes.find({ alumnos: { $in: alumnosIds } }).select("personalMatricula");
-    const docentesPorMaterias = await Docentes.find({ materias: { $in: materiasIds } }).select("personalMatricula");
-
-    console.log("Docentes por alumnos:", docentesPorAlumnos.map(d => d.personalMatricula));
-    console.log("Docentes por materias:", docentesPorMaterias.map(d => d.personalMatricula));
-    console.log("Docentes por alumnos y materias:", [...docentesPorAlumnos, ...docentesPorMaterias]);
-    // Combinar docentes sin duplicados
-    const docentes = [...docentesPorAlumnos, ...docentesPorMaterias].reduce((acc, docente) => {
-      if (!acc.some(d => d.personalMatricula === docente.personalMatricula)) {
-        acc.push(docente);
-      }
-      return acc;
-    }, []);
-
+    // Buscar todos los docentes
+    const docentes = await Docentes.find().select("personalMatricula");
     console.log("Docentes encontrados:", docentes.map(d => d.personalMatricula));
 
-    // Buscar tutores que tengan alumnos de la carrera
-    const tutores = await Tutores.find({ alumnos: { $in: alumnosIds } }).select("personalMatricula");
-
+    // Buscar todos los tutores
+    const tutores = await Tutores.find().select("personalMatricula");
     console.log("Tutores encontrados:", tutores.map(t => t.personalMatricula));
 
     // Buscar coordinadores y administradores de la carrera

@@ -86,7 +86,7 @@ function CrearPersonal() {
   
 
   const handleBack = () => { 
-    navigate(-1); // Navegar a la página anterior 
+    navigate(""); // Navegar a la página anterior 
   };
 
   const handleLogout = () => {

@@ -26,13 +26,22 @@ const AdministrarPersonalCG = () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/personal`);
         console.log("Personal encontrado:", response.data);
-        setPersonal(response.data);
+        const personalConCarrera = await Promise.all(response.data.map(async (persona) => {
+          try {
+        const carreraResponse = await axios.get(`http://localhost:5000/api/cordgen/carrera/${persona.matricula}`);
+        return { ...persona, id_carrera: carreraResponse.data.id_carrera };
+          } catch (error) {
+        console.error(`Error al obtener id_carrera para ${matricula}:`, error.message);
+        return persona;
+          }
+        }));
+        setPersonal(personalConCarrera);
       } catch (error) {
         console.error("Error al obtener datos del personal:", error.message);
       } finally {
         setLoading(false);
       }
-    };
+        };
 
     fetchPersonal();
   }, []);
@@ -91,6 +100,7 @@ const AdministrarPersonalCG = () => {
   const personalFiltrado = personalConRoles.filter(persona => 
     persona.matricula?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     persona.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    persona.id_carrera?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     persona.rolesTexto.includes(searchTerm.toLowerCase())
   );
   
@@ -102,44 +112,51 @@ const AdministrarPersonalCG = () => {
         <h3>Administrar personal</h3>
         <p className="info">Lista de personas asociados al programa académico:</p>
 
-        {/* Input de búsqueda */}
-        <input
-          type="text"
-          placeholder="Buscar por matrícula, nombre o permisos..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-bar"
-        />
+ 
+          <input
+            type="text"
+            placeholder="Buscar por carrera, matrícula, nombre o permisos..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-bar"
+          />
 
-        {personalFiltrado.length > 0 ? (
-        <div className="personal-scrollable-1">
-          <table className="personal-table">
-            <thead>
-              <tr>
-                <th>Programa</th>
-                <th>Nombre</th>
-                <th>Matricula</th>
-                <th>Permisos</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-            {personalFiltrado.length > 0 ? (
-              personalFiltrado.map(personal => (
-                <tr key={personal.matricula}>
-                  <td>{id_carrera}</td> {/* Muestra el nombre del programa */}
-                  <td>{personal.nombre}</td> {/* Muestra el nombre del docente */}
-                  <td>{personal.matricula}</td> {/* Muestra el ID del docente */}
-                  <td>{getRoleText(personal.roles)}</td> {/* Muestra el rol del docente */}
-                  <td>
-                    <div className="action-buttons">
-                      <button className="icon-button" onClick={() => navigate("/modificar-personal", { state: { personal } })}>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M12 20h9"></path>
-                          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                        </svg>
-                      </button>
-                      <button className="icon-button" onClick={() => { setUsuarioAEliminar(personal._id); setMostrarModal(true); }}>
+          {personalFiltrado.length > 0 ? (
+          <div className="personal-scrollable-1">
+            <table className="personal-table">
+              <thead>
+                <tr>
+            <th>Programa</th>
+            <th>Nombre</th>
+            <th>Matricula</th>
+            <th>Permisos</th>
+            <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+              {personalFiltrado.length > 0 ? (
+                personalFiltrado
+            .sort((a, b) => {
+              const roleOrder = { 'C': 1, 'A': 2, 'D': 3, 'T': 4 };
+              const aRole = a.roles.find(role => roleOrder[role]) || 'T';
+              const bRole = b.roles.find(role => roleOrder[role]) || 'T';
+              return roleOrder[aRole] - roleOrder[bRole];
+            })
+            .map(personal => (
+              <tr key={personal.matricula}>
+                <td>{['C', 'A'].some(role => personal.roles.includes(role)) ? personal.id_carrera : '-'}</td> {/* Muestra el nombre del programa o un guion */}
+                <td>{personal.nombre}</td> {/* Muestra el nombre del docente */}
+                <td>{personal.matricula}</td> {/* Muestra el ID del docente */}
+                <td>{getRoleText(personal.roles)}</td> {/* Muestra el rol del docente */}
+                <td>
+                  <div className="action-buttons">
+              <button className="icon-button" onClick={() => navigate("/modificar-personal", { state: { personal } })}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+              </button>
+              <button className="icon-button" onClick={() => { setUsuarioAEliminar(personal._id); setMostrarModal(true); }}>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="red" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <polyline points="3 6 5 6 21 6"></polyline>
                           <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>

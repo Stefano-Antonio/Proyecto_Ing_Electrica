@@ -125,9 +125,16 @@ const AdministrarPersonalCoordinador = () => {
             </thead>
             <tbody>
             {personalFiltrado.length > 0 ? (
-              personalFiltrado.map(personal => (
+              personalFiltrado
+              .sort((a, b) => {
+                const roleOrder = { 'C': 1, 'A': 2, 'D': 3, 'T': 4 };
+                const aRole = a.roles.find(role => roleOrder[role]) || 'T';
+                const bRole = b.roles.find(role => roleOrder[role]) || 'T';
+                return roleOrder[aRole] - roleOrder[bRole];
+              })
+              .map(personal => (
                 <tr key={personal.matricula}>
-                  <td>{id_carrera}</td> {/* Muestra el nombre del programa */}
+                  <td>{['C', 'A'].some(role => personal.roles.includes(role)) ? id_carrera : '-'}</td> {/* Muestra el nombre del programa o un guion */}
                   <td>{personal.nombre}</td> {/* Muestra el nombre del docente */}
                   <td>{personal.matricula}</td> {/* Muestra el ID del docente */}
                   <td>{getRoleText(personal.roles)}</td> {/* Muestra el rol del docente */}

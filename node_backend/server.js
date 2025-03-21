@@ -9,11 +9,11 @@ const authRoutes = require('./routes/authRoutes');  // Importa las rutas de aute
 const materiasRoutes = require('./routes/materiasRoutes');
 const personalRoutes = require('./routes/personalRoutes');
 const coordinadorRoutes = require('./routes/coordinadorRoutes');
+const coordinadorGenRoutes = require('./routes/coordinadorGenRoutes');
 const tutorRoutes = require('./routes/tutorRoutes');
 const docenteRoutes = require('./routes/docenteRoutes');
 const app = express();
 const PORT = process.env.PORT || 5000;
-const coordinadorGenRoutes = require('./routes/coordinadorGenRoutes');
 
 
 // Middleware
@@ -27,7 +27,7 @@ app.use('/api/personal', personalRoutes);
 app.use('/api/tutores', tutorRoutes);
 app.use('/api/docentes', docenteRoutes);
 app.use('/api/coordinadores', coordinadorRoutes);
-app.use('api/cord_gen', coordinadorGenRoutes);
+app.use('/api/cordgen', coordinadorGenRoutes);
 
 
 // Conexión a MongoDB
