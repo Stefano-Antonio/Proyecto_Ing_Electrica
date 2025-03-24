@@ -26,7 +26,7 @@ const AdministrarMateriasCG = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/materias/carrera/${id_carrera}`
+        `http://localhost:5000/api/materias`
       );
       setMaterias(response.data);
     } catch (error) {
@@ -77,6 +77,7 @@ const AdministrarMateriasCG = () => {
       materia.salon,
       materia.nombre,
       materia.grupo,
+      materia.id_carrera,
       getDocenteNombre(materia),
     ].some((campo) => campo.toLowerCase().includes(searchTerm.toLowerCase()))
   );
@@ -105,6 +106,7 @@ const AdministrarMateriasCG = () => {
             <table className="materia-table">
               <thead>
                 <tr>
+                  <th>Carrera</th>
                   <th>Grupo</th>
                   <th>Salón</th>
                   <th>Materia</th>
@@ -120,10 +122,11 @@ const AdministrarMateriasCG = () => {
               <tbody>
                 {materiasFiltradas.map((materia) => (
                   <tr key={materia._id}>
+                    <td>{materia.id_carrera}</td>
                     <td>{materia.grupo}</td>
                     <td>{materia.salon}</td>
                     <td>{materia.nombre}</td>
-                    <td>{getDocenteNombre(materia)}</td>
+                    <td c>{getDocenteNombre(materia)}</td>
                     <td>{materia.horarios.lunes || "-"}</td>
                     <td>{materia.horarios.martes || "-"}</td>
                     <td>{materia.horarios.miercoles || "-"}</td>
@@ -177,7 +180,7 @@ const AdministrarMateriasCG = () => {
         )}
 
         <div className="add-delete-buttons">
-          <button onClick={() => navigate("/crear-materia")}>Agregar nueva materia</button>
+          <button onClick={() => navigate("/crear-materia-cg")}>Agregar nueva materia</button>
         </div>
       </div>
     </div>

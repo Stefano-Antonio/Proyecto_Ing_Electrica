@@ -1,6 +1,6 @@
 import React, {useState} from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import "./InicioCoordinadorGen.css";
+import { Outlet, useNavigate,useLocation } from "react-router-dom";
 import AlumnoListCG from './AlumnoListCG';
 import AdministrarPersonalCG from './AdministrarPersonalCG';
 import AdministrarMateriasCG from './AdministrarMateriasCG';
@@ -42,16 +42,14 @@ function InicioCoordinadorGen() {
         <h4>{`Bienvenido, ${nombre}`}</h4>
         <h4>A continuacion, seleccione la lista que desee visualizar</h4>
 
-        <div className="docente-buttons">
-            <button className="button" onClick={() => mostrarComponente('alumno')}>Administrar alumnos</button>
-            <button className="button" onClick={() => mostrarComponente('personal')}>Administrar personal</button>
-            <button className="button" onClick={() => mostrarComponente('materias')}>Administrar materias</button>
+        <div className="buttons">
+          <button onClick={() => navigate("/inicio-coordinador-gen/alumnos")}>Administrar alumno</button>
+          <button onClick={() => navigate("/inicio-coordinador-gen/personal")}>Administrar personal</button>
+          <button onClick={() => navigate("/inicio-coordinador-gen/materias")}>Administrar materias</button>
         </div>
-
-        {/* Renderizado condicional de componentes */}
-        {componenteActivo === 'alumno' && <AlumnoListCG />}
-        {componenteActivo === 'personal' && <AdministrarPersonalCG />}
-        {componenteActivo === 'materias' && <AdministrarMateriasCG />}
+  
+        {/* Aquí se mostrará el componente de la ruta anidada */}
+        <Outlet />
       </div>
     </div>
   );

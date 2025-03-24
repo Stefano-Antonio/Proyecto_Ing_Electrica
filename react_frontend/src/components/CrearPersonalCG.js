@@ -32,14 +32,72 @@ function CrearPersonal() {
   
   const navigate = useNavigate();
 
+  const validarMatricula = (matricula) => {
+    return /^(CG|AG)?[A-Z]\d{4}$/.test(matricula); 
+  };
+
+  
+  const handleRoleChange = (e) => {
+    const selectedRole = e.target.value;
+    let prefix = "";
+  
+    switch (selectedRole) {
+      case "D":
+        prefix = "P"; // Docente
+        break;
+      case "T":
+        prefix = "T"; // Tutor
+        break;
+      case "CG":
+        prefix = "CG"; // Coordinador General
+        break;
+      case "C":
+        prefix = "C"; // Coordinador
+        break;
+      case "AG":
+        prefix = "AG"; // Administrador
+        break;
+      case "A":
+        prefix = "A"; // Administrador
+        break;
+      default:
+        prefix = "";
+    }
+  
+    setForm((prev) => ({
+      ...prev,
+      roles: selectedRole,
+      matricula: prefix, // Se asigna directamente el prefijo correcto
+      id_carrera: selectedRole === "C" || selectedRole === "A" ? prev.id_carrera : "" // Limpiar id_carrera si el rol no lo requiere
+    }));
+  
+    setMostrarCarrera(selectedRole === "C" || selectedRole === "A");
+  };
   
   const handleChange = (e) => {
     const { id, value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [id]: value
-    }));
+    
+    if (id === "matricula") {
+      let newValue = value.toUpperCase(); // Convertir a mayúsculas automáticamente
+  
+      if (form.roles === "CG" || form.roles === "AG") {
+        // Prefijo obligatorio de dos letras
+        if (!/^CG\d{0,4}$/.test(newValue) && !/^AG\d{0,4}$/.test(newValue)) {
+          return; // Evita entradas inválidas
+        }
+      } else {
+        // Prefijo obligatorio de una sola letra
+        if (!/^[A-Z]\d{0,4}$/.test(newValue)) {
+          return; // Evita entradas inválidas
+        }
+      }
+  
+      setForm((prev) => ({ ...prev, [id]: newValue }));
+    } else {
+      setForm((prev) => ({ ...prev, [id]: value }));
+    }
   };
+  
   
 
   const handleSubmit = async (e) => {
@@ -71,22 +129,9 @@ function CrearPersonal() {
   };
   
 
-  
-  const handleRoleChange = (e) => {
-    const selectedRole = e.target.value;
-  
-    setForm((prev) => ({
-      ...prev,
-      roles: selectedRole,
-      id_carrera: selectedRole === "C" || selectedRole === "A" ? prev.id_carrera : "" // Limpiar id_carrera si el rol no lo requiere
-    }));
-  
-    setMostrarCarrera(selectedRole === "C" || selectedRole === "A");
-  };
-  
 
   const handleBack = () => { 
-    navigate(""); // Navegar a la página anterior 
+    navigate("/inicio-coordinador-gen/personal"); // Navegar a la página anterior 
   };
 
   const handleLogout = () => {
@@ -189,15 +234,17 @@ function CrearPersonal() {
                 />
               </div>
               <div className="input-wrapper short-field2">
-                <label htmlFor="matricula">ID del usuario</label>
-                <input
-                  type="text"
-                  id="matricula"
-                  placeholder="Ingresar el ID de usuario"
-                  value={form.matricula}
-                  onChange={handleChange}
-                />
-              </div>
+                  <label htmlFor="matricula">ID del usuario</label>
+                  <input
+                    type="text"
+                    id="matricula"
+                    placeholder="Seleccione un permiso e ingrese 4 digitos"
+                    value={form.matricula}
+                    onChange={handleChange}
+                    maxLength={form.roles === "CG" || form.roles === "AG" ? 6 : 5} // 6 caracteres para CG y AG, 5 para los demás
+                    disabled={!form.roles} // Deshabilitado si no se ha elegido un rol
+                  />
+                </div>
             </div>
             <div className="form-group">
               <div className="input-wrapper short-field">
@@ -230,6 +277,8 @@ function CrearPersonal() {
                   <option value="T">Tutor</option>
                   <option value="C">Coordinador</option>
                   <option value="A">Administrador</option>
+                  <option value="CG">Coordinador General</option>
+                  <option value="AG">Administrador General</option>
                 </select>
               </div>
 
@@ -259,7 +308,7 @@ function CrearPersonal() {
               </div>
             </div>
             <div className="persona1-buttons">
-              <button type="submit" className="button">Agregar</button>
+            <button type="submit" disabled={!validarMatricula(form.matricula)}>Agregar</button>
             </div>
           </form>
             <div className="persona1-buttons">

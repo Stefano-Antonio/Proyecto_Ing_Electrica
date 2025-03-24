@@ -21,12 +21,52 @@ function CrearPersonal() {
 
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.id]: e.target.value
-    });
+  const validarMatricula = (matricula) => {
+    return /^(CG|AG)?[A-Z]\d{4}$/.test(matricula); 
   };
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+  
+    if (id === "roles") {
+      let prefix = "";
+      switch (value) {
+        case "D":
+          prefix = "P"; // Docente
+          break;
+        case "T":
+          prefix = "T"; // Tutor
+          break;
+        case "C":
+          prefix = "C"; // Coordinador
+          break;
+        case "A":
+          prefix = "A"; // Administrador
+          break;
+        default:
+          prefix = "";
+      }
+      
+      setForm((prevState) => ({
+        ...prevState,
+        roles: value,
+        matricula: prefix // Reiniciar matrícula al cambiar de rol
+      }));
+    } else if (id === "matricula") {
+      // Permitir solo 4 cifras y concatenar con la letra del rol
+      const numbersOnly = value.replace(/\D/g, "").slice(0, 4);
+      setForm((prevState) => ({
+        ...prevState,
+        matricula: prevState.matricula.charAt(0) + numbersOnly
+      }));
+    } else {
+      setForm((prevState) => ({
+        ...prevState,
+        [id]: value
+      }));
+    }
+  };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -150,9 +190,11 @@ function CrearPersonal() {
                 <input
                   type="text"
                   id="matricula"
-                  placeholder="Ingresar el ID de usuario"
+                  placeholder="Seleccione un permiso e ingrese 4 cifras"
                   value={form.matricula}
                   onChange={handleChange}
+                  maxLength={5} // Máximo 5 caracteres (1 letra + 4 cifras)
+                  disabled={!form.roles} // Deshabilitado si no se ha elegido un rol
                 />
               </div>
             </div>
@@ -201,7 +243,7 @@ function CrearPersonal() {
               </div>
             </div>
             <div className="persona1-buttons">
-              <button type="submit" className="button">Agregar</button>
+            <button type="submit" disabled={!validarMatricula(form.matricula)}>Agregar</button>
             </div>
           </form>
             <div className="persona1-buttons">

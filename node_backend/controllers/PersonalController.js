@@ -3,6 +3,8 @@ const Docentes = require('../models/Docentes');
 const Tutores = require('../models/Tutores');
 const Coordinadores = require('../models/Coordinadores');
 const Administradores = require('../models/Administradores');
+const CoordinadorGenMdl = require('../models/Coordinador_Gen');
+const AdministradorGenMdl = require('../models/Administrador_Gen');
 const Alumno = require('../models/Alumno');
 const Materia = require('../models/Materia');
 const bcrypt = require('bcryptjs');
@@ -28,47 +30,62 @@ const storage = multer.diskStorage({
 
   exports.createPersonal = async (req, res) => {
     console.log('Personal:', req.body);
-    const { matricula, nombre, password, roles, correo, telefono, id_carrera } = req.body; // Asegúrate de que id_carrera esté en el cuerpo de la solicitud
-    console.log('ID de la carrera recibido:', id_carrera); // Verificar que id_carrera se recibe correctamente
+    const { matricula, nombre, password, roles, correo, telefono, id_carrera } = req.body;
+    console.log('ID de la carrera recibido:', id_carrera);
+
     try {
         const newPersonal = new Personal({ matricula, nombre, password, roles, correo, telefono });
         const usuarioGuardado = await newPersonal.save();
         console.log('Usuario guardado en Personal:', usuarioGuardado);
-        console.log('PersonalMatricula antes de guardar:', usuarioGuardado.matricula);
 
-
-        if (roles.includes('D')) {
+        if (roles === 'D') {
             const newDocente = new Docentes({
                 personalMatricula: usuarioGuardado.matricula,
                 materias: [],
                 alumnos: []
             });
-            const docenteGuardado = await newDocente.save();
-            console.log('Usuario guardado en Docentes:', docenteGuardado);
-        } else if (roles.includes('T')) {
+            await newDocente.save();
+            console.log('Usuario guardado en Docentes');
+        } else if (roles === 'T') {
             const nuevoTutor = new Tutores({
                 personalMatricula: usuarioGuardado.matricula,
                 alumnos: []
             });
-            const tutorGuardado = await nuevoTutor.save();
-            console.log('Usuario guardado en Tutores:', tutorGuardado);
-        } else if (roles.includes('C')) {
-            console.log('Creando coordinador con id_carrera:', id_carrera, 'y personalMatricula:', usuarioGuardado.matricula); // Verificar valores antes de guardar
+            await nuevoTutor.save();
+            console.log('Usuario guardado en Tutores');
+        } else if (roles === 'C' && matricula.match(/^C\d{4}$/)) {
             const nuevoCoordinador = new Coordinadores({
                 id_carrera,
-                personalMatricula: usuarioGuardado.matricula, // Asegura que sea un string
+                personalMatricula: usuarioGuardado.matricula,
                 alumnos: []
             });
-            const coordinadorGuardado = await nuevoCoordinador.save();
-            console.log('Usuario guardado en Coordinadores:', coordinadorGuardado);
-        } else if (roles.includes('A')) {
+            await nuevoCoordinador.save();
+            console.log('Usuario guardado en Coordinadores');
+        } else if (roles === 'A' && matricula.match(/^A\d{4}$/)) {
             const nuevoAdministrador = new Administradores({
-                id_carrera: id_carrera, // Agregar el id_carrera aquí
-                personalMatricula: usuarioGuardado.matricula,
-                // Otros campos específicos de Administrador
+                id_carrera,
+                personalMatricula: usuarioGuardado.matricula
             });
-            const administradorGuardado = await nuevoAdministrador.save();
-            console.log('Usuario guardado en Administradores:', administradorGuardado);
+            await nuevoAdministrador.save();
+            console.log('Usuario guardado en Administradores');
+        } else if (roles === 'CG' && matricula.match(/^CG\d{4}$/)) {
+            const nuevoCoordinadorGen = new CoordinadorGenMdl({
+                nombre,
+                personalMatricula: usuarioGuardado.matricula,
+                alumnos: []
+            });
+            await nuevoCoordinadorGen.save();
+            console.log('Usuario guardado en Coordinador General');
+        } else if (roles === 'AG' && matricula.match(/^AG\d{4}$/)) {
+            const nuevoAdministradorGen = new AdministradorGenMdl({
+                nombre,
+                personalMatricula: usuarioGuardado.matricula,
+                password
+            });
+            await nuevoAdministradorGen.save();
+            console.log('Usuario guardado en Administrador General');
+        } else {
+            return res.status(400).json({ message: 'Rol o matrícula inválidos' });
         }
 
         res.status(201).json(usuarioGuardado);

@@ -118,9 +118,14 @@ function AdministrarTutorados() {
     navigate("/");
   };
 
-  const handleBack = () => { 
-    navigate("/inicio-coordinador/alumnos", { state: { matriculaCord: matriculaCord || storedMatriculaTutor } }); // Navegar a la página anterior 
-  }
+  const handleBack = () => {
+  if ((matriculaCord || storedMatriculaTutor).startsWith("C") && !(matriculaCord || storedMatriculaTutor).startsWith("CG")) {
+    navigate("/inicio-coordinador/alumnos", { state: { matriculaCord: matriculaCord || storedMatriculaTutor } });
+  } else if ((matriculaCord || storedMatriculaTutor).startsWith("CG")) {
+    navigate("/inicio-coordinador-gen", { state: { matriculaCord: matriculaCord || storedMatriculaTutor } });
+  } else {
+    navigate("/inicio-coordinador/alumnos", { state: { matriculaCord: matriculaCord || storedMatriculaTutor } });
+  }}
 
   const getEstatusIcon = (estatus) => {
     switch (estatus) {
