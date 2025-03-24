@@ -1,47 +1,39 @@
-import React, { useState } from "react";
-import './InicioAdministrador.css';
-import { useNavigate } from "react-router-dom";
-import AlumnoList from './AlumnoList';
-import AdministrarPersonal from './AdministrarPersonal';
-import AdministrarMateriasAdmin from "./AdministrarMateriasAdmin";
-
+import React from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+import "./InicioAdministrador.css";
 
 const InicioAdministrador = () => {
-  const navigate = useNavigate();
-    // Estado para controlar qué componente se debe mostrar
-    const [componenteActivo, setComponenteActivo] = useState('');
-  
-    // Función para cambiar el componente activo
-    const mostrarComponente = (componente) => {
-      setComponenteActivo(componente);
-    };
+    const navigate = useNavigate();
+    const id_carrera = localStorage.getItem("id_carrera");
+    const nombre = localStorage.getItem("nombre");
+    const matricula = localStorage.getItem("matricula");
 
     const handleLogout = () => {
       localStorage.removeItem("isAuthenticated");
       localStorage.removeItem("userType");
+      localStorage.removeItem("id_carrera");
+      localStorage.removeItem("matricula");
       navigate("/");
-    }
-  
+    };
+
     return (
-      <div className="container">
+      <div className="administrador-container">
         <div className="top-right"> 
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
         </div>
-        <h3>Administrador</h3>
+        <h2>Administrador</h2>
         <p>A continuación, seleccione la lista que desee visualizar</p>
   
         <div className="buttons">
-          <button onClick={() => mostrarComponente('alumno')}>Administrar alumno</button>
-          <button onClick={() => mostrarComponente('personal')}>Administrar personal</button>
-          <button onClick={() => mostrarComponente('materias')}>Administrar materias</button>
+          <button onClick={() => navigate("/inicio-administrador/alumnos")}>Administrar alumno</button>
+          <button onClick={() => navigate("/inicio-administrador/personal")}>Administrar personal</button>
+          <button onClick={() => navigate("/inicio-administrador/materias")}>Administrar materias</button>
         </div>
   
-        {/* Renderizado condicional de componentes */}
-        {componenteActivo === 'alumno' && <AlumnoList />}
-        {componenteActivo === 'personal' && <AdministrarPersonal />}
-        {componenteActivo === 'materias' && <AdministrarMateriasAdmin />}
+        {/* Aquí se mostrará el componente de la ruta anidada */}
+        <Outlet />
       </div>
     );
-  };
+};
 
 export default InicioAdministrador;

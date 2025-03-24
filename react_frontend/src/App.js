@@ -32,7 +32,7 @@ import './components/InicioAdministrador.css';
 import AdministrarMaterias from './components/AdministrarMaterias';
 import AdministrarMateriasCG from './components/AdministrarMateriasCG';
 import './components/AdministrarMaterias.css';
-import AdministrarPersonal from './components/AdministrarPersonal';
+import AdministrarPersonalAdmin from './components/AdministrarPersonalAdmin';
 import './components/AdministrarPersonal.css';
 import AdministrarMateriasAdmin from './components/AdministrarMateriasAdmin';
 import CrearAlumno from './components/CrearAlumno';
@@ -62,6 +62,8 @@ import AdministrarPersonalCoordinador from "./components/AdministrarPersonalCoor
 import AdministrarPersonalCG from "./components/AdministrarPersonalCG";
 import './components/InicioCoordinadorGen.css';
 import InicioCoordinadorGeneral from "./components/InicioCoordinadorGeneral";
+import AlumnoListAdmin from "./components/AlumnoListAdmin";
+import AdministrarTutoradosAdmin from "./components/AdministrarTutoradosAdmin";
 
 
 function App() {
@@ -95,7 +97,6 @@ function App() {
               <Route path="/administrar-materias" element={<AdministrarMaterias/>}></Route>
               <Route path="/crear-materia" element={<CrearMateria />} />
               <Route path="/crear-materia-cg" element={<CrearMateriaCG />} />
-              <Route path="/administrar-personal" element={<PrivateRoute><AdministrarPersonal/></PrivateRoute>}></Route>
               <Route path="/crear-alumno" element={<PrivateRoute><CrearAlumno/></PrivateRoute>}></Route>
               <Route path="/crear-alumno-cg" element={<PrivateRoute><CrearAlumnoCG/></PrivateRoute>}></Route>
               <Route path="/modificar-alumno" element={<PrivateRoute><ModificarAlumno/></PrivateRoute>}></Route>
@@ -105,6 +106,7 @@ function App() {
               <Route path="/crear-personal-cg" element={<PrivateRoute><CrearPersonalCG/></PrivateRoute>}></Route>
               <Route path="/modificar-personal" element={<PrivateRoute><ModificarPersonal/></PrivateRoute>}></Route>
               <Route path="/admin-tutor" element={<PrivateRoute><AdministrarTutorados/></PrivateRoute>}></Route>
+              <Route path="/lista-tutorados-admin" element={<PrivateRoute><AdministrarTutoradosAdmin/></PrivateRoute>}></Route>
               <Route path="/coordinador-tutor" element={<PrivateRoute><CoordinadorTutor/></PrivateRoute>}></Route>
               <Route path="/administrar-tutorados" element={<PrivateRoute><AdministrarTutorados /></PrivateRoute>} />
               <Route path="/asignar-tutor" element={<PrivateRoute><AsignarTutor/></PrivateRoute>}></Route>
@@ -112,8 +114,12 @@ function App() {
                   <Route path="alumnos" element={<AlumnoListCG/>}></Route>
                   <Route path="personal" element={<AdministrarPersonalCG/>}></Route>;
                   <Route path="materias" element={<AdministrarMateriasCG/>}></Route>;
-                  </Route>
-                    
+                </Route>
+                <Route path="/inicio-administrador" element={<PrivateRoute><InicioAdministrador/></PrivateRoute>}>
+                  <Route path="alumnos" element={<AlumnoListAdmin/>}></Route>
+                  <Route path="personal" element={<AdministrarPersonalAdmin/>}></Route>;
+                  <Route path="materias" element={<AdministrarMaterias/>}></Route>;
+                </Route>
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </div>

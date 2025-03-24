@@ -10,6 +10,7 @@ const materiasRoutes = require('./routes/materiasRoutes');
 const personalRoutes = require('./routes/personalRoutes');
 const coordinadorRoutes = require('./routes/coordinadorRoutes');
 const coordinadorGenRoutes = require('./routes/coordinadorGenRoutes');
+const administradorRoutes = require('./routes/administradorRoutes');
 const tutorRoutes = require('./routes/tutorRoutes');
 const docenteRoutes = require('./routes/docenteRoutes');
 const app = express();
@@ -27,6 +28,7 @@ app.use('/api/personal', personalRoutes);
 app.use('/api/tutores', tutorRoutes);
 app.use('/api/docentes', docenteRoutes);
 app.use('/api/coordinadores', coordinadorRoutes);
+app.use('/api/administradores', administradorRoutes);
 app.use('/api/cordgen', coordinadorGenRoutes);
 
 

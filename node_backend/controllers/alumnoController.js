@@ -9,6 +9,7 @@ const Personal = require('../models/Personal');
 const Tutor = require('../models/Tutores');
 const Docente = require('../models/Docentes');
 const Coordinador = require('../models/Coordinadores');
+const Administrador = require('../models/Administradores');
 
 
 // Configurar multer para manejar el archivo CSV
@@ -38,6 +39,7 @@ const asignarAlumnoATutor = async (tutorId, alumnoId) => {
     const TutorModel = await Tutor.findOne({ personalMatricula: tutorAsignado.matricula });
     const DocenteModel = await Docente.findOne({ personalMatricula: tutorAsignado.matricula });
     const CoordinadorModel = await Coordinador.findOne({ personalMatricula: tutorAsignado.matricula });
+    const AdministradorModel = await Administrador.findOne({ personalMatricula: tutorAsignado.matricula });
 
     if (TutorModel) {
       TutorModel.alumnos.push(alumnoId);
@@ -53,6 +55,11 @@ const asignarAlumnoATutor = async (tutorId, alumnoId) => {
       CoordinadorModel.alumnos.push(alumnoId);
       await CoordinadorModel.save();
       console.log('Alumno agregado a la lista de alumnos del coordinador');
+    }
+    if (AdministradorModel) {
+      AdministradorModel.alumnos.push(alumnoId);
+      await AdministradorModel.save();
+      console.log('Alumno agregado a la lista de alumnos del administrador');
     }
   } catch (error) {
     console.error('Error al asignar el alumno al tutor:', error);
@@ -101,7 +108,41 @@ exports.getAlumnos = async (req, res) => {
     res.status(500).json({ message: 'Error al obtener alumnos', error });
   }
 };
-// Obtener los alumnos de una carrera específica
+// Obtener los alumnos de una carrera específica (administradores)
+exports.getAlumnosCarreraAdmin = async (req, res) => {
+  console.log('Obteniendo alumnos de una carrera');
+
+  try {
+    const { matricula } = req.params;
+    console.log('Matrícula recibida:', matricula);
+
+
+      const personal = await Administrador.findOne({ personalMatricula: matricula });
+      if (personal) {
+        console.log('Administrador encontrado');
+      } else {
+        console.log('No se encontró un administrador con la matrícula proporcionada.');
+        return res.status(404).json({ message: 'No se encontró un administrador con esa matrícula.' });
+      }
+    
+
+      // Obtener el id_carrera del personal encontrado
+      const carrera = personal.id_carrera;
+      console.log('ID de carrera:', carrera);
+
+      // Buscar alumnos por la carrera obtenida
+      const alumnos = await Alumno.find({ id_carrera: carrera });
+
+      console.log('Alumnos encontrados:', alumnos);
+      res.status(200).json(alumnos);
+
+    } catch (error) {
+      console.error('Error al obtener alumnos de la carrera:', error);
+      res.status(500).json({ message: 'Error al obtener alumnos de la carrera', error });
+    }
+  };
+
+  // Obtener los alumnos de una carrera específica
 exports.getAlumnosCarrera = async (req, res) => {
   console.log('Obteniendo alumnos de una carrera');
 
@@ -244,6 +285,7 @@ exports.updateAlumno = async (req, res) => {
         const TutorModel = await Tutor.findOne({ personalMatricula: tutorAnteriorAsignado.matricula });
         const DocenteModel = await Docente.findOne({ personalMatricula: tutorAnteriorAsignado.matricula });
         const CoordinadorModel = await Coordinador.findOne({ personalMatricula: tutorAnteriorAsignado.matricula });
+        const AdministradorModel = await Administrador.findOne({ personalMatricula: tutorAnteriorAsignado.matricula });
 
         if (TutorModel) {
           TutorModel.alumnos = TutorModel.alumnos.filter(alumnoId => alumnoId.toString() !== alumno._id.toString());
@@ -257,6 +299,10 @@ exports.updateAlumno = async (req, res) => {
           CoordinadorModel.alumnos = CoordinadorModel.alumnos.filter(alumnoId => alumnoId.toString() !== alumno._id.toString());
           await CoordinadorModel.save();
           console.log('Alumno eliminado de la lista del coordinador anterior');
+        } else if (AdministradorModel) {
+          AdministradorModel.alumnos = AdministradorModel.alumnos.filter(alumnoId => alumnoId.toString() !== alumno._id.toString());
+          await AdministradorModel.save();
+          console.log('Alumno eliminado de la lista del administrador anterior');
         }
       }
     }
@@ -271,9 +317,10 @@ exports.updateAlumno = async (req, res) => {
     const TutorModel = await Tutor.findOne({ personalMatricula: tutorAsignado.matricula });
     const DocenteModel = await Docente.findOne({ personalMatricula: tutorAsignado.matricula });
     const CoordinadorModel = await Coordinador.findOne({ personalMatricula: tutorAsignado.matricula });
+    const AdministradorModel = await Administrador.findOne({ personalMatricula: tutorAsignado.matricula });
     console.log('Tutor encontrado:', TutorModel || DocenteModel || CoordinadorModel);
 
-    if (!TutorModel && !DocenteModel && !CoordinadorModel) {
+    if (!TutorModel && !DocenteModel && !CoordinadorModel && !AdministradorModel) {
       console.log('No se encontró un tutor en la base de datos con matrícula:', tutorAsignado.matricula);
     }
 
@@ -292,6 +339,11 @@ exports.updateAlumno = async (req, res) => {
       CoordinadorModel.alumnos.push(alumno._id);
       await CoordinadorModel.save();
       console.log('Alumno agregado a la lista de alumnos del coordinador');
+    }
+    if (AdministradorModel) {
+      AdministradorModel.alumnos.push(alumno._id);
+      await AdministradorModel.save();
+      console.log('Alumno agregado a la lista de alumnos del administrador');
     }
 
     // Actualizar el alumno con los nuevos datos
@@ -374,6 +426,7 @@ exports.deleteAlumno = async (req, res) => {
         const TutorModel = await Tutor.findOne({ personalMatricula: tutorAsignado.matricula });
         const DocenteModel = await Docente.findOne({ personalMatricula: tutorAsignado.matricula });
         const CoordinadorModel = await Coordinador.findOne({ personalMatricula: tutorAsignado.matricula });
+        const AdministradorModel = await Administrador.findOne({ personalMatricula: tutorAsignado.matricula });
 
         if (TutorModel) {
           TutorModel.alumnos = TutorModel.alumnos.filter(alumnoId => alumnoId.toString() !== alumno._id.toString());
@@ -389,6 +442,11 @@ exports.deleteAlumno = async (req, res) => {
           CoordinadorModel.alumnos = CoordinadorModel.alumnos.filter(alumnoId => alumnoId.toString() !== alumno._id.toString());
           await CoordinadorModel.save();
           console.log('Alumno eliminado de la lista del coordinador');
+        }
+        if (AdministradorModel) {
+          AdministradorModel.alumnos = AdministradorModel.alumnos.filter(alumnoId => alumnoId.toString() !== alumno._id.toString());
+          await AdministradorModel.save();
+          console.log('Alumno eliminado de la lista del administrador');
         }
       }
     }

@@ -107,24 +107,27 @@ exports.getPersonal = async (req, res) => {
 exports.getPersonalByCarrera = async (req, res) => {
   try {
     const { matricula } = req.params;
-    console.log("Matrícula del coordinador:", matricula);
+    console.log("Matrícula del coordinador/administrador:", matricula);
 
-    // Buscar el coordinador y obtener el id_carrera
+    // Buscar el coordinador o administrador y obtener el id_carrera
     const coordinador = await Coordinadores.findOne({ personalMatricula: matricula }).select("id_carrera");
-    if (!coordinador) {
-      return res.status(404).json({ message: "Coordinador no encontrado" });
+    const administrador = await Administradores.findOne({ personalMatricula: matricula }).select("id_carrera");
+
+    if (!coordinador && !administrador) {
+      return res.status(404).json({ message: "Coordinador o Administrador no encontrado" });
     }
 
-    console.log("ID de carrera del coordinador:", coordinador.id_carrera);
+    const id_carrera = coordinador ? coordinador.id_carrera : administrador.id_carrera;
+    console.log("ID de carrera:", id_carrera);
 
     // Obtener alumnos de la carrera
-    const alumnos = await Alumno.find({ id_carrera: coordinador.id_carrera }).select("_id");
+    const alumnos = await Alumno.find({ id_carrera }).select("_id");
     const alumnosIds = alumnos.map(alumno => alumno._id);
 
     console.log("Alumnos en la carrera:", alumnosIds);
 
     // Obtener materias de la carrera
-    const materias = await Materia.find({ id_carrera: coordinador.id_carrera }).select("_id");
+    const materias = await Materia.find({ id_carrera }).select("_id");
     const materiasIds = materias.map(materia => materia._id);
 
     console.log("Materias en la carrera:", materiasIds);
@@ -139,8 +142,8 @@ exports.getPersonalByCarrera = async (req, res) => {
 
     // Buscar coordinadores y administradores de la carrera
     const [coordinadores, administradores] = await Promise.all([
-      Coordinadores.find({ id_carrera: coordinador.id_carrera }).select("personalMatricula"),
-      Administradores.find({ id_carrera: coordinador.id_carrera }).select("personalMatricula")
+      Coordinadores.find({ id_carrera }).select("personalMatricula"),
+      Administradores.find({ id_carrera }).select("personalMatricula")
     ]);
 
     console.log("Coordinadores encontrados:", coordinadores.map(c => c.personalMatricula));
@@ -171,7 +174,6 @@ exports.getPersonalByCarrera = async (req, res) => {
     res.status(500).json({ message: "Error al obtener personal", error: error.message });
   }
 };
-
 
 exports.getPersonalById = async (req, res) => {
     try {

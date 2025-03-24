@@ -21,6 +21,7 @@ router.get('/', alumnoController.getAlumnos);
 router.get('/:id', alumnoController.getAlumnoById);
 router.get('/matricula/:matricula', alumnoController.getAlumnosAsignados); 
 router.get('/carrera/:matricula', alumnoController.getAlumnosCarrera);
+router.get('/carrera-admin/:matricula', alumnoController.getAlumnosCarreraAdmin);
 router.get('/horario/:id', alumnoController.getAlumnoByIdWithHorario);
 router.put('/:id', alumnoController.updateAlumno);
 router.put('/horario/:id', alumnoController.updateAlumnoHorario);
