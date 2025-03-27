@@ -68,8 +68,27 @@ function InicioDocente2() {
     fetchMaterias();
   }, [matriculaDocente, storedMatriculaDocente]);
 
+  // Función para formatear el nombre de la materia
+  const formatUrl = (nombre) => {
+    return nombre
+      .normalize("NFD") // Normaliza el texto para separar los acentos
+      .replace(/[\u0300-\u036f]/g, "") // Elimina los acentos
+      .toLowerCase() // Convierte a minúsculas
+      .replace(/[^a-z0-9\s]/g, "") // Elimina caracteres especiales
+      .trim() // Elimina espacios al inicio y al final
+      .replace(/\s+/g, "-"); // Reemplaza espacios por guiones
+  };
+
   const handleListaAlumnos = (materia) => {
-    navigate(`/docente/materias/${materia.nombre}/lista-alumnos`, { state: { nombre: nombreDocente || storedNombreDocente, matricula: matriculaDocente || storedMatriculaDocente, materiaId: materia._id, materiaNombre: materia.nombre } });
+    const materiaUrl = formatUrl(materia.nombre); // Formatea el nombre de la materia
+    navigate(`/docente/materias/${materiaUrl}/lista-alumnos`, {
+      state: {
+        nombre: nombreDocente || storedNombreDocente,
+        matricula: matriculaDocente || storedMatriculaDocente,
+        materiaId: materia._id,
+        materiaNombre: materia.nombre,
+      },
+    });
   };
 
   const handleLogout = () => {
@@ -88,8 +107,8 @@ function InicioDocente2() {
     navigate(-1); // Navegar a la página anterior
   };
 
-   // Filtrar materias por búsqueda
-   const materiasFiltradas = materias.filter(materias => 
+  // Filtrar materias por búsqueda
+  const materiasFiltradas = materias.filter(materias => 
     materias.grupo.toLowerCase().includes(searchTerm.toLowerCase()) ||
     materias.salon.toLowerCase().includes(searchTerm.toLowerCase()) ||
     materias.nombre.toLowerCase().includes(searchTerm.toLowerCase())
