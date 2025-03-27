@@ -33,12 +33,14 @@ s
 
 .docente-container h2 {
   font-size: 1.8rem;
+  text-align: center;
   font-weight: bold;
   color: #002a5c;
 }
 
 .docente-container p {
   color: #555;
+  text-align: center;
 }
 
 .docente-content-2 {
@@ -46,42 +48,31 @@ s
   white-space: nowrap; /* Evita que el contenido de las celdas se divida en múltiples líneas */
 }
 
-.docente-scrollable-table {
-  max-height: 280px;
-  max-width: 100%;
-  overflow-y: auto;
-  overflow-x: auto;
-}
 
 /* Tabla con ancho mayor para que active el scroll si es necesario */
 .docente-table-2 {
-  min-width: 130%; /* Ajusta este valor según el contenido */
+  width: 100%;
   border-collapse: collapse;
-  margin: 20px 0;
+  margin-bottom: 0px;
+  text-align: left;
 }
 .docente-table th,
 .docente-table td {
-  width: 33.33%; /* Asegura que cada columna tenga el mismo ancho */
-  text-align: center; /* Centra el contenido */
+  border: 1px solid #ccc;
+  text-align: center;
+  overflow: hidden;
 }
 
 .docente-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 20px 0;
-  overflow-x: auto;
+  background-color: #002060;
+  color: white;
 }
 
-.docente-table th,
-.docente-table td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: center;
-}
 
 .docente-table th {
-  background-color: #f2f2f2;
-  font-weight: bold;
+  background-color: #002060;
+  color: white;
+  text-align: center;
 }
 
 .actions {
@@ -124,6 +115,7 @@ s
 .field-group label {
   width: 100px;
   margin-right: 10px;
+  text-align: center;
   text-align: left; /* Alinea el texto a la derecha */
 }
 

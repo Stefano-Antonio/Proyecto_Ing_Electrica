@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import './App.css';
+import AlumnoListCG from './components/AlumnoListCG';
 import Encabezado from './components/Encabezado';
 import './components/Encabezado.css';
 import HorarioSeleccion from './components/HorarioSeleccion';
@@ -56,7 +57,6 @@ import CoordinadorTutor from './components/CoordinadorTutor';
 import ModificarMateria from './components/ModificarMateria';
 import './components/ModificarMateria.css';
 import AlumnoListCoord from "./components/AlumnoListCoord";
-import AlumnoListCG from "./components/AlumnoListCG";
 import './components/AlumnoList.css';
 import AdministrarPersonalCoordinador from "./components/AdministrarPersonalCoordinador";
 import AdministrarPersonalCG from "./components/AdministrarPersonalCG";
@@ -107,6 +107,7 @@ function App() {
               <Route path="/modificar-personal" element={<PrivateRoute><ModificarPersonal/></PrivateRoute>}></Route>
               <Route path="/admin-tutor" element={<PrivateRoute><AdministrarTutorados/></PrivateRoute>}></Route>
               <Route path="/lista-tutorados-admin" element={<PrivateRoute><AdministrarTutoradosAdmin/></PrivateRoute>}></Route>
+              <Route path="/administrar-materias-cg" element={<PrivateRoute><AdministrarMateriasCG/></PrivateRoute>}></Route>
               <Route path="/coordinador-tutor" element={<PrivateRoute><CoordinadorTutor/></PrivateRoute>}></Route>
               <Route path="/administrar-tutorados" element={<PrivateRoute><AdministrarTutorados /></PrivateRoute>} />
               <Route path="/asignar-tutor" element={<PrivateRoute><AsignarTutor/></PrivateRoute>}></Route>
@@ -114,7 +115,7 @@ function App() {
                   <Route path="alumnos" element={<AlumnoListCG/>}></Route>
                   <Route path="personal" element={<AdministrarPersonalCG/>}></Route>;
                   <Route path="materias" element={<AdministrarMateriasCG/>}></Route>;
-                </Route>
+                  </Route>
                 <Route path="/inicio-administrador" element={<PrivateRoute><InicioAdministrador/></PrivateRoute>}>
                   <Route path="alumnos" element={<AlumnoListAdmin/>}></Route>
                   <Route path="personal" element={<AdministrarPersonalAdmin/>}></Route>;

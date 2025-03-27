@@ -145,16 +145,16 @@ function InicioDocente2() {
           <table className="docente-table-2">
             <thead>
               <tr>
-                <th>Grupo</th>
-                <th>Salón</th>
-                <th>Alumnos</th>
-                <th>Materia</th>
-                <th>Lunes</th>
-                <th>Martes</th>
-                <th>Miércoles</th>
-                <th>Jueves</th>
-                <th>Viernes</th>
-                <th>Sábado</th>
+                <th style={{ textAlign: "center" }}>Grupo</th>
+                <th style={{ textAlign: "center" }}>Salón</th>
+                <th style={{ textAlign: "center" }}>Alumnos</th>
+                <th style={{ textAlign: "center" }}>Materia</th>
+                <th style={{ textAlign: "center" }}>Lunes</th>
+                <th style={{ textAlign: "center" }}>Martes</th>
+                <th style={{ textAlign: "center" }}>Miércoles</th>
+                <th style={{ textAlign: "center" }}>Jueves</th>
+                <th style={{ textAlign: "center" }}>Viernes</th>
+                <th style={{ textAlign: "center" }}>Sábado</th>
               </tr>
             </thead>
             <tbody>
