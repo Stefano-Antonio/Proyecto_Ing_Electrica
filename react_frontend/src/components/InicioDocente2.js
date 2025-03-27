@@ -49,6 +49,7 @@ function InicioDocente2() {
           return;
         }
 
+        //  OBTENER MATERIAS DEL DOCENTE 
         const response = await fetch(`http://localhost:5000/api/docentes/materias/${matricula}`);
         if (!response.ok) {
           throw new Error("Error al obtener las materias");
@@ -148,6 +149,7 @@ function InicioDocente2() {
                 <th style={{ textAlign: "center" }}>Grupo</th>
                 <th style={{ textAlign: "center" }}>Salón</th>
                 <th style={{ textAlign: "center" }}>Alumnos</th>
+                <th style={{ textAlign: "center" }}>Cupo</th>
                 <th style={{ textAlign: "center" }}>Materia</th>
                 <th style={{ textAlign: "center" }}>Lunes</th>
                 <th style={{ textAlign: "center" }}>Martes</th>
@@ -168,6 +170,7 @@ function InicioDocente2() {
                       <circle cx="12" cy="12" r="3"></circle>
                     </svg>
                   </button></td>
+                  <td>{materia.cupo}</td>
                   <td>{materia.nombre}</td>
                   <td>{materia.horarios.lunes || "-"}</td>
                   <td>{materia.horarios.martes || "-"}</td>

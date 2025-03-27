@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const Alumno = require('../models/Alumno');
 const Horario = require('../models/Horario');
+const Materia = require('../models/Materia');
 const Personal = require('../models/Personal');
 const Tutor = require('../models/Tutores');
 const Docente = require('../models/Docentes');
@@ -388,6 +389,36 @@ exports.updateAlumnoHorario = async (req, res) => {
       materias: materiasSeleccionadas
     });
 
+
+    for (const materiaId of materiasSeleccionadas) {
+      // Buscar la materia por su ID
+      const materia = await Materia.findById(materiaId);
+    
+      // Verificar si la materia existe
+      if (materia) {
+        // Asegurarse de que el campo 'alumnos' esté inicializado como un array
+        if (!Array.isArray(materia.alumnos)) {
+          materia.alumnos = []; // Inicializar como un array vacío si no existe
+        }
+    
+        if(materia.cupo > 0){
+        // Agregar el ID del alumno al array de alumnos de la materia
+        materia.alumnos.push(alumno._id);
+        }
+
+        //Quitar 1 del cupo de la materia de cada materia
+        if (materia.cupo > 0) {
+          materia.cupo = materia.cupo - 1;
+        } else {
+          console.warn(`Materia con ID ${materiaId} sin cupo`);
+          return res.status(500).json({ message: 'Materia sin cupo', error });
+        }
+        await materia.save(); // Guardar los cambios en la base de datos
+      } else {
+        console.warn(`Materia con ID ${materiaId} no encontrada`);
+      }
+    }
+
     // Guardar el nuevo horario en la base de datos
     const horarioGuardado = await nuevoHorario.save();
     console.log('Horario guardado:', horarioGuardado);
@@ -449,6 +480,15 @@ exports.deleteAlumno = async (req, res) => {
           console.log('Alumno eliminado de la lista del administrador');
         }
       }
+    }
+
+    //Eliminar el id del alumno de las materias que lo tienen en su array de alumnos
+    const materias = await Materia.find({ alumnos: alumno._id });
+    for (const materia of materias) {
+      materia.alumnos = materia.alumnos.filter(alumnoId => alumnoId.toString() !== alumno._id.toString());
+      //Aumentar en 1 el cupo de la materia
+      materia.cupo = materia.cupo + 1;
+      await materia.save();
     }
 
     // Eliminar el alumno

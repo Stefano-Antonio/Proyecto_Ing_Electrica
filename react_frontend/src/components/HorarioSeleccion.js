@@ -18,7 +18,7 @@ function HorarioSeleccion() {
   const [id_carrera, setIDCarrera] = useState(localStorage.getItem("id_carrera") || "ID de carrera desconocido");
 
 
-    // 🔒 Evitar que el usuario regrese a la pantalla anterior con el botón de retroceso
+    // Evitar que el usuario regrese a la pantalla anterior con el botón de retroceso
     useEffect(() => {
       const bloquearAtras = () => {
         window.history.pushState(null, null, window.location.href);
@@ -166,104 +166,105 @@ function HorarioSeleccion() {
     materias.nombre.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-    
-  return (
-    <div className="horario-layout">
-      <div className="horario-container">
-        <div className="top-right">
-          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
-        </div>
-        <h2>Sistema de selección de horario</h2>
-        <p>Bienvenido(a): <strong>{nombre || "Cargando..."}</strong></p>
-        <h4>Matricula <strong>{matricula || "Cargando..."}</strong></h4>
-        <p>A continuación, seleccione las materias que va a cargar en el semestre</p>
-
-        {/* Input de búsqueda */}
-        <input
-                  type="text"
-                  placeholder="Buscar por nombre, salon o grupo..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="search-bar"
-                />
-
-        <div className="horario-content">
-          <table className="horario-table">
-            <thead>
-              <tr>
-                <th>Seleccionar</th>
-                <th>Grupo</th>
-                <th>Salón</th>
-                <th>Materia</th>
-                <th>Lunes</th>
-                <th>Martes</th>
-                <th>Miércoles</th>
-                <th>Jueves</th>
-                <th>Viernes</th>
-                <th>Sabado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {materiasFiltradas.map((materia, index) => (
-                <tr key={index}>
-                  <td>
-                  <input
-                      type="checkbox"
-                      checked={isMateriaSeleccionada(materia)} // Vincula con el estado
-                      onChange={(e) => handleCheckboxChange(materia, e.target.checked)}
-                    />
-                  </td>
-                  <td>{materia.grupo || "N/A"}</td>
-                  <td>{materia.salon}</td>
-                  <td>{materia.nombre}</td>
-                  <td>{materia.horarios.lunes || "—"}</td>
-                  <td>{materia.horarios.martes || "—"}</td>
-                  <td>{materia.horarios.miercoles || "—"}</td>
-                  <td>{materia.horarios.jueves || "—"}</td>
-                  <td>{materia.horarios.viernes || "—"}</td>
-                  <td>{materia.horarios.sabado || "—"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {mostrarModal && (
-          <div className="modal">
-            <div className="modal-content">
-              <h3>TRASLAPE DE MATERIAS</h3>
-              <p>Existe un empalme en las siguientes materias:</p>
-              <ul>
-                {/* Crear una lista única de materias involucradas en conflictos */}
-                {[...new Set(conflictos.flatMap(conflicto => [conflicto.materiaA, conflicto.materiaB]))].map((materia, index) => (
-                  <li key={index}>
-                    - <strong>{materia}</strong>
-                  </li>
-                ))}
-              </ul>
-              <p>
-                Deseleccione las materias que están empalmadas para poder continuar.
-              </p>
-              <button onClick={() => setMostrarModal(false)}>Cerrar</button>
-            </div>
+    return (
+      <div className="horario-layout">
+        <div className="horario-container">
+          <div className="top-right">
+            <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
           </div>
-        )}
+          <h2>Sistema de selección de horario</h2>
+          <p>Bienvenido(a): <strong>{nombre || "Cargando..."}</strong></p>
+          <h4>Matricula <strong>{matricula || "Cargando..."}</strong></h4>
+          <p>A continuación, seleccione las materias que va a cargar en el semestre</p>
 
-        <div className="horario-buttons">
-          <button className="button" onClick={handleDesactivarTodas}>
-            Desactivar todas
-          </button>
-          <button
-            className="button"
-            onClick={handleContinuarValidacion}
-            disabled={materiasSeleccionadas.length === 0} // Deshabilitado si no hay materias seleccionadas
-          >
-            Continuar a validación
-          </button>
-          
+          {/* Input de búsqueda */}
+          <input
+            type="text"
+            placeholder="Buscar por nombre, salon o grupo..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-bar"
+          />
+
+          <div className="horario-content">
+            <table className="horario-table">
+              <thead>
+                <tr>
+                  <th>Seleccionar</th>
+                  <th>Grupo</th>
+                  <th>Salón</th>
+                  <th>Cupo</th>
+                  <th>Materia</th>
+                  <th>Lunes</th>
+                  <th>Martes</th>
+                  <th>Miércoles</th>
+                  <th>Jueves</th>
+                  <th>Viernes</th>
+                  <th>Sabado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {materiasFiltradas.map((materia, index) => (
+                  <tr key={index}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={isMateriaSeleccionada(materia)} // Vincula con el estado
+                        onChange={(e) => handleCheckboxChange(materia, e.target.checked)}
+                        disabled={materia.cupo === 0} // Deshabilitar si el cupo es 0
+                      />
+                    </td>
+                    <td>{materia.grupo || "N/A"}</td>
+                    <td>{materia.salon}</td>
+                    <td>{materia.cupo}</td>
+                    <td>{materia.nombre}</td>
+                    <td>{materia.horarios.lunes || "—"}</td>
+                    <td>{materia.horarios.martes || "—"}</td>
+                    <td>{materia.horarios.miercoles || "—"}</td>
+                    <td>{materia.horarios.jueves || "—"}</td>
+                    <td>{materia.horarios.viernes || "—"}</td>
+                    <td>{materia.horarios.sabado || "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {mostrarModal && (
+            <div className="modal">
+              <div className="modal-content">
+                <h3>TRASLAPE DE MATERIAS</h3>
+                <p>Existe un empalme en las siguientes materias:</p>
+                <ul>
+                  {/* Crear una lista única de materias involucradas en conflictos */}
+                  {[...new Set(conflictos.flatMap(conflicto => [conflicto.materiaA, conflicto.materiaB]))].map((materia, index) => (
+                    <li key={index}>
+                      - <strong>{materia}</strong>
+                    </li>
+                  ))}
+                </ul>
+                <p>
+                  Deseleccione las materias que están empalmadas para poder continuar.
+                </p>
+                <button onClick={() => setMostrarModal(false)}>Cerrar</button>
+              </div>
+            </div>
+          )}
+
+          <div className="horario-buttons">
+            <button className="button" onClick={handleDesactivarTodas}>
+              Desactivar todas
+            </button>
+            <button
+              className="button"
+              onClick={handleContinuarValidacion}
+              disabled={materiasSeleccionadas.length === 0} // Deshabilitado si no hay materias seleccionadas
+            >
+              Continuar a validación
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
 export default HorarioSeleccion;

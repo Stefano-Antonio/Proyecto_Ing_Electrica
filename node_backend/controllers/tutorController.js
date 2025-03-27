@@ -196,6 +196,33 @@ exports.deleteHorarioAlumno = async (req, res) => {
         // Obtener el ID del horario del alumno
         const horarioId = alumno.horario;
 
+        // Obtener las materias asociadas al horario del alumno
+        const horario = await Horario.findById(horarioId).populate('materias');
+        if (!horario || !horario.materias) {
+            console.log('No se encontraron materias asociadas al horario');
+            return res.status(404).json({ message: "No se encontraron materias asociadas al horario" });
+        }
+
+        // Eliminar al alumno del array de alumnos de las materias del horario
+        const materias = await Materia.updateMany(
+            { _id: { $in: horario.materias } }, // Filtrar solo las materias del horario
+            { 
+            $pull: { alumnos: alumno._id }, // Eliminar al alumno del array
+            $inc: { cupo: 1 } // Incrementar el cupo disponible
+            }
+        );
+
+        if (materias.modifiedCount > 0) {
+            console.log('Alumno eliminado de las materias del horario');
+        } else {
+            console.log('No se realizaron cambios en las materias');
+        }
+
+
+        if (materias){
+            console.log('Alumno eliminado de la materia');
+        }
+
         // Eliminar el horario de la colección Horario
         await Horario.findByIdAndDelete(horarioId);
         console.log('Horario eliminado correctamente', horarioId);

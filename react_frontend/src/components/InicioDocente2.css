@@ -115,7 +115,6 @@ s
 .field-group label {
   width: 100px;
   margin-right: 10px;
-  text-align: center;
   text-align: left; /* Alinea el texto a la derecha */
 }
 
@@ -146,30 +145,6 @@ s
   border-radius: 50%;
   position: relative;
 }
-
-.status-circle svg {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.validated {
-  background-color: green;
-}
-
-.rejected {
-  background-color: red;
-}
-
-.pending {
-  background-color: rgb(255, 230, 0);
-}
-
-.not-uploaded {
-  background-color: gray;
-}
-
 
 
 .logout-button {
