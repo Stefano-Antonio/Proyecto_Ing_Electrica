@@ -10,6 +10,7 @@ const materiasRoutes = require('./routes/materiasRoutes');
 const personalRoutes = require('./routes/personalRoutes');
 const coordinadorRoutes = require('./routes/coordinadorRoutes');
 const coordinadorGenRoutes = require('./routes/coordinadorGenRoutes');
+const administradorRoutes = require('./routes/administradorRoutes');
 const tutorRoutes = require('./routes/tutorRoutes');
 const docenteRoutes = require('./routes/docenteRoutes');
 const app = express();
@@ -28,10 +29,11 @@ app.use('/api/tutores', tutorRoutes);
 app.use('/api/docentes', docenteRoutes);
 app.use('/api/coordinadores', coordinadorRoutes);
 app.use('/api/cordgen', coordinadorGenRoutes);
+app.use('/api/administradores', administradorRoutes);
 
 
 // Conexión a MongoDB
-mongoose.connect('mongodb+srv://Stefano117:Mixbox360@cluster0.qgw2j.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+mongoose.connect('mongodb+srv://rogerzma500:upiiz_rzm500@dbuaie.mlhfo.mongodb.net/DBUAIE?retryWrites=true&w=majority', {
 
 }).then(async () => {
   console.log('Conectado a MongoDB');

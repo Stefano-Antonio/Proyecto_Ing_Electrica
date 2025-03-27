@@ -1,8 +1,8 @@
 import React, {useState} from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./InicioCoordinador2.css";
-import AlumnoList from './AlumnoList';
-import AdministrarPersonal from './AdministrarPersonal';
+import AlumnoList from './AlumnoListAdmin';
+import AdministrarPersonal from './AdministrarPersonalAdmin';
 import AdministrarMaterias from './AdministrarMaterias';
 
 function InicioCoordinador2() {

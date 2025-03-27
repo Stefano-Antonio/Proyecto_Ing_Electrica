@@ -17,33 +17,33 @@
   text-align: center;
   background-color: white;
   position: relative; /* Permite el posicionamiento relativo del botón */
-}
-
-.personal-scrollable-1 {
-  max-height: 370px;
-  overflow-y: auto;
+  max-width: 1200px; /* Ajusta el ancho máximo del contenedor */
+  margin: 0 auto; /* Centra el contenedor horizontalmente */
 }
 
 .personal-table {
-  width: 100%;
-  height: 450px;
+  width: 100%; /* Ajusta el ancho al 100% del contenedor */
   border-collapse: collapse;
   margin-bottom: 0px;
   text-align: left;
 }
 
-.personal-table, th, td {
-  border: 1px solid #ccc;
-}
-
-.personal-table th, td {
-  padding: 10px;
+.personal-table th, .personal-table td {
+  padding: 20px;
   text-align: center;
 }
 
 .personal-table th {
   background-color: #002060;
   color: white;
+}
+
+
+
+.personal-scrollable-1 {
+  max-height: 370px;
+  overflow-y: auto;
+  width: 100%; /* Ajusta el ancho al 100% del contenedor */
 }
 
 .search-bar {

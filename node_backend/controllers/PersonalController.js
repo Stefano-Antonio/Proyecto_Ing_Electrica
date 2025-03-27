@@ -62,13 +62,14 @@ const storage = multer.diskStorage({
             const coordinadorGuardado = await nuevoCoordinador.save();
             console.log('Usuario guardado en Coordinadores:', coordinadorGuardado);
         } else if (roles.includes('A')) {
+            console.log('Creando administrador con id_carrera:', id_carrera, 'y personalMatricula:', usuarioGuardado.matricula); // Verificar valores antes de guardar
             const nuevoAdministrador = new Administradores({
-                id_carrera: id_carrera, // Agregar el id_carrera aquí
-                personalMatricula: usuarioGuardado.matricula,
-                // Otros campos específicos de Administrador
+                id_carrera,
+                personalMatricula: usuarioGuardado.matricula, // Asegura que sea un string
+                alumnos: []
             });
             const administradorGuardado = await nuevoAdministrador.save();
-            console.log('Usuario guardado en Administradores:', administradorGuardado);
+            console.log('Usuario guardado en Coordinadores:', administradorGuardado);
         }
 
         res.status(201).json(usuarioGuardado);
@@ -90,24 +91,27 @@ exports.getPersonal = async (req, res) => {
 exports.getPersonalByCarrera = async (req, res) => {
   try {
     const { matricula } = req.params;
-    console.log("Matrícula del coordinador:", matricula);
+    console.log("Matrícula del coordinador/administrador:", matricula);
 
-    // Buscar el coordinador y obtener el id_carrera
+    // Buscar el coordinador o administrador y obtener el id_carrera
     const coordinador = await Coordinadores.findOne({ personalMatricula: matricula }).select("id_carrera");
-    if (!coordinador) {
-      return res.status(404).json({ message: "Coordinador no encontrado" });
+    const administrador = await Administradores.findOne({ personalMatricula: matricula }).select("id_carrera");
+
+    if (!coordinador && !administrador) {
+      return res.status(404).json({ message: "Coordinador o Administrador no encontrado" });
     }
 
-    console.log("ID de carrera del coordinador:", coordinador.id_carrera);
+    const id_carrera = coordinador ? coordinador.id_carrera : administrador.id_carrera;
+    console.log("ID de carrera:", id_carrera);
 
     // Obtener alumnos de la carrera
-    const alumnos = await Alumno.find({ id_carrera: coordinador.id_carrera }).select("_id");
+    const alumnos = await Alumno.find({ id_carrera }).select("_id");
     const alumnosIds = alumnos.map(alumno => alumno._id);
 
     console.log("Alumnos en la carrera:", alumnosIds);
 
     // Obtener materias de la carrera
-    const materias = await Materia.find({ id_carrera: coordinador.id_carrera }).select("_id");
+    const materias = await Materia.find({ id_carrera }).select("_id");
     const materiasIds = materias.map(materia => materia._id);
 
     console.log("Materias en la carrera:", materiasIds);
@@ -122,8 +126,8 @@ exports.getPersonalByCarrera = async (req, res) => {
 
     // Buscar coordinadores y administradores de la carrera
     const [coordinadores, administradores] = await Promise.all([
-      Coordinadores.find({ id_carrera: coordinador.id_carrera }).select("personalMatricula"),
-      Administradores.find({ id_carrera: coordinador.id_carrera }).select("personalMatricula")
+      Coordinadores.find({ id_carrera }).select("personalMatricula"),
+      Administradores.find({ id_carrera }).select("personalMatricula")
     ]);
 
     console.log("Coordinadores encontrados:", coordinadores.map(c => c.personalMatricula));
@@ -187,43 +191,43 @@ exports.updatePersonal = async (req, res) => {
 
 exports.deletePersonal = async (req, res) => {
 
-    try {
-        const personal = await Personal.findById(req.params.id);
-        if (!personal) {
-            return res.status(404).json({ message: 'Personal no encontrado' });
-        }
+  try {
+      const personal = await Personal.findById(req.params.id);
+      if (!personal) {
+          return res.status(404).json({ message: 'Personal no encontrado' });
+      }
 
-        // Eliminar el personal de los alumnos que lo tienen como tutor
-    await Alumno.updateMany(
-      { tutor: personal._id },
-      { $unset: { tutor: "" } }
-    );
-    console.log('Personal eliminado de los alumnos que lo tienen como tutor');
+      // Eliminar el personal de los alumnos que lo tienen como tutor
+  await Alumno.updateMany(
+    { tutor: personal._id },
+    { $unset: { tutor: "" } }
+  );
+  console.log('Personal eliminado de los alumnos que lo tienen como tutor');
 
-    // Eliminar el personal de las colecciones específicas (Docentes, Tutores, Coordinadores, Administradores)
-    if (personal.roles.includes('D')) {
-      await Docentes.findOneAndDelete({ personalMatricula: personal.matricula });
-      console.log('Personal eliminado de Docentes');
-    }
-    if (personal.roles.includes('T')) {
-      await Tutores.findOneAndDelete({ personalMatricula: personal.matricula });
-      console.log('Personal eliminado de Tutores');
-    }
-    if (personal.roles.includes('C')) {
-      await Coordinadores.findOneAndDelete({ personalMatricula: personal.matricula });
-      console.log('Personal eliminado de Coordinadores');
-    }
-    if (personal.roles.includes('A')) {
-      await Administradores.findOneAndDelete({ personalMatricula: personal.matricula });
-      console.log('Personal eliminado de Administradores');
-    }
+  // Eliminar el personal de las colecciones específicas (Docentes, Tutores, Coordinadores, Administradores)
+  if (personal.roles.includes('D')) {
+    await Docentes.findOneAndDelete({ personalMatricula: personal.matricula });
+    console.log('Personal eliminado de Docentes');
+  }
+  if (personal.roles.includes('T')) {
+    await Tutores.findOneAndDelete({ personalMatricula: personal.matricula });
+    console.log('Personal eliminado de Tutores');
+  }
+  if (personal.roles.includes('C')) {
+    await Coordinadores.findOneAndDelete({ personalMatricula: personal.matricula });
+    console.log('Personal eliminado de Coordinadores');
+  }
+  if (personal.roles.includes('A')) {
+    await Administradores.findOneAndDelete({ personalMatricula: personal.matricula });
+    console.log('Personal eliminado de Administradores');
+  }
 
-    // Eliminar el personal
-    await Personal.findByIdAndDelete(req.params.id);
-        res.status(204).json({ message: 'Personal eliminado' });
-    } catch (error) {
-        res.status(500).json({ message: 'Error al eliminar el personal', error });
-    }
+  // Eliminar el personal
+  await Personal.findByIdAndDelete(req.params.id);
+      res.status(204).json({ message: 'Personal eliminado' });
+  } catch (error) {
+      res.status(500).json({ message: 'Error al eliminar el personal', error });
+  }
 
 };
 

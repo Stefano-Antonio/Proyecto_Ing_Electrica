@@ -7,6 +7,4 @@ const CoordinadorMdl = new Schema({
     alumnos: [{ type: Schema.Types.ObjectId, ref: 'Alumno', default: [] }]   // Array de referencias a 'Alumno'
     });
 
-
-
 module.exports = mongoose.model('Coordinador', CoordinadorMdl);
