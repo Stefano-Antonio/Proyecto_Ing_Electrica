@@ -119,7 +119,7 @@ function App() {
                 <Route path="/inicio-administrador" element={<PrivateRoute><InicioAdministrador/></PrivateRoute>}>
                   <Route path="alumnos" element={<AlumnoListAdmin/>}></Route>
                   <Route path="personal" element={<AdministrarPersonalAdmin/>}></Route>;
-                  <Route path="materias" element={<AdministrarMaterias/>}></Route>;
+                  <Route path="materias" element={<AdministrarMateriasAdmin/>}></Route>;
                 </Route>
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
