@@ -31,14 +31,6 @@
   max-width: 1500px;
 }
 
-.materia-columna {
-  min-width: 200px;
-  max-width: 300px;
-  word-wrap: break-word;
-  white-space: normal;
-  text-align: left;
-}
-
 h3, h4 {
   color: hwb(220 0% 62%);
 }
@@ -59,17 +51,20 @@ h3, h4 {
 }
 
 .materia-table {
-  width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 0px;
-    text-align: left;
+  width: 100%; /* Cambia el ancho de la tabla al 100% del contenedor */
+  border-collapse: collapse;
+  margin-bottom: 10px;
+  text-align: left;
+  table-layout: fixed; /* Hace que las columnas tengan un ancho fijo */
 }
 
 .materia-table th, 
 .materia-table td {
-  border: 1px solid #ccc;
+  padding: 10px;
   text-align: center;
+  white-space: nowrap; /* Evita que el texto se divida en varias líneas */
   overflow: hidden;
+  text-overflow: ellipsis; /* Agrega "..." si el contenido es muy largo */
 }
 
 .materia-table th {
