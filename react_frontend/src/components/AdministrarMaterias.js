@@ -107,6 +107,7 @@ const AdministrarMaterias = () => {
                 <tr>
                   <th>Grupo</th>
                   <th>Salón</th>
+                  <th>Cupo</th>
                   <th>Materia</th>
                   <th>Docente</th>
                   <th>Lunes</th>
@@ -122,6 +123,7 @@ const AdministrarMaterias = () => {
                   <tr key={materia._id}>
                     <td>{materia.grupo}</td>
                     <td>{materia.salon}</td>
+                    <td>{materia.cupo}</td>
                     <td>{materia.nombre}</td>
                     <td>{getDocenteNombre(materia)}</td>
                     <td>{materia.horarios.lunes || "-"}</td>

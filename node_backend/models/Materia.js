@@ -12,6 +12,7 @@ const MateriaSchema = new Schema({
         jueves: { type: String, default: null },
         viernes: { type: String, default: null }
     },
+    alumnos: [{ type: Schema.Types.ObjectId, ref: 'Alumno', default: [] }] ,
     salon: { type: String, required: true },
     grupo: { type: String, required: true },
     cupo: { type: Number, required: true },

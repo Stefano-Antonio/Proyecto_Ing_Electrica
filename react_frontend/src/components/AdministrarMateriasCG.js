@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./AdministrarMaterias.css";
@@ -67,6 +67,30 @@ const AdministrarMateriasCG = () => {
     }
   };
 
+  // Función para formatear el nombre de la materia
+  const formatUrl = (nombre) => {
+    return nombre
+      .normalize("NFD") // Normaliza el texto para separar los acentos
+      .replace(/[\u0300-\u036f]/g, "") // Elimina los acentos
+      .toLowerCase() // Convierte a minúsculas
+      .replace(/[^a-z0-9\s]/g, "") // Elimina caracteres especiales
+      .trim() // Elimina espacios al inicio y al final
+      .replace(/\s+/g, "-"); // Reemplaza espacios por guiones
+  };
+  
+
+  const handleListaAlumnos = (materia) => {
+    const materiaUrl = formatUrl(materia.nombre); // Formatea el nombre de la materia
+    navigate(`/docente/materias/${materiaUrl}/lista-alumnos`, {
+      state: {
+        nombre: docentes.nombre,
+        matricula: docentes.matricula,
+        materiaId: materia._id,
+        materiaNombre: materia.nombre,
+      },
+    });
+  };
+
   if (loading) {
     return <div className="loading">Cargando información de materias...</div>;
   }
@@ -109,6 +133,7 @@ const AdministrarMateriasCG = () => {
                   <th>Carrera</th>
                   <th>Grupo</th>
                   <th>Salón</th>
+                  <th>Cupo</th>
                   <th>Materia</th>
                   <th>Docente</th>
                   <th>Lunes</th>
@@ -125,6 +150,7 @@ const AdministrarMateriasCG = () => {
                     <td>{materia.id_carrera}</td>
                     <td>{materia.grupo}</td>
                     <td>{materia.salon}</td>
+                    <td>{materia.cupo}</td>
                     <td>{materia.nombre}</td>
                     <td c>{getDocenteNombre(materia)}</td>
                     <td>{materia.horarios.lunes || "-"}</td>
@@ -133,6 +159,12 @@ const AdministrarMateriasCG = () => {
                     <td>{materia.horarios.jueves || "-"}</td>
                     <td>{materia.horarios.viernes || "-"}</td>
                     <td>
+                    <button className="icon-button" onClick={() => handleListaAlumnos(materia)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </button>
                       <button
                         className="icon-button"
                         onClick={() => navigate("/modificar-materia", { state: { materia } })}

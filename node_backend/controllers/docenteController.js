@@ -30,6 +30,7 @@ exports.getAlumnosAsignados = async (req, res) => {
     }
 };
 
+// Ruta para obtener los tutores de un coordinador específico
 exports.getDocentes = async (req, res) => {
     try {
         const docentes = await Docentes.find();
@@ -49,7 +50,7 @@ exports.getDocentes = async (req, res) => {
 };
 
 
-
+// Ruta para obtener los tutores de un coordinador específico
 exports.getDocenteById = async (req, res) => {
     try {
         const docente = await Docentes.findById(req.params.id);
@@ -128,6 +129,7 @@ exports.getHorarioAlumno = async (req, res) => {
     }
 };
 
+// Ruta para obtener los alumnos inscritos en una materia
 exports.getAlumnosInscritosEnMateria = async (req, res) => {
     console.log('Obteniendo alumnos inscritos en una materia');
     try {
