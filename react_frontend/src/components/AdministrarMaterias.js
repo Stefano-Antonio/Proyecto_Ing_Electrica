@@ -76,6 +76,30 @@ const AdministrarMaterias = () => {
     return <div className="loading">Cargando información de materias...</div>;
   }
 
+ // Función para formatear el nombre de la materia
+ const formatUrl = (nombre) => {
+  return nombre
+    .normalize("NFD") // Normaliza el texto para separar los acentos
+    .replace(/[\u0300-\u036f]/g, "") // Elimina los acentos
+    .toLowerCase() // Convierte a minúsculas
+    .replace(/[^a-z0-9\s]/g, "") // Elimina caracteres especiales
+    .trim() // Elimina espacios al inicio y al final
+    .replace(/\s+/g, "-"); // Reemplaza espacios por guiones
+};
+
+
+  const handleListaAlumnos = (materia) => {
+    const materiaUrl = formatUrl(materia.nombre); // Formatea el nombre de la materia
+    navigate(`/docente/materias/${materiaUrl}/lista-alumnos`, {
+      state: {
+        nombre: docentes.nombre,
+        matricula: docentes.matricula,
+        materiaId: materia._id,
+        materiaNombre: materia.nombre,
+      },
+    });
+  };
+
   // Filtrar materias por búsqueda
   const materiasFiltradas = materias.filter((materia) =>
     [
@@ -149,6 +173,12 @@ const AdministrarMaterias = () => {
                       </>
                     )}
                     <td>
+                    <button className="icon-button" onClick={() => handleListaAlumnos(materia)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </button>
                       <button
                         className="icon-button"
                         onClick={() => navigate("/modificar-materia", { state: { materia } })}

@@ -161,6 +161,7 @@ const AdministrarMateriasCG = () => {
                     <td>{materia.horarios.viernes || "-"}</td>
                     <td>{materia.horarios.sabado || "-"}</td>
                     <td>
+                      <div ClassName="Button-container">
                     <button className="icon-button" onClick={() => handleListaAlumnos(materia)}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -191,6 +192,7 @@ const AdministrarMateriasCG = () => {
                           <path d="M15 6V4a1 1 0 0 0-1-1H10a1 1 0 0 0-1 1v2"></path>
                         </svg>
                       </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

@@ -42,7 +42,6 @@ function Registro() {
   const handleLogin = async (event) => {
     event.preventDefault();
   
-   
     try {
       const endpoint =
         tipoUsuario === "alumno"
@@ -67,19 +66,16 @@ function Registro() {
           });
           return;
         }
-
-        // Verificar si la carrera del alumno coincide con la seleccionada
-        if (tipoUsuario === "personal") {
-          if (roles.includes("C") && idCarreraBD !== id_carrera){
+  
+        // Verificar si la carrera del personal coincide con la seleccionada (excepto para Docente y Tutor)
+        if (tipoUsuario === "personal" && !roles.includes("D") && !roles.includes("T") && idCarreraBD !== id_carrera) {
           toast.error("La matrícula no corresponde a la carrera seleccionada.", {
             position: "top-right",
             autoClose: 3000,
           });
           return;
-          }
         }
-        
-
+  
         localStorage.setItem("id_carrera", idCarreraBD);
         localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("matricula", matricula);
@@ -93,70 +89,47 @@ function Registro() {
         // Redirigir según el tipo de usuario
         if (tipoUsuario === "personal") {
           if (roles.includes("D")) {
-
-            // Validar si la carrera fue seleccionada
-          if (!id_carrera) {
-            toast.error("Por favor, selecciona una carrera antes de continuar.", {
-            position: "top-right",
-            autoClose: 3000,
-            });
-            return;
-          }
             navigate("/docente/alumnos", { state: { nombre, matricula } });
           } else if (roles.includes("C")) {
-
-
-            // Validar si la carrera fue seleccionada
             if (!id_carrera) {
               toast.error("Por favor, selecciona una carrera antes de continuar.", {
-              position: "top-right",
-              autoClose: 3000,
+                position: "top-right",
+                autoClose: 3000,
               });
               return;
             }
-
             navigate("/inicio-coordinador", { state: { nombre, matricula, id_carrera } });
           } else if (roles.includes("A")) {
-
-
-            // Validar si la carrera fue seleccionada
-              if (!id_carrera) {
-                toast.error("Por favor, selecciona una carrera antes de continuar.", {
+            if (!id_carrera) {
+              toast.error("Por favor, selecciona una carrera antes de continuar.", {
                 position: "top-right",
                 autoClose: 3000,
-                });
-                return;
-              }
-
+              });
+              return;
+            }
             navigate("/inicio-administrador", { state: { nombre, matricula, id_carrera } });
           } else if (roles.includes("T")) {
-
-
             navigate("/inicio-tutor", { state: { nombre, matricula } });
           } else if (roles.includes("CG")) {
-
-
             navigate("/inicio-coordinador-gen", { state: { nombre, matricula } });
           } else {
             setMensaje("Usuario personal desconocido");
           }
         } else if (tipoUsuario === "alumno") {
           if (horario) {
-            // Validar si la carrera fue seleccionada
             if (!id_carrera) {
               toast.error("Por favor, selecciona una carrera antes de continuar.", {
-              position: "top-right",
-              autoClose: 3000,
+                position: "top-right",
+                autoClose: 3000,
               });
               return;
             }
             navigate("/validacion-estatus", { state: { nombre, id, id_carrera, horario } });
           } else if (carrerasPermitidas.hasOwnProperty(idCarreraBD)) {
-            // Validar si la carrera fue seleccionada
             if (!id_carrera) {
               toast.error("Por favor, selecciona una carrera antes de continuar.", {
-              position: "top-right",
-              autoClose: 3000,
+                position: "top-right",
+                autoClose: 3000,
               });
               return;
             }
@@ -176,7 +149,6 @@ function Registro() {
       });
     }
   };
-  
    
 
   

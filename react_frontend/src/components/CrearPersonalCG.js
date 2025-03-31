@@ -13,7 +13,7 @@ function CrearPersonal() {
     matricula: "",
     correo: "",
     telefono: "",
-    roles: [],
+    roles: "",
     password: "",
     id_carrera: ""
   });

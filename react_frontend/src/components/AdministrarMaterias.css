@@ -31,6 +31,7 @@
   max-width: 1500px;
 }
 
+
 .materia-columna {
   min-width: 200px;
   max-width: 300px;
@@ -104,15 +105,23 @@ h3, h4 {
   width: 100%; /* Asegura que el contenedor ocupe todo el ancho disponible */
 }
 
+.button-container {
+  display: flex; /* Usar flexbox para alinear los botones */
+  gap: 8px; /* Espaciado entre los botones */
+  justify-content: center; /* Centrar los botones horizontalmente */
+  align-items: center; /* Alinear los botones verticalmente */
+}
+
 .icon-button {
-  background-color: transparent;
+  background: none;
   border: none;
   cursor: pointer;
+  padding: 4px;
 }
 
 .icon-button svg {
-  width: 8px; /* Ajusta el tamaño de los íconos a 16px */
-  height: 8px; /* Ajusta el tamaño de los íconos a 16px */
+  width: 20px;
+  height: 20px;
 }
 
 .add-delete-buttons {
