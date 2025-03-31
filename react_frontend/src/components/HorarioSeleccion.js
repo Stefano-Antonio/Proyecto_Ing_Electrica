@@ -16,7 +16,7 @@ function HorarioSeleccion() {
   const [id, setIDAlumno] = useState(localStorage.getItem("IDAlumno") || "ID desconocido");
   const [matricula, setMatricula] = useState(localStorage.getItem("matricula")); // Obtener matrícula del localStorage
   const [id_carrera, setIDCarrera] = useState(localStorage.getItem("id_carrera") || "ID de carrera desconocido");
-
+  const carrerasPermitidasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
 
     // Evitar que el usuario regrese a la pantalla anterior con el botón de retroceso
     useEffect(() => {
@@ -166,6 +166,9 @@ function HorarioSeleccion() {
     materias.nombre.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  
+  const isSemiescolarizada = carrerasPermitidasSemiescolarizadas.includes(id_carrera);
+
     return (
       <div className="horario-layout">
         <div className="horario-container">
@@ -187,6 +190,8 @@ function HorarioSeleccion() {
           />
 
           <div className="horario-content">
+          {!isSemiescolarizada && (
+            <>
             <table className="horario-table">
               <thead>
                 <tr>
@@ -200,7 +205,6 @@ function HorarioSeleccion() {
                   <th>Miércoles</th>
                   <th>Jueves</th>
                   <th>Viernes</th>
-                  <th>Sabado</th>
                 </tr>
               </thead>
               <tbody>
@@ -223,11 +227,48 @@ function HorarioSeleccion() {
                     <td>{materia.horarios.miercoles || "—"}</td>
                     <td>{materia.horarios.jueves || "—"}</td>
                     <td>{materia.horarios.viernes || "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            
+            </>
+        )}
+
+        {isSemiescolarizada && (
+                <table className="horario-table">
+              <thead>
+                <tr>
+                  <th>Seleccionar</th>
+                  <th>Grupo</th>
+                  <th>Salón</th>
+                  <th>Cupo</th>
+                  <th>Materia</th>
+                  <th>Sabado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {materiasFiltradas.map((materia, index) => (
+                  <tr key={index}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={isMateriaSeleccionada(materia)} // Vincula con el estado
+                        onChange={(e) => handleCheckboxChange(materia, e.target.checked)}
+                        disabled={materia.cupo === 0} // Deshabilitar si el cupo es 0
+                      />
+                    </td>
+                    <td>{materia.grupo || "N/A"}</td>
+                    <td>{materia.salon}</td>
+                    <td>{materia.cupo}</td>
+                    <td>{materia.nombre}</td>
                     <td>{materia.horarios.sabado || "—"}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
+         )}
+
           </div>
           {mostrarModal && (
             <div className="modal">

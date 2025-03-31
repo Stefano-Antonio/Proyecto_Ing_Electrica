@@ -7,7 +7,6 @@ const userRoutes = require('./routes/userRoutes');
 const alumnoRoutes = require('./routes/alumnoRoutes');
 const authRoutes = require('./routes/authRoutes'); 
 const materiasRoutes = require('./routes/materiasRoutes');
-const materiaSemiRoutes = require('./routes/materiaSemiRoutes');
 const personalRoutes = require('./routes/personalRoutes');
 const coordinadorRoutes = require('./routes/coordinadorRoutes');
 const coordinadorGenRoutes = require('./routes/coordinadorGenRoutes');
@@ -25,7 +24,6 @@ app.use('/api/users', userRoutes);
 app.use('/api/alumnos', alumnoRoutes);
 app.use('/api/auth', authRoutes);  // Usa las rutas de autenticación
 app.use('/api/materias', materiasRoutes);
-app.use('/api/materias-semi', materiaSemiRoutes);
 app.use('/api/personal', personalRoutes);
 app.use('/api/tutores', tutorRoutes);
 app.use('/api/docentes', docenteRoutes);

@@ -19,6 +19,7 @@ function Validacion1() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const { materiasSeleccionadas = [] } = location.state || {};
+  const carrerasPermitidasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
 
   useEffect(() => {
     const fetchAlumnoData = async () => {
@@ -125,6 +126,8 @@ function Validacion1() {
     navigate("/horario-seleccion", { state: { nombre, id, id_carrera } });
   };
 
+  const isSemiescolarizada = carrerasPermitidasSemiescolarizadas.includes(id_carrera);
+
   return (
     <div className="horario-layout">
       <ToastContainer />
@@ -150,7 +153,10 @@ function Validacion1() {
         </p>
 
         <div className="horario-content">
+          {!isSemiescolarizada && (
+            <>
           <table className="horario-table">
+          
             <thead>
               <tr>
                 <th>Grupo</th>
@@ -178,6 +184,34 @@ function Validacion1() {
               ))}
             </tbody>
           </table>
+            
+            </>
+        )}
+         {isSemiescolarizada && (
+          <>
+          <table className="horario-table">
+            <thead>
+              <tr>
+                <th>Grupo</th>
+                <th>Salón</th>
+                <th>Materia</th>
+                <th>Sábado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {materiasSeleccionadas.map((materia, index) => (
+                <tr key={index}>
+                  <td>{materia.grupo}</td>
+                  <td>{materia.salon}</td>
+                  <td>{materia.nombre}</td>
+                  <td>{materia.horarios.sabado || "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          </>
+        )}
+
         </div>
 
         <div className="form-group">

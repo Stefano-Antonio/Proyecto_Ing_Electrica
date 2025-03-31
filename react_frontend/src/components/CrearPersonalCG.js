@@ -36,8 +36,9 @@ function CrearPersonal() {
   const navigate = useNavigate();
 
   const validarMatricula = (matricula) => {
-    return /^(CG|AG)?[A-Z]\d{4}$/.test(matricula); 
+    return /^(CG|AG)\d{4}$|^[A-Z]\d{4}$/.test(matricula);
   };
+  
 
   
   const handleRoleChange = (e) => {

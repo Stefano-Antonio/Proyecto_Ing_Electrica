@@ -14,6 +14,7 @@ function RevisionHorarioTutor() {
   const location = useLocation();
   const id_carrera = localStorage.getItem("id_carrera");
   const { nombre , matricula, matriculaTutor } = location.state || {};
+  const carrerasPermitidasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
   console.log("Nombre y matrícula del tutor:", nombre, matricula, matriculaTutor, id_carrera);
   useEffect(() => {
     fetch(`http://localhost:5000/api/tutores/horario/${matricula}`)
@@ -105,6 +106,8 @@ function RevisionHorarioTutor() {
     navigate("/");
   };
 
+  const isSemiescolarizada = alumno && carrerasPermitidasSemiescolarizadas.includes(alumno.id_carrera);
+  
   return (
     <div className="horario-layout">
       <div className="horario-container">
@@ -123,6 +126,8 @@ function RevisionHorarioTutor() {
             </div>
 
             <div className="horario-content">
+          {!isSemiescolarizada && (
+            <>
               <table className="horario-table">
                 <thead>
                   <tr>
@@ -151,6 +156,37 @@ function RevisionHorarioTutor() {
                   ))}
                 </tbody>
               </table>
+            
+            </>
+        )}
+
+        {isSemiescolarizada && (
+          <>
+          
+            <table className="horario-table">
+            <thead>
+                  <tr>
+                    <th>Grupo</th>
+                    <th>Salón</th>
+                    <th>Materia</th>
+                    <th>Sabado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {horario.map((materia, index) => (
+                    <tr key={index}>
+                      <td>{materia.grupo}</td>
+                      <td>{materia.salon}</td>
+                      <td>{materia.materia}</td>
+                      <td>{materia.horarios.sabado || "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            
+            </>
+        )}
+
             </div>
           </>
         ) : (
