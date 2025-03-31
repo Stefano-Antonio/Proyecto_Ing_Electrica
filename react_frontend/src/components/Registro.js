@@ -80,7 +80,6 @@ function Registro() {
         }
         
 
-        setMensaje(mensaje);
         localStorage.setItem("id_carrera", idCarreraBD);
         localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("matricula", matricula);

@@ -70,7 +70,7 @@ useEffect(() => {
   const handleSubmitCSV = async (e) => {
     e.preventDefault();
     if (!file) {
-      alert("Por favor selecciona un archivo CSV");
+      toast.warn("Por favor selecciona un archivo CSV");
       return;
     }
 
@@ -84,12 +84,12 @@ useEffect(() => {
         { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      alert("Base de datos actualizada con éxito desde el archivo CSV");
+      toast.success("Base de datos actualizada con éxito desde el archivo CSV");
 
       setMostrarModal(false); // Cierra el modal después de subir el archivo
     } catch (error) {
       console.error("Error al subir el archivo CSV:", error);
-      alert("Hubo un error al actualizar la base de datos");
+      toast.error("Hubo un error al actualizar la base de datos");
     }
   };
 
@@ -146,7 +146,7 @@ useEffect(() => {
     }
   };
 
-  const handleSumbitDB = async (e) => {
+  const handleSubmitDB = async (e) => {
     setMostrarModal(true);
     return;
   }
@@ -238,7 +238,7 @@ return (
                     </div>
                 </form>
                 <div className="alumno-buttons">
-                    <button className="button" onClick={handleSubmitCSV}>Subir base de datos de alumnos</button>
+                    <button className="button" onClick={handleSubmitDB}>Subir base de datos de alumnos</button>
                 </div>
             </div>
         </div>

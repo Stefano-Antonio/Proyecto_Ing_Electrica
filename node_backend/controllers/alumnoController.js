@@ -519,12 +519,12 @@ exports.subirAlumnosCSV = async (req, res) => {
         const matriculasCSV = results.map((alumno) => alumno.matricula); // Guardamos solo las matrículas del CSV
 
         for (const alumnoData of results) {
-          const { matricula, nombre, telefono, correo } = alumnoData;
+          const { id_carrera, matricula, nombre, telefono, correo } = alumnoData;
 
           // Busca y actualiza, si no existe lo crea
           await Alumno.findOneAndUpdate(
             { matricula }, // Busca por matrícula
-            { nombre, telefono, correo }, // Actualiza estos campos
+            { id_carrera, nombre, telefono, correo }, // Actualiza estos campos
             { upsert: true, new: true } // upsert: true -> crea si no existe
           );
         }
@@ -549,7 +549,7 @@ exports.subirAlumnosCSV = async (req, res) => {
 exports.exportarAlumnosCSV = async (req, res) => {
   try {
     const alumnos = await Alumno.find(); // Obtén todos los alumnos
-    const fields = ['matricula', 'nombre', 'telefono', 'correo']; // Campos del CSV
+    const fields = ['id_carrera', 'matricula', 'nombre', 'telefono', 'correo']; // Campos del CSV
     const json2csvParser = new Parser({ fields });
     const csv = json2csvParser.parse(alumnos);
 

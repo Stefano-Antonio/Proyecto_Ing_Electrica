@@ -1,22 +1,38 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./CrearAlumno.css";
 
 function ModificarAlumnoCG() {
   const navigate = useNavigate();
+  const [mostrarModal, setMostrarModal] = useState(false);
   const location = useLocation();
   const alumno = location.state?.alumno;
   const { matriculaCord } = location.state || {};
   const [tutores, setTutores] = useState([]); // Lista de tutores
   const matriculaTutor = matriculaCord;
+  const [file, setFile] = useState(null); // Estado para el archivo
+  
   const [form, setForm] = useState({
     nombre: "",
+    id_carrera: "",
     matricula: "",
     correo: "",
     telefono: "",
     tutor: "" // Nuevo campo para el tutor
   });
+
+  const carrerasPermitidas = {
+    ISftw: "Ing. en Software",
+    IDsr: "Ing. en Desarrollo",
+    IEInd: "Ing. Electrónica Industrial",
+    ICmp: "Ing. Computación",
+    IRMca: "Ing. Robótica y Mecatrónica",
+    IElec: "Ing. Electricista",
+    ISftwS: "Ing. en Software (Semiescolarizado)"
+  };
 
   
   // Llenar los campos del formulario con los datos del alumno
@@ -24,6 +40,7 @@ function ModificarAlumnoCG() {
     if (alumno) {
       setForm({
         nombre: alumno.nombre || "",
+        id_carrera: alumno.id_carrera || "",
         matricula: alumno.matricula || "",
         correo: alumno.correo || "",
         telefono: alumno.telefono || "",
@@ -67,6 +84,36 @@ useEffect(() => {
     navigate("/");
   };
 
+  const handleFileChange = (e) => {
+      setFile(e.target.files[0]); // Guarda el archivo CSV
+    };
+  
+    const handleSubmitCSV = async (e) => {
+      e.preventDefault();
+      if (!file) {
+        toast.warn("Por favor selecciona un archivo CSV");
+        return;
+      }
+  
+      const formData = new FormData();
+      formData.append("csv", file);
+  
+      try {
+        const response = await axios.post(
+          "http://localhost:5000/api/alumnos/subir-csv",
+          formData,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+  
+        toast.success("Base de datos actualizada con éxito desde el archivo CSV");
+  
+        setMostrarModal(false); // Cierra el modal después de subir el archivo
+      } catch (error) {
+        console.error("Error al subir el archivo CSV:", error);
+        toast.error("Hubo un error al actualizar la base de datos");
+      }
+    };
+
   const handleBack = () => {
     navigate(-1);
   };
@@ -75,9 +122,10 @@ useEffect(() => {
     e.preventDefault();
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/alumnos/${alumno._id}`,
+        `http://localhost:5000/api/cordgen/alumnos/${alumno._id}`,
         {
           nombre: form.nombre,
+          id_carrera: form.id_carrera,
           matricula: form.matricula,
           correo: form.correo,
           telefono: form.telefono,
@@ -85,16 +133,44 @@ useEffect(() => {
         }
       );
       console.log("Alumno actualizado:", response.data);
-      alert("Alumno actualizado con éxito");
+      toast.success("Alumno actualizado con éxito");
       navigate(-1);
     } catch (error) {
       console.error("Error al actualizar el alumno:", error);
-      alert("Hubo un error al actualizar el alumno");
+      toast.error("Hubo un error al actualizar el alumno");
     }
   };
 
+  const handleDownloadCSV = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/alumnos/exportar-csv",
+        {
+          responseType: "blob", // Asegúrate de recibir el archivo como blob
+        }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "alumnos.csv");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Error al descargar el archivo CSV:", error);
+      alert("No se pudo descargar el archivo");
+    }
+  };
+
+  const handleSubmitDB = async (e) => {
+    setMostrarModal(true);
+    return;
+  }
+
   return (
     <div className="alumno-layout">
+      <ToastContainer />
       <div className="alumno-container">
         <div className="top-left">
           <button className="back-button" onClick={handleBack}>Regresar</button>
@@ -162,13 +238,41 @@ useEffect(() => {
                   ))}
                 </select>
               </div>
+              <div className="input-wrapper short-field2">
+                            <label htmlFor="id_carrera">Carrera</label>
+                            <select
+                                id="id_carrera"
+                                value={form.id_carrera}
+                                onChange={(e) => setForm({ ...form, id_carrera: e.target.value })}
+                            >
+                                <option value="" disabled hidden>Seleccione una carrera</option>
+                                {Object.entries(carrerasPermitidas).map(([key, value]) => (
+                                    <option key={key} value={key}>{value}</option>
+                                ))}
+                            </select>
+                        </div>
             </div>
             <div className="alumno-buttons">
               <button type="submit" className="button">Actualizar</button>
             </div>
           </form>
+          <div className="alumno-buttons">
+              <button className="button" onClick={handleSubmitDB}>Subir base de datos de alumnos</button>
+            </div>
         </div>
       </div>
+      {mostrarModal && (
+            <div className="modal">
+                <div className="modal-content">
+                    <h3>Subir base de datos</h3>
+                    <p>Seleccione el archivo a subir:</p>
+                    <input type="file" accept=".csv" onChange={handleFileChange} />
+                    <button onClick={handleSubmitCSV}>Subir CSV</button>
+                    <button onClick={handleDownloadCSV}>Descargar CSV</button>
+                    <button onClick={() => setMostrarModal(false)}>Cerrar</button>
+                </div>
+            </div>
+        )}
     </div>
   );
 }
