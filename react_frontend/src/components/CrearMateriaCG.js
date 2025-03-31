@@ -19,7 +19,8 @@ function CrearMateriaCG() {
         martes: '',
         miercoles: '',
         jueves: '',
-        viernes: ''
+        viernes: '',
+        sabado: '' // Agregar sábado para materias semiescolarizadas
       },
       salon: '',
       grupo: '',
@@ -38,8 +39,15 @@ function CrearMateriaCG() {
     ICmp: "Ing. Computación",
     IRMca: "Ing. Robótica y Mecatrónica",
     IElec: "Ing. Electricista",
-    ISftwS: "Ing. en Software (Semiescolarizado)"
+    ISftwS: "Ing. en Software (Semiescolarizado)",
+    IDsrS: "Ing. en Desarrollo (Semiescolarizado)",
+    IEIndS: "Ing. Electrónica Industrial(Semiescolarizado)",
+    ICmpS: "Ing. Computación (Semiescolarizado)",
+    IRMcaS: "Ing. Robótica y Mecatrónica (Semiescolarizado)",
+    IElecS: "Ing. Electricista (Semiescolarizado)",
   };
+
+  const carrerasPermitidasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
 
 
     useEffect(() => {
@@ -116,7 +124,7 @@ function CrearMateriaCG() {
   const handleChange = (e) => {
     const { id, value } = e.target;
   
-    if (["lunes", "martes", "miercoles", "jueves", "viernes"].includes(id)) {
+    if (["lunes", "martes", "miercoles", "jueves", "viernes","sabado"].includes(id)) {
       // Si el cambio es en los horarios, actualiza solo esa clave dentro de horarios
       setFormData((prevState) => ({
         ...prevState,
@@ -157,7 +165,23 @@ function CrearMateriaCG() {
             Object.entries(formData.horarios).map(([key, value]) => [key, value === "" ? null : value])
           )
         };
-        
+        if (id_carrera === "ISftwS" || id_carrera === "IDsrS" || id_carrera === "IEIndS" || id_carrera === "ICmpS" || id_carrera === "IRMcaS" || id_carrera === "IElecS") {
+
+          const response = await axios.post('http://localhost:5000/api/materias', finalData);
+          console.log("Materia actualizada:", response.data);
+          toast.success('Materia creada con éxito');
+          setFormData({
+          id_materia: '',
+          id_carrera: '',
+          nombre: '',
+          horarios: { sabado: ''},
+          salon: '',
+          grupo: '',
+          cupo: '',
+          docente: ''
+
+        });
+        }else{
         const response = await axios.post('http://localhost:5000/api/materias', finalData);
         console.log("Materia actualizada:", response.data);
         toast.success('Materia creada con éxito');
@@ -171,13 +195,14 @@ function CrearMateriaCG() {
           cupo: '',
           docente: ''
         });
+      }
       } catch (error) {
         console.error('Error al crear la materia:', error);
         toast.error('Hubo un error al crear la materia');
       }
     };
     
-
+    const isSemiescolarizada = carrerasPermitidasSemiescolarizadas.includes(formData.id_carrera);
 
   return (
     <div className="materia-layout">
@@ -266,13 +291,11 @@ function CrearMateriaCG() {
               
             </div>
             <div className="form-group">
+        {!isSemiescolarizada && (
+            <>
                 <div className="input-wrapper short-field">
                     <label htmlFor="lunes">Lunes</label>
-                    <select
-                        id="lunes"
-                        value={formData.horarios.lunes}
-                        onChange={handleChange}
-                    >
+                    <select id="lunes" value={formData.horarios.lunes} onChange={handleChange}>
                         <option value="" disabled hidden>Seleccione...</option>
                         <option value="">-</option>
                         <option value="7:00-8:30">7:00-8:30</option>
@@ -286,11 +309,7 @@ function CrearMateriaCG() {
 
                 <div className="input-wrapper short-field">
                     <label htmlFor="martes">Martes</label>
-                    <select
-                        id="martes"
-                        value={formData.horarios.martes}
-                        onChange={handleChange}
-                    >
+                    <select id="martes" value={formData.horarios.martes} onChange={handleChange}>
                         <option value="" disabled hidden>Seleccione...</option>
                         <option value="">-</option>
                         <option value="7:00-8:30">7:00-8:30</option>
@@ -303,12 +322,8 @@ function CrearMateriaCG() {
                 </div>
 
                 <div className="input-wrapper short-field">
-                    <label htmlFor="miercoles">Miercoles</label>
-                    <select
-                        id="miercoles"
-                        value={formData.horarios.miercoles}
-                        onChange={handleChange}
-                    >
+                    <label htmlFor="miercoles">Miércoles</label>
+                    <select id="miercoles" value={formData.horarios.miercoles} onChange={handleChange}>
                         <option value="" disabled hidden>Seleccione...</option>
                         <option value="">-</option>
                         <option value="7:00-8:30">7:00-8:30</option>
@@ -322,11 +337,7 @@ function CrearMateriaCG() {
 
                 <div className="input-wrapper short-field">
                     <label htmlFor="jueves">Jueves</label>
-                    <select
-                        id="jueves"
-                        value={formData.horarios.jueves}
-                        onChange={handleChange}
-                    >
+                    <select id="jueves" value={formData.horarios.jueves} onChange={handleChange}>
                         <option value="" disabled hidden>Seleccione...</option>
                         <option value="">-</option>
                         <option value="7:00-8:30">7:00-8:30</option>
@@ -340,11 +351,7 @@ function CrearMateriaCG() {
 
                 <div className="input-wrapper short-field">
                     <label htmlFor="viernes">Viernes</label>
-                    <select
-                        id="viernes"
-                        value={formData.horarios.viernes}
-                        onChange={handleChange}
-                    >
+                    <select id="viernes" value={formData.horarios.viernes} onChange={handleChange}>
                         <option value="" disabled hidden>Seleccione...</option>
                         <option value="">-</option>
                         <option value="7:00-8:30">7:00-8:30</option>
@@ -355,19 +362,35 @@ function CrearMateriaCG() {
                         <option value="14:30-16:00">14:30-16:00</option>
                     </select>
                 </div>
-               
-                <div className="input-wrapper short-field2">
-                  <label htmlFor="id_carrera">Carrera</label>
-                  <select id="id_carrera" value={formData.id_carrera} onChange={handleChange} required>
-                    <option value="" disabled hidden>Seleccione una carrera</option>
-                    {Object.entries(carrerasPermitidas).map(([key, value]) => (
-                      <option key={key} value={key}>{value}</option>
-                    ))}
-                  </select>
-                </div>
-                
+            </>
+        )}
 
+        {isSemiescolarizada && (
+            <div className="input-wrapper short-field">
+                <label htmlFor="sabado">Sábado</label>
+                <select id="sabado" value={formData.horarios.sabado} onChange={handleChange}>
+                    <option value="" disabled hidden>Seleccione...</option>
+                    <option value="">-</option>
+                        <option value="7:00-8:30">7:00-8:30</option>
+                        <option value="8:30-10:00">8:30-10:00</option>
+                        <option value="10:00-11:30">10:00-11:30</option>
+                        <option value="11:30-13:00">11:30-13:00</option>
+                        <option value="13:00-14:30">13:00-14:30</option>
+                        <option value="14:30-16:00">14:30-16:00</option>
+                </select>
             </div>
+        )}
+
+        <div className="input-wrapper short-field2">
+            <label htmlFor="id_carrera">Carrera</label>
+            <select id="id_carrera" value={formData.id_carrera} onChange={handleChange} required>
+                <option value="" disabled hidden>Seleccione una carrera</option>
+                {Object.entries(carrerasPermitidas).map(([key, value]) => (
+                    <option key={key} value={key}>{value}</option>
+                ))}
+            </select>
+        </div>
+    </div>
             {mostrarModal && (
               <div className="modal">
                 <div className="modal-content">

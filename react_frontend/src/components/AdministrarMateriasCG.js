@@ -141,6 +141,7 @@ const AdministrarMateriasCG = () => {
                   <th>Miércoles</th>
                   <th>Jueves</th>
                   <th>Viernes</th>
+                  <th>Sabado</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -158,6 +159,7 @@ const AdministrarMateriasCG = () => {
                     <td>{materia.horarios.miercoles || "-"}</td>
                     <td>{materia.horarios.jueves || "-"}</td>
                     <td>{materia.horarios.viernes || "-"}</td>
+                    <td>{materia.horarios.sabado || "-"}</td>
                     <td>
                     <button className="icon-button" onClick={() => handleListaAlumnos(materia)}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

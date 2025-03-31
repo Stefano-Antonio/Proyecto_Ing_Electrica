@@ -1,14 +1,15 @@
 const Materia = require('../models/Materia');
 const Docentes = require('../models/Docentes');
 const Horario = require('../models/Horario');
-const mongoose = require('mongoose');
 const Personal = require('../models/Personal');
+const mongoose = require('mongoose');
 const { Parser } = require('json2csv');
 const multer = require('multer');
 const csv = require('csv-parser');
 const fs = require('fs');
 const path = require('path');
-const carrerasPermitidas = ["ISftw", "IDsr", "IEInd", "ICmp", "IRMca", "ISftwS"];
+const carrerasPermitidas = ["ISftw", "IDsr", "IEInd", "ICmp", "IRMca", "ISftwS","IDsr", "IEInd", "ICmp", "IRMca"];
+
 
 // Configurar multer para manejar el archivo CSV
 const storage = multer.diskStorage({

@@ -6,7 +6,7 @@ const materiaController = require('../controllers/materiaController');
 router.post('/subir-csv', materiaController.upload.single('csv'), materiaController.subirMateriasCSV);
 router.get('/exportar-csv', materiaController.exportarMateriasCSV);
 
-// 🔹 NUEVAS RUTAS: Importar/exportar CSV POR CARRERA
+// NUEVAS RUTAS: Importar/exportar CSV POR CARRERA
 router.post('/subir-csv-por-carrera', materiaController.upload.single('csv'), materiaController.subirMateriasCSVPorCarrera);
 router.get('/exportar-csv-por-carrera', materiaController.exportarMateriasCSVPorCarrera);
 

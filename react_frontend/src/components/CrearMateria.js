@@ -18,13 +18,18 @@ function CrearMateria() {
       martes: '',
       miercoles: '',
       jueves: '',
-      viernes: ''
+      viernes: '',
+      sabado: ''
     },
     salon: '',
     grupo: '',
     cupo: '',
     docente: '' // Aquí puedes colocar el ObjectId del docente si es necesario
   });
+
+  
+
+  const carrerasPermitidasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
 
   const [docentes, setDocentes] = useState([]);
 
@@ -102,7 +107,7 @@ function CrearMateria() {
   const handleChange = (e) => {
     const { id, value } = e.target;
 
-    if (["lunes", "martes", "miercoles", "jueves", "viernes"].includes(id)) {
+    if (["lunes", "martes", "miercoles", "jueves", "viernes","sabado"].includes(id)) {
       // Si el cambio es en los horarios, actualiza solo esa clave dentro de horarios
       setFormData((prevState) => ({
         ...prevState,
@@ -147,7 +152,7 @@ function CrearMateria() {
       setFormData({
         id_materia: '',
         nombre: '',
-        horarios: { lunes: '', martes: '', miercoles: '', jueves: '', viernes: '' },
+        horarios: { lunes: '', martes: '', miercoles: '', jueves: '', viernes: '', sabado: '' },
         salon: '',
         grupo: '',
         cupo: '',
@@ -158,6 +163,8 @@ function CrearMateria() {
       toast.error('Hubo un error al crear la materia');
     }
   };
+    
+  const isSemiescolarizada = carrerasPermitidasSemiescolarizadas.includes(id_carrera);
 
   return (
     <div className="materia-layout">
@@ -236,102 +243,104 @@ function CrearMateria() {
                   <option value="" disabled hidden>Seleccione un docente</option>
                   {docentes.map(docente => (
                     <option key={docente.personalMatricula} value={docente.personalMatricula}>
-                      {docente.nombre}  {/* Mostramos nombre + matrícula */}
+                      {docente.nombre}
                     </option>
                   ))}
                 </select>
               </div>
             </div>
             <div className="form-group">
-              <div className="input-wrapper short-field">
-                <label htmlFor="lunes">Lunes</label>
-                <select
-                  id="lunes"
-                  value={formData.horarios.lunes}
-                  onChange={handleChange}
-                >
-                  <option value="" disabled hidden>Seleccione...</option>
-                  <option value="">-</option>
-                  <option value="7:00-8:30">7:00-8:30</option>
-                  <option value="8:30-10:00">8:30-10:00</option>
-                  <option value="10:00-11:30">10:00-11:30</option>
-                  <option value="11:30-13:00">11:30-13:00</option>
-                  <option value="13:00-14:30">13:00-14:30</option>
-                  <option value="14:30-16:00">14:30-16:00</option>
-                </select>
-              </div>
+        {!isSemiescolarizada && (
+            <>
+                <div className="input-wrapper short-field">
+                    <label htmlFor="lunes">Lunes</label>
+                    <select id="lunes" value={formData.horarios.lunes} onChange={handleChange}>
+                        <option value="" disabled hidden>Seleccione...</option>
+                        <option value="">-</option>
+                        <option value="7:00-8:30">7:00-8:30</option>
+                        <option value="8:30-10:00">8:30-10:00</option>
+                        <option value="10:00-11:30">10:00-11:30</option>
+                        <option value="11:30-13:00">11:30-13:00</option>
+                        <option value="13:00-14:30">13:00-14:30</option>
+                        <option value="14:30-16:00">14:30-16:00</option>
+                    </select>
+                </div>
 
-              <div className="input-wrapper short-field">
-                <label htmlFor="martes">Martes</label>
-                <select
-                  id="martes"
-                  value={formData.horarios.martes}
-                  onChange={handleChange}
-                >
-                  <option value="" disabled hidden>Seleccione...</option>
-                  <option value="">-</option>
-                  <option value="7:00-8:30">7:00-8:30</option>
-                  <option value="8:30-10:00">8:30-10:00</option>
-                  <option value="10:00-11:30">10:00-11:30</option>
-                  <option value="11:30-13:00">11:30-13:00</option>
-                  <option value="13:00-14:30">13:00-14:30</option>
-                  <option value="14:30-16:00">14:30-16:00</option>
-                </select>
-              </div>
+                <div className="input-wrapper short-field">
+                    <label htmlFor="martes">Martes</label>
+                    <select id="martes" value={formData.horarios.martes} onChange={handleChange}>
+                        <option value="" disabled hidden>Seleccione...</option>
+                        <option value="">-</option>
+                        <option value="7:00-8:30">7:00-8:30</option>
+                        <option value="8:30-10:00">8:30-10:00</option>
+                        <option value="10:00-11:30">10:00-11:30</option>
+                        <option value="11:30-13:00">11:30-13:00</option>
+                        <option value="13:00-14:30">13:00-14:30</option>
+                        <option value="14:30-16:00">14:30-16:00</option>
+                    </select>
+                </div>
 
-              <div className="input-wrapper short-field">
-                <label htmlFor="miercoles">Miercoles</label>
-                <select
-                  id="miercoles"
-                  value={formData.horarios.miercoles}
-                  onChange={handleChange}
-                >
-                  <option value="" disabled hidden>Seleccione...</option>
-                  <option value="">-</option>
-                  <option value="7:00-8:30">7:00-8:30</option>
-                  <option value="8:30-10:00">8:30-10:00</option>
-                  <option value="10:00-11:30">10:00-11:30</option>
-                  <option value="11:30-13:00">11:30-13:00</option>
-                  <option value="13:00-14:30">13:00-14:30</option>
-                  <option value="14:30-16:00">14:30-16:00</option>
-                </select>
-              </div>
+                <div className="input-wrapper short-field">
+                    <label htmlFor="miercoles">Miércoles</label>
+                    <select id="miercoles" value={formData.horarios.miercoles} onChange={handleChange}>
+                        <option value="" disabled hidden>Seleccione...</option>
+                        <option value="">-</option>
+                        <option value="7:00-8:30">7:00-8:30</option>
+                        <option value="8:30-10:00">8:30-10:00</option>
+                        <option value="10:00-11:30">10:00-11:30</option>
+                        <option value="11:30-13:00">11:30-13:00</option>
+                        <option value="13:00-14:30">13:00-14:30</option>
+                        <option value="14:30-16:00">14:30-16:00</option>
+                    </select>
+                </div>
 
-              <div className="input-wrapper short-field">
-                <label htmlFor="jueves">Jueves</label>
-                <select
-                  id="jueves"
-                  value={formData.horarios.jueves}
-                  onChange={handleChange}
-                >
-                  <option value="" disabled hidden>Seleccione...</option>
-                  <option value="">-</option>
-                  <option value="7:00-8:30">7:00-8:30</option>
-                  <option value="8:30-10:00">8:30-10:00</option>
-                  <option value="10:00-11:30">10:00-11:30</option>
-                  <option value="11:30-13:00">11:30-13:00</option>
-                  <option value="13:00-14:30">13:00-14:30</option>
-                  <option value="14:30-16:00">14:30-16:00</option>
-                </select>
-              </div>
+                <div className="input-wrapper short-field">
+                    <label htmlFor="jueves">Jueves</label>
+                    <select id="jueves" value={formData.horarios.jueves} onChange={handleChange}>
+                        <option value="" disabled hidden>Seleccione...</option>
+                        <option value="">-</option>
+                        <option value="7:00-8:30">7:00-8:30</option>
+                        <option value="8:30-10:00">8:30-10:00</option>
+                        <option value="10:00-11:30">10:00-11:30</option>
+                        <option value="11:30-13:00">11:30-13:00</option>
+                        <option value="13:00-14:30">13:00-14:30</option>
+                        <option value="14:30-16:00">14:30-16:00</option>
+                    </select>
+                </div>
 
-              <div className="input-wrapper short-field">
-                <label htmlFor="viernes">Viernes</label>
-                <select
-                  id="viernes"
-                  value={formData.horarios.viernes}
-                  onChange={handleChange}
-                >
-                  <option value="" disabled hidden>Seleccione...</option>
-                  <option value="">-</option>
-                  <option value="7:00-8:30">7:00-8:30</option>
-                  <option value="8:30-10:00">8:30-10:00</option>
-                  <option value="10:00-11:30">10:00-11:30</option>
-                  <option value="11:30-13:00">11:30-13:00</option>
-                  <option value="13:00-14:30">13:00-14:30</option>
-                  <option value="14:30-16:00">14:30-16:00</option>
+                <div className="input-wrapper short-field">
+                    <label htmlFor="viernes">Viernes</label>
+                    <select id="viernes" value={formData.horarios.viernes} onChange={handleChange}>
+                        <option value="" disabled hidden>Seleccione...</option>
+                        <option value="">-</option>
+                        <option value="7:00-8:30">7:00-8:30</option>
+                        <option value="8:30-10:00">8:30-10:00</option>
+                        <option value="10:00-11:30">10:00-11:30</option>
+                        <option value="11:30-13:00">11:30-13:00</option>
+                        <option value="13:00-14:30">13:00-14:30</option>
+                        <option value="14:30-16:00">14:30-16:00</option>
+                    </select>
+                </div>
+            </>
+        )}
+
+        {isSemiescolarizada && (
+            <div className="input-wrapper short-field">
+                <label htmlFor="sabado">Sábado</label>
+                <select id="sabado" value={formData.horarios.sabado} onChange={handleChange}required>
+                    <option value="" disabled hidden>Seleccione...</option>
+                    <option value="">-</option>
+                        <option value="7:00-8:30">7:00-8:30</option>
+                        <option value="8:30-10:00">8:30-10:00</option>
+                        <option value="10:00-11:30">10:00-11:30</option>
+                        <option value="11:30-13:00">11:30-13:00</option>
+                        <option value="13:00-14:30">13:00-14:30</option>
+                        <option value="14:30-16:00">14:30-16:00</option>
                 </select>
-              </div>
+            </div>
+        )}
+
+
             </div>
             <div className="materia-buttons">
               <button type="submit" className="button">Agregar</button>

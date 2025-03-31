@@ -1,16 +1,11 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const MateriaSchema = new Schema({
+const MateriaSemiSchema = new Schema({
     id_materia: {type: Number, required: false},
     id_carrera: {  type: String, required: true },
     nombre: { type: String, required: true },
     horarios: {
-        lunes: { type: String, default: null },
-        martes: { type: String, default: null },
-        miercoles: { type: String, default: null },
-        jueves: { type: String, default: null },
-        viernes: { type: String, default: null },
         sabado: { type: String, default: null }
     },
     alumnos: [{ type: Schema.Types.ObjectId, ref: 'Alumno', default: [] }] ,
@@ -19,4 +14,5 @@ const MateriaSchema = new Schema({
     cupo: { type: Number, required: true },
     docente: { type: Schema.Types.ObjectId, ref: 'Docente', required: false, default: null }
 });
-module.exports = mongoose.model('Materia', MateriaSchema);
+
+module.exports = mongoose.model('MateriaSemi', MateriaSemiSchema);

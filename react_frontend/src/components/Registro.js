@@ -14,7 +14,7 @@ function Registro() {
   const [mensaje, setMensaje] = useState("");
   const [id_carrera, setIdCarrera] = useState("");
   const navigate = useNavigate();
-
+  
   const carrerasPermitidas = {
     ISftw: "Ing. en Software",
     IDsr: "Ing. en Desarrollo",
@@ -22,7 +22,12 @@ function Registro() {
     ICmp: "Ing. Computación",
     IRMca: "Ing. Robótica y Mecatrónica",
     IElec: "Ing. Electricista",
-    ISftwS: "Ing. en Software (Semiescolarizado)"
+    ISftwS: "Ing. en Software (Semiescolarizado)",
+    IDsrS: "Ing. en Desarrollo (Semiescolarizado)",
+    IEIndS: "Ing. Electrónica Industrial(Semiescolarizado)",
+    ICmpS: "Ing. Computación (Semiescolarizado)",
+    IRMcaS: "Ing. Robótica y Mecatrónica (Semiescolarizado)",
+    IElecS: "Ing. Electricista (Semiescolarizado)",
   };
 
   const handleTipoUsuarioChange = (event) => {

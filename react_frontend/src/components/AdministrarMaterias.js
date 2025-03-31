@@ -16,6 +16,11 @@ const AdministrarMaterias = () => {
   const id_carrera = localStorage.getItem("id_carrera");
   const navigate = useNavigate();
 
+  // Lista de carreras semiescolarizadas
+  const carrerasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
+
+  const esSemiescolarizada = carrerasSemiescolarizadas.includes(id_carrera);
+
   useEffect(() => {
     fetchMaterias();
     fetchDocentes();
@@ -110,11 +115,17 @@ const AdministrarMaterias = () => {
                   <th>Cupo</th>
                   <th>Materia</th>
                   <th>Docente</th>
+                  {esSemiescolarizada ? (
+                    <th>Sábado</th>
+                  ) : (
+                    <>
                   <th>Lunes</th>
                   <th>Martes</th>
                   <th>Miércoles</th>
                   <th>Jueves</th>
                   <th>Viernes</th>
+                  </>
+                  )}
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -126,11 +137,17 @@ const AdministrarMaterias = () => {
                     <td>{materia.cupo}</td>
                     <td>{materia.nombre}</td>
                     <td>{getDocenteNombre(materia)}</td>
-                    <td>{materia.horarios.lunes || "-"}</td>
-                    <td>{materia.horarios.martes || "-"}</td>
-                    <td>{materia.horarios.miercoles || "-"}</td>
-                    <td>{materia.horarios.jueves || "-"}</td>
-                    <td>{materia.horarios.viernes || "-"}</td>
+                    {esSemiescolarizada ? (
+                      <td>{materia.horarios.sabado || "-"}</td>
+                    ) : (
+                      <>
+                        <td>{materia.horarios.lunes || "-"}</td>
+                        <td>{materia.horarios.martes || "-"}</td>
+                        <td>{materia.horarios.miercoles || "-"}</td>
+                        <td>{materia.horarios.jueves || "-"}</td>
+                        <td>{materia.horarios.viernes || "-"}</td>
+                      </>
+                    )}
                     <td>
                       <button
                         className="icon-button"

@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import "./InicioDocente.css";
+import "./DocenteAlumnos.css";
 
 function DocenteAlumnos() {
   const [alumnos, setAlumnos] = useState([]); // Definir el estado alumnos
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const location = useLocation();
-
   const { nombre, matricula: matriculaDocente, materiaId, materiaNombre } = location.state || {};
 
   // Guardar la matrícula del tutor en localStorage
