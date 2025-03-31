@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import "./InicioDocente.css";
+import "./DocenteAlumnos.css";
 
 function DocenteAlumnos() {
   const [alumnos, setAlumnos] = useState([]); // Definir el estado alumnos
