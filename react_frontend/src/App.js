@@ -108,6 +108,7 @@ function App() {
               <Route path="/crear-personal-cg" element={<PrivateRoute><CrearPersonalCG/></PrivateRoute>}></Route>
               <Route path="/coordinador/modificar-personal" element={<PrivateRoute><ModificarPersonal/></PrivateRoute>}></Route>
               <Route path="/admin-tutor" element={<PrivateRoute><AdministrarTutorados/></PrivateRoute>}></Route>
+              <Route path="/coordinador/admin-tutor" element={<PrivateRoute><AdministrarTutorados/></PrivateRoute>}></Route>
               <Route path="/lista-tutorados-admin" element={<PrivateRoute><AdministrarTutoradosAdmin/></PrivateRoute>}></Route>
               <Route path="/administrar-materias-cg" element={<PrivateRoute><AdministrarMateriasCG/></PrivateRoute>}></Route>
               <Route path="/coordinador-tutor" element={<PrivateRoute><CoordinadorTutor/></PrivateRoute>}></Route>

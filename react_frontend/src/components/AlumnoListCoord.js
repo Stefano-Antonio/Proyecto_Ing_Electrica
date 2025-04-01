@@ -71,12 +71,12 @@ const AlumnoListCoord = () => {
   console.log("matriculaCord:", matriculaCord);
 
   const handleNavigate1 = () => {
-    navigate("/crear-alumno", { state: { matriculaCord: matriculaCord } });
+    navigate("/coordinador/crear-alumno", { state: { matriculaCord: matriculaCord } });
   };
 
   const handleNavigate2 = () => {
     console.log("Navegando a: ", `/coordinador-tutor`);
-    navigate("/admin-tutor", { state: { matriculaCord: matriculaCord } });
+    navigate("/coordinador/admin-tutor", { state: { matriculaCord: matriculaCord } });
   };
 
   const handleNavigate3 = (alumno) => {

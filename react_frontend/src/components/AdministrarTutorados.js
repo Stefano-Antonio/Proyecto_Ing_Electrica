@@ -120,7 +120,7 @@ function AdministrarTutorados() {
 
   const handleBack = () => {
   if ((matriculaCord || storedMatriculaTutor).startsWith("C") && !(matriculaCord || storedMatriculaTutor).startsWith("CG")) {
-    navigate("/inicio-coordinador/alumnos", { state: { matriculaCord: matriculaCord || storedMatriculaTutor } });
+    navigate("/coordinador/alumnos", { state: { matriculaCord: matriculaCord || storedMatriculaTutor } });
   } else if ((matriculaCord || storedMatriculaTutor).startsWith("CG")) {
     navigate("/inicio-coordinador-gen", { state: { matriculaCord: matriculaCord || storedMatriculaTutor } });
   } else {
