@@ -47,9 +47,8 @@
 
 .radio-group {
   display: flex;
-  flex-direction: column; /* Coloca las opciones en columna */
   align-items: flex-start;
-  margin-top: 20px;
+  margin-top:45px;
 }
 
 .radio-option {
@@ -59,7 +58,7 @@
 }
 
 .radio-option input[type="radio"] {
-  margin-right: 20px; /* Espacio entre el radio button y el label */
+  margin-right: 0px; /* Espacio entre el radio button y el label */
 }
 
 .login-button-container {

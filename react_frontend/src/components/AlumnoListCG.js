@@ -130,6 +130,7 @@ const AlumnoListCG = () => {
   const alumnosFiltrados = alumnos.filter(alumno => 
     alumno.matricula.toLowerCase().includes(searchTerm.toLowerCase()) ||
     alumno.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    alumno.id_carrera.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (tutoresNombres[alumno._id] && tutoresNombres[alumno._id].toLowerCase().includes(searchTerm.toLowerCase())) ||
     alumno.estatus.toLowerCase().includes(searchTerm.toLowerCase())
   );
