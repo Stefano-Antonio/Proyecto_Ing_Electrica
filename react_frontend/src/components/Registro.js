@@ -98,7 +98,7 @@ function Registro() {
               });
               return;
             }
-            navigate("/inicio-coordinador", { state: { nombre, matricula, id_carrera } });
+            navigate("/coordinador", { state: { nombre, matricula, id_carrera } });
           } else if (roles.includes("A")) {
             if (!id_carrera) {
               toast.error("Por favor, selecciona una carrera antes de continuar.", {
@@ -107,7 +107,7 @@ function Registro() {
               });
               return;
             }
-            navigate("/inicio-administrador", { state: { nombre, matricula, id_carrera } });
+            navigate("/administrador", { state: { nombre, matricula, id_carrera } });
           } else if (roles.includes("T")) {
             navigate("/inicio-tutor", { state: { nombre, matricula } });
           } else if (roles.includes("CG")) {

@@ -98,7 +98,7 @@ function DocenteAlumnos() {
 
         <h2>Lista de alumnos de la materia</h2>
         <div className="docente-header">
-          <h3>{`${nombre}`}</h3>
+          <h3>Docente: {`${nombre}`}</h3>
           <h3>Grupo: 1A</h3>
           <h3>Materia: {materiaNombre}</h3>
         </div>
@@ -114,7 +114,7 @@ function DocenteAlumnos() {
 
         {alumnosFiltrados.length > 0 ? (
         <div className="docente-content">
-          <table className="docente-table">
+          <table className="docente-table-1">
             <thead>
               <tr>
                 <th>Matricula</th>

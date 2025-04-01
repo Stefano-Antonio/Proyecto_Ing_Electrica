@@ -13,9 +13,9 @@ const RedirectRoute = ({ children, userType }) => {
         if (roles.includes("D")) {
             return "/docente/alumnos";
         } else if (roles.includes("C")) {
-            return "/inicio-coordinador";
+            return "/coordinador";
         } else if (roles.includes("A")) {
-            return "/inicio-administrador";
+            return "/administrador";
         } else if (roles.includes("T")){
             return "/inicio-tutor";
         } else if (roles.includes("CG")){

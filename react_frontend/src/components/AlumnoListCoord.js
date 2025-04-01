@@ -81,11 +81,11 @@ const AlumnoListCoord = () => {
 
   const handleNavigate3 = (alumno) => {
     console.log("Navegando a: ", `/revisar-horario/${alumno.matricula}`);
-    navigate(`/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
+    navigate(`/coordinador/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
   };
 
   const handleModify = (alumno) => {
-    navigate("/modificar-alumno", { state: { alumno, matriculaCord: matriculaCord } });
+    navigate("/coordinador/modificar-alumno", { state: { alumno, matriculaCord: matriculaCord } });
   };
 
   const setModal = (id) => {

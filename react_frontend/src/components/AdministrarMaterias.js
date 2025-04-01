@@ -90,9 +90,9 @@ const AdministrarMaterias = () => {
 
   const handleListaAlumnos = (materia) => {
     const materiaUrl = formatUrl(materia.nombre); // Formatea el nombre de la materia
-    navigate(`/docente/materias/${materiaUrl}/lista-alumnos`, {
+    navigate(`/coordinador/materias/${materiaUrl}/lista-alumnos`, {
       state: {
-        nombre: docentes.nombre,
+        nombre: getDocenteNombre(materia),
         matricula: docentes.matricula,
         materiaId: materia._id,
         materiaNombre: materia.nombre,
@@ -226,7 +226,7 @@ const AdministrarMaterias = () => {
         )}
 
         <div className="add-delete-buttons">
-          <button onClick={() => navigate("/crear-materia")}>Agregar nueva materia</button>
+          <button onClick={() => navigate("/coordinador/crear-materia")}>Agregar nueva materia</button>
         </div>
       </div>
     </div>

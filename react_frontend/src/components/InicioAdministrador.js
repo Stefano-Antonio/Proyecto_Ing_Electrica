@@ -25,9 +25,9 @@ const InicioAdministrador = () => {
         <p>A continuación, seleccione la lista que desee visualizar</p>
   
         <div className="buttons">
-          <button onClick={() => navigate("/inicio-administrador/alumnos")}>Administrar alumno</button>
-          <button onClick={() => navigate("/inicio-administrador/personal")}>Administrar personal</button>
-          <button onClick={() => navigate("/inicio-administrador/materias")}>Administrar materias</button>
+          <button onClick={() => navigate("/administrador/alumnos")}>Administrar alumno</button>
+          <button onClick={() => navigate("/administrador/personal")}>Administrar personal</button>
+          <button onClick={() => navigate("/administrador/materias")}>Administrar materias</button>
         </div>
   
         {/* Aquí se mostrará el componente de la ruta anidada */}
