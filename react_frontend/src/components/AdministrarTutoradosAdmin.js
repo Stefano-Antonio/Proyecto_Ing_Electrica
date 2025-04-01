@@ -119,7 +119,7 @@ function AdministrarTutoradosAdmin() {
   };
 
   const handleBack = () => { 
-    navigate("/inicio-administrador/alumnos", { state: { matriculaAdmin: matriculaAdmin || storedMatriculaTutor } }); // Navegar a la página anterior 
+    navigate("/administrador/alumnos", { state: { matriculaAdmin: matriculaAdmin || storedMatriculaTutor } }); // Navegar a la página anterior 
   }
 
   const getEstatusIcon = (estatus) => {

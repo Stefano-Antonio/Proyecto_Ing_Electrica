@@ -76,12 +76,12 @@ const AlumnoListAdmin = () => {
 
   const handleNavigate2 = () => {
     console.log("Navegando a: ", `/coordinador-tutor`);
-    navigate("/lista-tutorados-admin", { state: { matriculaAdmin: matriculaAdmin } });
+    navigate("/administrador/admin-tutor", { state: { matriculaAdmin: matriculaAdmin } });
   };
 
   const handleNavigate3 = (alumno) => {
     console.log("Navegando a: ", `/revisar-horario/${alumno.matricula}`);
-    navigate(`/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaAdmin: matriculaAdmin} });
+    navigate(`/administrador/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaAdmin: matriculaAdmin} });
   };
 
 
