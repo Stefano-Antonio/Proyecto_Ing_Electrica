@@ -135,27 +135,13 @@ exports.getTutores = async (req, res) => {
 
     console.log("Materias en la carrera:", materiasIds);
 
-    // Buscar docentes que tengan alumnos de la carrera o impartan materias de la carrera
-    const docentesPorAlumnos = await Docentes.find({ alumnos: { $in: alumnosIds } }).select("personalMatricula");
-    const docentesPorMaterias = await Docentes.find({ materias: { $in: materiasIds } }).select("personalMatricula");
+    // Buscar todos los docentes
+    const docentes = await Docentes.find().select("personalMatricula");
+    console.log("Todos los docentes encontrados:", docentes.map(d => d.personalMatricula));
 
-    console.log("Docentes por alumnos:", docentesPorAlumnos.map(d => d.personalMatricula));
-    console.log("Docentes por materias:", docentesPorMaterias.map(d => d.personalMatricula));
-    console.log("Docentes por alumnos y materias:", [...docentesPorAlumnos, ...docentesPorMaterias]);
-    // Combinar docentes sin duplicados
-    const docentes = [...docentesPorAlumnos, ...docentesPorMaterias].reduce((acc, docente) => {
-      if (!acc.some(d => d.personalMatricula === docente.personalMatricula)) {
-        acc.push(docente);
-      }
-      return acc;
-    }, []);
-
-    console.log("Docentes encontrados:", docentes.map(d => d.personalMatricula));
-
-    // Buscar tutores que tengan alumnos de la carrera
-    const tutores = await Tutores.find({ alumnos: { $in: alumnosIds } }).select("personalMatricula");
-
-    console.log("Tutores encontrados:", tutores.map(t => t.personalMatricula));
+    // Buscar todos los tutores
+    const tutores = await Tutores.find().select("personalMatricula");
+    console.log("Todos los tutores encontrados:", tutores.map(t => t.personalMatricula));
 
     // Buscar coordinadores y administradores de la carrera
     const [coordinadores, administradores] = await Promise.all([

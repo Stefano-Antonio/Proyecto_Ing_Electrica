@@ -68,7 +68,7 @@ function Registro() {
         }
   
         // Verificar si la carrera del personal coincide con la seleccionada (excepto para Docente y Tutor)
-        if (tipoUsuario === "personal" && !roles.includes("D") && !roles.includes("T") && idCarreraBD !== id_carrera) {
+        if (tipoUsuario === "personal" && !roles.includes("D") && !roles.includes("T") && !roles.includes("CG") && !roles.includes("AG") && idCarreraBD !== id_carrera) {
           toast.error("La matrícula no corresponde a la carrera seleccionada.", {
             position: "top-right",
             autoClose: 3000,
@@ -172,7 +172,7 @@ function Registro() {
                   checked={tipoUsuario === "alumno"}
                   onChange={handleTipoUsuarioChange}
                 />{" "}
-                Alumno
+              Alumno
               </label>
               <label className="radio-option">
                 <input
@@ -182,7 +182,7 @@ function Registro() {
                   checked={tipoUsuario === "personal"}
                   onChange={handleTipoUsuarioChange}
                 />{" "}
-                Personal
+              Personal
               </label>
             </div>
           </div>
