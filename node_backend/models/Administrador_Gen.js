@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 const AdministradorGenMdl = new Schema({
   nombre: { type: String, required: true },
   personalMatricula: { type: String, required: true, unique: true },
-  password:{ type: String, required: true }
   });
   
 

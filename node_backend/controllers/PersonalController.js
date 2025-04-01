@@ -61,14 +61,15 @@ const storage = multer.diskStorage({
             });
             await nuevoCoordinador.save();
             console.log('Usuario guardado en Coordinadores');
-        } else if (roles === 'A' && matricula.match(/^A\d{4}$/)) {
-            const nuevoAdministrador = new Administradores({
-                id_carrera,
-                personalMatricula: usuarioGuardado.matricula
-            });
-            await nuevoAdministrador.save();
-            console.log('Usuario guardado en Administradores');
-        } else if (roles === 'CG' && matricula.match(/^CG\d{4}$/)) {
+        } else if (roles.includes('A') && usuarioGuardado.matricula.match(/^A\d{4}$/)) {
+          console.log("Creando Administrador con matrícula:", usuarioGuardado.matricula);
+          const nuevoAdministrador = new Administradores({
+              id_carrera,
+              personalMatricula: usuarioGuardado.matricula
+          });
+          await nuevoAdministrador.save();
+          console.log('Usuario guardado en Administradores');
+      } else if (roles === 'CG' && matricula.match(/^CG\d{4}$/)) {
             const nuevoCoordinadorGen = new CoordinadorGenMdl({
                 nombre,
                 personalMatricula: usuarioGuardado.matricula,
