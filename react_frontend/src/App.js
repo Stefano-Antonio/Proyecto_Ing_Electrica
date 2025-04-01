@@ -89,12 +89,13 @@ function App() {
               <Route path="/revisar-horario/:matricula" element={<PrivateRoute><RevisionHorarioTutor /></PrivateRoute>} />
               <Route path="/coordinador/revisar-horario/:matricula" element={<PrivateRoute><RevisionHorarioTutor /></PrivateRoute>} />
               <Route path="/docente/materias/:materia/lista-alumnos" element={<PrivateRoute><DocenteAlumnos/></PrivateRoute>}></Route>
+              <Route path="/coordinador/revisar-horario/:matricula" element={<PrivateRoute><RevisionHorarioTutor /></PrivateRoute>} />
+              <Route path="/administrador/revisar-horario/:matricula" element={<PrivateRoute><RevisionHorarioTutor /></PrivateRoute>} />
               <Route path="/coordinador" element={<PrivateRoute><InicioCoordinador/></PrivateRoute>}>
                   <Route path="alumnos" element={<AlumnoListCoord/>}></Route>
                   <Route path="personal" element={<AdministrarPersonalCoordinador/>}></Route>;
                   <Route path="materias" element={<AdministrarMaterias/>}></Route>;
                   </Route>
-              <Route path="/administrador" element={<InicioAdministrador/>}></Route>
               <Route path="/coordinador/materias/:materia/lista-alumnos" element={<PrivateRoute><DocenteAlumnos/></PrivateRoute>}></Route>
               <Route path="/administrar-materias" element={<AdministrarMaterias/>}></Route>
               <Route path="/coordinador/crear-materia" element={<CrearMateria />} />
@@ -109,7 +110,7 @@ function App() {
               <Route path="/coordinador/modificar-personal" element={<PrivateRoute><ModificarPersonal/></PrivateRoute>}></Route>
               <Route path="/admin-tutor" element={<PrivateRoute><AdministrarTutorados/></PrivateRoute>}></Route>
               <Route path="/coordinador/admin-tutor" element={<PrivateRoute><AdministrarTutorados/></PrivateRoute>}></Route>
-              <Route path="/lista-tutorados-admin" element={<PrivateRoute><AdministrarTutoradosAdmin/></PrivateRoute>}></Route>
+              <Route path="/administrador/admin-tutor" element={<PrivateRoute><AdministrarTutoradosAdmin/></PrivateRoute>}></Route>
               <Route path="/administrar-materias-cg" element={<PrivateRoute><AdministrarMateriasCG/></PrivateRoute>}></Route>
               <Route path="/coordinador-tutor" element={<PrivateRoute><CoordinadorTutor/></PrivateRoute>}></Route>
               <Route path="/coordinador/administrar-tutorados" element={<PrivateRoute><AdministrarTutorados /></PrivateRoute>} />
@@ -119,7 +120,7 @@ function App() {
                   <Route path="personal" element={<AdministrarPersonalCG/>}></Route>;
                   <Route path="materias" element={<AdministrarMateriasCG/>}></Route>;
                   </Route>
-                <Route path="/inicio-administrador" element={<PrivateRoute><InicioAdministrador/></PrivateRoute>}>
+                <Route path="/administrador" element={<PrivateRoute><InicioAdministrador/></PrivateRoute>}>
                   <Route path="alumnos" element={<AlumnoListAdmin/>}></Route>
                   <Route path="personal" element={<AdministrarPersonalAdmin/>}></Route>;
                   <Route path="materias" element={<AdministrarMateriasAdmin/>}></Route>;
