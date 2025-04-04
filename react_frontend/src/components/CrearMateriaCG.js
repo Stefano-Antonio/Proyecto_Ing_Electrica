@@ -77,11 +77,11 @@ function CrearMateriaCG() {
           { headers: { "Content-Type": "multipart/form-data" } }
         );
     
-        alert("Base de datos de materias actualizada con éxito desde el archivo CSV");
+        toast.success("Base de datos de materias actualizada con éxito desde el archivo CSV");
         setMostrarModal(false);
       } catch (error) {
         console.error("Error al subir el archivo CSV:", error);
-        alert("Hubo un error al actualizar la base de datos");
+        toast.error("Hubo un error al actualizar la base de datos");
       }
     };
     
@@ -101,7 +101,7 @@ function CrearMateriaCG() {
         link.remove();
       } catch (error) {
         console.error("Error al descargar el archivo CSV:", error);
-        alert("No se pudo descargar el archivo");
+        toast.error("No se pudo descargar el archivo");
       }
     };
     
@@ -145,7 +145,7 @@ function CrearMateriaCG() {
 
         const { id_carrera } = formData;
         if (!id_carrera) {
-          alert("Error: No se encontró el ID de la carrera.");
+          toast.error("Error: No se encontró el ID de la carrera.");
           return;
         }
 
@@ -382,11 +382,25 @@ function CrearMateriaCG() {
             )}
             <div className="materia-buttons">
               <button type="submit" className="button">Agregar</button>
-              <button className="button" onClick={() => setMostrarModal(true)}>Subir base de datos de materias</button>
             </div>
           </form>
+          <div className="materia-buttons">
+              <button className="button" onClick={() => setMostrarModal(true)}>Subir base de datos de materias</button>
+            </div>
         </div>
       </div>
+      {mostrarModal && (
+              <div className="modal">
+                <div className="modal-content">
+                  <h3>Subir base de datos</h3>
+                  <p>Seleccione el archivo a subir:</p>
+                  <input type="file" accept=".csv" onChange={handleFileChange} />
+                  <button onClick={handleSubmitCSV}>Subir CSV</button>
+                  <button onClick={handleDownloadCSV}>Descargar CSV</button>
+                  <button onClick={() => setMostrarModal(false)}>Cerrar</button>
+                </div>
+              </div>
+            )}
     </div>
   );
 }

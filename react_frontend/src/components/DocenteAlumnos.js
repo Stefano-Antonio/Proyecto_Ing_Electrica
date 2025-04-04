@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import "./InicioDocente.css";
+import "./DocenteAlumnos.css";
 
 function DocenteAlumnos() {
   const [alumnos, setAlumnos] = useState([]); // Definir el estado alumnos
@@ -115,7 +115,7 @@ function DocenteAlumnos() {
 
         {alumnosFiltrados.length > 0 ? (
         <div className="docente-content">
-          <table className="docente-table">
+          <table className="docente-table-1">
             <thead>
               <tr>
                 <th>Matricula</th>

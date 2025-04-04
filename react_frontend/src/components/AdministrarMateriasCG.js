@@ -167,7 +167,7 @@ const AdministrarMateriasCG = () => {
                   </button>
                       <button
                         className="icon-button"
-                        onClick={() => navigate("/modificar-materia", { state: { materia } })}
+                        onClick={() => navigate("/modificar-materia-cg", { state: { materia } })}
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M12 20h9"></path>

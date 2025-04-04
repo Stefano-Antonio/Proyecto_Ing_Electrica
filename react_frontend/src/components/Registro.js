@@ -75,7 +75,6 @@ function Registro() {
         }
         
 
-        setMensaje(mensaje);
         localStorage.setItem("id_carrera", idCarreraBD);
         localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("matricula", matricula);
@@ -111,7 +110,7 @@ function Registro() {
               return;
             }
 
-            navigate("/inicio-coordinador", { state: { nombre, matricula, id_carrera } });
+            navigate("/coordinador", { state: { nombre, matricula, id_carrera } });
           } else if (roles.includes("A")) {
 
 

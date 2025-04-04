@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./CrearAlumno.css";
 
 function ModificarAlumnoCG() {
@@ -12,11 +14,22 @@ function ModificarAlumnoCG() {
   const matriculaTutor = matriculaCord;
   const [form, setForm] = useState({
     nombre: "",
+    id_carrera: "",
     matricula: "",
     correo: "",
     telefono: "",
     tutor: "" // Nuevo campo para el tutor
   });
+
+  const carrerasPermitidas = {
+    ISftw: "Ing. en Software",
+    IDsr: "Ing. en Desarrollo",
+    IEInd: "Ing. Electrónica Industrial",
+    ICmp: "Ing. Computación",
+    IRMca: "Ing. Robótica y Mecatrónica",
+    IElec: "Ing. Electricista",
+    ISftwS: "Ing. en Software (Semiescolarizado)"
+  };
 
   
   // Llenar los campos del formulario con los datos del alumno
@@ -24,6 +37,7 @@ function ModificarAlumnoCG() {
     if (alumno) {
       setForm({
         nombre: alumno.nombre || "",
+        id_carrera: alumno.id_carrera || "",
         matricula: alumno.matricula || "",
         correo: alumno.correo || "",
         telefono: alumno.telefono || "",
@@ -75,9 +89,10 @@ useEffect(() => {
     e.preventDefault();
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/alumnos/${alumno._id}`,
+        `http://localhost:5000/api/cordgen/alumnos/${alumno._id}`,
         {
           nombre: form.nombre,
+          id_carrera: form.id_carrera,
           matricula: form.matricula,
           correo: form.correo,
           telefono: form.telefono,
@@ -85,16 +100,17 @@ useEffect(() => {
         }
       );
       console.log("Alumno actualizado:", response.data);
-      alert("Alumno actualizado con éxito");
+      toast.success("Alumno actualizado con éxito");
       navigate(-1);
     } catch (error) {
       console.error("Error al actualizar el alumno:", error);
-      alert("Hubo un error al actualizar el alumno");
+      toast.error("Hubo un error al actualizar el alumno");
     }
   };
 
   return (
     <div className="alumno-layout">
+      <ToastContainer />
       <div className="alumno-container">
         <div className="top-left">
           <button className="back-button" onClick={handleBack}>Regresar</button>
@@ -162,6 +178,19 @@ useEffect(() => {
                   ))}
                 </select>
               </div>
+              <div className="input-wrapper short-field2">
+                            <label htmlFor="id_carrera">Carrera</label>
+                            <select
+                                id="id_carrera"
+                                value={form.id_carrera}
+                                onChange={(e) => setForm({ ...form, id_carrera: e.target.value })}
+                            >
+                                <option value="" disabled hidden>Seleccione una carrera</option>
+                                {Object.entries(carrerasPermitidas).map(([key, value]) => (
+                                    <option key={key} value={key}>{value}</option>
+                                ))}
+                            </select>
+                        </div>
             </div>
             <div className="alumno-buttons">
               <button type="submit" className="button">Actualizar</button>

@@ -233,7 +233,7 @@ return (
                     </div>
                 </form>
                 <div className="alumno-buttons">
-                    <button className="button" onClick={handleSubmitCSV}>Subir base de datos de alumnos</button>
+                <button type="button" className="button" onClick={handleSumbitDB}>Subir base de datos de alumnos</button>
                 </div>
             </div>
         </div>
