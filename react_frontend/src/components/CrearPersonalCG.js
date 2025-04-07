@@ -167,7 +167,7 @@ function CrearPersonal() {
   
     try {
       await axios.post(
-        `http://localhost:5000/api/personal/subir-csv/carrera/${id_carrera}`, // Ahora se pasa en la URL
+        `http://localhost:5000/api/personal/subir-csv/`, // Ahora se pasa en la URL
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -195,7 +195,7 @@ function CrearPersonal() {
   
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/personal/exportar-csv/carrera/${id_carrera}`,
+        `http://localhost:5000/api/personal/exportar-csv/`,
         { responseType: "blob" } // Recibir como blob para descarga
       );
   

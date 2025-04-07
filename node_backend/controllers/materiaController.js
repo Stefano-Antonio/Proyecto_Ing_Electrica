@@ -449,30 +449,45 @@ exports.exportarMateriasCSVPorCarrera = async (req, res) => {
       return res.status(400).json({ message: "Se requiere el id_carrera" });
     }
 
+    const carrerasPermitidasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
+
     const materias = await Materia.find({ id_carrera }).populate("docente"); // Filtrar solo por la carrera
 
     if (materias.length === 0) {
       return res.status(404).json({ message: "No hay materias registradas para esta carrera" });
     }
 
-    const formattedData = materias.map((m) => ({
-      id_materia: m.id_materia,
-      id_carrera: m.id_carrera,
-      nombre: m.nombre,
-      salon: m.salon,
-      grupo: m.grupo,
-      cupo: m.cupo,
-      docente: m.docente ? m.docente.personalMatricula : "Sin asignar", // Guardar matrícula del docente
-      lunes: m.horarios.lunes || "-",
-      martes: m.horarios.martes || "-",
-      miercoles: m.horarios.miercoles || "-",
-      jueves: m.horarios.jueves || "-",
-      viernes: m.horarios.viernes || "-",
-      sabado: m.horarios.sabado || "-",
-    }));
+    // Determinar las columnas según el tipo de carrera
+    const isSemiescolarizada = carrerasPermitidasSemiescolarizadas.includes(id_carrera);
+    const fields = isSemiescolarizada
+      ? ["id_materia", "id_carrera", "nombre", "salon", "grupo", "cupo", "docente", "viernes", "sabado"]
+      : ["id_materia", "id_carrera", "nombre", "salon", "grupo", "cupo", "docente", "lunes", "martes", "miercoles", "jueves", "viernes"];
 
-    const fields = ["id_materia", "id_carrera", "nombre", "salon", "grupo", "cupo", "docente",
-                    "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"];
+    const formattedData = materias.map((m) => {
+      const baseData = {
+        id_materia: m.id_materia,
+        id_carrera: m.id_carrera,
+        nombre: m.nombre,
+        salon: m.salon,
+        grupo: m.grupo,
+        cupo: m.cupo,
+        docente: m.docente ? m.docente.personalMatricula : "Sin asignar", // Guardar matrícula del docente
+      };
+
+      // Agregar horarios según el tipo de carrera
+      if (isSemiescolarizada) {
+        baseData.viernes = m.horarios.viernes || "-";
+        baseData.sabado = m.horarios.sabado || "-";
+      } else {
+        baseData.lunes = m.horarios.lunes || "-";
+        baseData.martes = m.horarios.martes || "-";
+        baseData.miercoles = m.horarios.miercoles || "-";
+        baseData.jueves = m.horarios.jueves || "-";
+        baseData.viernes = m.horarios.viernes || "-";
+      }
+
+      return baseData;
+    });
 
     const json2csvParser = new Parser({ fields });
     let csv = json2csvParser.parse(formattedData);
@@ -524,6 +539,9 @@ exports.subirMateriasCSVPorCarrera = async (req, res) => {
           return res.status(400).json({ message: "No se encontró el ID de la carrera en el archivo CSV" });
         }
 
+        const carrerasPermitidasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
+        const isSemiescolarizada = carrerasPermitidasSemiescolarizadas.includes(id_carrera);
+
         const idsCSV = results.map((materia) => materia.id_materia?.toString().trim()).filter(Boolean);
 
         await Promise.all(
@@ -550,15 +568,19 @@ exports.subirMateriasCSVPorCarrera = async (req, res) => {
               }
             }
 
-            // 🔹 Formatear horarios
-            const horariosFinal = {
-              lunes: lunes !== "-" ? lunes : null,
-              martes: martes !== "-" ? martes : null,
-              miercoles: miercoles !== "-" ? miercoles : null,
-              jueves: jueves !== "-" ? jueves : null,
-              viernes: viernes !== "-" ? viernes : null,
-              sabado: sabado !== "-" ? sabado : null
-            };
+            // 🔹 Formatear horarios según el tipo de carrera
+            const horariosFinal = isSemiescolarizada
+              ? {
+                  viernes: viernes !== "-" ? viernes : null,
+                  sabado: sabado !== "-" ? sabado : null,
+                }
+              : {
+                  lunes: lunes !== "-" ? lunes : null,
+                  martes: martes !== "-" ? martes : null,
+                  miercoles: miercoles !== "-" ? miercoles : null,
+                  jueves: jueves !== "-" ? jueves : null,
+                  viernes: viernes !== "-" ? viernes : null,
+                };
 
             // 🔹 Insertar o actualizar materia
             const materiaActualizada = await Materia.findOneAndUpdate(

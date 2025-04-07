@@ -62,9 +62,12 @@ import AdministrarPersonalCoordinador from "./components/AdministrarPersonalCoor
 import AdministrarPersonalCG from "./components/AdministrarPersonalCG";
 import './components/InicioCoordinadorGen.css';
 import InicioCoordinadorGeneral from "./components/InicioCoordinadorGeneral";
+import InicioAdministradorGeneral from "./components/InicioAdministradorGeneral"
 import AlumnoListAdmin from "./components/AlumnoListAdmin";
 import AdministrarTutoradosAdmin from "./components/AdministrarTutoradosAdmin";
-
+import AlumnoListAG from './components/AlumnoListAG';
+import AdministrarPersonalAG from './components/AdministrarPersonalAG';
+import AdministrarMateriasAG from './components/AdministrarMateriasAG';
 
 function App() {
   const userType = localStorage.getItem("userType") || "alumno"; // Puede ser "alumno" o "personal"
@@ -124,6 +127,11 @@ function App() {
                   <Route path="alumnos" element={<AlumnoListAdmin/>}></Route>
                   <Route path="personal" element={<AdministrarPersonalAdmin/>}></Route>;
                   <Route path="materias" element={<AdministrarMateriasAdmin/>}></Route>;
+                </Route>
+                <Route path="/inicio-administrador-gen" element={<PrivateRoute><InicioAdministradorGeneral/></PrivateRoute>}>
+                  <Route path="alumnos" element={<AlumnoListAG/>}></Route>
+                  <Route path="personal" element={<AdministrarPersonalAG/>}></Route>;
+                  <Route path="materias" element={<AdministrarMateriasAG/>}></Route>;
                 </Route>
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
