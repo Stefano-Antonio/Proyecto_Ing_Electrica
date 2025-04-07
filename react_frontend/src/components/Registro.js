@@ -112,6 +112,9 @@ function Registro() {
             navigate("/inicio-tutor", { state: { nombre, matricula } });
           } else if (roles.includes("CG")) {
             navigate("/inicio-coordinador-gen", { state: { nombre, matricula } });
+          }
+          else if (roles.includes("AG")) {
+            navigate("/inicio-administrador-gen", { state: { nombre, matricula } });
           } else {
             setMensaje("Usuario personal desconocido");
           }
