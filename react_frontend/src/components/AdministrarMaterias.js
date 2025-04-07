@@ -140,7 +140,11 @@ const AdministrarMaterias = () => {
                   <th>Materia</th>
                   <th>Docente</th>
                   {esSemiescolarizada ? (
-                    <th>Sábado</th>
+                    <>
+                      <th>Paridad</th>
+                      <th>Viernes</th>
+                      <th>Sábado</th>
+                    </>
                   ) : (
                     <>
                   <th>Lunes</th>
@@ -162,7 +166,11 @@ const AdministrarMaterias = () => {
                     <td>{materia.nombre}</td>
                     <td>{getDocenteNombre(materia)}</td>
                     {esSemiescolarizada ? (
+                      <>
+                      <td>{materia.semi || "-"}</td>
+                      <td>{materia.horarios.viernes || "-"}</td>
                       <td>{materia.horarios.sabado || "-"}</td>
+                      </>
                     ) : (
                       <>
                         <td>{materia.horarios.lunes || "-"}</td>

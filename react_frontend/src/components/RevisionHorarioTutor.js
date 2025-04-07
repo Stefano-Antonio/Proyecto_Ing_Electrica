@@ -169,6 +169,8 @@ function RevisionHorarioTutor() {
                     <th>Grupo</th>
                     <th>Salón</th>
                     <th>Materia</th>
+                    <th>Paridad</th>
+                    <th>Viernes</th>
                     <th>Sabado</th>
                   </tr>
                 </thead>
@@ -178,6 +180,8 @@ function RevisionHorarioTutor() {
                       <td>{materia.grupo}</td>
                       <td>{materia.salon}</td>
                       <td>{materia.materia}</td>
+                      <td>{materia.semi}</td>
+                      <td>{materia.horarios.viernes || "-"}</td>
                       <td>{materia.horarios.sabado || "-"}</td>
                     </tr>
                   ))}

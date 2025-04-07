@@ -113,18 +113,22 @@ function HorarioSeleccion() {
     const conflictos = [];
   
     materiasSeleccionadas.forEach((materiaA, index) => {
-      const horariosA = Object.entries(materiaA.horarios); // Obtener horarios por días como pares [día, horario]
+      const horariosA = Object.entries(materiaA.horarios);
+  
       materiasSeleccionadas.slice(index + 1).forEach((materiaB) => {
         const horariosB = Object.entries(materiaB.horarios);
   
+  
+        // Si ambas no som par o impar salgtar validación
+        if (materiaA.semi !== materiaB.semi) {
+          return;
+        }
+  
         horariosA.forEach(([diaA, horarioA]) => {
           if (horarioA) {
-            const horarioB = horariosB.find(([diaB, _]) => diaB === diaA)?.[1]; // Encontrar el horario del mismo día
+            const horarioB = horariosB.find(([diaB]) => diaB === diaA)?.[1];
   
-            if (
-              horarioB &&
-              hayTraslape(horarioA.split("-"), horarioB.split("-"))
-            ) {
+            if (horarioB && hayTraslape(horarioA.split("-"), horarioB.split("-"))) {
               conflictos.push({
                 materiaA: materiaA.nombre,
                 materiaB: materiaB.nombre,
@@ -137,6 +141,8 @@ function HorarioSeleccion() {
   
     return conflictos;
   };
+  
+  
   
   
 
@@ -244,6 +250,8 @@ function HorarioSeleccion() {
                   <th>Salón</th>
                   <th>Cupo</th>
                   <th>Materia</th>
+                  <th>Semana</th>
+                  <th>Viernes</th>
                   <th>Sabado</th>
                 </tr>
               </thead>
@@ -262,6 +270,8 @@ function HorarioSeleccion() {
                     <td>{materia.salon}</td>
                     <td>{materia.cupo}</td>
                     <td>{materia.nombre}</td>
+                    <td>{materia.semi || "—"}</td>
+                    <td>{materia.horarios.viernes || "—"}</td>
                     <td>{materia.horarios.sabado || "—"}</td>
                   </tr>
                 ))}

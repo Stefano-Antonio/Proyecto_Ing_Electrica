@@ -54,6 +54,7 @@ exports.getHorarioAlumno = async (req, res) => {
             grupo: materia.grupo,
             salon: materia.salon,
             materia: materia.nombre,
+            semi: materia.semi,
             horarios: materia.horarios
         }));
 

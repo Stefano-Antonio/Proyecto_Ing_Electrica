@@ -195,6 +195,8 @@ function Validacion1() {
                 <th>Grupo</th>
                 <th>Salón</th>
                 <th>Materia</th>
+                <th>Paridad</th>
+                <th>Viernes</th>
                 <th>Sábado</th>
               </tr>
             </thead>
@@ -204,6 +206,8 @@ function Validacion1() {
                   <td>{materia.grupo}</td>
                   <td>{materia.salon}</td>
                   <td>{materia.nombre}</td>
+                  <td>{materia.semi || "—"}</td>
+                  <td>{materia.horarios.viernes || "—"}</td>
                   <td>{materia.horarios.sabado || "—"}</td>
                 </tr>
               ))}

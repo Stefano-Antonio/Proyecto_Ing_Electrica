@@ -247,6 +247,84 @@ exports.deletePersonal = async (req, res) => {
 
 };
 
+
+
+exports.deletePersonalCord = async (req, res) => {
+
+  const { id, idCarreraEsperada } = req.body;
+  console.log("datos de eliminacion", id, idCarreraEsperada);
+
+  try {
+      const personal = await Personal.findById(id);
+      if (!personal) {
+          return res.status(404).json({ message: 'Personal no encontrado' });
+      }
+
+      // Eliminar el personal de los alumnos que lo tienen como tutor
+  await Alumno.updateMany(
+    { tutor: personal._id },
+    { $unset: { tutor: "" } }
+  );
+  console.log('Personal eliminado de los alumnos que lo tienen como tutor');
+
+  // Eliminar el personal de las colecciones específicas (Docentes, Tutores, Coordinadores, Administradores)
+  if (personal.roles.includes('D')) {
+    const docente = await Docentes.findOne({ personalMatricula: personal.matricula })
+      
+    //Buscar si el docente tiene materias o alumnos con un id_carrera diferente al del coordinador
+    const alumnoInvalido = await Alumno.findById({
+      _id: { $in: docente.alumnos},
+      id_carrera: {$ne: idCarreraEsperada}
+      });
+
+    const materiaInvalida = await Materia.findById({
+      _id: { $in: docente.materias},
+      id_carrera: {$ne: idCarreraEsperada}
+      });
+
+    if (alumnoInvalido && materiaInvalida){
+    
+      await Docentes.findOneAndDelete({ personalMatricula: personal.matricula });
+      console.log('Personal eliminado de Docentes');
+      }else{
+        return res.status(404).json({ message: 'El docente tiene alumnos o materias en otra carrera existente' });
+      }
+  }
+  if (personal.roles.includes('T')) {
+    const tutor = await Tutores.findOne({ personalMatricula: personal.matricula })
+
+    //Buscar si el docente tiene materias o alumnos con un id_carrera diferente al del coordinador
+    const malumnoInvalido = await Alumno.findById({
+      _id: { $in: tutor.alumnos},
+      id_carrera: {$ne: idCarreraEsperada}
+      });
+
+    if (malumnoInvalido){
+    
+      await Tutores.findOneAndDelete({ personalMatricula: personal.matricula });
+      console.log('Personal eliminado de Tutores');  
+    }else{
+      return res.status(404).json({ message: 'El tutor tiene alumnos en otra carrera existente' });
+    }
+  }
+  if (personal.roles.includes('C')) {
+    await Coordinadores.findOneAndDelete({ personalMatricula: personal.matricula });
+    console.log('Personal eliminado de Coordinadores');
+  }
+  if (personal.roles.includes('A')) {
+    await Administradores.findOneAndDelete({ personalMatricula: personal.matricula });
+    console.log('Personal eliminado de Administradores');
+  }
+
+  // Eliminar el personal
+  await Personal.findByIdAndDelete(req.params.id);
+      res.status(204).json({ message: 'Personal eliminado' });
+  } catch (error) {
+      res.status(500).json({ message: 'Error al eliminar el personal', error });
+  }
+
+};
+
 // Subir datos desde CSV
 exports.subirPersonalCSV = async (req, res) => {
     if (!req.file) {

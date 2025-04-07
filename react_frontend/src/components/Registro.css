@@ -40,7 +40,7 @@
 .field-group input,
 .field-group select {
   flex: 1;
-  min-width: 0; /* Evita que el input se expanda fuera del contenedor */
+  min-width: 20; /* Evita que el input se expanda fuera del contenedor */
   padding: 8px;
   margin-top: 5px;
 }
@@ -63,7 +63,7 @@
 
 .login-button-container {
   text-align: center;
-  margin-top: 10px;
+  margin-top: 20px;
 }
 
 .login-button {

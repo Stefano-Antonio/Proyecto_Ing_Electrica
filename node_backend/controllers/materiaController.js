@@ -27,7 +27,7 @@ const storage = multer.diskStorage({
 
 // Crear una nueva materia
 exports.createMateria = async (req, res) => {
-  const { id_materia, id_carrera, nombre, horarios, salon, grupo, cupo, docente } = req.body;
+  const { id_materia, id_carrera, nombre, semi, horarios, salon, grupo, cupo, docente } = req.body;
   console.log('Datos recibidos para crear la materia:', req.body);
 
   try {
@@ -57,7 +57,8 @@ exports.createMateria = async (req, res) => {
       id_materia, 
       id_carrera, 
       nombre, 
-      horarios, 
+      horarios,
+      semi,
       salon, 
       grupo, 
       cupo, 
@@ -186,7 +187,7 @@ exports.getMateriaById = async (req, res) => {
 
 //Actualizar materia
 exports.updateMateria = async (req, res) => {
-  const { nombre, horarios, salon, grupo, cupo, docente, id_materia } = req.body;
+  const { nombre, horarios, salon, semi, grupo, cupo, docente, id_materia } = req.body;
   console.log('Datos recibidos para crear la materia:', req.body);
   const { id } = req.params;
   
@@ -219,7 +220,7 @@ exports.updateMateria = async (req, res) => {
 
     // Actualizar la materia con el nuevo docente (si hay)
     const materia = await Materia.findByIdAndUpdate(id,
-      { id_materia, nombre, horarios, salon, grupo, cupo, docente: docenteObjectId },
+      { id_materia, nombre, horarios, salon, semi, grupo, cupo, docente: docenteObjectId },
       { new: true }
     );
 

@@ -47,12 +47,13 @@ const AdministrarPersonalCoordinador = () => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/personal/${usuarioAEliminar}`);
+      const formData = {usuarioAEliminar, idCarreraEsperada: id_carrera}; // Incluir id_carrera en los datos del formulario
+      await axios.delete("http://localhost:5000/api/personal/coordinador", formData);
       setPersonal(prevState => prevState.filter(persona => persona._id !== usuarioAEliminar));
       toast.success("Personal eliminado con éxito");
     } catch (error) {
-      console.error("Error al eliminar personal:", error.message);
-      toast.error("Hubo un error al eliminar el personal");
+      console.error("El docente o tutor tiene participacion en otra carrera", error.message);
+      toast.error("El docente o tutor tiene participacion en otra carrera");
     } finally {
       setMostrarModal(false);
     }

@@ -24,6 +24,7 @@ function ModificarMateria() {
       viernes: '',
       sabado: ''
     },
+    semi: '',
     salon: '',
     grupo: '',
     cupo: '',
@@ -50,6 +51,7 @@ function ModificarMateria() {
         grupo: materia.grupo || "",
         cupo: materia.cupo || "",
         docente: materia.docente || "", // Asegúrate de que este valor coincida con el valor del campo de selección
+        semi: materia.semi || "",
         horarios: {
           lunes: materia.horarios.lunes || "",
           martes: materia.horarios.martes || "",
@@ -170,6 +172,7 @@ function ModificarMateria() {
         nombre: formData.nombre,
         horarios: formData.horarios,
         salon: formData.salon,
+        semi: formData.semi,
         grupo: formData.grupo,
         cupo: formData.cupo,
         docente: formData.docente
@@ -281,56 +284,56 @@ function ModificarMateria() {
                     <label htmlFor="lunes">Lunes</label>
                     <select id="horarios-lunes" value={formData.horarios.lunes} onChange={handleChange}>
                         <option value="" disabled hidden>Seleccione...</option>
-                        <option value="">-</option>
-                        <option value="7:00-8:30">7:00-8:30</option>
-                        <option value="8:30-10:00">8:30-10:00</option>
-                        <option value="10:00-11:30">10:00-11:30</option>
-                        <option value="11:30-13:00">11:30-13:00</option>
-                        <option value="13:00-14:30">13:00-14:30</option>
-                        <option value="14:30-16:00">14:30-16:00</option>
-                    </select>
+                   <option value="">-</option>
+                       <option value="7:30-9:30">7:30-9:30</option>
+                       <option value="10:00-12:00">10:00-12:00</option>
+                       <option value="12:00-14:00">12:00-14:00</option>
+                       <option value="14:00-16:00">14:00-16:00</option>
+                       <option value="16:00-18:00">16:00-18:00</option>
+                       <option value="18:00-20:00">18:00-20:00</option>
+               </select>
                 </div>
 
                 <div className="input-wrapper short-field">
                     <label htmlFor="martes">Martes</label>
                     <select id="horarios-martes" value={formData.horarios.martes} onChange={handleChange}>
                         <option value="" disabled hidden>Seleccione...</option>
-                        <option value="">-</option>
-                        <option value="7:00-8:30">7:00-8:30</option>
-                        <option value="8:30-10:00">8:30-10:00</option>
-                        <option value="10:00-11:30">10:00-11:30</option>
-                        <option value="11:30-13:00">11:30-13:00</option>
-                        <option value="13:00-14:30">13:00-14:30</option>
-                        <option value="14:30-16:00">14:30-16:00</option>
-                    </select>
+                   <option value="">-</option>
+                       <option value="7:30-9:30">7:30-9:30</option>
+                       <option value="10:00-12:00">10:00-12:00</option>
+                       <option value="12:00-14:00">12:00-14:00</option>
+                       <option value="14:00-16:00">14:00-16:00</option>
+                       <option value="16:00-18:00">16:00-18:00</option>
+                       <option value="18:00-20:00">18:00-20:00</option>
+               </select>
                 </div>
 
                 <div className="input-wrapper short-field">
                     <label htmlFor="miercoles">Miércoles</label>
                     <select id="horarios-miercoles" value={formData.horarios.miercoles} onChange={handleChange}>
                         <option value="" disabled hidden>Seleccione...</option>
-                        <option value="">-</option>
-                        <option value="7:00-8:30">7:00-8:30</option>
-                        <option value="8:30-10:00">8:30-10:00</option>
-                        <option value="10:00-11:30">10:00-11:30</option>
-                        <option value="11:30-13:00">11:30-13:00</option>
-                        <option value="13:00-14:30">13:00-14:30</option>
-                        <option value="14:30-16:00">14:30-16:00</option>
-                    </select>
+                   <option value="">-</option>
+                       <option value="7:30-9:30">7:30-9:30</option>
+                       <option value="10:00-12:00">10:00-12:00</option>
+                       <option value="12:00-14:00">12:00-14:00</option>
+                       <option value="14:00-16:00">14:00-16:00</option>
+                       <option value="16:00-18:00">16:00-18:00</option>
+                       <option value="18:00-20:00">18:00-20:00</option>
+               </select>
                 </div>
 
                 <div className="input-wrapper short-field">
-                    <label htmlFor="jueves">Jueves</label>
+                    <label htmlFor="horarios-jueves">Jueves</label>
                     <select id="horarios-jueves" value={formData.horarios.jueves} onChange={handleChange}>
                         <option value="" disabled hidden>Seleccione...</option>
-                        <option value="">-</option>
-                        <option value="7:00-8:30">7:00-8:30</option>
-                        <option value="8:30-10:00">8:30-10:00</option>
-                        <option value="10:00-11:30">10:00-11:30</option>
-                        <option value="11:30-13:00">11:30-13:00</option>
-                        <option value="13:00-14:30">13:00-14:30</option>
-                        <option value="14:30-16:00">14:30-16:00</option>
-                    </select>
+                   <option value="">-</option>
+                       <option value="7:30-9:30">7:30-9:30</option>
+                       <option value="10:00-12:00">10:00-12:00</option>
+                       <option value="12:00-14:00">12:00-14:00</option>
+                       <option value="14:00-16:00">14:00-16:00</option>
+                       <option value="16:00-18:00">16:00-18:00</option>
+                       <option value="18:00-20:00">18:00-20:00</option>
+               </select>
                 </div>
 
                 <div className="input-wrapper short-field">
@@ -350,19 +353,43 @@ function ModificarMateria() {
         )}
 
         {isSemiescolarizada && (
+          <>
+          <div className="input-wrapper short-field">
+              <label htmlFor="viernes">Viernes</label>
+              <select id="horarios-viernes" value={formData.horarios.viernes} onChange={handleChange}required>
+                  <option value="" disabled hidden>Seleccione...</option>
+                  <option value="">-</option>
+                       <option value="7:00-14:00">7:00-14:00</option>
+                       <option value="7:00-15:00">7:00-15:00</option>
+                       <option value="14:00-20:00">14:00-20:00</option>
+                       <option value="14:00-21:00">14:00-21:00</option>
+                       <option value="15:00-20:00">15:00-20:00</option>
+                       <option value="15:00-21:00">15:00-21:00</option>
+              </select>
+          </div>
             <div className="input-wrapper short-field">
                 <label htmlFor="sabado">Sábado</label>
                 <select id="horarios-sabado" value={formData.horarios.sabado} onChange={handleChange}required>
                     <option value="" disabled hidden>Seleccione...</option>
                     <option value="">-</option>
-                        <option value="7:00-8:30">7:00-8:30</option>
-                        <option value="8:30-10:00">8:30-10:00</option>
-                        <option value="10:00-11:30">10:00-11:30</option>
-                        <option value="11:30-13:00">11:30-13:00</option>
-                        <option value="13:00-14:30">13:00-14:30</option>
-                        <option value="14:30-16:00">14:30-16:00</option>
+                       <option value="7:00-14:00">7:00-14:00</option>
+                       <option value="7:00-15:00">7:00-15:00</option>
+                       <option value="14:00-20:00">14:00-20:00</option>
+                       <option value="14:00-21:00">14:00-21:00</option>
+                       <option value="15:00-20:00">15:00-20:00</option>
+                       <option value="15:00-21:00">15:00-21:00</option>
                 </select>
             </div>
+
+            <div className="input-wrapper short-field">
+              <label htmlFor="semi">Par-Impar</label>
+                <select id="semi" value={formData.semi} onChange={handleChange} required>
+                  <option value="" disabled hidden>Seleccione paridad</option>
+                  <option value="par">Par</option>
+                  <option value="impar">Impar</option>
+              </select>
+            </div>
+            </>
         )}
 
             </div>
