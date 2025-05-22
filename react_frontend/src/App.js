@@ -68,6 +68,9 @@ import AdministrarTutoradosAdmin from "./components/AdministrarTutoradosAdmin";
 import AlumnoListAG from './components/AlumnoListAG';
 import AdministrarPersonalAG from './components/AdministrarPersonalAG';
 import AdministrarMateriasAG from './components/AdministrarMateriasAG';
+import ModificarPersonalCG from './components/ModificarPersonalCG';
+import ModificarMateriaCG from './components/ModificarMateriaCG';
+import './components/ModificarPersonal.css';
 
 function App() {
   const userType = localStorage.getItem("userType") || "alumno"; // Puede ser "alumno" o "personal"
@@ -113,6 +116,8 @@ function App() {
               <Route path="/coordinador/modificar-personal" element={<PrivateRoute><ModificarPersonal/></PrivateRoute>}></Route>
               <Route path="/admin-tutor" element={<PrivateRoute><AdministrarTutorados/></PrivateRoute>}></Route>
               <Route path="/coordinador/admin-tutor" element={<PrivateRoute><AdministrarTutorados/></PrivateRoute>}></Route>
+              <Route path="/modificar-personal-cg" element={<PrivateRoute><ModificarPersonalCG/></PrivateRoute>}></Route>
+              <Route path="/modificar-materia-cg" element={<PrivateRoute><ModificarMateriaCG/></PrivateRoute>}></Route>
               <Route path="/administrador/admin-tutor" element={<PrivateRoute><AdministrarTutoradosAdmin/></PrivateRoute>}></Route>
               <Route path="/administrar-materias-cg" element={<PrivateRoute><AdministrarMateriasCG/></PrivateRoute>}></Route>
               <Route path="/coordinador-tutor" element={<PrivateRoute><CoordinadorTutor/></PrivateRoute>}></Route>
