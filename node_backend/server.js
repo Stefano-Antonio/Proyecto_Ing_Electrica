@@ -35,7 +35,7 @@ app.use('/api/admingen', administradorGenRoutes);
 
 
 // Conexión a MongoDB
-mongoose.connect('mongodb+srv://Stefano117:Mixbox360@cluster0.qgw2j.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+mongoose.connect('mongodb+srv://rogerzma500:upiiz_rzm500@dbuaie.mlhfo.mongodb.net/DBUAIE?retryWrites=true&w=majority', {
 
 }).then(async () => {
   console.log('Conectado a MongoDB');
