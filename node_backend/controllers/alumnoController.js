@@ -549,7 +549,7 @@ exports.subirAlumnosCSV = async (req, res) => {
 exports.exportarAlumnosCSV = async (req, res) => {
   try {
     const alumnos = await Alumno.find(); // Obtén todos los alumnos
-    const fields = ['id_carrera', 'matricula', 'nombre', 'telefono', 'correo']; // Campos del CSV
+    const fields = ['id_carrera', 'matricula', 'nombre', 'telefono', 'correo', 'id_carrera']; // Campos del CSV
     const json2csvParser = new Parser({ fields });
     const csv = json2csvParser.parse(alumnos);
 

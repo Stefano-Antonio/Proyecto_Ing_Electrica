@@ -17,58 +17,50 @@ const AlumnoListCG = () => {
   const matriculaCord = localStorage.getItem("matricula");
   const navigate = useNavigate();
 
+useEffect(() => {
+  const fetchAlumnos = async () => {
+    try {
+      // Obtener los alumnos asociados al coordinador
+      const response = await axios.get(`http://localhost:5000/api/alumnos`);
+      const alumnosData = response.data;
+      console.log("Alumnos:", response.data);
 
+      // Obtener los detalles del tutor para cada alumno
+      const tutoresNombresTemp = {};
+      await Promise.all(alumnosData.map(async (alumno) => {
+        if (alumno.tutor) {
+          const tutorResponse = await axios.get(`http://localhost:5000/api/coordinadores/alumnos/${alumno.tutor}`);
+          tutoresNombresTemp[alumno._id] = tutorResponse.data.nombre;
+        }
+      }));
 
-  useEffect(() => {
-    const fetchAlumnos = async () => {
-      try {
-        // Obtener los alumnos asociados al coordinador
-        const response = await axios.get(`http://localhost:5000/api/alumnos`);
-        const alumnosData = response.data;
-        console.log("Alumnos:", response.data);
-
-        // Obtener los detalles del tutor para cada alumno
-        const tutoresNombresTemp = {};
-        await Promise.all(alumnosData.map(async (alumno) => {
-          if (alumno.tutor) {
-            const tutorResponse = await axios.get(`http://localhost:5000/api/coordinadores/alumnos/${alumno.tutor}`);
-            console.log("Tutor response:", tutorResponse);
-            tutoresNombresTemp[alumno._id] = tutorResponse.data.nombre; // Extraer el nombre del tutor
+      // Obtener estatus para cada alumno
+      const fetchEstatus = async (alumno) => {
+        try {
+          const estatusResponse = await fetch(`http://localhost:5000/api/tutores/estatus/${alumno.matricula}`);
+          if (!estatusResponse.ok) {
+            throw new Error("Error al obtener el estatus del horario");
           }
-        }));
+          const estatusData = await estatusResponse.json();
+          return { ...alumno, estatus: estatusData.estatus };
+        } catch (error) {
+          return { ...alumno, estatus: "Desconocido" };
+        }
+      };
 
-        const fetchEstatus = async (alumno) => {
-          try {
-            //
-            const estatusResponse = await fetch(`http://localhost:5000/api/tutores/estatus/${alumno.matricula}`);
-            if (!estatusResponse.ok) {
-              throw new Error("Error al obtener el estatus del horario");
-            }
-            const estatusData = await estatusResponse.json();
-            return { ...alumno, estatus: estatusData.estatus };
-          } catch (error) {
-            console.error("Error al obtener el estatus del horario para", alumno.matricula, error);
-            return { ...alumno, estatus: "Desconocido" };
-          }
-        };
+      const alumnosConEstatus = await Promise.all(alumnosData.map(fetchEstatus));
 
-        const alumnosConEstatus = await Promise.all(alumnosData.map(fetchEstatus));
+      setAlumnos(alumnosConEstatus);
+      setTutoresNombres(tutoresNombresTemp);
+      setLoading(false); // Solo aquí, cuando todo está listo
+    } catch (error) {
+      console.error('Error al obtener alumnos:', error);
+      setLoading(false);
+    }
+  };
 
-        setAlumnos(alumnosConEstatus);
-        setTutoresNombres(tutoresNombresTemp);
-      } catch (error) {
-        console.error('Error al obtener alumnos:', error);
-      }
-    };
-
-    const fetchData = async () => {
-      await fetchAlumnos();
-      setLoading(false); // Indica que los datos han sido cargados
-    };
-
-    fetchData();
-    fetchAlumnos();
-  }, [matriculaCord]);
+  fetchAlumnos();
+}, [matriculaCord]);
 
   console.log("matriculaCord:", matriculaCord);
 
@@ -128,11 +120,11 @@ const AlumnoListCG = () => {
   
   // Filtrar alumnos por búsqueda
   const alumnosFiltrados = alumnos.filter(alumno => 
-    alumno.matricula.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    alumno.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    alumno.id_carrera.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (tutoresNombres[alumno._id] && tutoresNombres[alumno._id].toLowerCase().includes(searchTerm.toLowerCase())) ||
-    alumno.estatus.toLowerCase().includes(searchTerm.toLowerCase())
+    (alumno.matricula || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (alumno.nombre || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (alumno.id_carrera || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+    ((tutoresNombres[alumno._id] || "").toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (alumno.estatus || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
