@@ -11,6 +11,8 @@ const Tutor = require('../models/Tutores');
 const Docente = require('../models/Docentes');
 const Coordinador = require('../models/Coordinadores');
 const Administrador = require('../models/Administradores');
+const generarPDFHorario = require('../utils/pdfHorario');
+const enviarCorreoConPDF = require('../utils/email');
 
 
 // Configurar multer para manejar el archivo CSV
@@ -372,6 +374,7 @@ exports.updateAlumno = async (req, res) => {
     return res.status(500).json({ message: 'Error al actualizar el alumno', error });
   }
 };
+
 // Actualizar un alumno con horario
 exports.updateAlumnoHorario = async (req, res) => {
   const { correo, telefono, materiasSeleccionadas } = req.body;
@@ -429,6 +432,29 @@ exports.updateAlumnoHorario = async (req, res) => {
     alumno.horario = horarioGuardado._id;
 
     const alumnoActualizado = await alumno.save();
+
+    const carrerasPermitidas = {
+      ISftw: "Ing. en Software",
+      IDsr: "Ing. en Desarrollo",
+      IEInd: "Ing. Electrónica Industrial",
+      ICmp: "Ing. Computación",
+      IRMca: "Ing. Robótica y Mecatrónica",
+      IElec: "Ing. Electricista",
+      ISftwS: "Ing. en Software (Semiescolarizado)",
+      IDsrS: "Ing. en Desarrollo (Semiescolarizado)",
+      IEIndS: "Ing. Electrónica Industrial (Semiescolarizado)",
+      ICmpS: "Ing. Computación (Semiescolarizado)",
+      IRMcaS: "Ing. Robótica y Mecatrónica (Semiescolarizado)",
+      IElecS: "Ing. Electricista (Semiescolarizado)",
+    };
+
+    // Obtener datos detallados de las materias
+    const materias = await Materia.find({ _id: { $in: materiasSeleccionadas } });
+
+    const carreraNombre = carrerasPermitidas[alumno.id_carrera] || 'Carrera no encontrada';
+    // Generar PDF y enviar por correo
+    const pdfBuffer = await generarPDFHorario(alumno.nombre, carreraNombre, materias);
+    await enviarCorreoConPDF(alumno.correo, pdfBuffer, alumno.nombre);
 
     return res.status(200).json(alumnoActualizado);
   } catch (error) {
