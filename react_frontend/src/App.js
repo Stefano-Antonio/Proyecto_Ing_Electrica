@@ -70,6 +70,7 @@ import AdministrarPersonalAG from './components/AdministrarPersonalAG';
 import AdministrarMateriasAG from './components/AdministrarMateriasAG';
 import ModificarPersonalCG from './components/ModificarPersonalCG';
 import ModificarMateriaCG from './components/ModificarMateriaCG';
+import RevisionHorarioAdmin from './components/RevisionHorarioAdmin';
 import './components/ModificarPersonal.css';
 
 function App() {
@@ -96,7 +97,7 @@ function App() {
               <Route path="/coordinador/revisar-horario/:matricula" element={<PrivateRoute><RevisionHorarioTutor /></PrivateRoute>} />
               <Route path="/docente/materias/:materia/lista-alumnos" element={<PrivateRoute><DocenteAlumnos/></PrivateRoute>}></Route>
               <Route path="/coordinador/revisar-horario/:matricula" element={<PrivateRoute><RevisionHorarioTutor /></PrivateRoute>} />
-              <Route path="/administrador/revisar-horario/:matricula" element={<PrivateRoute><RevisionHorarioTutor /></PrivateRoute>} />
+              <Route path="/administrador/revisar-horario/:matricula" element={<PrivateRoute><RevisionHorarioAdmin /></PrivateRoute>} />
               <Route path="/coordinador" element={<PrivateRoute><InicioCoordinador/></PrivateRoute>}>
                   <Route path="alumnos" element={<AlumnoListCoord/>}></Route>
                   <Route path="personal" element={<AdministrarPersonalCoordinador/>}></Route>;

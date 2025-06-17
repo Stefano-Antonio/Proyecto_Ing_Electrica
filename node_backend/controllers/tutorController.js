@@ -4,6 +4,7 @@ const Tutor = require('../models/Tutores');
 const Personal = require('../models/Personal');
 const Horario = require('../models/Horario');
 const Materia = require('../models/Materia');
+const enviarCorreo = require('../utils/emailHorario');
 
 // Ruta para obtener los alumnos de un tutor específico
 exports.getAlumnosAsignados = async (req, res) => {
@@ -118,65 +119,55 @@ exports.updateEstatusHorario = async (req, res) => {
     console.log('Actualizando el estatus del horario por matrícula');
     try {
       const { matricula } = req.params;
-      const { estatus, comentario } = req.body; // Extraer el comentario junto con el estatus
+      const { estatus, comentario } = req.body;
       console.log('Matrícula del alumno:', matricula);
       console.log('Nuevo estatus:', estatus);
-      console.log('Comentario:', comentario); // Mostrar el comentario recibido
-  
+      console.log('Comentario:', comentario);
+
       // Buscar al alumno por su matrícula
       const alumno = await Alumno.findOne({ matricula });
-  
+
       if (!alumno) {
         console.log('Alumno no encontrado');
         return res.status(404).json({ message: "Alumno no encontrado" });
       }
-  
+
       // Obtener el ID del horario
       const horarioId = alumno.horario;
-  
+
       if (!horarioId) {
         console.log('El alumno no tiene un horario asignado');
         return res.status(400).json({ message: "El alumno no tiene un horario asignado" });
       }
-  
+
       // Actualizar el estatus y el comentario del horario
       const horarioActualizado = await Horario.findByIdAndUpdate(
         horarioId,
         { 
           estatus,
-          comentario // Guardar el comentario en el campo correspondiente
+          comentario
         },
         { new: true }
       );
-  
+
       if (!horarioActualizado) {
         console.log('Horario no encontrado');
         return res.status(404).json({ message: "Horario no encontrado" });
       }
-  
+
+      // Enviar correo al alumno
+      console.log('Enviando comentario por correo al alumno');
+      await enviarCorreo({
+        to: alumno.correo,
+        subject: "Actualización de estatus de horario",
+        text: `Hola ${alumno.nombre},\n\nTu horario ha sido actualizado con el siguiente estatus: "${estatus === 1 ? 'Aceptado' : 'Rechazado'}".\nComentario: "${comentario}".\n\nSaludos.`,
+        html: `<p>Hola <strong>${alumno.nombre}</strong>,<br>
+               Tu horario ha sido actualizado con el siguiente estatus: <b>${estatus === 1 ? 'Aceptado' : 'Rechazado'}</b>.<br>
+               <b>Comentario:</b> ${comentario}<br><br>Saludos.</p>`
+      });
+      console.log('Correo enviado correctamente');
+
       res.json({ message: "Estatus y comentario actualizados correctamente", horario: horarioActualizado });
-    
-
-    
-        // Envio de correo al alumno
-        console.log('Enviando comentario por correo al alumno');
-        const transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-                user: "stimpabo27@gmail.com", // Cambia esto con tu correo
-                pass: "tucontraseña" // Usa variables de entorno en producción
-            }
-        });
-
-        const mailOptions = {
-            from: "stimpabo27@gmail.com",
-            to: alumno.correo, // Asegúrate de que el modelo Alumno tiene un campo 'email'
-            subject: "Actualización de estatus de horario",
-            text: `Hola ${alumno.nombre},\n\nTu horario ha sido actualizado con el siguiente estatus: "${estatus}".\nComentario: "${comentario}".\n\nSaludos.`
-        };
-
-        //await transporter.sendMail(mailOptions);
-        console.log('Correo enviado correctamente');
     } catch (error) {
         console.error("Error al actualizar el estatus del horario:", error);
         res.status(500).json({ message: "Error interno del servidor" });
