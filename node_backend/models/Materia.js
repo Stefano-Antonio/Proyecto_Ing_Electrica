@@ -18,7 +18,7 @@ const MateriaSchema = new Schema({
     salon: { type: String, required: true },
     grupo: { type: String, required: true },
     cupo: { type: Number, required: true },
-    laboratorio: { type: Boolean, required: true, default: null },
+    laboratorio: { type: Boolean, default: false },
     docente: { type: Schema.Types.ObjectId, ref: 'Docente', required: false, default: null }
 });
 module.exports = mongoose.model('Materia', MateriaSchema);

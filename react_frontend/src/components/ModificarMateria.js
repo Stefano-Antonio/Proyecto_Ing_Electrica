@@ -28,6 +28,7 @@ function ModificarMateria() {
     salon: '',
     grupo: '',
     cupo: '',
+    laboratorio: false, // Asignar valor por defecto
     docente: '' // Aquí puedes colocar el ObjectId del docente si es necesario
   });
 
@@ -49,6 +50,7 @@ function ModificarMateria() {
         grupo: materia.grupo || "",
         cupo: materia.cupo || "",
         docente: materia.docente || "",
+        laboratorio: materia.laboratorio || false, // Asignar valor por defecto
         semi: materia.semi || "",
         horarios: {
           lunes: materia.horarios?.lunes || "-",
@@ -143,6 +145,7 @@ function ModificarMateria() {
 
   const handleChange = (e) => {
     const { id, value } = e.target;
+
   
     if (id.startsWith("horarios-")) {
       const dia = id.split("-")[1]; // Extrae el día del ID (ejemplo: horarios-lunes → lunes)
@@ -173,6 +176,7 @@ function ModificarMateria() {
         semi: formData.semi,
         grupo: formData.grupo,
         cupo: formData.cupo,
+        laboratorio: formData.laboratorio,
         docente: formData.docente
       };
 
@@ -251,6 +255,13 @@ function ModificarMateria() {
                   onChange={handleChange}
                   required
                 />
+              </div>
+              <div className="input-wrapper">
+                <label htmlFor="laboratorio">Laboratorio</label>
+                <select id="laboratorio" value={formData.laboratorio.toString()} onChange={handleChange} required>
+                  <option value="true">Sí</option>
+                  <option value="false">No</option>
+                </select>
               </div>
               <div className="input-wrapper short-field">
                 <label htmlFor="grupo">Grupo</label>

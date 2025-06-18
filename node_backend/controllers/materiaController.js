@@ -188,7 +188,7 @@ exports.getMateriaById = async (req, res) => {
 
 //Actualizar materia
 exports.updateMateria = async (req, res) => {
-  const { nombre, horarios, salon, semi, grupo, cupo, docente, id_materia } = req.body;
+  const { nombre, horarios, salon, semi, grupo, cupo, docente, laboratorio, id_materia } = req.body;
   console.log('Datos recibidos para crear la materia:', req.body);
   const { id } = req.params;
   
@@ -221,7 +221,17 @@ exports.updateMateria = async (req, res) => {
 
     // Actualizar la materia con el nuevo docente (si hay)
     const materia = await Materia.findByIdAndUpdate(id,
-      { id_materia, nombre, horarios, salon, semi, grupo, cupo, docente: docenteObjectId },
+      { 
+        id_materia, 
+        nombre, 
+        horarios, 
+        salon, 
+        semi, 
+        grupo, 
+        cupo, 
+        laboratorio: laboratorio === true || laboratorio === "true", // Asegurar que sea booleano
+        docente: docenteObjectId 
+      },
       { new: true }
     );
 

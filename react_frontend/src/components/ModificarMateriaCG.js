@@ -30,6 +30,7 @@ function ModificarMateriaCG() {
     salon: materiaSeleccionada.salon || "",
     grupo: materiaSeleccionada.grupo || "",
     cupo: materiaSeleccionada.cupo || "",
+    laboratorio: materiaSeleccionada.laboratorio || false,
     docente: materiaSeleccionada.docente || "",
   });
 
@@ -128,7 +129,12 @@ function ModificarMateriaCG() {
   const handleChange = (e) => {
     const { id, value } = e.target;
 
-    if (["lunes", "martes", "miercoles", "jueves", "viernes", "sabado"].includes(id)) {
+    if (id === "laboratorio") {
+      setFormData((prevState) => ({
+        ...prevState,
+        laboratorio: value === "true" ? true : false, // Manejo robusto del booleano
+      }));
+    } else if (["lunes", "martes", "miercoles", "jueves", "viernes", "sabado"].includes(id)) {
       // Si el cambio es en los horarios, actualiza solo esa clave dentro de horarios
       setFormData((prevState) => ({
         ...prevState,
@@ -191,9 +197,9 @@ function ModificarMateriaCG() {
         </div>
         <h1>Modificar materia</h1>
         <div className="materia-content">
-        <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit}>
             <div className="form-group">
-            <div className="input-wrapper short-field">
+              <div className="input-wrapper">
                 <label htmlFor="id_materia">ID de materia</label>
                 <input
                   type="text"
@@ -204,7 +210,7 @@ function ModificarMateriaCG() {
                   required
                 />
               </div>
-              <div className="input-wrapper short-field">
+              <div className="input-wrapper">
                 <label htmlFor="nombre">Nombre</label>
                 <input
                   type="text"
@@ -215,7 +221,7 @@ function ModificarMateriaCG() {
                   required
                 />
               </div>
-              <div className="input-wrapper short-field2">
+              <div className="input-wrapper">
                 <label htmlFor="salon">Salón</label>
                 <input
                   type="text"
@@ -228,7 +234,7 @@ function ModificarMateriaCG() {
               </div>
             </div>
             <div className="form-group">
-              <div className="input-wrapper short-field">
+              <div className="input-wrapper">
                 <label htmlFor="cupo">Cupo</label>
                 <input
                   type="text"
@@ -239,7 +245,14 @@ function ModificarMateriaCG() {
                   required
                 />
               </div>
-              <div className="input-wrapper short-field">
+              <div className="input-wrapper">
+                <label htmlFor="laboratorio">Laboratorio</label>
+                <select id="laboratorio" value={formData.laboratorio.toString()} onChange={handleChange} required>
+                  <option value="true">Sí</option>
+                  <option value="false">No</option>
+                </select>
+              </div>
+              <div className="input-wrapper">
                 <label htmlFor="grupo">Grupo</label>
                 <input
                   type="text"
@@ -250,27 +263,25 @@ function ModificarMateriaCG() {
                   required
                 />
               </div>
-              <div className="input-wrapper short-field2">
+              <div className="input-wrapper">
                 <label htmlFor="docente">Docente</label>
-                    <select id="docente" value={formData.docente} onChange={handleChange} required>
-                    <option value="" disabled hidden>Seleccione un docente</option>
-                    {docentes.map((docente) => (
-                        <option key={docente._id} value={docente._id}>
-                        {docente.nombre}  {/* Muestra el nombre del docente */}
-                        </option>
-                    ))}
-                    </select>
+                <select id="docente" value={formData.docente} onChange={handleChange} required>
+                  <option value="" disabled hidden>Seleccione un docente</option>
+                  {docentes.map((docente) => (
+                    <option key={docente._id} value={docente._id}>
+                      {docente.nombre}
+                    </option>
+                  ))}
+                </select>
               </div>
-
-
-              
             </div>
             <div className="form-group">
-        {!isSemiescolarizada && (
-            <>
-                <div className="input-wrapper short-field">
-                    <label htmlFor="lunes">Lunes</label>
-                    <select id="lunes" value={formData.horarios.lunes} onChange={handleChange}>
+              {!isSemiescolarizada && (
+                <>
+                  {["lunes", "martes", "miercoles", "jueves", "viernes"].map((dia) => (
+                    <div className="input-wrapper" key={dia}>
+                      <label htmlFor={dia}>{dia.charAt(0).toUpperCase() + dia.slice(1)}</label>
+                      <select id={dia} value={formData.horarios[dia]} onChange={handleChange}>
                         <option value="" disabled hidden>Seleccione...</option>
                         <option value="">-</option>
                         <option value="7:00-8:30">7:00-8:30</option>
@@ -279,93 +290,36 @@ function ModificarMateriaCG() {
                         <option value="11:30-13:00">11:30-13:00</option>
                         <option value="13:00-14:30">13:00-14:30</option>
                         <option value="14:30-16:00">14:30-16:00</option>
-                    </select>
-                </div>
-
-                <div className="input-wrapper short-field">
-                    <label htmlFor="martes">Martes</label>
-                    <select id="martes" value={formData.horarios.martes} onChange={handleChange}>
-                        <option value="" disabled hidden>Seleccione...</option>
-                        <option value="">-</option>
-                        <option value="7:00-8:30">7:00-8:30</option>
-                        <option value="8:30-10:00">8:30-10:00</option>
-                        <option value="10:00-11:30">10:00-11:30</option>
-                        <option value="11:30-13:00">11:30-13:00</option>
-                        <option value="13:00-14:30">13:00-14:30</option>
-                        <option value="14:30-16:00">14:30-16:00</option>
-                    </select>
-                </div>
-
-                <div className="input-wrapper short-field">
-                    <label htmlFor="miercoles">Miércoles</label>
-                    <select id="miercoles" value={formData.horarios.miercoles} onChange={handleChange}>
-                        <option value="" disabled hidden>Seleccione...</option>
-                        <option value="">-</option>
-                        <option value="7:00-8:30">7:00-8:30</option>
-                        <option value="8:30-10:00">8:30-10:00</option>
-                        <option value="10:00-11:30">10:00-11:30</option>
-                        <option value="11:30-13:00">11:30-13:00</option>
-                        <option value="13:00-14:30">13:00-14:30</option>
-                        <option value="14:30-16:00">14:30-16:00</option>
-                    </select>
-                </div>
-
-                <div className="input-wrapper short-field">
-                    <label htmlFor="jueves">Jueves</label>
-                    <select id="jueves" value={formData.horarios.jueves} onChange={handleChange}>
-                        <option value="" disabled hidden>Seleccione...</option>
-                        <option value="">-</option>
-                        <option value="7:00-8:30">7:00-8:30</option>
-                        <option value="8:30-10:00">8:30-10:00</option>
-                        <option value="10:00-11:30">10:00-11:30</option>
-                        <option value="11:30-13:00">11:30-13:00</option>
-                        <option value="13:00-14:30">13:00-14:30</option>
-                        <option value="14:30-16:00">14:30-16:00</option>
-                    </select>
-                </div>
-
-                <div className="input-wrapper short-field">
-                    <label htmlFor="viernes">Viernes</label>
-                    <select id="viernes" value={formData.horarios.viernes} onChange={handleChange}>
-                        <option value="" disabled hidden>Seleccione...</option>
-                        <option value="">-</option>
-                        <option value="7:00-8:30">7:00-8:30</option>
-                        <option value="8:30-10:00">8:30-10:00</option>
-                        <option value="10:00-11:30">10:00-11:30</option>
-                        <option value="11:30-13:00">11:30-13:00</option>
-                        <option value="13:00-14:30">13:00-14:30</option>
-                        <option value="14:30-16:00">14:30-16:00</option>
-                    </select>
-                </div>
-            </>
-        )}
-
-        {isSemiescolarizada && (
-            <div className="input-wrapper short-field">
-                <label htmlFor="sabado">Sábado</label>
-                <select id="sabado" value={formData.horarios.sabado} onChange={handleChange}>
+                      </select>
+                    </div>
+                  ))}
+                </>
+              )}
+              {isSemiescolarizada && (
+                <div className="input-wrapper">
+                  <label htmlFor="sabado">Sábado</label>
+                  <select id="sabado" value={formData.horarios.sabado} onChange={handleChange}>
                     <option value="" disabled hidden>Seleccione...</option>
                     <option value="">-</option>
-                        <option value="7:00-8:30">7:00-8:30</option>
-                        <option value="8:30-10:00">8:30-10:00</option>
-                        <option value="10:00-11:30">10:00-11:30</option>
-                        <option value="11:30-13:00">11:30-13:00</option>
-                        <option value="13:00-14:30">13:00-14:30</option>
-                        <option value="14:30-16:00">14:30-16:00</option>
-                </select>
-            </div>
-        )}
-
-        <div className="input-wrapper short-field2">
-            <label htmlFor="id_carrera">Carrera</label>
-            <select id="id_carrera" value={formData.id_carrera} onChange={handleChange} required>
-                <option value="" disabled hidden>Seleccione una carrera</option>
-                {Object.entries(carrerasPermitidas).map(([key, value]) => (
+                    <option value="7:00-8:30">7:00-8:30</option>
+                    <option value="8:30-10:00">8:30-10:00</option>
+                    <option value="10:00-11:30">10:00-11:30</option>
+                    <option value="11:30-13:00">11:30-13:00</option>
+                    <option value="13:00-14:30">13:00-14:30</option>
+                    <option value="14:30-16:00">14:30-16:00</option>
+                  </select>
+                </div>
+              )}
+              <div className="input-wrapper">
+                <label htmlFor="id_carrera">Carrera</label>
+                <select id="id_carrera" value={formData.id_carrera} onChange={handleChange} required>
+                  <option value="" disabled hidden>Seleccione una carrera</option>
+                  {Object.entries(carrerasPermitidas).map(([key, value]) => (
                     <option key={key} value={key}>{value}</option>
-                ))}
-            </select>
-        </div>
-    </div>
+                  ))}
+                </select>
+              </div>
+            </div>
             {mostrarModal && (
               <div className="modal">
                 <div className="modal-content">
@@ -379,7 +333,7 @@ function ModificarMateriaCG() {
               </div>
             )}
             <div className="materia-buttons">
-              <button type="submit" className="button">Agregar</button>
+              <button type="submit" className="button">Guardar cambios</button>
               <button className="button" onClick={() => setMostrarModal(true)}>Subir base de datos de materias</button>
             </div>
           </form>
