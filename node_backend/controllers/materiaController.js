@@ -27,7 +27,7 @@ const storage = multer.diskStorage({
 
 // Crear una nueva materia
 exports.createMateria = async (req, res) => {
-  const { id_materia, id_carrera, nombre, semi, horarios, salon, grupo, cupo, docente } = req.body;
+  const { id_materia, id_carrera, nombre, semi, horarios, salon, grupo, cupo, laboratorio, docente } = req.body;
   console.log('Datos recibidos para crear la materia:', req.body);
 
   try {
@@ -62,6 +62,7 @@ exports.createMateria = async (req, res) => {
       salon, 
       grupo, 
       cupo, 
+      laboratorio: laboratorio || false, // Aseguramos que laboratorio tenga un valor booleano
       docente: docenteObjectId  // Guardamos la matrícula en lugar de ObjectId
     });
 

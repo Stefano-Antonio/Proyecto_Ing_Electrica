@@ -25,6 +25,7 @@ function CrearMateria() {
     salon: '',
     grupo: '',
     cupo: '',
+    laboratorio: false,
     docente: '' // Aquí puedes colocar el ObjectId del docente si es necesario
   });
 
@@ -158,6 +159,7 @@ function CrearMateria() {
         semi: '',
         grupo: '',
         cupo: '',
+        laboratorio: '',
         docente: ''
       });
     } catch (error) {
@@ -248,6 +250,13 @@ function CrearMateria() {
                       {docente.nombre}
                     </option>
                   ))}
+                </select>
+              </div>
+              <div className="input-wrapper short-field3">
+                <label htmlFor="laboratorio">Laboratorio</label>
+                <select id="laboratorio" value={formData.laboratorio || "false"} onChange={handleChange} required>
+                  <option value="true">Sí</option>
+                  <option value="false">No</option>
                 </select>
               </div>
             </div>

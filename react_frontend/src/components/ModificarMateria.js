@@ -40,9 +40,7 @@ function ModificarMateria() {
   // Llenar los campos del formulario con los datos del alumno
   useEffect(() => {
     if (materia) {
-      console.log("Datos de la materia recibidos:", materia); // Agregar console.log aquí
-      
-      
+      console.log("Datos de la materia recibidos:", materia);
       setFormData({
         id_materia: materia.id_materia || "",
         id_carrera: materia.id_carrera || "",
@@ -50,16 +48,16 @@ function ModificarMateria() {
         salon: materia.salon || "",
         grupo: materia.grupo || "",
         cupo: materia.cupo || "",
-        docente: materia.docente || "", // Asegúrate de que este valor coincida con el valor del campo de selección
+        docente: materia.docente || "",
         semi: materia.semi || "",
         horarios: {
-          lunes: materia.horarios.lunes || "",
-          martes: materia.horarios.martes || "",
-          miercoles: materia.horarios.miercoles || "",
-          jueves: materia.horarios.jueves || "",
-          viernes: materia.horarios.viernes || "",
-          sabado: materia.horarios.sabado || ""
-        }
+          lunes: materia.horarios?.lunes || "-",
+          martes: materia.horarios?.martes || "-",
+          miercoles: materia.horarios?.miercoles || "-",
+          jueves: materia.horarios?.jueves || "-",
+          viernes: materia.horarios?.viernes || "-",
+          sabado: materia.horarios?.sabado || "-",
+        },
       });
     }
   }, [materia]);
@@ -145,14 +143,14 @@ function ModificarMateria() {
 
   const handleChange = (e) => {
     const { id, value } = e.target;
-
+  
     if (id.startsWith("horarios-")) {
       const dia = id.split("-")[1]; // Extrae el día del ID (ejemplo: horarios-lunes → lunes)
       setFormData((prevFormData) => ({
         ...prevFormData,
         horarios: {
           ...prevFormData.horarios,
-          [dia]: value,
+          [dia]: value === "" ? "-" : value, // Si el valor es vacío, asigna "-"
         },
       }));
     } else {

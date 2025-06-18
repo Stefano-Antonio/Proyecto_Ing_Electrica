@@ -26,6 +26,7 @@ function CrearMateriaCG() {
       salon: '',
       grupo: '',
       cupo: '',
+      laboratorio: false,
       docente: '' // Aquí puedes colocar el ObjectId del docente si es necesario
     });
 
@@ -151,55 +152,56 @@ function CrearMateriaCG() {
     const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-
         const { id_carrera } = formData;
         if (!id_carrera) {
           alert("Error: No se encontró el ID de la carrera.");
           return;
         }
 
-        // Reemplaza valores vacíos en horarios con null
         const finalData = {
           ...formData,
-          id_carrera, // Incluir el ID de carrera
+          id_carrera,
           horarios: Object.fromEntries(
             Object.entries(formData.horarios).map(([key, value]) => [key, value === "" ? null : value])
           )
         };
-        if (id_carrera === "ISftwS" || id_carrera === "IDsrS" || id_carrera === "IEIndS" || id_carrera === "ICmpS" || id_carrera === "IRMcaS" || id_carrera === "IElecS") {
 
+        console.log("Datos enviados al backend:", finalData); // Agrega este log para depuración
+
+        if (id_carrera === "ISftwS" || id_carrera === "IDsrS" || id_carrera === "IEIndS" || id_carrera === "ICmpS" || id_carrera === "IRMcaS" || id_carrera === "IElecS") {
           const response = await axios.post('http://localhost:5000/api/materias', finalData);
           console.log("Materia actualizada:", response.data);
           toast.success('Materia creada con éxito');
           setFormData({
-          id_materia: '',
-          id_carrera: '',
-          nombre: '',
-          horarios: { sabado: ''},
-          salon: '',
-          grupo: '',
-          cupo: '',
-          docente: ''
-
-        });
-        }else{
-        const response = await axios.post('http://localhost:5000/api/materias', finalData);
-        console.log("Materia actualizada:", response.data);
-        toast.success('Materia creada con éxito');
-        setFormData({
-          id_materia: '',
-          id_carrera: '',
-          nombre: '',
-          horarios: { lunes: '', martes: '', miercoles: '', jueves: '', viernes: '' },
-          salon: '',
-          grupo: '',
-          cupo: '',
-          docente: ''
-        });
-      }
+            id_materia: '',
+            id_carrera: '',
+            nombre: '',
+            horarios: { sabado: '' },
+            salon: '',
+            grupo: '',
+            cupo: '',
+            laboratorio: false,
+            docente: ''
+          });
+        } else {
+          const response = await axios.post('http://localhost:5000/api/materias', finalData);
+          console.log("Materia actualizada:", response.data);
+          toast.success('Materia creada con éxito');
+          setFormData({
+            id_materia: '',
+            id_carrera: '',
+            nombre: '',
+            horarios: { lunes: '', martes: '', miercoles: '', jueves: '', viernes: '' },
+            salon: '',
+            grupo: '',
+            cupo: '',
+            laboratorio: '',
+            docente: ''
+          });
+        }
       } catch (error) {
-        console.error('Error al crear la materia:', error);
-        toast.error('Hubo un error al crear la materia');
+        console.error('Error al crear la materia:', error.response?.data || error.message);
+        toast.error(error.response?.data?.message || 'Hubo un error al crear la materia');
       }
     };
     
@@ -287,9 +289,13 @@ function CrearMateriaCG() {
                   ))}
                 </select>
               </div>
-
-
-              
+              <div className="input-wrapper short-field3">
+                <label htmlFor="laboratorio">Laboratorio</label>
+                <select id="laboratorio" value={formData.laboratorio || "false"} onChange={handleChange} required>
+                  <option value="true">Sí</option>
+                  <option value="false">No</option>
+                </select>
+              </div>
             </div>
             <div className="form-group">
         {!isSemiescolarizada && (
@@ -369,19 +375,19 @@ function CrearMateriaCG() {
         {isSemiescolarizada && (
 
           <>
-            <div className="input-wrapper short-field">
-            <label htmlFor="viernes">Viernes</label>
-            <select id="viernes" value={formData.horarios.viernes} onChange={handleChange}>
-                <option value="" disabled hidden>Seleccione...</option>
-                <option value="">-</option>
+             <div className="input-wrapper short-field">
+                    <label htmlFor="viernes">Viernes</label>
+                    <select id="viernes" value={formData.horarios.viernes} onChange={handleChange}>
+                        <option value="" disabled hidden>Seleccione...</option>
+                   <option value="">-</option>
                        <option value="7:00-14:00">7:00-14:00</option>
                        <option value="7:00-15:00">7:00-15:00</option>
                        <option value="14:00-20:00">14:00-20:00</option>
                        <option value="14:00-21:00">14:00-21:00</option>
                        <option value="15:00-20:00">15:00-20:00</option>
                        <option value="15:00-21:00">15:00-21:00</option>
-            </select>
-            </div>
+               </select>
+                </div>
             <div className="input-wrapper short-field">
                 <label htmlFor="sabado">Sábado</label>
                 <select id="sabado" value={formData.horarios.sabado} onChange={handleChange}>
