@@ -17,6 +17,9 @@ router.get('/estatus/:matricula', tutorController.getEstatusHorario);
 //Ruta para actualizar el estatud de un horario
 router.put('/estatus/actualizar/:matricula', tutorController.updateEstatusHorario);
 
+//Ruta para actualizar el estatud de un horario
+router.put('/estatus/actualizar-admin/:matricula', tutorController.updateEstatusHorarioAdmin);
+
 //Ruta para eliminar horario de un alumno
 router.delete('/eliminar/:matricula', tutorController.deleteHorarioAlumno);
 

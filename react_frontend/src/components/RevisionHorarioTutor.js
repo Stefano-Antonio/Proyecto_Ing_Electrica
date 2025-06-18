@@ -45,10 +45,10 @@ function RevisionHorarioTutor() {
 
   const enviarComentarioCorreo = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/tutores/${alumno._id}/comentario`, {
+      const response = await fetch(`http://localhost:5000/api/tutores/enviarCorreo`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ comentario }),
+        body: JSON.stringify({ alumnoId: alumno._id, comentario }),
       });
 
       if (!response.ok) {
@@ -56,11 +56,11 @@ function RevisionHorarioTutor() {
       }
 
       console.log("Comentario enviado por correo correctamente.");
-      //navigate(-1); // Regresar a la página anterior
     } catch (error) {
       console.error("Error al enviar comentario:", error);
     }
   };
+
 
   const actualizarEstatus = async (nuevoEstatus) => {
     try {
