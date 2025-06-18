@@ -65,7 +65,7 @@ function RevisionHorarioAdmin() {
 const actualizarEstatus = async (nuevoEstatus) => {
   try {
     console.log("Actualizando estatus...");
-    const response = await fetch(`http://localhost:5000/api/tutores/estatus/actualizar/${matricula}`, {
+    const response = await fetch(`http://localhost:5000/api/tutores/estatus/actualizar-admin/${matricula}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ estatus: nuevoEstatus, comentario }),
@@ -218,8 +218,8 @@ const actualizarEstatus = async (nuevoEstatus) => {
               className="accept-button"
               style={{ backgroundColor: "orange", color: "white" }}
               onClick={() => {
-                setEstatus(1);
-                actualizarEstatus(1);
+                setEstatus(0);
+                actualizarEstatus(0);
               }}
             >
               Quitar validación

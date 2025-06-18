@@ -173,6 +173,68 @@ exports.updateEstatusHorario = async (req, res) => {
         res.status(500).json({ message: "Error interno del servidor" });
     }
 };
+
+// Ruta para actualizar el estatus del horario por matrícula
+exports.updateEstatusHorarioAdmin = async (req, res) => {
+    console.log('Actualizando el estatus del horario por matrícula');
+    try {
+      const { matricula } = req.params;
+      const { estatus, comentario } = req.body;
+      console.log('Matrícula del alumno:', matricula);
+      console.log('Nuevo estatus:', estatus);
+      console.log('Comentario:', comentario);
+
+      // Buscar al alumno por su matrícula
+      const alumno = await Alumno.findOne({ matricula });
+
+      if (!alumno) {
+        console.log('Alumno no encontrado');
+        return res.status(404).json({ message: "Alumno no encontrado" });
+      }
+
+      // Obtener el ID del horario
+      const horarioId = alumno.horario;
+
+      if (!horarioId) {
+        console.log('El alumno no tiene un horario asignado');
+        return res.status(400).json({ message: "El alumno no tiene un horario asignado" });
+      }
+
+      // Actualizar el estatus y el comentario del horario
+      const horarioActualizado = await Horario.findByIdAndUpdate(
+        horarioId,
+        { 
+          estatus,
+          comentario
+        },
+        { new: true }
+      );
+
+      if (!horarioActualizado) {
+        console.log('Horario no encontrado');
+        return res.status(404).json({ message: "Horario no encontrado" });
+      }
+
+      // Enviar correo al alumno
+      console.log('Enviando comentario por correo al alumno');
+      await enviarCorreo({
+        to: alumno.correo,
+        subject: "Actualización de estatus de horario",
+        text: `Hola ${alumno.nombre},\n\nTu horario ha sido actualizado con el siguiente estatus: "${estatus === 1 ? 'Aceptado' : 'Rechazado'}".\nComentario: "${comentario}".\n\nSaludos.`,
+        html: `<p>Hola <strong>${alumno.nombre}</strong>,<br>
+               Tu horario ha regresado a estatus: PENDIENTE.<br>
+               Con las siguientes observaciones:<br><br>
+               <b>Comentario:</b> ${comentario}<br><br>Saludos.</p>`
+      });
+      console.log('Correo enviado correctamente');
+
+      res.json({ message: "Estatus y comentario actualizados correctamente", horario: horarioActualizado });
+    } catch (error) {
+        console.error("Error al actualizar el estatus del horario:", error);
+        res.status(500).json({ message: "Error interno del servidor" });
+    }
+};
+  
   
 
 // Ruta para eliminar un horario de un alumno y de la base de datos
