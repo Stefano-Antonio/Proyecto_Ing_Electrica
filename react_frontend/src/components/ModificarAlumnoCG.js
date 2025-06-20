@@ -31,7 +31,12 @@ function ModificarAlumnoCG() {
     ICmp: "Ing. Computación",
     IRMca: "Ing. Robótica y Mecatrónica",
     IElec: "Ing. Electricista",
-    ISftwS: "Ing. en Software (Semiescolarizado)"
+    ISftwS: "Ing. en Software (Semiescolarizado)",
+    IDsrS: "Ing. en Desarrollo (Semiescolarizado)",
+    IEIndS: "Ing. Electrónica Industrial(Semiescolarizado)",
+    ICmpS: "Ing. Computación (Semiescolarizado)",
+    IRMcaS: "Ing. Robótica y Mecatrónica (Semiescolarizado)",
+    IElecS: "Ing. Electricista (Semiescolarizado)",
   };
 
   

@@ -17,5 +17,10 @@ router.get('/estatus/:matricula', coordinadorController.getEstatusHorario);
 //Ruta para traer lista de tutores disponibles
 router.get('/tutores/:matricula', coordinadorController.getTutores);
 
+// Ruta para obtener las horas de un coordinador
+router.get('/horas/:id_carrera', coordinadorController.getHorasCoordinador);
+
+// Ruta para actualizar las horas de un coordinador
+router.put('/horas/:matricula', coordinadorController.updateHorasCoordinador);
 
 module.exports = router;

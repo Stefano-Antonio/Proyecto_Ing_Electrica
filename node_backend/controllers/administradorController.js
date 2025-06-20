@@ -110,12 +110,9 @@ exports.getTutores = async (req, res) => {
     }, []);
     const tutores = await Tutores.find({ alumnos: { $in: alumnosIds } }).select("personalMatricula");
     console.log("Tutores encontrados:", tutores.map(t => t.personalMatricula));
-    const administradores = await Administradores.find({ id_carrera: administrador.id_carrera }).select("personalMatricula");
-    console.log("Administradores encontrados:", administradores.map(c => c.personalMatricula));
     const personalMatriculasSet = new Set([
       ...docentes.map(d => d.personalMatricula),
-      ...tutores.map(t => t.personalMatricula),
-      ...administradores.map(c => c.personalMatricula)
+      ...tutores.map(t => t.personalMatricula)
     ]);
     const personalMatriculas = Array.from(personalMatriculasSet);
     if (personalMatriculas.length === 0) {

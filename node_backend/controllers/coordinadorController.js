@@ -143,21 +143,16 @@ exports.getTutores = async (req, res) => {
     const tutores = await Tutores.find().select("personalMatricula");
     console.log("Todos los tutores encontrados:", tutores.map(t => t.personalMatricula));
 
-    // Buscar coordinadores y administradores de la carrera
-    const [coordinadores, administradores] = await Promise.all([
-      Coordinadores.find({ id_carrera: coordinador.id_carrera }).select("personalMatricula"),
-      Administradores.find({ id_carrera: coordinador.id_carrera }).select("personalMatricula")
-    ]);
+    // Buscar coordinadores de la carrera
+    const coordinadores = await Coordinadores.find({ id_carrera: coordinador.id_carrera }).select("personalMatricula");
 
     console.log("Coordinadores encontrados:", coordinadores.map(c => c.personalMatricula));
-    console.log("Administradores encontrados:", administradores.map(a => a.personalMatricula));
 
-    // Unir todas las matrículas en un Set para evitar duplicados
+    // Unir todas las matrículas en un Set para evitar duplicados, excluyendo administradores
     const personalMatriculasSet = new Set([
       ...docentes.map(d => d.personalMatricula),
       ...tutores.map(t => t.personalMatricula),
-      ...coordinadores.map(c => c.personalMatricula),
-      ...administradores.map(a => a.personalMatricula)
+      ...coordinadores.map(c => c.personalMatricula)
     ]);
 
     // Convertir el Set a Array y buscar los datos completos del personal
@@ -175,6 +170,59 @@ exports.getTutores = async (req, res) => {
   } catch (error) {
     console.error("Error en getPersonalByCarrera:", error);
     res.status(500).json({ message: "Error al obtener personal", error: error.message });
+  }
+};
+
+  // Obtener las horas de un coordinador
+exports.getHorasCoordinador = async (req, res) => {
+  const { id_carrera } = req.params;
+  console.log("Matrícula del coordinador:", id_carrera);
+  try {
+    // Buscar al coordinador por su matrícula
+    const coordinador = await Coordinadores.findOne({ id_carrera: id_carrera });
+
+    if (!coordinador) {
+      return res.status(404).json({ message: "Coordinador no encontrado" });
+    }
+
+    // Obtener las horas del coordinador
+    const horas = coordinador.horas || []; // Evitar que sea undefined
+    console.log("Horas encontradas:", horas);
+
+    // Enviar como objeto con la clave "horas"
+    res.status(200).json({ horas });
+  } catch (error) {
+    console.error("Error al obtener horas del coordinador:", error);
+    res.status(500).json({ message: "Error al obtener horas", error: error.message });
+  }   
+};
+
+
+// Actualizar las horas de un coordinador
+
+exports.updateHorasCoordinador = async (req, res) => {
+  const { matricula } = req.params;
+  const { horas } = req.body; // Espera un array de horas en el cuerpo de la solicitud
+  console.log("Matrícula del coordinador:", matricula);
+  console.log("Horas a actualizar:", horas);
+
+  try {
+    // Buscar al coordinador por su matrícula
+    const coordinador = await Coordinadores.findOne({ personalMatricula: matricula });
+
+    if (!coordinador) {
+      return res.status(404).json({ message: "Coordinador no encontrado" });
+    }
+
+    // Actualizar las horas del coordinador
+    coordinador.horas = horas;
+    await coordinador.save();
+
+    console.log("Horas actualizadas correctamente");
+    res.status(200).json({ message: "Horas actualizadas correctamente", horas: coordinador.horas });
+  } catch (error) {
+    console.error("Error al actualizar horas del coordinador:", error);
+    res.status(500).json({ message: "Error al actualizar horas", error: error.message });
   }
 
 };

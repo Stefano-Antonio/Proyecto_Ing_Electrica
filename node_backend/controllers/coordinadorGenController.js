@@ -205,19 +205,19 @@ exports.updateAlumno = async (req, res) => {
 
 // Ruta para obtener tutores
 module.exports.getTutores = async (req, res) => {
-    console.log("Obteniendo tutores");
-    try {
-        const personal = await Personal.find({});
-        
-        // Filtrar los perfiles que solo tengan roles T (Tutores), D (Directores), C (Coordinadores), A (Administradores) o CG (Coordinadores Generales)
-        const filteredTutors = personal.filter(p => 
-            p.roles.some(role => ['T', 'D', 'C', 'A', 'CG'].includes(role))
-        );
-        
-        console.log("Tutores encontrados:", filteredTutors);
-        return res.json({ tutors: filteredTutors }); // Devolver un objeto con la propiedad 'tutors'
-    } catch (error) {
-        console.error("Error al obtener tutores:", error);
-        return res.status(500).json({ message: "Error del servidor", error });
-    }
+  console.log("Obteniendo tutores");
+  try {
+    const personal = await Personal.find({});
+    
+    // Filtrar los perfiles que solo tengan roles T (Tutores), D (Directores), C (Coordinadores) o CG (Coordinadores Generales)
+    const filteredTutors = personal.filter(p => 
+      p.roles.some(role => ['T', 'D', 'C', 'CG'].includes(role))
+    );
+    
+    console.log("Tutores encontrados:", filteredTutors);
+    return res.json({ tutors: filteredTutors }); // Devolver un objeto con la propiedad 'tutors'
+  } catch (error) {
+    console.error("Error al obtener tutores:", error);
+    return res.status(500).json({ message: "Error del servidor", error });
+  }
 };

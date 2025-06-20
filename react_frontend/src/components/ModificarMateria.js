@@ -350,12 +350,12 @@ function ModificarMateria() {
                     <select id="horarios-viernes" value={formData.horarios.viernes} onChange={handleChange}>
                         <option value="" disabled hidden>Seleccione...</option>
                         <option value="">-</option>
-                        <option value="7:00-8:30">7:00-8:30</option>
-                        <option value="8:30-10:00">8:30-10:00</option>
-                        <option value="10:00-11:30">10:00-11:30</option>
-                        <option value="11:30-13:00">11:30-13:00</option>
-                        <option value="13:00-14:30">13:00-14:30</option>
-                        <option value="14:30-16:00">14:30-16:00</option>
+                       <option value="7:30-9:30">7:30-9:30</option>
+                       <option value="10:00-12:00">10:00-12:00</option>
+                       <option value="12:00-14:00">12:00-14:00</option>
+                       <option value="14:00-16:00">14:00-16:00</option>
+                       <option value="16:00-18:00">16:00-18:00</option>
+                       <option value="18:00-20:00">18:00-20:00</option>
                     </select>
                 </div>
             </>

@@ -45,7 +45,7 @@ module.exports.getTutores = async (req, res) => {
         
         // Filtrar los perfiles que solo tengan roles T (Tutores), D (Directores), C (Coordinadores), A (Administradores) o CG (Coordinadores Generales)
         const filteredTutors = personal.filter(p => 
-            p.roles.some(role => ['T', 'D', 'C', 'A', 'CG'].includes(role))
+            p.roles.some(role => ['T', 'D', 'C', 'CG'].includes(role))
         );
         
         console.log("Tutores encontrados:", filteredTutors);

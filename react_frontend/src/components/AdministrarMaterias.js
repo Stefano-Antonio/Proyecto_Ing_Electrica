@@ -12,6 +12,8 @@ const AdministrarMaterias = () => {
   const [loading, setLoading] = useState(true);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [materiaAEliminar, setMateriaAEliminar] = useState(null);
+  const [horasMaximas, setHorasMaximas] = useState("");
+
 
   const id_carrera = localStorage.getItem("id_carrera");
   const navigate = useNavigate();
@@ -20,11 +22,6 @@ const AdministrarMaterias = () => {
   const carrerasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
 
   const esSemiescolarizada = carrerasSemiescolarizadas.includes(id_carrera);
-
-  useEffect(() => {
-    fetchMaterias();
-    fetchDocentes();
-  }, []);
 
   // Cargar materias desde el backend
   const fetchMaterias = async () => {
@@ -72,21 +69,16 @@ const AdministrarMaterias = () => {
     }
   };
 
-  if (loading) {
-    return <div className="loading">Cargando información de materias...</div>;
-  }
-
- // Función para formatear el nombre de la materia
- const formatUrl = (nombre) => {
-  return nombre
-    .normalize("NFD") // Normaliza el texto para separar los acentos
-    .replace(/[\u0300-\u036f]/g, "") // Elimina los acentos
-    .toLowerCase() // Convierte a minúsculas
-    .replace(/[^a-z0-9\s]/g, "") // Elimina caracteres especiales
-    .trim() // Elimina espacios al inicio y al final
-    .replace(/\s+/g, "-"); // Reemplaza espacios por guiones
-};
-
+  // Función para formatear el nombre de la materia
+  const formatUrl = (nombre) => {
+    return nombre
+      .normalize("NFD") // Normaliza el texto para separar los acentos
+      .replace(/[\u0300-\u036f]/g, "") // Elimina los acentos
+      .toLowerCase() // Convierte a minúsculas
+      .replace(/[^a-z0-9\s]/g, "") // Elimina caracteres especiales
+      .trim() // Elimina espacios al inicio y al final
+      .replace(/\s+/g, "-"); // Reemplaza espacios por guiones
+  };
 
   const handleListaAlumnos = (materia) => {
     const materiaUrl = formatUrl(materia.nombre); // Formatea el nombre de la materia
@@ -100,6 +92,36 @@ const AdministrarMaterias = () => {
     });
   };
 
+  const fetchHorasCoordinador = async () => {
+    try {
+      const id_carrera = localStorage.getItem("id_carrera");
+      const response = await axios.get(`http://localhost:5000/api/coordinadores/horas/${id_carrera}`);
+      setHorasMaximas(response.data.horas); // Suponiendo que el backend regresa { horas: 40 }
+    } catch (error) {
+      console.error("Error al obtener las horas del coordinador:", error);
+    }
+  };
+  
+  const actualizarHorasCoordinador = async () => {
+    try {
+      const matricula = localStorage.getItem("matricula");
+      if (!matricula) {
+        console.error("Error: Matricula no encontrada en localStorage.");
+        toast.error("Error: Matricula no encontrada.");
+        return;
+      }
+
+      console.log(`Actualizando horas para la matrícula: ${matricula}`);
+      await axios.put(`http://localhost:5000/api/coordinadores/horas/${matricula}`, {
+        horas: horasMaximas,
+      });
+      toast.success(`Horas actualizadas a: ${horasMaximas}`);
+    } catch (error) {
+      console.error("Error al actualizar las horas:", error);
+      toast.error("Error al actualizar las horas");
+    }
+  };
+  
   // Filtrar materias por búsqueda
   const materiasFiltradas = materias.filter((materia) =>
     [
@@ -109,6 +131,17 @@ const AdministrarMaterias = () => {
       getDocenteNombre(materia),
     ].some((campo) => campo.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+  useEffect(() => {
+    fetchMaterias();
+    fetchDocentes();
+    fetchHorasCoordinador();
+    
+  }, []);
+
+  if (loading) {
+    return <div className="loading">Cargando información de materias...</div>;
+  }
 
   
 
@@ -120,14 +153,35 @@ const AdministrarMaterias = () => {
         <h4>A continuación, se muestran las siguientes opciones:</h4>
         <p className="info">Lista de materias activas:</p>
 
-        {/* Input de búsqueda */}
-        <input
-          type="text"
-          placeholder="Buscar por nombre, grupo, salón o docente..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-bar"
-        />
+        {/* Contenedor para el filtro y las horas */}
+        <div className="filter-hours-container">
+          {/* Input de búsqueda */}
+          <input
+            type="text"
+            placeholder="Buscar por nombre, grupo, salón o docente..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-bar"
+          />
+
+          {/* Input para el número máximo de horas permitidas */}
+          <div className="max-hours-container">
+            <label htmlFor="max-hours">Máx. horas permitidas:</label>
+            <input
+              type="number"
+              id="max-hours"
+              value={horasMaximas}
+              onChange={(e) => setHorasMaximas(e.target.value)}
+              className="max-hours-input"
+            />
+            <button
+              className="confirm-button"
+              onClick={actualizarHorasCoordinador}
+            >
+              Confirmar
+            </button>
+          </div>
+        </div>
 
         {materiasFiltradas.length > 0 ? (
           <div className="scrollable-table">
