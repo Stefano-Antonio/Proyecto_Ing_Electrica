@@ -645,6 +645,45 @@ exports.exportarAlumnosCSVPorCarrera = async (req, res) => {
   }
 };
 
+exports.exportarAlumnosCSVPorCarreraFiltrados = async (req, res) => {
+  try {
+    const { id_carrera } = req.params;
+    const { ids } = req.body; // Array de IDs de alumnos filtrados
+
+    if (!id_carrera || !ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ message: "Se requiere el id_carrera y un array de IDs" });
+    }
+
+    const alumnos = await Alumno.find({ id_carrera, _id: { $in: ids } });
+
+    if (alumnos.length === 0) {
+      return res.status(404).json({ message: "No hay alumnos registrados para esta carrera con esos filtros" });
+    }
+
+    const formattedData = alumnos.map((a) => ({
+      matricula: a.matricula,
+      nombre: a.nombre,
+      telefono: a.telefono,
+      correo: a.correo,
+      id_carrera: a.id_carrera
+    }));
+
+    const fields = ["matricula", "nombre", "telefono", "correo", "id_carrera"];
+    const json2csvParser = new Parser({ fields });
+    let csv = json2csvParser.parse(formattedData);
+
+    // Agregar BOM para compatibilidad con Excel
+    csv = "\ufeff" + csv;
+
+    res.header("Content-Type", "text/csv; charset=utf-8");
+    res.attachment(`alumnos_carrera_${id_carrera}_filtrados.csv`);
+    res.send(csv);
+  } catch (error) {
+    console.error("❌ Error al exportar CSV filtrado:", error);
+    res.status(500).json({ message: "Error al exportar CSV", error });
+  }
+};
+
 //Subir csv de alumnos por carrera
 exports.subirAlumnosCSVPorCarrera = async (req, res) => {
   if (!req.file) {

@@ -9,6 +9,7 @@ const AlumnoListAdmin = () => {
   const [alumnos, setAlumnos] = useState([]);
   const [tutoresNombres, setTutoresNombres] = useState({});
   const [mostrarModal, setMostrarModal] = useState(false);
+  const id_carrera = localStorage.getItem("id_carrera");
   const [nombre, setNombreAlumno] = ("");
   const [matricula, setMatriculaAlumno] = useState("");
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
@@ -70,8 +71,20 @@ const AlumnoListAdmin = () => {
 
   console.log("matriculaCord:", matriculaAdmin);
 
-  const handleNavigate1 = () => {
-    navigate("/crear-alumno", { state: { matriculaAdmin: matriculaAdmin } });
+  const handleDownloadCSV = async () => {
+    const ids = alumnosFiltrados.map(a => a._id);
+    const response = await axios.post(
+      `http://localhost:5000/api/alumnos/exportar-csv/carrera-filtrados/${id_carrera}`,
+      { ids },
+      { responseType: "blob" }
+    );
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `alumnos_filtrados.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleNavigate2 = () => {
@@ -112,6 +125,11 @@ const AlumnoListAdmin = () => {
     alumno.estatus.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleDownloadDB = async (e) => {
+    setMostrarModal(true);
+    return;
+  }
+
   return (
     <div className="alumno-layout">
       <ToastContainer position="top-right" autoClose={3000} />
@@ -136,6 +154,8 @@ const AlumnoListAdmin = () => {
                 <th>Matricula</th>
                 <th>Nombre del alumno</th>
                 <th>Tutor asignado</th>
+                <th>Correo</th>
+                <th>Teléfono</th>
                 <th>Horario</th>
                 <th>Estatus de horario</th>
               </tr>
@@ -146,6 +166,8 @@ const AlumnoListAdmin = () => {
                   <td>{alumno.matricula}</td>
                   <td>{alumno.nombre}</td>
                   <td>{tutoresNombres[alumno._id] ? tutoresNombres[alumno._id] : "Sin asignar"}</td>
+                  <td>{alumno.correo}</td>
+                  <td>{alumno.telefono}</td>
                   <td className="actions">
                     <button
                       className="icon-button"
@@ -169,7 +191,7 @@ const AlumnoListAdmin = () => {
         )}
 
         <div className="add-delete-buttons">
-          <button onClick={handleNavigate1}>Descargar CSV de alumnos</button>
+          <button onClick={handleDownloadDB}>Descargar lista de alumnos</button>
           <button onClick={handleNavigate2}>Administrar tutorados</button>
         </div>
 
@@ -177,6 +199,20 @@ const AlumnoListAdmin = () => {
           
         </ul>
       </div>
+      {mostrarModal && (
+              <div className="modal">
+                <div className="modal-content">
+                  <h3>Descargar base de datos base de datos</h3>
+                  <p>Seleccione el archivo a subir:</p>
+                  <ul>
+                  </ul>
+                  <p>
+                  </p>
+                  <button onClick={handleDownloadCSV}>Descargar CSV</button>
+                  <button onClick={() => setMostrarModal(false)}>Cerrar</button>
+                </div>
+              </div>
+            )}
     </div>
     
   );

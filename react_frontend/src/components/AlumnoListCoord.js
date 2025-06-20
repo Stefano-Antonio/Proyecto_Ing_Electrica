@@ -9,7 +9,9 @@ const AlumnoListCoord = () => {
   const [alumnos, setAlumnos] = useState([]);
   const [tutoresNombres, setTutoresNombres] = useState({});
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [mostrarModalMaterias, setMostrarModalMaterias] = useState(false);
   const [nombre, setNombreAlumno] = ("");
+  const id_carrera = localStorage.getItem("id_carrera");
   const [matricula, setMatriculaAlumno] = useState("");
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const [loading, setLoading] = useState(true);
@@ -74,6 +76,22 @@ const AlumnoListCoord = () => {
     navigate("/coordinador/crear-alumno", { state: { matriculaCord: matriculaCord } });
   };
 
+    const handleDownloadCSV = async () => {
+      const ids = alumnosFiltrados.map(a => a._id);
+      const response = await axios.post(
+        `http://localhost:5000/api/alumnos/exportar-csv/carrera-filtrados/${id_carrera}`,
+        { ids },
+        { responseType: "blob" }
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `alumnos_filtrados.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
   const handleNavigate2 = () => {
     console.log("Navegando a: ", `/coordinador-tutor`);
     navigate("/coordinador/admin-tutor", { state: { matriculaCord: matriculaCord } });
@@ -92,6 +110,11 @@ const AlumnoListCoord = () => {
     setAlumnoAEliminar(id);
     setMostrarModal(true);
   };
+
+  const handleDownloadDB = () => {
+    setMostrarModalMaterias(true);
+  };
+  
 
   const handleDelete = async () => {
     try {
@@ -156,6 +179,8 @@ const AlumnoListCoord = () => {
               <th>Matricula</th>
               <th>Nombre del alumno</th>
               <th>Tutor asignado</th>
+              <th>Correo</th>
+              <th>Telefono</th>
               <th>Horario</th>
               <th>Estatus de horario</th>
               <th>Eliminar</th>
@@ -167,6 +192,8 @@ const AlumnoListCoord = () => {
                 <td>{alumno.matricula}</td>
                 <td>{alumno.nombre}</td>
                 <td>{tutoresNombres[alumno._id] ? tutoresNombres[alumno._id] : "Sin asignar"}</td>
+                <td>{alumno.correo}</td>
+                <td>{alumno.telefono}</td>
                 <td className="actions">
                   <button
                     className="icon-button"
@@ -221,9 +248,25 @@ const AlumnoListCoord = () => {
         </div>
       )}
 
+      {mostrarModalMaterias && (
+              <div className="modal">
+                <div className="modal-content">
+                  <h3>Descargar base de datos base de datos</h3>
+                  <p>Seleccione el archivo a subir:</p>
+                  <ul>
+                  </ul>
+                  <p>
+                  </p>
+                  <button onClick={handleDownloadCSV}>Descargar CSV</button>
+                  <button onClick={() => setMostrarModalMaterias(false)}>Cerrar</button>
+                </div>
+              </div>
+            )}
+
       <div className="add-delete-buttons">
         <button onClick={handleNavigate1}>Agregar alumnos</button>
         <button onClick={handleNavigate2}>Administrar tutorados</button>
+        <button onClick={handleDownloadDB}>Descargar lista de alumnos</button>
       </div>
 
       <ul>
