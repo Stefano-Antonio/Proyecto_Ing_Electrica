@@ -11,6 +11,7 @@ const AdministrarMaterias = () => {
   const [searchTerm, setSearchTerm] = useState(""); // Filtro de búsqueda
   const [loading, setLoading] = useState(true);
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [mostrarModalMaterias, setMostrarModalMaterias] = useState(false);
   const [materiaAEliminar, setMateriaAEliminar] = useState(null);
   const [horasMaximas, setHorasMaximas] = useState("");
 
@@ -91,6 +92,40 @@ const AdministrarMaterias = () => {
       },
     });
   };
+
+  const handleDownloadCSV = async () => {
+    const id_carrera = localStorage.getItem("id_carrera");
+    const ids = materiasFiltradas.map((m) => m._id);
+
+    if (!id_carrera || ids.length === 0) {
+      toast.error("No hay materias filtradas o falta el id_carrera.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/api/materias/exportar-csv/carrera-filtrados/${id_carrera}`,
+        { ids },
+        { responseType: "blob" }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `materias_filtradas_${id_carrera}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("❌ Error al descargar CSV de materias filtradas:", error);
+      toast.error("No se pudo descargar el archivo.");
+    }
+  };
+
+  const handleDownloadDB = () => {
+    setMostrarModalMaterias(true);
+  };
+
 
   const fetchHorasCoordinador = async () => {
     try {
@@ -287,8 +322,24 @@ const AdministrarMaterias = () => {
           </div>
         )}
 
+        {mostrarModalMaterias && (
+              <div className="modal">
+                <div className="modal-content">
+                  <h3>Descargar base de datos</h3>
+                  <p>Haga clic para descargar la base de datos:</p>
+                  <ul>
+                  </ul>
+                  <p>
+                  </p>
+                  <button onClick={handleDownloadCSV}>Descargar CSV</button>
+                  <button onClick={() => setMostrarModalMaterias(false)}>Cerrar</button>
+                </div>
+              </div>
+            )}
+
         <div className="add-delete-buttons">
           <button onClick={() => navigate("/coordinador/crear-materia")}>Agregar nueva materia</button>
+          <button onClick={handleDownloadDB}>Descargar CSV de materias</button>
         </div>
       </div>
     </div>

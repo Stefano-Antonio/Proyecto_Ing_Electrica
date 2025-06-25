@@ -9,6 +9,8 @@ router.get('/exportar-csv', materiaController.exportarMateriasCSV);
 // NUEVAS RUTAS: Importar/exportar CSV POR CARRERA
 router.post('/subir-csv-por-carrera', materiaController.upload.single('csv'), materiaController.subirMateriasCSVPorCarrera);
 router.get('/exportar-csv-por-carrera', materiaController.exportarMateriasCSVPorCarrera);
+router.post('/exportar-csv/carrera-filtrados/:id_carrera', materiaController.exportarCSVPorCarreraFiltrado);
+
 
 // Ruta para crear una nueva materia
 router.post('/', materiaController.createMateria);

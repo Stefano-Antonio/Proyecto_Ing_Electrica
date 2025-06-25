@@ -501,6 +501,55 @@ exports.exportarMateriasCSVPorCarrera = async (req, res) => {
   }
 };
 
+//Exportar CSV por carrera filtrado
+exports.exportarCSVPorCarreraFiltrado = async (req, res) => {
+  try {
+    const { id_carrera } = req.params;
+    const { ids } = req.body; // IDs de materias filtradas
+
+    if (!id_carrera || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ message: "Se requiere el id_carrera y un array de IDs de materias" });
+    }
+
+    const materias = await Materia.find({ _id: { $in: ids }, id_carrera }).populate("docente");
+
+    if (materias.length === 0) {
+      return res.status(404).json({ message: "No se encontraron materias con esos filtros" });
+    }
+
+    const formattedData = materias.map((m) => ({
+      id_materia: m.id_materia,
+      id_carrera: m.id_carrera,
+      nombre: m.nombre,
+      salon: m.salon,
+      grupo: m.grupo,
+      cupo: m.cupo,
+      docente: m.docente ? m.docente.personalMatricula : "Sin asignar",
+      lunes: m.horarios.lunes || "-",
+      martes: m.horarios.martes || "-",
+      miercoles: m.horarios.miercoles || "-",
+      jueves: m.horarios.jueves || "-",
+      viernes: m.horarios.viernes || "-",
+      sabado: m.horarios.sabado || "-",
+    }));
+
+    const fields = [
+      "id_materia", "id_carrera", "nombre", "salon", "grupo", "cupo", "docente",
+      "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"
+    ];
+
+    const json2csvParser = new Parser({ fields });
+    let csv = "\ufeff" + json2csvParser.parse(formattedData);
+
+    res.header("Content-Type", "text/csv; charset=utf-8");
+    res.attachment(`materias_filtradas_${id_carrera}.csv`);
+    res.send(csv);
+  } catch (error) {
+    console.error("❌ Error al exportar CSV filtrado de materias:", error);
+    res.status(500).json({ message: "Error al exportar", error });
+  }
+};
+
 //Subir CSV por carrera
 
 exports.subirMateriasCSVPorCarrera = async (req, res) => {
