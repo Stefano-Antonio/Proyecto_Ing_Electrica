@@ -120,6 +120,8 @@ const AdministrarPersonalAdmin = () => {
                 <th>Programa</th>
                 <th>Nombre</th>
                 <th>Matricula</th>
+                <th>Correo</th>
+                <th>Teléfono</th>
                 <th>Permisos</th>
               </tr>
             </thead>
@@ -137,6 +139,8 @@ const AdministrarPersonalAdmin = () => {
                   <td>{['C', 'A'].some(role => personal.roles.includes(role)) ? id_carrera : '-'}</td> {/* Muestra el nombre del programa o un guion */}
                   <td>{personal.nombre}</td> {/* Muestra el nombre del docente */}
                   <td>{personal.matricula}</td> {/* Muestra el ID del docente */}
+                  <td>{personal.correo}</td> {/* Muestra el ID del docente */}
+                  <td>{personal.telefono}</td> {/* Muestra el ID del docente */}
                   <td>{getRoleText(personal.roles)}</td> {/* Muestra el rol del docente */}
 
                 </tr>

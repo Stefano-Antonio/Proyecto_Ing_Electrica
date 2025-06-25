@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./RevisionHorarioTutor.css";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function RevisionHorarioTutor() {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [horario, setHorario] = useState([]);
@@ -74,7 +75,7 @@ function RevisionHorarioTutor() {
       if (!response.ok) {
         throw new Error("Error al actualizar el estatus");
       }
-  
+      toast.success("Estatus actualizado correctamente");
       console.log("Estatus actualizado correctamente.");
       navigate(-1); // Regresar a la página anterior
   
@@ -89,7 +90,7 @@ function RevisionHorarioTutor() {
       }
     } catch (error) {
       console.error("Error al actualizar el estatus:", error);
-      alert("Hubo un error al actualizar el estatus.");
+      toast.error("Hubo un error al actualizar el estatus.");
     }
   };
   
@@ -110,6 +111,7 @@ function RevisionHorarioTutor() {
   
   return (
     <div className="horario-layout">
+      <ToastContainer />
       <div className="horario-container">
         <div className="top-left">
           <button className="back-button" onClick={handleBack}>Regresar</button>

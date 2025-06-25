@@ -37,14 +37,6 @@ const AdministrarPersonalCoordinador = () => {
     fetchPersonal();
   }, []);
 
-  const handleRoleChange = (matricula, nuevoRol) => {
-    setPersonal(prevState =>
-      prevState.map(persona =>
-        persona.matricula === matricula ? { ...persona, roles: nuevoRol } : persona
-      )
-    );
-  };
-
   const handleDelete = async () => {
     try {
       const formData = {usuarioAEliminar, idCarreraEsperada: id_carrera}; // Incluir id_carrera en los datos del formulario
@@ -94,7 +86,6 @@ const AdministrarPersonalCoordinador = () => {
     persona.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     persona.rolesTexto.includes(searchTerm.toLowerCase())
   );
-  
 
   return (
     <div className="personal-layout">
@@ -120,6 +111,8 @@ const AdministrarPersonalCoordinador = () => {
                 <th>Programa</th>
                 <th>Nombre</th>
                 <th>Matricula</th>
+                <th>Correo</th>
+                <th>Telefono</th>
                 <th>Permisos</th>
                 <th>Acciones</th>
               </tr>
@@ -138,6 +131,8 @@ const AdministrarPersonalCoordinador = () => {
                   <td>{['C', 'A'].some(role => personal.roles.includes(role)) ? id_carrera : '-'}</td> {/* Muestra el nombre del programa o un guion */}
                   <td>{personal.nombre}</td> {/* Muestra el nombre del docente */}
                   <td>{personal.matricula}</td> {/* Muestra el ID del docente */}
+                  <td>{personal.correo}</td> {/* Muestra el correo del personal */}
+                  <td>{personal.telefono}</td> {/* Muestra el telefono del personal */}
                   <td>{getRoleText(personal.roles)}</td> {/* Muestra el rol del docente */}
                   <td>
                     <div className="action-buttons">

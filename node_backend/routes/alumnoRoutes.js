@@ -14,6 +14,8 @@ router.get('/exportar-csv/carrera/:id_carrera', alumnoController.exportarAlumnos
 // Ruta para subir alumnos por carrera desde CSV
 router.post('/subir-csv/carrera/:id_carrera', upload.single('csv'), alumnoController.subirAlumnosCSVPorCarrera);
 
+// Ruta para exportar alumnos por carrera filtrados a CSV
+router.post('/exportar-csv/carrera-filtrados/:id_carrera', alumnoController.exportarAlumnosCSVPorCarreraFiltrados);
 
 // Rutas para las operaciones CRUD
 router.post('/', alumnoController.createAlumno);
@@ -27,5 +29,6 @@ router.put('/:id', alumnoController.updateAlumno);
 router.put('/horario/:id', alumnoController.updateAlumnoHorario);
 router.delete('/:id', alumnoController.deleteAlumno);
 router.get('/estatus/:matricula', alumnoController.getEstatusHorario);
+
 
 module.exports = router;
