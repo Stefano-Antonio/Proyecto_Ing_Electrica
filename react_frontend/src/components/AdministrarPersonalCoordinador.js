@@ -10,6 +10,7 @@ const AdministrarPersonalCoordinador = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [mostrarModalPersonal, setMostrarModalPersonal] = useState(false);
   const [usuarioAEliminar, setUsuarioAEliminar] = useState(null);
   
   const navigate = useNavigate();
@@ -37,13 +38,38 @@ const AdministrarPersonalCoordinador = () => {
     fetchPersonal();
   }, []);
 
-  const handleRoleChange = (matricula, nuevoRol) => {
-    setPersonal(prevState =>
-      prevState.map(persona =>
-        persona.matricula === matricula ? { ...persona, roles: nuevoRol } : persona
-      )
+  const handleDownloadCSV = async () => {
+  const id_carrera = localStorage.getItem("id_carrera");
+  const matriculas = personalFiltrado.map((p) => p.matricula);
+
+  if (!id_carrera || matriculas.length === 0) {
+    toast.error("No hay personal filtrado o falta el id_carrera.");
+    return;
+  }
+
+  try {
+    const response = await axios.post(
+      `http://localhost:5000/api/personal/exportar-csv/carrera-filtrados/${id_carrera}`,
+      { matriculas },
+      { responseType: "blob" }
     );
-  };
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `personal_filtrado_${id_carrera}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    console.error("❌ Error al descargar CSV filtrado de personal:", error);
+    toast.error("No se pudo descargar el archivo.");
+  }
+};
+    const handleDownloadDB = () => {
+        setMostrarModalPersonal(true);
+      };
+
 
   const handleDelete = async () => {
     try {
@@ -94,6 +120,7 @@ const AdministrarPersonalCoordinador = () => {
     persona.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     persona.rolesTexto.includes(searchTerm.toLowerCase())
   );
+  
   
 
   return (
@@ -187,8 +214,24 @@ const AdministrarPersonalCoordinador = () => {
           </div>
         )}
 
+        {mostrarModalPersonal && (
+              <div className="modal">
+                <div className="modal-content">
+                  <h3>Descargar base de datos</h3>
+                  <p>Haga clic para descargar la base de datos:</p>
+                  <ul>
+                  </ul>
+                  <p>
+                  </p>
+                  <button onClick={handleDownloadCSV}>Descargar CSV</button>
+                  <button onClick={() => setMostrarModalPersonal(false)}>Cerrar</button>
+                </div>
+              </div>
+            )}
+
         <div className="add-delete-buttons">
           <button onClick={() => navigate("/coordinador/crear-personal")}>Agregar personal</button>
+          <button onClick={handleDownloadDB}>Descargar CSV de personal</button>
         </div>
       </div>
     </div>

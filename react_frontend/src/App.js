@@ -72,6 +72,7 @@ import ModificarPersonalCG from './components/ModificarPersonalCG';
 import ModificarMateriaCG from './components/ModificarMateriaCG';
 import RevisionHorarioAdmin from './components/RevisionHorarioAdmin';
 import './components/ModificarPersonal.css';
+import HistorialAcademicoMaterias from './components/HistorialAcademicoMaterias';
 
 function App() {
   const userType = localStorage.getItem("userType") || "alumno"; // Puede ser "alumno" o "personal"
@@ -104,6 +105,7 @@ function App() {
                   <Route path="materias" element={<AdministrarMaterias/>}></Route>;
                   </Route>
               <Route path="/coordinador/materias/:materia/lista-alumnos" element={<PrivateRoute><DocenteAlumnos/></PrivateRoute>}></Route>
+              <Route path="/coordinador/materias/historial-academico" element={<PrivateRoute><HistorialAcademicoMaterias/></PrivateRoute>}></Route>
               <Route path="/administrar-materias" element={<AdministrarMaterias/>}></Route>
               <Route path="/coordinador/crear-materia" element={<CrearMateria />} />
               <Route path="/crear-materia-cg" element={<CrearMateriaCG />} />
