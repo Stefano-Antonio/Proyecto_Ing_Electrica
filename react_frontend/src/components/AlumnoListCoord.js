@@ -12,6 +12,7 @@ const AlumnoListCoord = () => {
   const [mostrarModalMaterias, setMostrarModalMaterias] = useState(false);
   const [nombre, setNombreAlumno] = ("");
   const id_carrera = localStorage.getItem("id_carrera");
+  const [comprobantes, setComprobantes] = useState([]);
   const [matricula, setMatriculaAlumno] = useState("");
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const [loading, setLoading] = useState(true);
@@ -59,7 +60,20 @@ const AlumnoListCoord = () => {
       } catch (error) {
         console.error('Error al obtener alumnos:', error);
       }
+
+      const fetchComprobantes = async () => {
+        try {
+          const response = await axios.get('http://localhost:5000/api/alumnos/comprobantes/lista');
+          setComprobantes(response.data);
+        } catch (error) {
+          console.error('Error al obtener la lista de comprobantes:', error);
+        }
+      };
+      fetchComprobantes();
+      
     };
+
+    
 
     const fetchData = async () => {
       await fetchAlumnos();
@@ -183,6 +197,7 @@ const AlumnoListCoord = () => {
               <th>Telefono</th>
               <th>Horario</th>
               <th>Estatus de horario</th>
+              <th>Comprobante de pago</th>
               <th>Eliminar</th>
             </tr>
           </thead>
@@ -207,6 +222,23 @@ const AlumnoListCoord = () => {
                   </button>
                 </td>
                 <td>{getEstatusIcon(alumno.estatus)}</td>
+                <td>
+                    {comprobantes.includes(`Pago_${alumno.matricula}.pdf`) ? (
+                      <a
+                        href={`http://localhost:5000/uploads/comprobantes/Pago_${alumno.matricula}.pdf`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Ver comprobante"
+                      >
+                        {/* Ícono de hoja */}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" viewBox="0 0 24 24">
+                          <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
+                        </svg>
+                      </a>
+                    ) : (
+                      <span style={{ color: "red" }}>Sin pagar</span>
+                    )}
+                </td>
                 <td>
                   <div className="action-buttons">
                     <button className="icon-button" onClick={() => handleModify(alumno)}>

@@ -14,6 +14,7 @@ const administradorRoutes = require('./routes/administradorRoutes');
 const administradorGenRoutes = require('./routes/administradorGenRoutes');
 const tutorRoutes = require('./routes/tutorRoutes');
 const docenteRoutes = require('./routes/docenteRoutes');
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -32,6 +33,8 @@ app.use('/api/coordinadores', coordinadorRoutes);
 app.use('/api/administradores', administradorRoutes);
 app.use('/api/cordgen', coordinadorGenRoutes);
 app.use('/api/admingen', administradorGenRoutes);
+//Ruta para los comprobantes
+app.use('/uploads/comprobantes', express.static('uploads/comprobantes'));
 
 
 // Conexión a MongoDB

@@ -47,6 +47,7 @@ router.post('/exportar-csv/carrera-filtrados/:id_carrera', alumnoController.expo
 
 // Ruta para subir comprobante de pago
 router.post('/subir-comprobante/:matricula', uploadComprobante.single('comprobante'), alumnoController.subirComprobantePago);
+
 // Rutas para las operaciones CRUD
 router.post('/', alumnoController.createAlumno);
 router.get('/', alumnoController.getAlumnos);
@@ -59,5 +60,18 @@ router.put('/:id', alumnoController.updateAlumno);
 router.put('/horario/:id', alumnoController.updateAlumnoHorario);
 router.delete('/:id', alumnoController.deleteAlumno);
 router.get('/estatus/:matricula', alumnoController.getEstatusHorario);
+
+
+// Importar comprobantes de pago
+router.get('/comprobantes/lista', (req, res) => {
+  const comprobantesDir = 'uploads/comprobantes';
+  fs.readdir(comprobantesDir, (err, files) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error al leer la carpeta de comprobantes', error: err });
+    }
+    res.json(files); // Devuelve un array de nombres de archivos
+  });
+});
+
 
 module.exports = router;
