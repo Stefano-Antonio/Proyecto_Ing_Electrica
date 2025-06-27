@@ -15,7 +15,6 @@ function RevisionHorarioAdmin() {
   const id_carrera = localStorage.getItem("id_carrera");
   const { nombre , matricula, matriculaTutor } = location.state || {};
   const carrerasPermitidasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
-  console.log("Nombre y matrícula del tutor:", nombre, matricula, matriculaTutor, id_carrera);
   useEffect(() => {
     fetch(`http://localhost:5000/api/tutores/horario/${matricula}`)
       .then(response => response.json())
@@ -36,7 +35,6 @@ function RevisionHorarioAdmin() {
         throw new Error("Error al eliminar el horario");
       }
 
-      console.log("Horario eliminado correctamente.");
       //navigate(-1); // Regresar a la página anterior
     } catch (error) {
       console.error("Error al eliminar el horario:", error);
@@ -64,7 +62,6 @@ function RevisionHorarioAdmin() {
 
 const actualizarEstatus = async (nuevoEstatus) => {
   try {
-    console.log("Actualizando estatus...");
     const response = await fetch(`http://localhost:5000/api/tutores/estatus/actualizar-admin/${matricula}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -75,7 +72,6 @@ const actualizarEstatus = async (nuevoEstatus) => {
       throw new Error("Error al actualizar el estatus");
     }
 
-    console.log("Estatus actualizado correctamente.");
     navigate(-1); // Regresar a la página anterior
 
     // Ya NO elimines el horario ni envíes el comentario aquí,

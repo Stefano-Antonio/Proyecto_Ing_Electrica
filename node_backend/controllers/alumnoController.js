@@ -640,7 +640,7 @@ exports.exportarAlumnosCSVPorCarrera = async (req, res) => {
     res.attachment(`alumnos_carrera_${id_carrera}.csv`);
     res.send(csv);
   } catch (error) {
-    console.error("❌ Error al exportar CSV por carrera:", error);
+    console.error("Error al exportar CSV por carrera:", error);
     res.status(500).json({ message: "Error al exportar CSV", error });
   }
 };
@@ -679,7 +679,7 @@ exports.exportarAlumnosCSVPorCarreraFiltrados = async (req, res) => {
     res.attachment(`alumnos_carrera_${id_carrera}_filtrados.csv`);
     res.send(csv);
   } catch (error) {
-    console.error("❌ Error al exportar CSV filtrado:", error);
+    console.error("Error al exportar CSV filtrado:", error);
     res.status(500).json({ message: "Error al exportar CSV", error });
   }
 };
@@ -709,9 +709,9 @@ exports.subirAlumnosCSVPorCarrera = async (req, res) => {
           return res.status(400).json({ message: "El archivo CSV está vacío" });
         }
 
-        console.log("✅ Datos obtenidos del CSV después de limpiar:", results);
+        console.log("Datos obtenidos del CSV después de limpiar:", results);
 
-        // 📌 Obtener la carrera del CSV (de la primera alumno)
+        // Obtener la carrera del CSV (de la primera alumno)
         const id_carrera = results[0].id_carrera;
 
         if (!id_carrera) {
@@ -737,13 +737,13 @@ exports.subirAlumnosCSVPorCarrera = async (req, res) => {
               { upsert: true, new: true }
             );
 
-            console.log(`🔄 Alumno actualizado/insertado: ${matricula}`);
+            console.log(`Alumno actualizado/insertado: ${matricula}`);
           })
         );
 
-        // 🔥 Solo eliminar alumnos que sean de la misma carrera y no estén en el CSV
+        // Solo eliminar alumnos que sean de la misma carrera y no estén en el CSV
         if (matriculasCSV.length > 0) {
-          console.log("✅ Eliminando alumnos no incluidos en el CSV de esta carrera.");
+          console.log("Eliminando alumnos no incluidos en el CSV de esta carrera.");
           await Alumno.deleteMany({ id_carrera, matricula: { $nin: matriculasCSV } });
         }
 
@@ -751,12 +751,12 @@ exports.subirAlumnosCSVPorCarrera = async (req, res) => {
         res.status(200).json({ message: `Base de datos de alumnos de la carrera ${id_carrera} actualizada con éxito desde el CSV` });
 
       } catch (error) {
-        console.error("❌ Error al procesar el CSV:", error);
+        console.error("Error al procesar el CSV:", error);
         res.status(500).json({ message: "Error al actualizar la base de datos de alumnos desde el CSV", error });
       }
     })
     .on("error", (err) => {
-      console.error("❌ Error al leer el CSV:", err);
+      console.error("Error al leer el CSV:", err);
       res.status(500).json({ message: "Error al procesar el archivo CSV", error: err });
     });
 };

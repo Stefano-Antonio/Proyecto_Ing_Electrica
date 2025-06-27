@@ -68,7 +68,7 @@
 
 .login-button {
   width: 100%;
-  max-width: 200px;
+  max-width: 150px;
   padding: 8px;
   font-size: 16px;
   cursor: pointer;
@@ -78,6 +78,20 @@
   border: none;
   margin-top: 10px;
 }
+
+.forgot-button {
+  width: 50%;
+  max-width: 100px;
+  padding: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  border-radius: 5px;
+  background-color: #002a5c;
+  color: white;
+  border: none;
+  margin-top: 10px;
+}
+
 
 .session-selection,
 .login-section {

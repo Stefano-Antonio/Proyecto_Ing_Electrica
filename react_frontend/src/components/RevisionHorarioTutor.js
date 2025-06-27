@@ -36,7 +36,6 @@ function RevisionHorarioTutor() {
         throw new Error("Error al eliminar el horario");
       }
 
-      console.log("Horario eliminado correctamente.");
       //navigate(-1); // Regresar a la página anterior
     } catch (error) {
       console.error("Error al eliminar el horario:", error);
@@ -55,7 +54,6 @@ function RevisionHorarioTutor() {
         throw new Error("Error al enviar el comentario por correo");
       }
 
-      console.log("Comentario enviado por correo correctamente.");
       //navigate(-1); // Regresar a la página anterior
     } catch (error) {
       console.error("Error al enviar comentario:", error);
@@ -75,20 +73,14 @@ function RevisionHorarioTutor() {
         throw new Error("Error al actualizar el estatus");
       }
   
-      console.log("Estatus actualizado correctamente.");
       navigate(-1); // Regresar a la página anterior
   
       if (nuevoEstatus === 0) { // Si está rechazado
-        console.log("Eliminando horario...");
         await eliminarHorario(); // Esperar a que se complete
-        console.log("Horario eliminado.");
   
-        console.log("Enviando comentario por correo...");
         await enviarComentarioCorreo(); // Esperar a que se complete
-        console.log("Comentario enviado.");
       }
     } catch (error) {
-      console.error("Error al actualizar el estatus:", error);
       alert("Hubo un error al actualizar el estatus.");
     }
   };

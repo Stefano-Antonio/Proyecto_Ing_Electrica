@@ -59,7 +59,6 @@ function ModificarPersonalCG() {
         `http://localhost:5000/api/personal/${personalSeleccionado._id}`,
         form
       );
-      console.log("Usuario actualizado:", response.data);
       toast.success("Usuario actualizado con éxito");
       navigate("/inicio-coordinador-gen/personal"); // Redirigir después de actualizar
     } catch (error) {

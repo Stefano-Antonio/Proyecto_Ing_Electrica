@@ -25,6 +25,8 @@ exports.getAlumnosAsignados = async (req, res) => {
     res.status(500).json({ message: 'Error al buscar el ID', error: error.message });
   }
 };
+
+//Ruta para obtener los alumnos asignados a un coordinador
 exports.getAlumnosAsignadosCord = async (req, res) => {
   const { matricula } = req.params;
   console.log("Matrícula del coordinador:", matricula);
@@ -48,7 +50,7 @@ exports.getAlumnosAsignadosCord = async (req, res) => {
   }
 };
 
-
+// Ruta para obtener todos los coordinadores
 exports.getCoordinadores = async (req, res) => {
     try {
         const coordinadores = await Coordinadores.find();
@@ -226,5 +228,3 @@ exports.updateHorasCoordinador = async (req, res) => {
   }
 
 };
-
-

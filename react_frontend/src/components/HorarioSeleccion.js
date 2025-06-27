@@ -20,7 +20,7 @@ function HorarioSeleccion() {
   const [matricula, setMatricula] = useState(localStorage.getItem("matricula")); // Obtener matrícula del localStorage
   const [id_carrera, setIDCarrera] = useState(localStorage.getItem("id_carrera") || "ID de carrera desconocido");
   const carrerasPermitidasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
-    const [horasMaximas, setHorasMaximas] = useState("");
+  const [horasMaximas, setHorasMaximas] = useState("");
 
     // Evitar que el usuario regrese a la pantalla anterior con el botón de retroceso
     useEffect(() => {

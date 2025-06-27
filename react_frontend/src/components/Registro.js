@@ -39,6 +39,30 @@ function Registro() {
     setIdCarrera(event.target.value);
   };
   
+  const HandleForgotPassword = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/personal/password/${matricula}`);
+      if (response.status === 200) {
+        toast.success("Se ha enviado un correo para la recuperación de contraseña.", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      } else {
+        toast.error("No se pudo enviar el correo de recuperación.", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      }
+    } catch (error) {
+      console.error("Error al recuperar contraseña:", error);
+      toast.error("Error al recuperar contraseña. Verifique la matrícula ingresada.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
+  };
+
+
   const handleLogin = async (event) => {
     event.preventDefault();
   
@@ -190,7 +214,7 @@ function Registro() {
             </div>
           </div>
 
-         
+          <div className="field-group"></div>
           <div className="field-group">
             <label>Carrera </label>
             <select value={id_carrera} onChange={handleCarreraChange} required>
@@ -229,9 +253,18 @@ function Registro() {
                   placeholder="Contraseña"
                   required
                 />
+                <button
+                  className="forgot-button"
+                  type="button"
+                  onClick={HandleForgotPassword}
+                >
+                  Olvidé mi contraseña
+                </button>
               </div>
             )}
-            <button className="login-button" type="submit">Iniciar sesión</button>
+            <div className="button-group">
+              <button className="login-button" type="submit">Iniciar sesión</button>
+            </div>
           </form>
           {mensaje && <p>{mensaje}</p>}
         </div>

@@ -24,7 +24,6 @@ function Validacion1() {
   useEffect(() => {
     const fetchAlumnoData = async () => {
       const id = location.state?.id || localStorage.getItem("id");
-      console.log("ID del alumno:", id,nombre,matricula,email,phone);
       if (!id) {
         toast.error("No se encontró el ID del alumno.");
         return;
@@ -38,7 +37,6 @@ function Validacion1() {
         setNombreAlumno(nombre);
         setEmail(correo);
         setPhone(telefono);
-        console.log("Datos del alumno obtenidos:", response.data);
         if (_id) {
           localStorage.setItem("IDAlumno", _id);
         } else {

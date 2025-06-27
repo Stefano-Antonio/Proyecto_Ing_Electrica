@@ -18,6 +18,7 @@ router.put('/:id', personalController.updatePersonal);
 router.get('/carrera/:matricula', personalController.getPersonalByCarrera);
 router.delete('/:id', personalController.deletePersonal);
 router.delete('/coordinador', personalController.deletePersonalCord);
+router.get('/password/:matricula', personalController.getPassword);
 
 
 

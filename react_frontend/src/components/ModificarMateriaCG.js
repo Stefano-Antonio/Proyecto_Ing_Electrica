@@ -14,7 +14,6 @@ function ModificarMateriaCG() {
   const [file, setFile] = useState(null); // Almacenar el archivo CSV
   const [docentes, setDocentes] = useState([]);
   const docenteNombre = localStorage.getItem("docenteNombre");
-  console.log("nombre:", docenteNombre);
   const [formData, setFormData] = useState({
     id_materia: materiaSeleccionada.id_materia || "",
     id_carrera: materiaSeleccionada.id_carrera || "",
@@ -170,7 +169,6 @@ function ModificarMateriaCG() {
         `http://localhost:5000/api/materias/${materiaSeleccionada._id}`,
         finalData
       );
-      console.log("Materia actualizada:", response.data);
       toast.success("Materia actualizada con éxito");
       navigate(-1); // Navegar a la página anterior
     } catch (error) {

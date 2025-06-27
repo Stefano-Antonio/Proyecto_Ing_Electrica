@@ -60,7 +60,6 @@ function Validacion2() {
 
   const handleSubirComprobante = () => {
     if (archivo) {
-      console.log("Archivo subido:", archivo);
       setArchivoSubido(true);
       alert("El comprobante de pago se ha subido correctamente.");
     }

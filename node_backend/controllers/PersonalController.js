@@ -13,6 +13,7 @@ const multer = require('multer');
 const csv = require('csv-parser');
 const fs = require('fs');
 const path = require('path');
+const nodemailer = require('nodemailer');
 
 // Configurar multer para manejar el archivo CSV
 const storage = multer.diskStorage({
@@ -31,12 +32,10 @@ const storage = multer.diskStorage({
   exports.createPersonal = async (req, res) => {
     console.log('Personal:', req.body);
     const { matricula, nombre, password, roles, correo, telefono, id_carrera } = req.body;
-    console.log('ID de la carrera recibido:', id_carrera);
 
     try {
         const newPersonal = new Personal({ matricula, nombre, password, roles, correo, telefono });
         const usuarioGuardado = await newPersonal.save();
-        console.log('Usuario guardado en Personal:', usuarioGuardado);
 
         if (roles === 'D') {
             const newDocente = new Docentes({
@@ -45,14 +44,12 @@ const storage = multer.diskStorage({
                 alumnos: []
             });
             await newDocente.save();
-            console.log('Usuario guardado en Docentes');
         } else if (roles === 'T') {
             const nuevoTutor = new Tutores({
                 personalMatricula: usuarioGuardado.matricula,
                 alumnos: []
             });
             await nuevoTutor.save();
-            console.log('Usuario guardado en Tutores');
         } else if (roles === 'C' && matricula.match(/^C\d{4}$/)) {
             const nuevoCoordinador = new Coordinadores({
                 id_carrera,
@@ -60,15 +57,12 @@ const storage = multer.diskStorage({
                 alumnos: []
             });
             await nuevoCoordinador.save();
-            console.log('Usuario guardado en Coordinadores');
         } else if (roles.includes('A') && usuarioGuardado.matricula.match(/^A\d{4}$/)) {
-          console.log("Creando Administrador con matrícula:", usuarioGuardado.matricula);
           const nuevoAdministrador = new Administradores({
               id_carrera,
               personalMatricula: usuarioGuardado.matricula
           });
           await nuevoAdministrador.save();
-          console.log('Usuario guardado en Administradores');
       } else if (roles === 'CG' && matricula.match(/^CG\d{4}$/)) {
             const nuevoCoordinadorGen = new CoordinadorGenMdl({
                 nombre,
@@ -76,7 +70,6 @@ const storage = multer.diskStorage({
                 alumnos: []
             });
             await nuevoCoordinadorGen.save();
-            console.log('Usuario guardado en Coordinador General');
         } else if (roles === 'AG' && matricula.match(/^AG\d{4}$/)) {
             const nuevoAdministradorGen = new AdministradorGenMdl({
                 nombre,
@@ -84,7 +77,6 @@ const storage = multer.diskStorage({
                 password
             });
             await nuevoAdministradorGen.save();
-            console.log('Usuario guardado en Administrador General');
         } else {
             return res.status(400).json({ message: 'Rol o matrícula inválidos' });
         }
@@ -108,7 +100,6 @@ exports.getPersonal = async (req, res) => {
 exports.getPersonalByCarrera = async (req, res) => {
   try {
     const { matricula } = req.params;
-    console.log("Matrícula del coordinador/administrador:", matricula);
 
     // Buscar el coordinador o administrador y obtener el id_carrera
     const coordinador = await Coordinadores.findOne({ personalMatricula: matricula }).select("id_carrera");
@@ -119,27 +110,22 @@ exports.getPersonalByCarrera = async (req, res) => {
     }
 
     const id_carrera = coordinador ? coordinador.id_carrera : administrador.id_carrera;
-    console.log("ID de carrera:", id_carrera);
 
     // Obtener alumnos de la carrera
     const alumnos = await Alumno.find({ id_carrera }).select("_id");
     const alumnosIds = alumnos.map(alumno => alumno._id);
 
-    console.log("Alumnos en la carrera:", alumnosIds);
 
     // Obtener materias de la carrera
     const materias = await Materia.find({ id_carrera }).select("_id");
     const materiasIds = materias.map(materia => materia._id);
 
-    console.log("Materias en la carrera:", materiasIds);
 
     // Buscar todos los docentes
     const docentes = await Docentes.find().select("personalMatricula");
-    console.log("Docentes encontrados:", docentes.map(d => d.personalMatricula));
 
     // Buscar todos los tutores
     const tutores = await Tutores.find().select("personalMatricula");
-    console.log("Tutores encontrados:", tutores.map(t => t.personalMatricula));
 
     // Buscar coordinadores y administradores de la carrera
     const [coordinadores, administradores] = await Promise.all([
@@ -147,8 +133,6 @@ exports.getPersonalByCarrera = async (req, res) => {
       Administradores.find({ id_carrera }).select("personalMatricula")
     ]);
 
-    console.log("Coordinadores encontrados:", coordinadores.map(c => c.personalMatricula));
-    console.log("Administradores encontrados:", administradores.map(a => a.personalMatricula));
 
     // Unir todas las matrículas en un Set para evitar duplicados
     const personalMatriculasSet = new Set([
@@ -164,8 +148,6 @@ exports.getPersonalByCarrera = async (req, res) => {
     if (personalMatriculas.length === 0) {
       return res.status(404).json({ message: "No hay personal en esta carrera" });
     }
-
-    console.log("Personal encontrado (sin duplicados):", personalMatriculas);
 
     const personal = await Personal.find({ matricula: { $in: personalMatriculas } });
 
@@ -218,24 +200,19 @@ exports.deletePersonal = async (req, res) => {
       { tutor: personal._id },
       { $unset: { tutor: "" } }
     );
-    console.log('Personal eliminado de los alumnos que lo tienen como tutor');
 
     // Eliminar el personal de las colecciones específicas (Docentes, Tutores, Coordinadores, Administradores)
     if (personal.roles.includes('D')) {
       await Docentes.findOneAndDelete({ personalMatricula: personal.matricula });
-      console.log('Personal eliminado de Docentes');
     }
     if (personal.roles.includes('T')) {
       await Tutores.findOneAndDelete({ personalMatricula: personal.matricula });
-      console.log('Personal eliminado de Tutores');
     }
     if (personal.roles.includes('C')) {
       await Coordinadores.findOneAndDelete({ personalMatricula: personal.matricula });
-      console.log('Personal eliminado de Coordinadores');
     }
     if (personal.roles.includes('A')) {
       await Administradores.findOneAndDelete({ personalMatricula: personal.matricula });
-      console.log('Personal eliminado de Administradores');
     }
 
     // Eliminar el personal
@@ -252,7 +229,6 @@ exports.deletePersonal = async (req, res) => {
 exports.deletePersonalCord = async (req, res) => {
 
   const { id, idCarreraEsperada } = req.body;
-  console.log("datos de eliminacion", id, idCarreraEsperada);
 
   try {
       const personal = await Personal.findById(id);
@@ -265,7 +241,6 @@ exports.deletePersonalCord = async (req, res) => {
     { tutor: personal._id },
     { $unset: { tutor: "" } }
   );
-  console.log('Personal eliminado de los alumnos que lo tienen como tutor');
 
   // Eliminar el personal de las colecciones específicas (Docentes, Tutores, Coordinadores, Administradores)
   if (personal.roles.includes('D')) {
@@ -285,7 +260,6 @@ exports.deletePersonalCord = async (req, res) => {
     if (alumnoInvalido && materiaInvalida){
     
       await Docentes.findOneAndDelete({ personalMatricula: personal.matricula });
-      console.log('Personal eliminado de Docentes');
       }else{
         return res.status(404).json({ message: 'El docente tiene alumnos o materias en otra carrera existente' });
       }
@@ -302,18 +276,15 @@ exports.deletePersonalCord = async (req, res) => {
     if (malumnoInvalido){
     
       await Tutores.findOneAndDelete({ personalMatricula: personal.matricula });
-      console.log('Personal eliminado de Tutores');  
     }else{
       return res.status(404).json({ message: 'El tutor tiene alumnos en otra carrera existente' });
     }
   }
   if (personal.roles.includes('C')) {
     await Coordinadores.findOneAndDelete({ personalMatricula: personal.matricula });
-    console.log('Personal eliminado de Coordinadores');
   }
   if (personal.roles.includes('A')) {
     await Administradores.findOneAndDelete({ personalMatricula: personal.matricula });
-    console.log('Personal eliminado de Administradores');
   }
 
   // Eliminar el personal
@@ -421,7 +392,6 @@ exports.subirPersonalCSV = async (req, res) => {
         ...coordinadores.map((c) => c.personalMatricula),
       ]);
   
-      console.log("Personal en la carrera:", Array.from(personalMatriculas));
   
       // Obtener la información completa del personal filtrado
       const personal = await Personal.find({ matricula: { $in: Array.from(personalMatriculas) } });
@@ -451,7 +421,7 @@ exports.subirPersonalCSV = async (req, res) => {
       res.attachment(`personal_carrera_${id_carrera}.csv`);
       res.send(csv);
     } catch (error) {
-      console.error("❌ Error en exportarCSVPorCarrera:", error);
+      console.error("Error en exportarCSVPorCarrera:", error);
       res.status(500).json({ message: "Error al exportar a CSV", error });
     }
   };
@@ -490,7 +460,7 @@ exports.subirPersonalCSV = async (req, res) => {
     res.attachment(`personal_filtrado_${id_carrera}.csv`);
     res.send(csv);
   } catch (error) {
-    console.error("❌ Error al exportar CSV filtrado de personal:", error);
+    console.error("Error al exportar CSV filtrado de personal:", error);
     res.status(500).json({ message: "Error interno al exportar", error });
   }
 };
@@ -501,7 +471,7 @@ exports.subirPersonalCSV = async (req, res) => {
       return res.status(400).json({ message: "No se ha enviado ningún archivo CSV" });
     }
   
-    const { id_carrera } = req.params; // 📌 Obtener id_carrera desde la URL
+    const { id_carrera } = req.params; // Obtener id_carrera desde la URL
     if (!id_carrera) {
       return res.status(400).json({ message: "Se requiere el ID de la carrera en la URL" });
     }
@@ -525,8 +495,6 @@ exports.subirPersonalCSV = async (req, res) => {
             return res.status(400).json({ message: "El archivo CSV está vacío" });
           }
   
-          console.log("✅ Datos obtenidos del CSV:", results);
-  
           const matriculasCSV = results.map((p) => p.matricula?.toString().trim()).filter(Boolean);
   
           await Promise.all(
@@ -535,12 +503,10 @@ exports.subirPersonalCSV = async (req, res) => {
               matricula = matricula ? matricula.toString().trim() : null;
   
               if (!matricula) {
-                console.warn("⚠ Personal sin matrícula:", personalData);
                 return;
               }
   
               if (!roles) {
-                console.warn(`⚠ Usuario ${matricula} sin roles definidos`);
                 return;
               }
   
@@ -555,7 +521,6 @@ exports.subirPersonalCSV = async (req, res) => {
                 { upsert: true, new: true }
               );
   
-              console.log(`🔄 Personal actualizado/insertado: ${matricula}`);
   
               // 🔥 Manejo de roles
               if (roles.includes("D")) {
@@ -612,7 +577,6 @@ exports.subirPersonalCSV = async (req, res) => {
                   Coordinadores.findOneAndDelete({ personalMatricula: matricula, id_carrera }),
                   Administradores.findOneAndDelete({ personalMatricula: matricula, id_carrera })
                 ]);
-                console.log(`🗑️ Personal y registros relacionados eliminados: ${matricula}`);
               }
             })
           );
@@ -621,12 +585,46 @@ exports.subirPersonalCSV = async (req, res) => {
           res.status(200).json({ message: `Base de datos de personal de la carrera ${id_carrera} actualizada con éxito desde el CSV` });
   
         } catch (error) {
-          console.error("❌ Error al procesar el CSV:", error);
+          console.error("Error al procesar el CSV:", error);
           res.status(500).json({ message: "Error al actualizar la base de datos de personal desde el CSV", error });
         }
       })
       .on("error", (err) => {
-        console.error("❌ Error al leer el CSV:", err);
+        console.error("Error al leer el CSV:", err);
         res.status(500).json({ message: "Error al procesar el archivo CSV", error: err });
       });
   };
+
+// Ruta para recuperar la contraseña de un personal
+exports.getPassword = async (req, res) => {
+  const { matricula } = req.params;
+  try {
+    const personal = await Personal.findOne({ matricula });
+    if (!personal) {
+      return res.status(404).json({ message: 'Personal no encontrado' });
+    }
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+      user: 'stefanovaldez117@gmail.com', // Reemplaza con tu correo
+      pass: 'wwjo ykiy ziyq ijte'  // Reemplaza con tu contraseña
+      }
+    });
+
+    const mailOptions = {
+      from: 'your-email@gmail.com', // Reemplaza con tu correo
+      to: personal.correo,
+      subject: 'Recuperación de contraseña',
+      text: `Hola ${personal.nombre}, tu contraseña es: ${personal.password}`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+      return res.status(500).json({ message: 'Error al enviar el correo', error });
+      }
+      res.status(200).json({ message: 'Correo enviado con la contraseña' });
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al recuperar la contraseña', error });
+  }
+  }

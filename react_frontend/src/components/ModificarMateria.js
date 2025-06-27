@@ -10,7 +10,6 @@ function ModificarMateria() {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [file, setFile] = useState(null); // Almacenar el archivo CSV
   const docenteNombre = localStorage.getItem("docenteNombre");
-  console.log("nombre:", docenteNombre);
   const id_carrera = localStorage.getItem("id_carrera");
   const [formData, setFormData] = useState({
     id_materia: '',
@@ -41,7 +40,6 @@ function ModificarMateria() {
   // Llenar los campos del formulario con los datos del alumno
   useEffect(() => {
     if (materia) {
-      console.log("Datos de la materia recibidos:", materia);
       setFormData({
         id_materia: materia.id_materia || "",
         id_carrera: materia.id_carrera || "",
@@ -71,7 +69,6 @@ function ModificarMateria() {
     const fetchDocentes = async () => {
       try {
         const response = await axios.get("http://localhost:5000/api/docentes");
-        console.log("Docentes recibidos:", response.data); // Agregar console.log aquí
         setDocentes(response.data); // Guardamos la lista de docentes con el nombre incluido
       } catch (error) {
         console.error("Error al obtener los docentes:", error);
@@ -181,7 +178,6 @@ function ModificarMateria() {
       };
 
       const response = await axios.put(`http://localhost:5000/api/materias/${materia._id}`, materiaActualizada);
-      console.log("Materia actualizada:", response.data);
       toast.success("Materia actualizada con éxito");
     } catch (error) {
       console.error("Error al actualizar la materia:", error);
@@ -194,8 +190,6 @@ function ModificarMateria() {
     
   const isSemiescolarizada = carrerasPermitidasSemiescolarizadas.includes(formData.id_carrera);
 
-  console.log("isSemiescolarizada:", isSemiescolarizada);
-  console.log("Datos del formulario:", formData); // Agregar console.log aquí
   return (
     <div className="materia-layout">
       <ToastContainer position="top-right" autoClose={3000} />
