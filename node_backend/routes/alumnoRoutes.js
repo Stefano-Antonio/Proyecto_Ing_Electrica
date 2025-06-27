@@ -2,6 +2,34 @@ const express = require('express');
 const router = express.Router();
 const alumnoController = require('../controllers/alumnoController'); // Asegúrate de que esta ruta es válida
 const upload = alumnoController.upload;
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+const storageComprobantes = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/comprobantes/');
+  },
+  filename: (req, file, cb) => {
+    const matricula = req.params.matricula || 'sinmatricula';
+    const nombreArchivo = `Pago_${matricula}.pdf`;
+    const rutaArchivo = `uploads/comprobantes/${nombreArchivo}`;
+    // Si ya existe, elimínalo antes de guardar el nuevo
+    if (fs.existsSync(rutaArchivo)) {
+      try {
+        fs.unlinkSync(rutaArchivo);
+        console.log(`Archivo anterior eliminado: ${rutaArchivo}`);
+      } catch (err) {
+        console.error(`Error al eliminar archivo anterior: ${rutaArchivo}`, err);
+      }
+    }
+    console.log("Nombre final del archivo:", nombreArchivo);
+    cb(null, nombreArchivo);
+  }
+});
+const uploadComprobante = multer({ storage: storageComprobantes });
+
+
 
 // Ruta para exportar a CSV (debe ir antes de las rutas dinámicas)
 router.get('/exportar-csv', alumnoController.exportarAlumnosCSV);
@@ -17,7 +45,8 @@ router.post('/subir-csv/carrera/:id_carrera', upload.single('csv'), alumnoContro
 // Ruta para exportar alumnos por carrera filtrados a CSV
 router.post('/exportar-csv/carrera-filtrados/:id_carrera', alumnoController.exportarAlumnosCSVPorCarreraFiltrados);
 
-
+// Ruta para subir comprobante de pago
+router.post('/subir-comprobante/:matricula', uploadComprobante.single('comprobante'), alumnoController.subirComprobantePago);
 // Rutas para las operaciones CRUD
 router.post('/', alumnoController.createAlumno);
 router.get('/', alumnoController.getAlumnos);

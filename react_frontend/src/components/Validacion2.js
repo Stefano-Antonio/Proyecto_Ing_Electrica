@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./Validacion2.css";
 
 function Validacion2() {
@@ -58,10 +60,27 @@ function Validacion2() {
     }
   };
 
-  const handleSubirComprobante = () => {
-    if (archivo) {
+  const handleSubirComprobante = async () => {
+    if (!archivo) return;
+
+    // Renombra el archivo antes de enviarlo (opcional, pero no necesario si ya usas la matrícula en la URL)
+    const nombreArchivo = `Pago_${matricula}.pdf`;
+    const archivoRenombrado = new File([archivo], nombreArchivo, { type: archivo.type });
+
+    const formData = new FormData();
+    formData.append('comprobante', archivoRenombrado);
+
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/api/alumnos/subir-comprobante/${matricula}`,
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+      );
       setArchivoSubido(true);
-      alert("El comprobante de pago se ha subido correctamente.");
+      toast.success("El comprobante de pago se ha subido correctamente.");
+    } catch (error) {
+      toast.error("Error al subir el comprobante.");
+      console.error(error);
     }
   };
 
@@ -73,6 +92,7 @@ function Validacion2() {
 
   return (
     <div className="validacion-layout">
+      <ToastContainer />
       <div className="validacion-container">
         <h2>Validación de horario</h2>
         <h4><strong>{nombreAlumno || "Cargando..."}</strong></h4>

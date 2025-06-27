@@ -760,3 +760,20 @@ exports.subirAlumnosCSVPorCarrera = async (req, res) => {
       res.status(500).json({ message: "Error al procesar el archivo CSV", error: err });
     });
 };
+
+// Subir comprobante de pago del alumno
+exports.subirComprobantePago = async (req, res) => {
+  try {
+    console.log("req.body.matricula:", req.body.matricula);
+    if (req.file) {
+      console.log("Archivo recibido:", req.file.originalname);
+      console.log("Archivo guardado como:", req.file.filename);
+    }
+    if (!req.file) {
+      return res.status(400).json({ message: 'No se subió ningún archivo' });
+    }
+    res.status(200).json({ message: 'Comprobante subido correctamente', filePath: req.file.path });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al subir el comprobante', error });
+  }
+};
