@@ -4,7 +4,12 @@
     background-color: #002a5c; /* Color de fondo azul */
     padding: 10px;
     color: white;
-   
+    position: fixed; /* Fija el encabezado en la parte superior */
+    top: 0;
+    left: 0;
+    width: 100%; /* Asegura que ocupe todo el ancho de la pantalla */
+    z-index: 1000; /* Asegura que el encabezado esté por encima de otros elementos */
+    overflow-x: auto; /* Permite el desplazamiento lateral */
   }
   
   .header-logo_uaz {
@@ -27,4 +32,28 @@
 
   }
   .header-title .highlight { color: white; /* Cambia el color del texto a blanco */ }
-     
+
+  @media (max-width: 768px) {
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 10px;
+      height: 50px; /* Reduce la altura del encabezado */
+    }
+
+    .header-logo_uaz,
+    .header-logo_uaei {
+      width: 40px; /* Reduce el tamaño de los logos */
+      height: auto;
+    }
+
+    .header-title {
+      font-size: 0.9rem; /* Reduce el tamaño de la letra */
+      text-align: center;
+    }
+
+    .header-title .highlight {
+      font-size: 0.7rem; /* Reduce el tamaño de la letra para el texto destacado */
+    }
+  }

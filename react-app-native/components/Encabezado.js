@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingHorizontal: 10,
     width: screenWidth, // Asegurar que el encabezado ocupe todo el ancho de la pantalla
+    marginBottom: 20, // Espacio debajo del encabezado
   },
   headerLogoUaz: {
     width: 60, // Ajustar el tamaño para móviles

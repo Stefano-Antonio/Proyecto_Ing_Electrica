@@ -10,12 +10,22 @@
 }
 
 .footer {
+  position: fixed; /* Fija el pie de página en la parte inferior */
+  bottom: 0; /* Asegura que esté en la parte inferior */
+  left: 0; /* Alinea al borde izquierdo */
+  right: 0; /* Alinea al borde derecho */
   background-color: #e0e0e0;
   color: #000000;
   text-align: center;
-  padding: 20px;
-  font-size: 14px;
+  padding: 20px; /* Ajusta el padding */
+  font-size: 14px; /* Ajusta el tamaño de fuente */
   width: 100%;
+  height: auto; /* Permite que el tamaño sea dinámico */
+}
+
+.footer.hidden {
+  transform: translateY(100%); /* Oculta el pie de página desplazándolo hacia abajo */
+  transition: transform 0.3s ease; /* Añade una transición suave */
 }
 
 .footer-container {
@@ -24,7 +34,7 @@
   align-items: center;
   max-width: 1200px; /* Ajusta el ancho máximo según sea necesario */
   margin: 0 auto; /* Centra el contenedor */
-  padding: 0 20px; /* Añade un padding para evitar que las imágenes toquen los bordes */
+  padding: 0 20px; /* Ajusta el padding lateral */
 }
 
 .footer-content {
@@ -54,4 +64,27 @@
   width: 100px; /* Ajusta el tamaño según sea necesario */
   height: auto;
   margin: 0 10px;
+}
+
+/* Estilos para móviles */
+@media (max-width: 768px) {
+  .footer {
+    position: fixed; /* Fija el pie de página en la parte inferior */
+    bottom: 0; /* Asegura que esté en la parte inferior */
+    left: 0; /* Alinea al borde izquierdo */
+    right: 0; /* Alinea al borde derecho */
+    background-color: #e0e0e0;
+    color: #000000;
+    text-align: center;
+    padding: 5px; /* Reduce el padding para hacerlo más delgado */
+    font-size: 10px; /* Reduce el tamaño de fuente */
+    width: 100%;
+    height: auto; /* Ajusta dinámicamente el tamaño */
+    transform: translateY(100%); /* Oculta el pie de página por defecto */
+    transition: transform 0.3s ease; /* Añade una transición suave */
+  }
+
+  .footer-container {
+    padding: 0 10px; /* Reduce el padding lateral */
+  }
 }

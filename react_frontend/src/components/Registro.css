@@ -15,15 +15,15 @@
   border-radius: 5px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   margin-top: 0px; /* Separación vertical superior */
-  margin-bottom: 0px; /* Separación vertical inferior */
+  margin-bottom: 20px; /* Separación vertical inferior */
   min-height: 300px; /* Altura mínima */
   max-height: 300px; /* Altura máxima */
 }
 
 .registro-container h1{
- margin-top: -40px
-
+ margin-top: 20px; /* Margen superior para el título de bienvenida */
 }
+
 .field-group {
   display: flex;
   flex-wrap: wrap; /* Permite que el contenido se ajuste en columnas */
@@ -68,7 +68,7 @@
 
 .login-button {
   width: 100%;
-  max-width: 150px;
+  max-width: 200px;
   padding: 8px;
   font-size: 16px;
   cursor: pointer;
@@ -78,20 +78,6 @@
   border: none;
   margin-top: 10px;
 }
-
-.forgot-button {
-  width: 50%;
-  max-width: 100px;
-  padding: 6px;
-  font-size: 11px;
-  cursor: pointer;
-  border-radius: 5px;
-  background-color: #002a5c;
-  color: white;
-  border: none;
-  margin-top: 10px;
-}
-
 
 .session-selection,
 .login-section {
@@ -109,4 +95,57 @@
   font-size: 1.5rem;
   margin-bottom: 15px;
   margin-top: 0px
+}
+
+@media (max-width: 768px) {
+  .registro-layout {
+    flex-direction: column; /* Cambia a diseño vertical */
+    justify-content: center;
+    align-items: center;
+  }
+
+  .registro-container {
+    width: 90%; /* Ajusta el ancho para pantallas pequeñas */
+    max-width: none; /* Elimina el ancho máximo */
+    padding: 20px; /* Reduce el padding */
+    min-height: auto; /* Ajusta la altura mínima */
+    max-height: auto; /* Ajusta la altura máxima */
+    box-shadow: none; /* Elimina la sombra para simplificar el diseño en móviles */
+    margin-top: 30px; /* Margen superior para el recuadro de "Ingrese sus credenciales" en móviles */
+  }
+
+  .registro-container h1 {
+    margin-top: 20px; /* Margen superior para el título de bienvenida en móviles */
+  }
+
+  .field-group label {
+    width: 100%; /* Ocupa el ancho completo */
+    margin-bottom: 5px; /* Añade espacio debajo del label */
+    text-align: left; /* Mantiene alineación izquierda */
+  }
+
+  .field-group input,
+  .field-group select {
+    width: 100%; /* Ajusta el ancho de los inputs */
+  }
+
+  .radio-group {
+    flex-direction: column; /* Cambia a diseño vertical */
+    align-items: flex-start;
+  }
+
+  .login-button {
+    width: 100%; /* Ajusta el ancho de los botones */
+    max-width: none; /* Elimina el ancho máximo */
+  }
+
+  .session-selection,
+  .login-section {
+    padding: 15px; /* Reduce el padding */
+  }
+
+  .session-selection h2,
+  .login-section h2 {
+    font-size: 1.2rem; /* Reduce el tamaño de fuente */
+  }
 }

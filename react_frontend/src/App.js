@@ -79,7 +79,9 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <Encabezado />
+        <div className="Header-wrapper"> {/* Wrapper para espacio debajo del encabezado */}
+          <Encabezado />
+        </div>
         <div className="Main-layout">
           <div className="Lat_iazquierda"></div> {/* Barra lateral izquierda */}
           <div className="Contenido">

@@ -5,12 +5,13 @@
   min-height: 100vh; /* Asegúrate de que ocupe el 100% de la altura de la ventana */
   margin: 0; /* Elimina márgenes no deseados */
   padding: 0; /* Elimina rellenos no deseados */
-  overflow-x: hidden;
+  overflow-x: auto;
+  margin-bottom: 80px; /* Espacio adicional debajo del encabezado */
 }
 
 .Main-layout {
   display: grid;
-  grid-template-columns: 120px 1fr 120px; 
+  grid-template-columns: 220px 1fr 220px; 
   box-sizing: border-box;
   flex: 1;
   max-width: 100%; /* Asegura que el ancho sea completo */
@@ -27,4 +28,29 @@
   flex-direction: column;
   align-items: center;
   width: 100%; /* Asegura que el contenido ocupe todo el espacio disponible */
+  margin-bottom: 100px; /* Espacio adicional para evitar empalme con el pie de página */
+}
+
+.Header-wrapper {
+  margin-bottom: 140px; /* Espacio debajo del encabezado */
+}
+
+@media (max-width: 768px) {
+  .App {
+    flex-direction: column;
+    padding: 10px; /* Espacio para pantallas pequeñas */
+  }
+
+  .Main-layout {
+    grid-template-columns: 1fr; /* Cambia el diseño a una sola columna */
+  }
+
+  .Lat_iazquierda, .Lat_derecha {
+    display: none; /* Oculta las barras laterales en dispositivos móviles */
+  }
+
+  .Contenido {
+    width: 100%; /* Asegura que el contenido ocupe todo el espacio disponible */
+    padding: 10px; /* Ajusta el espacio interno */
+  }
 }
