@@ -116,6 +116,11 @@ const AlumnoListCoord = () => {
     navigate(`/coordinador/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
   };
 
+  const handleNavigate4 = (alumno) => {
+    console.log("Navegando a: ", `/validar-pago/${alumno.matricula}`);
+    navigate(`/coordinador/validar-pago/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
+  };
+
   const handleModify = (alumno) => {
     navigate("/coordinador/modificar-alumno", { state: { alumno, matriculaCord: matriculaCord } });
   };
@@ -223,21 +228,40 @@ const AlumnoListCoord = () => {
                 </td>
                 <td>{getEstatusIcon(alumno.estatus)}</td>
                 <td>
-                    {comprobantes.includes(`Pago_${alumno.matricula}.pdf`) ? (
-                      <a
-                        href={`http://localhost:5000/uploads/comprobantes/Pago_${alumno.matricula}.pdf`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                  {comprobantes.includes(`Pago_${alumno.matricula}.pdf`) ? (
+                    alumno.estatus === "Revisado" ? (
+                      // Verde: Subido y revisado
+                      <button
+                        className="icon-button"
+                        onClick={() => handleNavigate4(alumno)}
                         title="Ver comprobante"
+                        style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
                       >
-                        {/* Ícono de hoja */}
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" viewBox="0 0 24 24">
                           <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
                         </svg>
-                      </a>
+                      </button>
                     ) : (
-                      <span style={{ color: "red" }}>Sin pagar</span>
-                    )}
+                      // Amarillo: Subido pero no revisado
+                      <button
+                        className="icon-button"
+                        onClick={() => handleNavigate4(alumno)}
+                        title="Comprobante subido, pendiente de revisión"
+                        style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#FFD600" viewBox="0 0 24 24">
+                          <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
+                        </svg>
+                      </button>
+                    )
+                  ) : (
+                    // Gris: No subido
+                    <span title="Sin comprobante">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#BDBDBD" viewBox="0 0 24 24">
+                        <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
+                      </svg>
+                    </span>
+                  )}
                 </td>
                 <td>
                   <div className="action-buttons">
