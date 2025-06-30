@@ -128,7 +128,12 @@ function CrearPersonal() {
       });
     } catch (error) {
       console.error("Error al agregar el usuario:", error);
-      toast.error("Hubo un error al agregar el usuario");
+      if (error.response && error.response.status === 409) { // Check for duplicate error
+        const duplicado = error.response.data?.duplicado || ""; // Obtener información del campo duplicado
+        toast.error(`Error: El usuario ya existe. Campo duplicado: ${duplicado}`);
+      } else {
+        toast.error("Hubo un error al agregar el usuario");
+      }
     }
   };
   

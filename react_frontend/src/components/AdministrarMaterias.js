@@ -14,6 +14,7 @@ const AdministrarMaterias = () => {
   const [mostrarModalMaterias, setMostrarModalMaterias] = useState(false);
   const [materiaAEliminar, setMateriaAEliminar] = useState(null);
   const [horasMaximas, setHorasMaximas] = useState("");
+  const [editMode, setEditMode] = useState(false); // Estado para controlar el modo de edición
 
 
   const id_carrera = localStorage.getItem("id_carrera");
@@ -137,6 +138,10 @@ const AdministrarMaterias = () => {
     }
   };
   
+  const toggleEditMode = () => {
+    setEditMode((prev) => !prev);
+  };
+
   const actualizarHorasCoordinador = async () => {
     try {
       const matricula = localStorage.getItem("matricula");
@@ -151,6 +156,7 @@ const AdministrarMaterias = () => {
         horas: horasMaximas,
       });
       toast.success(`Horas actualizadas a: ${horasMaximas}`);
+      setEditMode(false); // Volver al modo estático
     } catch (error) {
       console.error("Error al actualizar las horas:", error);
       toast.error("Error al actualizar las horas");
@@ -202,19 +208,33 @@ const AdministrarMaterias = () => {
           {/* Input para el número máximo de horas permitidas */}
           <div className="max-hours-container">
             <label htmlFor="max-hours">Máx. horas permitidas:</label>
-            <input
-              type="number"
-              id="max-hours"
-              value={horasMaximas}
-              onChange={(e) => setHorasMaximas(e.target.value)}
-              className="max-hours-input"
-            />
-            <button
-              className="confirm-button"
-              onClick={actualizarHorasCoordinador}
-            >
-              Confirmar
-            </button>
+            {editMode ? (
+              <>
+                <input
+                  type="number"
+                  id="max-hours"
+                  value={horasMaximas}
+                  onChange={(e) => setHorasMaximas(e.target.value)}
+                  className="max-hours-input"
+                />
+                <button
+                  className="confirm-button"
+                  onClick={actualizarHorasCoordinador}
+                >
+                  Confirmar
+                </button>
+              </>
+            ) : (
+              <>
+                <span>{horasMaximas}</span>
+                <button
+                  className="edit-button"
+                  onClick={toggleEditMode}
+                >
+                  Editar
+                </button>
+              </>
+            )}
           </div>
         </div>
 

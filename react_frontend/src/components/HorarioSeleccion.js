@@ -63,7 +63,6 @@ function HorarioSeleccion() {
         console.error("Error al obtener las materias:", error);
       }
     };
-
     fetchMaterias();
   }, []);
 
@@ -247,7 +246,7 @@ function HorarioSeleccion() {
 
           {/* Recuadro para el número máximo de horas permitidas */}
           <div className="max-hours-box">
-            <label>Número máximo de horas permitidas:</label>
+            <label>Número máximo de horas permitidas: </label>
             <span className="max-hours-value">{horasMaximas || "Cargando..."}</span>
           </div>
           </div>

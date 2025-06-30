@@ -61,6 +61,7 @@
   
   .alumnos-table {
     width: 100%;
+    height: 450px;
     border-collapse: collapse;
     margin-bottom: 100px;
     text-align: left;
@@ -68,11 +69,13 @@
   
   .alumnos-table, th, td {
     border: 1px solid #ccc;
+    height: 20px; /* Uniform row height for all table rows */
   }
   
-  .alumnos-table th, td {
+  .alumnos-table th, .alumnos-table td {
     padding: 10px;
     text-align: center;
+    height: 20px; /* Uniform row height for all table rows */
   }
 
   .action-buttons {
@@ -87,6 +90,7 @@
   .alumnos-table th {
     background-color: #002060;
     color: white;
+    height: 20px; /* Ajusta el tamaño de la fila del encabezado para uniformidad */
   }
   
   .close-session {
@@ -182,4 +186,31 @@
   margin-top: 20px;
   display: flex;
   justify-content: space-between;
+}
+
+.materia-table {
+    width: 100%;
+    height: 450px;
+    border-collapse: collapse;
+    margin-bottom: 0px;
+    text-align: left;
+}
+
+.materia-table th, 
+.materia-table td {
+    border: 1px solid #ccc;
+    text-align: center;
+    overflow: hidden;
+    height: 20px; /* Uniform row height for all table rows */
+}
+
+.materia-table th {
+    background-color: #002060;
+    color: white;
+    height: 20px; /* Adjust header row height for uniformity */
+}
+
+.materia-table th:last-child, 
+.materia-table td:last-child {
+    width: 180px; /* Adjust width of the "Actions" column */
 }

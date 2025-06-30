@@ -118,6 +118,7 @@ const AdministrarPersonalCoordinador = () => {
   const personalFiltrado = personalConRoles.filter(persona => 
     persona.matricula?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     persona.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    persona.id_carrera?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     persona.rolesTexto.includes(searchTerm.toLowerCase())
   );
   

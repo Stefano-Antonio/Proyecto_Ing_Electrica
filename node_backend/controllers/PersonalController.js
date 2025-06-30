@@ -58,12 +58,12 @@ const storage = multer.diskStorage({
             });
             await nuevoCoordinador.save();
         } else if (roles.includes('A') && usuarioGuardado.matricula.match(/^A\d{4}$/)) {
-          const nuevoAdministrador = new Administradores({
-              id_carrera,
-              personalMatricula: usuarioGuardado.matricula
-          });
-          await nuevoAdministrador.save();
-      } else if (roles === 'CG' && matricula.match(/^CG\d{4}$/)) {
+            const nuevoAdministrador = new Administradores({
+                id_carrera,
+                personalMatricula: usuarioGuardado.matricula
+            });
+            await nuevoAdministrador.save();
+        } else if (roles === 'CG' && matricula.match(/^CG\d{4}$/)) {
             const nuevoCoordinadorGen = new CoordinadorGenMdl({
                 nombre,
                 personalMatricula: usuarioGuardado.matricula,
@@ -84,6 +84,10 @@ const storage = multer.diskStorage({
         res.status(201).json(usuarioGuardado);
     } catch (error) {
         console.error('Error al crear el personal y los documentos relacionados:', error);
+        if (error.code === 11000) { // Error de duplicado en MongoDB
+            const campoDuplicado = Object.keys(error.keyValue)[0];
+            return res.status(409).json({ message: 'Error de duplicado', duplicado: campoDuplicado });
+        }
         res.status(500).json({ message: 'Error al crear el personal y los documentos relacionados', error });
     }
 };

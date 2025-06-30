@@ -81,6 +81,7 @@ h3, h4 {
 
 .materia-table {
     width: 100%;
+    height: 450px;
     border-collapse: collapse;
     margin-bottom: 0px;
     text-align: left;
@@ -96,6 +97,7 @@ h3, h4 {
 .materia-table th {
   background-color: #002060;
   color: white;
+  height: 40px; /* Ajusta el tamaño de la fila del encabezado para uniformidad */
 }
 
 .materia-table th:last-child, 
