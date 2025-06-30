@@ -15,7 +15,7 @@
   border-radius: 5px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   margin-top: 0px; /* Separación vertical superior */
-  margin-bottom: 20px; /* Separación vertical inferior */
+  margin-bottom: 100px; /* Añade margen debajo del recuadro */
   min-height: 300px; /* Altura mínima */
   max-height: 300px; /* Altura máxima */
 }
@@ -49,12 +49,14 @@
   display: flex;
   align-items: flex-start;
   margin-top:45px;
+  flex-direction: row !important; /* Fuerza el diseño horizontal */
 }
 
 .radio-option {
   display: flex;
   align-items: center;
   margin-bottom: 25px; 
+  margin-right: 15px; /* Espacio entre las opciones */
 }
 
 .radio-option input[type="radio"] {
@@ -67,16 +69,22 @@
 }
 
 .login-button {
-  width: 100%;
-  max-width: 200px;
-  padding: 8px;
-  font-size: 16px;
+  width: 80%; /* Reduce el ancho del botón */
+  max-width: 150px; /* Ajusta el ancho máximo */
+  padding: 6px; /* Reduce el padding */
+  font-size: 14px; /* Reduce el tamaño de fuente */
   cursor: pointer;
   border-radius: 5px;
   background-color: #002a5c;
   color: white;
   border: none;
   margin-top: 10px;
+  margin-bottom: 15px; /* Añade margen debajo del botón */
+}
+.forgot-button {
+  width: 20%; /* Reduce el ancho del botón */
+  font-size: 0.7rem; /* Reduce font size further */
+  padding: 3px 8px; /* Make padding slimmer */
 }
 
 .session-selection,
@@ -102,12 +110,14 @@
     flex-direction: column; /* Cambia a diseño vertical */
     justify-content: center;
     align-items: center;
+    width: 100%; /* Asegura que el contenedor ocupe todo el ancho de la pantalla */
+    margin: 0; /* Elimina márgenes laterales */
   }
 
   .registro-container {
-    width: 90%; /* Ajusta el ancho para pantallas pequeñas */
+    width: 100%; /* Ajusta el ancho para ocupar todo el fondo horizontal */
     max-width: none; /* Elimina el ancho máximo */
-    padding: 20px; /* Reduce el padding */
+    padding: 20px; /* Ajusta el padding para mejor visualización */
     min-height: auto; /* Ajusta la altura mínima */
     max-height: auto; /* Ajusta la altura máxima */
     box-shadow: none; /* Elimina la sombra para simplificar el diseño en móviles */
@@ -130,13 +140,27 @@
   }
 
   .radio-group {
-    flex-direction: column; /* Cambia a diseño vertical */
-    align-items: flex-start;
+    flex-direction: row !important; /* Fuerza el diseño horizontal */
+    align-items: center;
+  }
+
+  .radio-option {
+    margin-right: 15px; /* Espacio entre las opciones */
+    flex-direction: row; /* Cambia a diseño horizontal */
+    align-items: center; /* Alinea el texto y el botón al mismo nivel */
+  }
+
+  .radio-option input[type="radio"] {
+    margin-right: 10px; /* Espacio entre el radio button y el texto */
   }
 
   .login-button {
     width: 100%; /* Ajusta el ancho de los botones */
     max-width: none; /* Elimina el ancho máximo */
+  }
+
+  .forgot-button {
+    font-size: 0.6rem; /* Reduce el tamaño de la fuente en móviles */
   }
 
   .session-selection,

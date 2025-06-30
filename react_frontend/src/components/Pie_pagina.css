@@ -10,26 +10,22 @@
 }
 
 .footer {
-  position: fixed; /* Fija el pie de página en la parte inferior */
-  bottom: 0; /* Asegura que esté en la parte inferior */
-  left: 0; /* Alinea al borde izquierdo */
-  right: 0; /* Alinea al borde derecho */
   background-color: #e0e0e0;
   color: #000000;
   text-align: center;
-  padding: 10px; /* Reduce el padding para hacerlo más delgado */
-  font-size: 12px; /* Reduce el tamaño de fuente */
+  padding: 20px;
+  font-size: 14px;
   width: 100%;
-  height: auto; /* Permite que el tamaño sea dinámico */
 }
 
+/* Ajuste dinámico del tamaño lateral del pie de página */
 .footer-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1200px; /* Ajusta el ancho máximo según sea necesario */
+  max-width: 100%; /* Ajusta el ancho máximo según el tamaño de la página */
   margin: 0 auto; /* Centra el contenedor */
-  padding: 0 10px; /* Reduce el padding lateral */
+  padding: 0 5%; /* Ajusta el padding dinámicamente */
 }
 
 .footer-content {
@@ -59,4 +55,30 @@
   width: 100px; /* Ajusta el tamaño según sea necesario */
   height: auto;
   margin: 0 10px;
+}
+
+/* Media query para versiones móviles */
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column; /* Cambia la dirección a columna para mejor visualización en móviles */
+    padding: 0 10px; /* Reduce el padding lateral en móviles */
+    width: 100%; /* Asegura que el pie de página ocupe todo el ancho de la pantalla */
+    padding: 10px; /* Ajusta el padding para mejor visualización en móviles */
+    box-sizing: border-box; /* Incluye el padding en el ancho total */
+  }
+
+  .footer-content {
+    text-align: center; /* Centra el contenido en móviles */
+  }
+
+  .footer-image-1,
+  .footer-image-2 {
+    display: block;
+    margin: 0 auto; /* Centra las imágenes horizontalmente */
+  }
+
+  .footer-image-1 img, .footer-image-2 img {
+    width: 80px; /* Ajusta el tamaño de las imágenes en móviles */
+    margin: 5px; /* Reduce el margen en móviles */
+  }
 }
