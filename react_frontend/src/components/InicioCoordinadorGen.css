@@ -75,6 +75,16 @@
     vertical-align: middle; /* Alinea los íconos verticalmente al centro */
   }
   
+  .back-button{
+  background-color: #002a5c;
+  color: #f0f0f0;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
   .docente-buttons {
     display: flex;
     justify-content: center;
@@ -179,3 +189,12 @@
     background-color: #d32f2f; /* Color de fondo al pasar el cursor */
   }
   
+  .hide-button-fixed {
+    width: 120px;
+    min-width: 120px;
+    max-width: 120px;
+    height: 36px;
+    font-size: 16px;
+    padding: 6px 0;
+    box-sizing: border-box;
+  }

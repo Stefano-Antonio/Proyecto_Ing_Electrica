@@ -22,7 +22,6 @@ const AdministrarPersonalCG = () => {
         setLoading(false);
         return;
       }
-
       try {
         const response = await axios.get(`http://localhost:5000/api/personal`);
         console.log("Personal encontrado:", response.data);
@@ -42,7 +41,6 @@ const AdministrarPersonalCG = () => {
         setLoading(false);
       }
         };
-
     fetchPersonal();
   }, []);
 
@@ -86,6 +84,31 @@ const AdministrarPersonalCG = () => {
           return 'Desconocido';
       }
     }).join(', ');
+  };
+
+  // Descargar archivo Excel de personal
+  const handleDownloadExcel = async () => {
+    const id_carrera = localStorage.getItem("id_carrera");
+    if (!id_carrera) {
+      toast.error("ID de carrera no encontrado.");
+      return;
+    }
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/personal/exportar-excel/carrera/${id_carrera}`,
+        { responseType: "blob" }
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "personal.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Error al descargar el archivo Excel:", error);
+      toast.error("No se pudo descargar el archivo Excel.");
+    }
   };
 
   if (loading) {
@@ -194,6 +217,7 @@ const AdministrarPersonalCG = () => {
 
         <div className="add-delete-buttons">
           <button onClick={() => navigate("/crear-personal-cg")}>Agregar personal</button>
+          <button onClick={handleDownloadExcel}>Descargar Excel</button>
         </div>
       </div>
     </div>

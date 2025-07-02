@@ -73,6 +73,7 @@ import ModificarMateriaCG from './components/ModificarMateriaCG';
 import RevisionHorarioAdmin from './components/RevisionHorarioAdmin';
 import './components/ModificarPersonal.css';
 import RevisionComprobantePago from './components/RevisionComprobantePago';
+import HistorialAcademico from './components/HistorialAcademico';
 
 function App() {
   const userType = localStorage.getItem("userType") || "alumno"; // Puede ser "alumno" o "personal"
@@ -87,7 +88,6 @@ function App() {
           <div className="Lat_iazquierda"></div> {/* Barra lateral izquierda */}
           <div className="Contenido">
             <Routes>
-              
               <Route path="/" element={<PrivateRoute><Registro /></PrivateRoute>} />
               <Route path="/login" element={<RedirectRoute userType={userType}><Registro /></RedirectRoute>} />
               <Route path="/horario-seleccion" element={<PrivateRoute><HorarioSeleccion /></PrivateRoute>} />
@@ -133,6 +133,7 @@ function App() {
                   <Route path="alumnos" element={<AlumnoListCG/>}></Route>
                   <Route path="personal" element={<AdministrarPersonalCG/>}></Route>;
                   <Route path="materias" element={<AdministrarMateriasCG/>}></Route>;
+                  <Route path="historial-academico" element={<PrivateRoute><HistorialAcademico /></PrivateRoute>} />
                   </Route>
                 <Route path="/administrador" element={<PrivateRoute><InicioAdministrador/></PrivateRoute>}>
                   <Route path="alumnos" element={<AlumnoListAdmin/>}></Route>
