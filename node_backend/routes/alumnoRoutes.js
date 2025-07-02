@@ -8,7 +8,12 @@ const fs = require('fs');
 
 const storageComprobantes = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/comprobantes/');
+    const dir = 'uploads/comprobantes/';
+    // Verifica si la carpeta existe, si no, la crea
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    cb(null, dir);
   },
   filename: (req, file, cb) => {
     const matricula = req.params.matricula || 'sinmatricula';
@@ -73,5 +78,8 @@ router.get('/comprobantes/lista', (req, res) => {
   });
 });
 
+router.put('/validar-comprobante/:matricula', alumnoController.validarComprobantePago);
+
 
 module.exports = router;
+
