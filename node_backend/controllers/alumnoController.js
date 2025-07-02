@@ -764,16 +764,39 @@ exports.subirAlumnosCSVPorCarrera = async (req, res) => {
 // Subir comprobante de pago del alumno
 exports.subirComprobantePago = async (req, res) => {
   try {
-    console.log("req.body.matricula:", req.body.matricula);
-    if (req.file) {
-      console.log("Archivo recibido:", req.file.originalname);
-      console.log("Archivo guardado como:", req.file.filename);
-    }
+    const matricula = req.params.matricula;
     if (!req.file) {
       return res.status(400).json({ message: 'No se subió ningún archivo' });
     }
+    // Actualiza el estatus del comprobante a "Pendiente"
+    await Alumno.findOneAndUpdate(
+      { matricula },
+      { estatusComprobante: "Pendiente" }
+    );
     res.status(200).json({ message: 'Comprobante subido correctamente', filePath: req.file.path });
   } catch (error) {
     res.status(500).json({ message: 'Error al subir el comprobante', error });
+  }
+};
+
+// Validar el comprobante de pago del alumno
+exports.validarComprobantePago = async (req, res) => {
+  try {
+    const { matricula } = req.params;
+    const { estatus } = req.body; // "Revisado" o "Rechazado"
+    if (!["Aceptado", "Rechazado"].includes(estatus)) {
+      return res.status(400).json({ message: "Estatus inválido" });
+    }
+    const alumno = await Alumno.findOneAndUpdate(
+      { matricula },
+      { estatusComprobante: estatus },
+      { new: true }
+    );
+    if (!alumno) {
+      return res.status(404).json({ message: "Alumno no encontrado" });
+    }
+    res.status(200).json({ message: "Estatus del comprobante actualizado", alumno });
+  } catch (error) {
+    res.status(500).json({ message: "Error al validar comprobante", error });
   }
 };

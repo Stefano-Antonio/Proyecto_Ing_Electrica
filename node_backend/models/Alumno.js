@@ -8,7 +8,12 @@ const AlumnoSchema = new Schema({
   telefono: { type: String, required: true },
   correo: { type: String, required: true },
   horario: { type: Schema.Types.ObjectId, ref: 'Horario', default: null },
-  tutor: {type: String, default: null}
+  tutor: {type: String, default: null},
+  estatusComprobante: {
+  type: String,
+  enum: ["Pendiente", "Aceptado", "Rechazado"],
+  default: "Pendiente"
+},
 });
 
 module.exports = mongoose.model('Alumno', AlumnoSchema);
