@@ -32,10 +32,18 @@ function InicioCoordinadorGen() {
 
   return (
     <div className="docente-layout">
+      {location.pathname !== '/inicio-coordinador-gen' && (
+        <div className="top-hide" style={{ display: 'flex', justifyContent: 'flex-start', margin: '10px 0 0 0' }}>
+          <button className="back-button hide-button-fixed" onClick={() => navigate('/inicio-coordinador-gen')}>Ocultar</button>
+        </div>
+      )}
       <div className="docente-container">
 
         <div className="top-right"> 
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
+        </div>
+        <div className="top-left"> 
+          <button className="historial-button" onClick={() => navigate("/inicio-coordinador-gen/historial-academico")}>Historial académico</button>
         </div>
 
         <h2>Coordinador General</h2>
