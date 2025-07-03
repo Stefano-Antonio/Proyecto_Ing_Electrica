@@ -71,19 +71,23 @@ function CrearPersonal() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        const formData = { ...form, id_carrera }; // Incluir id_carrera en los datos del formulario
-        const response = await axios.post("http://localhost:5000/api/personal", formData);
-        console.log("Usuario agregado:", response.data);
-        toast.success("Usuario agregado con éxito");
-        setForm({ nombre: "", matricula: "", correo: "", telefono: "", roles: "", password: "" }); // Reset form
+      const formData = { ...form, id_carrera };
+      const response = await axios.post("http://localhost:5000/api/personal", formData);
+      console.log("Usuario agregado:", response.data);
+      toast.success("Usuario agregado con éxito");
+      setForm({ nombre: "", matricula: "", correo: "", telefono: "", roles: "", password: "" });
     } catch (error) {
-        console.error("Error al agregar el usuario:", error);
-        if (error.response && error.response.status === 409) { // Check for duplicate error
-            const duplicado = error.response.data?.duplicado || ""; // Obtener información del campo duplicado
-            toast.error(`Error: El usuario ya existe. Campo duplicado: ${duplicado}`);
-        } else {
-            toast.error("Hubo un error al agregar el usuario");
-        }
+      // Verifica si el error es por matrícula duplicada
+      if (
+        error.response &&
+        (error.response.data?.message?.toLowerCase().includes("matricula") ||
+        error.response.data?.error?.code === 11000)
+      ) {
+        toast.error("La matrícula ingresada ya existe. Por favor, ingrese una diferente.");
+      } else {
+        toast.error("Hubo un error al agregar el usuario");
+      }
+      console.error("Error al agregar el usuario:", error);
     }
   };
 
@@ -105,35 +109,31 @@ function CrearPersonal() {
   const handleSubmitCSV = async (e) => {
     e.preventDefault();
     if (!file) {
-        toast.error("Por favor selecciona un archivo CSV.");
-        return;
+      toast.error("Por favor selecciona un archivo CSV.");
+      return;
     }
-
+  
     const id_carrera = localStorage.getItem("id_carrera");
     if (!id_carrera) {
-        toast.error("ID de carrera no encontrado.");
-        return;
+      toast.error("ID de carrera no encontrado.");
+      return;
     }
-
+  
     const formData = new FormData();
     formData.append("csv", file);
-
+  
     try {
-        await axios.post(
-            `http://localhost:5000/api/personal/subir-csv/carrera/${id_carrera}`,
-            formData,
-            { headers: { "Content-Type": "multipart/form-data" } }
-        );
-
-        toast.success("Base de datos actualizada con éxito desde el archivo CSV");
-        setMostrarModal(false);
+      await axios.post(
+        `http://localhost:5000/api/personal/subir-csv/carrera/${id_carrera}`, // ✅ Ahora se pasa en la URL
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+  
+      toast.success("Base de datos actualizada con éxito desde el archivo CSV");
+      setMostrarModal(false);
     } catch (error) {
-        console.error("Error al subir el archivo CSV:", error);
-        if (error.response && error.response.status === 409) { // Check for duplicate error
-            toast.error("Error: Algunos registros ya existen en la base de datos.");
-        } else {
-            toast.error("Hubo un error al actualizar la base de datos");
-        }
+      console.error("Error al subir el archivo CSV:", error);
+      toast.error("Hubo un error al actualizar la base de datos");
     }
   };
 

@@ -800,3 +800,23 @@ exports.validarComprobantePago = async (req, res) => {
     res.status(500).json({ message: "Error al validar comprobante", error });
   }
 };
+
+// Obtener el comprobante de pago del alumno
+exports.existeComprobantePago = async (req, res) => {
+  try {
+    const { matricula } = req.params;
+    const comprobantePath = path.join(__dirname, '..', 'uploads', 'comprobantes', `Pago_${matricula}.pdf`);
+    const existe = fs.existsSync(comprobantePath);
+
+    // Opcional: también puedes devolver el estatus actual del comprobante
+    let estatus = null;
+    if (existe) {
+      const alumno = await Alumno.findOne({ matricula });
+      estatus = alumno ? alumno.estatusComprobante : null;
+    }
+
+    res.status(200).json({ existe, estatus });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al verificar comprobante', error });
+  }
+};

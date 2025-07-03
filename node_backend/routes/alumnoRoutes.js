@@ -79,6 +79,7 @@ router.get('/comprobantes/lista', (req, res) => {
 });
 
 router.put('/validar-comprobante/:matricula', alumnoController.validarComprobantePago);
+router.get('/comprobante/:matricula', alumnoController.existeComprobantePago);
 
 
 module.exports = router;
