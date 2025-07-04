@@ -228,3 +228,36 @@ exports.updateHorasCoordinador = async (req, res) => {
   }
 
 };
+
+// Obtener si el comprobante está habilitado
+exports.getComprobantePagoHabilitado = async (req, res) => {
+  const { id_carrera } = req.params;
+  try {
+    const coordinador = await Coordinadores.findOne({ id_carrera });
+    if (!coordinador) {
+      return res.status(404).json({ message: "Coordinador no encontrado" });
+    }
+    res.json({ comprobantePagoHabilitado: coordinador.comprobantePagoHabilitado });
+  } catch (error) {
+    res.status(500).json({ message: "Error al consultar comprobantePagoHabilitado", error: error.message });
+  }
+};
+
+// Actualizar si el comprobante está habilitado
+exports.setComprobantePagoHabilitado = async (req, res) => {
+  const { id_carrera } = req.params;
+  const { comprobantePagoHabilitado } = req.body;
+  try {
+    const coordinador = await Coordinadores.findOneAndUpdate(
+      { id_carrera },
+      { comprobantePagoHabilitado },
+      { new: true }
+    );
+    if (!coordinador) {
+      return res.status(404).json({ message: "Coordinador no encontrado" });
+    }
+    res.json({ comprobantePagoHabilitado: coordinador.comprobantePagoHabilitado });
+  } catch (error) {
+    res.status(500).json({ message: "Error al actualizar comprobantePagoHabilitado", error: error.message });
+  }
+};

@@ -17,6 +17,8 @@ function Validacion2() {
   const [estatusHorario, setEstatusHorario] = useState(0); // 0: En proceso, 1: Validado
   const [estatusComprobante, setEstatusComprobante] = useState("Pendiente");
   const [comprobanteExiste, setComprobanteExiste] = useState(false);
+  const [comprobanteHabilitado, setComprobanteHabilitado] = useState(true);
+  const id_carrera = localStorage.getItem("id_carrera");
 
   useEffect(() => {
     const bloquearAtras = () => {
@@ -51,6 +53,18 @@ function Validacion2() {
     };
     obtenerEstatusHorario();
   }, [matricula]);
+
+  useEffect(() => {
+    const fetchComprobanteHabilitado = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/api/coordinadores/comprobante-habilitado/${id_carrera}`);
+        setComprobanteHabilitado(res.data.comprobantePagoHabilitado);
+      } catch (error) {
+        setComprobanteHabilitado(true); // Por defecto true si falla
+      }
+    };
+    fetchComprobanteHabilitado();
+  }, [id_carrera]);
 
   useEffect(() => {
     // Consultar si ya hay comprobante y su estatus usando la nueva ruta optimizada
@@ -136,6 +150,7 @@ function Validacion2() {
             <div className="same-line">
               <h3 className="center-text">Estatus de horario: Validado</h3>
             </div>
+            {comprobanteHabilitado && (
             <div className="validacion-buttons">
               {/* Mostrar link y estatus si existe comprobante */}
               {comprobanteExiste && (
@@ -203,6 +218,13 @@ function Validacion2() {
                 </div>
               )}
             </div>
+            )}
+                {/* Si comprobante está deshabilitado, solo muestra el estado del horario */}
+                {!comprobanteHabilitado && (
+                  <div style={{ color: "#888", marginTop: 8 }}>
+                    El comprobante de pago no es requerido para tu carrera.
+                  </div>
+                )}
             {/* Mensaje informativo si no puede subir */}
             {!mostrarControlesSubida && (
               <div style={{ color: "#888", marginTop: 8 }}>

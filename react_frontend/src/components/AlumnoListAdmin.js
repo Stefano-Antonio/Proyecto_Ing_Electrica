@@ -9,6 +9,7 @@ const AlumnoListAdmin = () => {
   const [alumnos, setAlumnos] = useState([]);
   const [tutoresNombres, setTutoresNombres] = useState({});
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [mostrarModalMaterias, setMostrarModalMaterias] = useState(false);
   const id_carrera = localStorage.getItem("id_carrera");
   const [nombre, setNombreAlumno] = ("");
   const [matricula, setMatriculaAlumno] = useState("");
@@ -72,20 +73,20 @@ const AlumnoListAdmin = () => {
   console.log("matriculaCord:", matriculaAdmin);
 
   const handleDownloadCSV = async () => {
-    const ids = alumnosFiltrados.map(a => a._id);
-    const response = await axios.post(
-      `http://localhost:5000/api/alumnos/exportar-csv/carrera-filtrados/${id_carrera}`,
-      { ids },
-      { responseType: "blob" }
-    );
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", `alumnos_filtrados.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+      const ids = alumnosFiltrados.map(a => a._id);
+      const response = await axios.post(
+        `http://localhost:5000/api/alumnos/exportar-csv/carrera-filtrados/${id_carrera}`,
+        { ids },
+        { responseType: "blob" }
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `alumnos_filtrados.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
 
   const handleNavigate2 = () => {
     console.log("Navegando a: ", `/coordinador-tutor`);
@@ -210,6 +211,21 @@ const AlumnoListAdmin = () => {
                   </p>
                   <button onClick={handleDownloadCSV}>Descargar CSV</button>
                   <button onClick={() => setMostrarModal(false)}>Cerrar</button>
+                </div>
+              </div>
+            )}
+
+            {mostrarModalMaterias && (
+              <div className="modal">
+                <div className="modal-content">
+                  <h3>Descargar base de datos base de datos</h3>
+                  <p>Seleccione el archivo a subir:</p>
+                  <ul>
+                  </ul>
+                  <p>
+                  </p>
+                  <button onClick={handleDownloadCSV}>Descargar CSV</button>
+                  <button onClick={() => setMostrarModalMaterias(false)}>Cerrar</button>
                 </div>
               </div>
             )}

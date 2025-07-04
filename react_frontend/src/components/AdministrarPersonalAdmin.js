@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const AdministrarPersonalAdmin = () => {
   const [personal, setPersonal] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [mostrarModalPersonal, setMostrarModalPersonal] = useState(false);
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const id_carrera = localStorage.getItem("id_carrera");
   useEffect(() => {
@@ -70,31 +71,38 @@ const AdministrarPersonalAdmin = () => {
     persona.rolesTexto.includes(searchTerm.toLowerCase())
   );
 
-  const handleDownloadCSV = async () => {
-    const id_carrera = localStorage.getItem("id_carrera");
-    if (!id_carrera) {
-      toast.error("ID de carrera no encontrado.");
-      return;
-    }
-  
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/api/personal/exportar-csv/carrera/${id_carrera}`,
-        { responseType: "blob" } // Recibir como blob para descarga
-      );
-  
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "personal.csv");
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error("Error al descargar el archivo CSV:", error);
-      toast.error("No se pudo descargar el archivo.");
-    }
-  };
+    const handleDownloadCSV = async () => {
+      const id_carrera = localStorage.getItem("id_carrera");
+      const matriculas = personalFiltrado.map((p) => p.matricula);
+
+      if (!id_carrera || matriculas.length === 0) {
+        toast.error("No hay personal filtrado o falta el id_carrera.");
+        return;
+      }
+
+      try {
+        const response = await axios.post(
+          `http://localhost:5000/api/personal/exportar-csv/carrera-filtrados/${id_carrera}`,
+          { matriculas },
+          { responseType: "blob" }
+        );
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `personal_filtrado_${id_carrera}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } catch (error) {
+        console.error("❌ Error al descargar CSV filtrado de personal:", error);
+        toast.error("No se pudo descargar el archivo.");
+      }
+    };
+    const handleDownloadDB = () => {
+        setMostrarModalPersonal(true);
+      };
+
   
   return (
     <div className="personal-layout">
@@ -152,12 +160,27 @@ const AdministrarPersonalAdmin = () => {
             )}
           </tbody>
           </table>
+          {mostrarModalPersonal && (
+              <div className="modal">
+                <div className="modal-content">
+                  <h3>Descargar base de datos</h3>
+                  <p>Haga clic para descargar la base de datos:</p>
+                  <ul>
+                  </ul>
+                  <p>
+                  </p>
+                  <button onClick={handleDownloadCSV}>Descargar CSV</button>
+                  <button onClick={() => setMostrarModalPersonal(false)}>Cerrar</button>
+                </div>
+              </div>
+            )}
         </div>
+        
       ) : (
         <p className="no-alumnos-message">No se encontraron resultados.</p>
       )}
         <div className="add-delete-buttons">
-          <button onClick={handleDownloadCSV}>Descargar base de datos de personal</button>
+          <button onClick={handleDownloadDB}>Descargar base de datos de personal</button>
         </div>
       </div>
     </div>
