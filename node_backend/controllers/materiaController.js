@@ -525,6 +525,7 @@ exports.exportarCSVPorCarreraFiltrado = async (req, res) => {
       grupo: m.grupo,
       cupo: m.cupo,
       docente: m.docente ? m.docente.personalMatricula : "Sin asignar",
+      laboratorio: m.laboratorio ? "Sí" : "No", // <-- Aquí el cambio
       lunes: m.horarios.lunes || "-",
       martes: m.horarios.martes || "-",
       miercoles: m.horarios.miercoles || "-",
@@ -535,7 +536,7 @@ exports.exportarCSVPorCarreraFiltrado = async (req, res) => {
 
     const fields = [
       "id_materia", "id_carrera", "nombre", "salon", "grupo", "cupo", "docente",
-      "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"
+      "laboratorio", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"
     ];
 
     const json2csvParser = new Parser({ fields });
@@ -590,7 +591,7 @@ exports.subirMateriasCSVPorCarrera = async (req, res) => {
         await Promise.all(
           results.map(async (materiaData) => {
             let { id_materia, nombre, salon, grupo, cupo, docente,
-                  lunes, martes, miercoles, jueves, viernes, sabado } = materiaData;
+                  lunes, martes, miercoles, jueves, viernes, sabado, laboratorio } = materiaData;
 
             id_materia = id_materia ? id_materia.toString().trim() : null;
 
@@ -621,10 +622,16 @@ exports.subirMateriasCSVPorCarrera = async (req, res) => {
               sabado: sabado !== "-" ? sabado : null
             };
 
+            // 🔹 Convertir "Sí"/"No" a booleano para laboratorio
+            let laboratorioBool = false;
+            if (typeof laboratorio === "string") {
+              laboratorioBool = laboratorio.trim().toLowerCase() === "sí" || laboratorio.trim().toLowerCase() === "si";
+            }
+
             // 🔹 Insertar o actualizar materia
             const materiaActualizada = await Materia.findOneAndUpdate(
               { id_materia, id_carrera }, // Filtrar por ID de materia y carrera
-              { id_materia, id_carrera, nombre, horarios: horariosFinal, salon, grupo, cupo, docente: docenteObjectId },
+              { id_materia, id_carrera, nombre, horarios: horariosFinal, salon, grupo, cupo, docente: docenteObjectId, laboratorio: laboratorioBool },
               { upsert: true, new: true }
             );
 
@@ -668,4 +675,3 @@ exports.subirMateriasCSVPorCarrera = async (req, res) => {
       res.status(500).json({ message: "Error al procesar el archivo CSV", error: err });
     });
 };
-
