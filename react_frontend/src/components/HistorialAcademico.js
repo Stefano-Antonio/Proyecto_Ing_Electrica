@@ -5,9 +5,18 @@ import './HistorialAcademico.css';
 function HistorialAcademico() {
   const [semestres, setSemestres] = useState([
     "2025-1", "2024-2", "2024-1", "2023-2", "2023-1"
-  ]); // Puedes poblar esto dinámicamente si lo deseas
+  ]);
   const [semestreSeleccionado, setSemestreSeleccionado] = useState(semestres[0]);
+  const [historiales, setHistoriales] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Obtener historiales académicos del backend
+    fetch('http://localhost:5000/api/historial')
+      .then(res => res.json())
+      .then(data => setHistoriales(data))
+      .catch(() => setHistoriales([]));
+  }, []);
 
   // Crear carpeta en Documentos si no existe
   useEffect(() => {
@@ -24,10 +33,6 @@ const descargarArchivo = async (tipo) => {
     let url = '';
     let nombre = '';
     const id_carrera = localStorage.getItem('id_carrera');
-    /*if (!window.api || !window.api.createFolder || !window.api.saveFile) {
-        alert('Funcionalidad no disponible en este entorno.');
-        return;
-    }*/
     switch (tipo) {
         case 'personal':
             if (!id_carrera) {
@@ -35,24 +40,22 @@ const descargarArchivo = async (tipo) => {
                 return;
             }
             url = `http://localhost:5000/api/personal/exportar-csv`;
-            nombre = 'personal.xlsx';
+            nombre = 'personal.csv'; // Cambia a .csv
             break;
         case 'alumnos':
             url = 'http://localhost:5000/api/alumnos/exportar-csv';
-            nombre = 'alumnos.xlsx';
+            nombre = 'alumnos.csv'; // Cambia a .csv
             break;
         case 'materias':
             url = 'http://localhost:5000/api/materias/exportar-csv';
-            nombre = 'materias.xlsx';
+            nombre = 'materias.csv'; // Cambia a .csv
             break;
         default:
             alert('Tipo de descarga no válido.');
             return;
     }
     try {
-        // Carpeta absoluta en Windows
         const folderPath = 'C:/Users/Stefano/Documentos/HistorialAcademico';
-        // Se intenta crear la carpeta, pero si ya existe, no pasa nada (debe manejarlo la función nativa)
         await window.api.createFolder(folderPath);
         const response = await fetch(url);
         if (!response.ok) throw new Error('Error al descargar ' + tipo);
@@ -66,53 +69,83 @@ const descargarArchivo = async (tipo) => {
 
   const handleGenerarHistorialAcademico = async () => {
     try {
-      if (!window.api || !window.api.createFolder || !window.api.saveFile) {
-        alert('Funcionalidad no disponible en este entorno.');
-        return;
+      const response = await fetch('http://localhost:5000/api/historial/generar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          semestre: semestreSeleccionado,
+          matricula: localStorage.getItem('matricula')
+        })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        alert('Historial generado correctamente');
+        setHistoriales(prev => [data.historial, ...prev]);
+      } else {
+        alert('Error: ' + data.message);
       }
-      const folderPath = 'C:/Users/Stefano/Documentos/HistorialAcademico';
-      await window.api.createFolder(folderPath);
-      const id_carrera = localStorage.getItem('id_carrera');
-      const endpoints = [
-        { tipo: 'personal', url: id_carrera ? `http://localhost:5000/api/personal/exportar-csv` : '', nombre: 'personal.xlsx' },
-        { tipo: 'alumnos', url: 'http://localhost:5000/api/alumnos/exportar-csv', nombre: 'alumnos.xlsx' },
-        { tipo: 'materias', url: 'http://localhost:5000/api/materias/exportar-csv', nombre: 'materias.xlsx' }
-      ];
-      for (const endpoint of endpoints) {
-        if (!endpoint.url) continue;
-        const response = await fetch(endpoint.url);
-        if (!response.ok) throw new Error('Error al descargar ' + endpoint.tipo);
-        const blob = await response.blob();
-        await window.api.saveFile(folderPath + '/' + endpoint.nombre, blob);
-      }
-      alert('Historial académico generado y guardado en ' + folderPath);
-    } catch (error) {
-      alert('Error al generar historial académico: ' + error.message);
+    } catch (err) {
+      alert('Error al generar historial: ' + err.message);
     }
   };
-  
+
   return (
     <div className="historial-academico-container">
       <h2>Historial Académico</h2>
-      <div className="panel-control">
-        <label htmlFor="semestre-select">Selecciona el semestre:</label>
-        <select
-          id="semestre-select"
-          value={semestreSeleccionado}
-          onChange={e => setSemestreSeleccionado(e.target.value)}
-        >
-          {semestres.map((sem) => (
-            <option key={sem} value={sem}>{sem}</option>
-          ))}
-        </select>
-        <div className="botones-descarga">
-          <button onClick={() => descargarArchivo('personal')}>Descargar Personal</button>
-          <button onClick={() => descargarArchivo('alumnos')}>Descargar Alumnos</button>
-          <button onClick={() => descargarArchivo('materias')}>Descargar Materias</button>
-        </div>
-      </div>
       <div className="espacio-historial">
-        {/* Aquí se puede mostrar la información del historial académico según el semestre seleccionado */}
+        <h3>Historiales generados</h3>
+        <table className="historial-table">
+          <thead>
+            <tr>
+              <th>Semestre</th>
+              <th>Fecha</th>
+              <th>Personal</th>
+              <th>Alumnos</th>
+              <th>Materias</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Array.isArray(historiales) && historiales.length > 0
+              ? historiales
+                  .filter(h => h && h.semestre) // Filtra elementos undefined o sin semestre
+                  .map(h => (
+                    <tr key={h._id}>
+                      <td>{h.semestre}</td>
+                      <td>{new Date(h.fecha_generacion).toLocaleString()}</td>
+                      {/* Busca archivos .csv en el backend y descarga como .csv */}
+                      <td>
+                        <a
+                          href={`http://localhost:5000/descargas/${h.semestre}/personal.csv`}
+                          download="personal.csv"
+                          type="text/csv"
+                        >Descargar</a>
+                      </td>
+                      <td>
+                        <a
+                          href={`http://localhost:5000/descargas/${h.semestre}/alumnos.csv`}
+                          download="alumnos.csv"
+                          type="text/csv"
+                        >Descargar</a>
+                      </td>
+                      <td>
+                        <a
+                          href={`http://localhost:5000/descargas/${h.semestre}/materias.csv`}
+                          download="materias.csv"
+                          type="text/csv"
+                        >Descargar</a>
+                      </td>
+                    </tr>
+                  ))
+              : (
+                <tr>
+                  <td colSpan={5} style={{ textAlign: 'center' }}>No hay historiales disponibles</td>
+                </tr>
+              )
+            }
+          </tbody>
+        </table>
       </div>
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '30px' }}>
         <button className="generar-historial-button" onClick={handleGenerarHistorialAcademico}>Generar historial académico</button>

@@ -2,6 +2,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 const userRoutes = require('./routes/userRoutes');
 const alumnoRoutes = require('./routes/alumnoRoutes');
@@ -14,7 +15,7 @@ const administradorRoutes = require('./routes/administradorRoutes');
 const administradorGenRoutes = require('./routes/administradorGenRoutes');
 const tutorRoutes = require('./routes/tutorRoutes');
 const docenteRoutes = require('./routes/docenteRoutes');
-
+const historialAcademicoRoutes = require('./routes/historialAcademicoRoutes');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -33,6 +34,8 @@ app.use('/api/coordinadores', coordinadorRoutes);
 app.use('/api/administradores', administradorRoutes);
 app.use('/api/cordgen', coordinadorGenRoutes);
 app.use('/api/admingen', administradorGenRoutes);
+app.use('/api/historial', historialAcademicoRoutes);
+app.use('/descargas', express.static(path.join(__dirname, 'exports')));
 //Ruta para los comprobantes
 app.use('/uploads/comprobantes', express.static('uploads/comprobantes'));
 
