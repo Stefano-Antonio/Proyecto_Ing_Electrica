@@ -1,0 +1,132 @@
+import React, { useState, useEffect } from "react";
+import "./RevisionHorarioTutor.css";
+import { useNavigate, useLocation } from "react-router-dom";
+import {ToastContainer, toast} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import axios from "axios"; // Asegúrate de tener axios instalado
+
+function RevisionComprobantePago() {
+  const [mostrarModal, setMostrarModal] = useState(false);
+  const [horario, setHorario] = useState([]);
+  const [comentario, setComentario] = useState("");
+  const [estatus, setEstatus] = useState(null);
+  const [alumno, setAlumno] = useState(null);
+  const [alumnoCargado, setAlumnoCargado] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const id_carrera = localStorage.getItem("id_carrera");
+  const { nombre, matricula, matriculaTutor } = location.state || {};
+
+  useEffect(() => {
+    // Obtener datos del alumno (no dependas del horario)
+    fetch(`http://localhost:5000/api/alumnos/matricula/${matricula}`)
+      .then(response => response.json())
+      .then(data => {
+        setAlumno(data);
+        setAlumnoCargado(true);
+      })
+      .catch(error => {
+        setAlumnoCargado(true); // Permite mostrar el comprobante aunque falle
+      });
+
+    // Obtener horario (opcional)
+    fetch(`http://localhost:5000/api/tutores/horario/${matricula}`)
+      .then(response => response.json())
+      .then(data => {
+        setHorario(data.horario || []);
+      })
+      .catch(error => {
+        // No pasa nada si no hay horario
+      });
+  }, [matricula]);
+
+  const handleBack = () => {
+    navigate(-1);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("userType");
+    localStorage.removeItem("tutorId");
+    localStorage.removeItem("matriculaTutor");
+    navigate("/");
+  };
+
+  // Nueva función para validar comprobante
+  const validarComprobante = async (nuevoEstatus) => {
+    try {
+      await axios.put(
+        `http://localhost:5000/api/alumnos/validar-comprobante/${matricula}`,
+        { estatus: nuevoEstatus }
+      );
+      toast.success(`Comprobante marcado como ${nuevoEstatus === "Revisado" ? "ACEPTADO" : "RECHAZADO"}`);
+      // Opcional: recargar datos del alumno o navegar
+      setAlumno({ ...alumno, estatusComprobante: nuevoEstatus });
+    } catch (error) {
+      toast.error("Error al actualizar el estatus del comprobante");
+    }
+  };
+
+  // Mostrar comprobante aunque no haya horario ni alumno, pero sí matrícula
+  return (
+    <div className="horario-layout">
+      <ToastContainer />
+      <div className="horario-container">
+        <div className="top-left">
+          <button className="back-button" onClick={handleBack}>Regresar</button>
+        </div>
+        <div className="top-right">
+          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
+        </div>
+        <h1>Revisión de comprobante de pago</h1>
+        {(alumnoCargado && (alumno || matricula)) ? (
+          <>
+            <div className="horario-header">
+              <h3>Nombre del alumno: {alumno?.nombre || nombre || "Desconocido"}</h3>
+              <h3>Carrera: {alumno?.id_carrera || id_carrera || "Desconocida"}</h3>
+            </div>
+            <div className="horario-content">
+              <div className="comprobante-viewer" style={{ width: "100%", maxWidth: 1000, margin: "0 auto", marginBottom: 24 }}>
+                <iframe
+                  src={`http://localhost:5000/uploads/comprobantes/Pago_${matricula}.pdf`}
+                  title="Comprobante de pago"
+                  width="100%"
+                  height="500px"
+                  style={{ border: "1px solid #ccc", borderRadius: "8px" }}
+                >
+                  Este navegador no soporta la visualización de PDFs.
+                </iframe>
+              </div>
+            </div>
+          </>
+        ) : (
+          <p>Cargando datos del alumno...</p>
+        )}
+
+        <div className="comments-validation-wrapper">
+          <div className="validation-section">
+            <h3>Validación</h3>
+            <div className="button-group">
+              <button
+                className="accept-button"
+                style={{ backgroundColor: "green", color: "white" }}
+                onClick={() => validarComprobante("Aceptado")}
+              >
+                Aceptado
+              </button>
+              <button
+                className="reject-button"
+                style={{ backgroundColor: "red", color: "white" }}
+                onClick={() => validarComprobante("Rechazado")}
+              >
+                Rechazado
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default RevisionComprobantePago;

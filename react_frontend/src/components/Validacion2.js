@@ -15,6 +15,8 @@ function Validacion2() {
   const [nombreAlumno, setNombreAlumno] = useState(location.state?.nombre || "");
   const [IDAlumno, setIDAlumno] = useState(location.state?._id || "");
   const [estatusHorario, setEstatusHorario] = useState(0); // 0: En proceso, 1: Validado
+  const [estatusComprobante, setEstatusComprobante] = useState("Pendiente");
+  const [comprobanteExiste, setComprobanteExiste] = useState(false);
 
   useEffect(() => {
     const bloquearAtras = () => {
@@ -50,6 +52,21 @@ function Validacion2() {
     obtenerEstatusHorario();
   }, [matricula]);
 
+  useEffect(() => {
+    // Consultar si ya hay comprobante y su estatus usando la nueva ruta optimizada
+    const fetchComprobanteYEstado = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/alumnos/comprobante/${matricula}`);
+        setComprobanteExiste(response.data.existe);
+        setEstatusComprobante(response.data.estatus || "Pendiente");
+      } catch (error) {
+        setComprobanteExiste(false);
+        setEstatusComprobante("Pendiente");
+      }
+    };
+    fetchComprobanteYEstado();
+  }, [matricula, archivoSubido]);
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file && file.type === "application/pdf") {
@@ -63,7 +80,6 @@ function Validacion2() {
   const handleSubirComprobante = async () => {
     if (!archivo) return;
 
-    // Renombra el archivo antes de enviarlo (opcional, pero no necesario si ya usas la matrícula en la URL)
     const nombreArchivo = `Pago_${matricula}.pdf`;
     const archivoRenombrado = new File([archivo], nombreArchivo, { type: archivo.type });
 
@@ -71,13 +87,14 @@ function Validacion2() {
     formData.append('comprobante', archivoRenombrado);
 
     try {
-      const response = await axios.post(
+      await axios.post(
         `http://localhost:5000/api/alumnos/subir-comprobante/${matricula}`,
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
       setArchivoSubido(true);
       toast.success("El comprobante de pago se ha subido correctamente.");
+      setArchivo(null);
     } catch (error) {
       toast.error("Error al subir el comprobante.");
       console.error(error);
@@ -89,6 +106,9 @@ function Validacion2() {
     localStorage.removeItem("userType");
     navigate("/");
   };
+
+  // Solo mostrar controles de subida si no hay comprobante o si está rechazado
+  const mostrarControlesSubida = !comprobanteExiste || estatusComprobante === "Rechazado";
 
   return (
     <div className="validacion-layout">
@@ -117,29 +137,78 @@ function Validacion2() {
               <h3 className="center-text">Estatus de horario: Validado</h3>
             </div>
             <div className="validacion-buttons">
-              <div className="file-upload-container">
-                <label htmlFor="archivo" className="button-validar">
-                  Subir archivo
-                </label>
-                <input
-                  id="archivo"
-                  type="file"
-                  accept=".pdf"
-                  onChange={handleFileChange}
-                  style={{ display: "none" }}
-                />
-                <span className="archivo-mensaje">{archivo ? archivo.name : "Ningún archivo seleccionado"}</span>
+              {/* Mostrar link y estatus si existe comprobante */}
+              {comprobanteExiste && (
+                <div className="file-upload-container" style={{ marginBottom: 10 }}>
+                  <a
+                    href={`http://localhost:5000/uploads/comprobantes/Pago_${matricula}.pdf`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Ver comprobante"
+                  >
+                    <svg width="32" height="32" fill="#1976d2" viewBox="0 0 24 24">
+                      <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
+                    </svg>
+                    <span style={{ marginLeft: 8 }}>Ver comprobante</span>
+                  </a>
+                  <span style={{ marginLeft: 16, color: 
+                    estatusComprobante === "Rechazado" ? "red" :
+                    estatusComprobante === "Pendiente" ? "#FFD600" :
+                    estatusComprobante === "Revisado" || estatusComprobante === "Aceptado" ? "green" : "#BDBDBD"
+                  }}>
+                    {estatusComprobante}
+                  </span>
+                </div>
+              )}
+
+              {/* Mostrar controles solo si NO hay comprobante o si está rechazado */}
+              {mostrarControlesSubida && (
+                <>
+                  <div className="file-upload-container">
+                    <label htmlFor="archivo" className="button-validar">
+                      Subir archivo
+                    </label>
+                    <input
+                      id="archivo"
+                      type="file"
+                      accept=".pdf"
+                      onChange={handleFileChange}
+                      style={{ display: "none" }}
+                    />
+                    <span className="archivo-mensaje">{archivo ? archivo.name : "Ningún archivo seleccionado"}</span>
+                  </div>
+                  <div className="validacion-buttons">
+                    <button
+                      className="button"
+                      onClick={handleSubirComprobante}
+                      disabled={!archivo}
+                    >
+                      Subir comprobante de pago
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {/* Mensajes según el estatus */}
+              {comprobanteExiste && estatusComprobante === "Rechazado" && (
+                <div style={{ color: "red", marginTop: 8 }}>
+                  Tu comprobante fue rechazado. Debes volver a subirlo.
+                </div>
+              )}
+              {comprobanteExiste && (estatusComprobante === "Pendiente" || estatusComprobante === "Revisado" || estatusComprobante === "Aceptado") && (
+                <div style={{ color: estatusComprobante === "Pendiente" ? "#FFD600" : "green", marginTop: 8 }}>
+                  {estatusComprobante === "Pendiente"
+                    ? "Tu comprobante está pendiente de validación."
+                    : "Tu comprobante ha sido validado."}
+                </div>
+              )}
+            </div>
+            {/* Mensaje informativo si no puede subir */}
+            {!mostrarControlesSubida && (
+              <div style={{ color: "#888", marginTop: 8 }}>
+                Ya has subido un comprobante. Solo puedes volver a subir si tu comprobante fue rechazado.
               </div>
-            </div>
-            <div className="validacion-buttons">
-              <button
-                className="button"
-                onClick={handleSubirComprobante}
-                disabled={!archivo}
-              >
-                Subir comprobante de pago
-              </button>
-            </div>
+            )}
           </>
         )}
       </div>

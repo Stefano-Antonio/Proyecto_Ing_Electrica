@@ -71,14 +71,23 @@ function CrearPersonal() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const formData = { ...form, id_carrera }; // Incluir id_carrera en los datos del formulario
+      const formData = { ...form, id_carrera };
       const response = await axios.post("http://localhost:5000/api/personal", formData);
       console.log("Usuario agregado:", response.data);
       toast.success("Usuario agregado con éxito");
-      setForm({ nombre: "", matricula: "", correo: "", telefono: "", roles: "", password: "" }); // Reset form
+      setForm({ nombre: "", matricula: "", correo: "", telefono: "", roles: "", password: "" });
     } catch (error) {
+      // Verifica si el error es por matrícula duplicada
+      if (
+        error.response &&
+        (error.response.data?.message?.toLowerCase().includes("matricula") ||
+        error.response.data?.error?.code === 11000)
+      ) {
+        toast.error("La matrícula ingresada ya existe. Por favor, ingrese una diferente.");
+      } else {
+        toast.error("Hubo un error al agregar el usuario");
+      }
       console.error("Error al agregar el usuario:", error);
-      toast.error("Hubo un error al agregar el usuario");
     }
   };
 
