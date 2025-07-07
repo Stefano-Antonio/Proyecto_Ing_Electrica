@@ -139,17 +139,15 @@ function CrearMateria() {
         return;
       }
 
-      // Reemplaza valores vacíos en horarios con null
       const finalData = {
         ...formData,
-        id_carrera, // Incluir el ID de carrera
+        id_carrera,
         horarios: Object.fromEntries(
           Object.entries(formData.horarios).map(([key, value]) => [key, value === "" ? null : value])
         )
       };
 
       const response = await axios.post('http://localhost:5000/api/materias', finalData);
-      console.log("Materia actualizada:", response.data);
       toast.success('Materia creada con éxito');
       setFormData({
         id_materia: '',
@@ -163,11 +161,15 @@ function CrearMateria() {
         docente: ''
       });
     } catch (error) {
-      console.error('Error al crear la materia:', error);
-      toast.error('Hubo un error al crear la materia');
+      // Mostrar mensaje específico si viene del backend
+      if (error.response && error.response.data && error.response.data.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error('Hubo un error al crear la materia');
+      }
     }
   };
-    
+      
   const isSemiescolarizada = carrerasPermitidasSemiescolarizadas.includes(id_carrera);
 
   return (

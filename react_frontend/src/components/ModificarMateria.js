@@ -177,13 +177,17 @@ function ModificarMateria() {
         docente: formData.docente
       };
 
-      const response = await axios.put(`http://localhost:5000/api/materias/${materia._id}`, materiaActualizada);
+      await axios.put(`http://localhost:5000/api/materias/${materia._id}`, materiaActualizada);
       toast.success("Materia actualizada con éxito");
+      navigate(-1); // Navegar a la página anterior solo si fue éxito
     } catch (error) {
-      console.error("Error al actualizar la materia:", error);
-      toast.error("Hubo un error al actualizar la materia");
+      // Mostrar mensaje específico si viene del backend
+      if (error.response && error.response.data && error.response.data.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Hubo un error al actualizar la materia");
+      }
     }
-    navigate(-1); // Navegar a la página anterior
   };
 
   

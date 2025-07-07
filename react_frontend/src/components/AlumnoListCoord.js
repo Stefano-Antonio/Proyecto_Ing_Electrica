@@ -11,9 +11,11 @@ const AlumnoListCoord = () => {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mostrarModalMaterias, setMostrarModalMaterias] = useState(false);
   const [nombre, setNombreAlumno] = ("");
+  const [comprobanteHabilitado, setComprobanteHabilitado] = useState(true);
   const id_carrera = localStorage.getItem("id_carrera");
   const [comprobantes, setComprobantes] = useState([]);
   const [matricula, setMatriculaAlumno] = useState("");
+  const [mostrarComprobante, setMostrarComprobante] = useState(true);
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const [loading, setLoading] = useState(true);
   const [AlumnoAEliminar, setAlumnoAEliminar] = useState(null);
@@ -21,30 +23,31 @@ const AlumnoListCoord = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Obtener alumnos y tutores
     const fetchAlumnos = async () => {
       try {
-        // Obtener los alumnos asociados al coordinador
         const response = await axios.get(`http://localhost:5000/api/alumnos/carrera/${matriculaCord}`);
         const alumnosData = response.data;
-        console.log("Alumnos:", response.data);
+        console.log("Alumnos:", alumnosData);
 
-        // Obtener los detalles del tutor para cada alumno
+        // Obtener los nombres de los tutores
         const tutoresNombresTemp = {};
         await Promise.all(alumnosData.map(async (alumno) => {
           if (alumno.tutor) {
-            const tutorResponse = await axios.get(`http://localhost:5000/api/coordinadores/alumnos/${alumno.tutor}`);
-            console.log("Tutor response:", tutorResponse);
-            tutoresNombresTemp[alumno._id] = tutorResponse.data.nombre; // Extraer el nombre del tutor
+            try {
+              const tutorResponse = await axios.get(`http://localhost:5000/api/coordinadores/alumnos/${alumno.tutor}`);
+              tutoresNombresTemp[alumno._id] = tutorResponse.data.nombre;
+            } catch (error) {
+              tutoresNombresTemp[alumno._id] = "Error al obtener tutor";
+            }
           }
         }));
 
+        // Obtener estatus de horario para cada alumno
         const fetchEstatus = async (alumno) => {
           try {
-            //
             const estatusResponse = await fetch(`http://localhost:5000/api/tutores/estatus/${alumno.matricula}`);
-            if (!estatusResponse.ok) {
-              throw new Error("Error al obtener el estatus del horario");
-            }
+            if (!estatusResponse.ok) throw new Error("Error al obtener el estatus del horario");
             const estatusData = await estatusResponse.json();
             return { ...alumno, estatus: estatusData.estatus };
           } catch (error) {
@@ -54,35 +57,45 @@ const AlumnoListCoord = () => {
         };
 
         const alumnosConEstatus = await Promise.all(alumnosData.map(fetchEstatus));
-
         setAlumnos(alumnosConEstatus);
         setTutoresNombres(tutoresNombresTemp);
       } catch (error) {
         console.error('Error al obtener alumnos:', error);
       }
-
-      const fetchComprobantes = async () => {
-        try {
-          const response = await axios.get('http://localhost:5000/api/alumnos/comprobantes/lista');
-          setComprobantes(response.data);
-        } catch (error) {
-          console.error('Error al obtener la lista de comprobantes:', error);
-        }
-      };
-      fetchComprobantes();
-      
     };
 
-    
+    // Obtener lista de comprobantes
+    const fetchComprobantes = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/alumnos/comprobantes/lista');
+        setComprobantes(response.data);
+      } catch (error) {
+        console.error('Error al obtener la lista de comprobantes:', error);
+      }
+    };
 
+    // Obtener si el comprobante está habilitado
+    const fetchComprobanteHabilitado = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/api/coordinadores/comprobante-habilitado/${id_carrera}`);
+        setComprobanteHabilitado(res.data.comprobantePagoHabilitado);
+        setMostrarComprobante(res.data.comprobantePagoHabilitado); // Sincroniza el estado visual
+      } catch (error) {
+        setComprobanteHabilitado(true); // Por defecto true si falla
+        setMostrarComprobante(true);
+      }
+    };
+
+    // Ejecutar todas las funciones asíncronas
     const fetchData = async () => {
       await fetchAlumnos();
-      setLoading(false); // Indica que los datos han sido cargados
+      await fetchComprobantes();
+      await fetchComprobanteHabilitado();
+      setLoading(false);
     };
 
     fetchData();
-    fetchAlumnos();
-  }, [matriculaCord]);
+  }, [matriculaCord, id_carrera]);
 
   console.log("matriculaCord:", matriculaCord);
 
@@ -123,6 +136,20 @@ const AlumnoListCoord = () => {
 
   const handleModify = (alumno) => {
     navigate("/coordinador/modificar-alumno", { state: { alumno, matriculaCord: matriculaCord } });
+  };
+
+  const handleToggleComprobante = async () => {
+    const nuevoEstado = !comprobanteHabilitado;
+    setComprobanteHabilitado(nuevoEstado);
+    setMostrarComprobante(nuevoEstado);
+    try {
+      await axios.put(`http://localhost:5000/api/coordinadores/comprobante-habilitado/${id_carrera}`, {
+        comprobantePagoHabilitado: nuevoEstado
+      });
+      toast.success(nuevoEstado ? "Comprobante habilitado" : "Comprobante deshabilitado");
+    } catch (error) {
+      toast.error("Error al actualizar el estado del comprobante");
+    }
   };
 
   const setModal = (id) => {
@@ -181,14 +208,25 @@ const AlumnoListCoord = () => {
       <h3>Administrar alumnos</h3>
       <p>Lista de alumnos asociados al programa académico</p>
       
-        {/* Input de búsqueda */}
-        <input
-          type="text"
-          placeholder="Buscar por matrícula, nombre, tutor o estatus..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-bar"
-        />
+        
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
+          {/* Input de búsqueda */}
+          <input
+            type="text"
+            placeholder="Buscar por matrícula, nombre, tutor o estatus..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-bar"
+            style={{ flex: 1, minWidth: "250px", height: "38px" }} // Más ancho y alto fijo
+          />
+          {/* Boton para deshabilitar comprobante de pago */}
+          <button
+            className="toggle-comprobante-btn"
+            onClick={handleToggleComprobante}
+          >
+            {mostrarComprobante ? "Ocultar comprobante de pago" : "Mostrar comprobante de pago"}
+          </button>
+        </div>
 
       {alumnosFiltrados.length > 0 ? (
       <div className="alumno-scrollable-table">
@@ -202,7 +240,7 @@ const AlumnoListCoord = () => {
               <th>Telefono</th>
               <th>Horario</th>
               <th>Estatus de horario</th>
-              <th>Comprobante de pago</th>
+              {mostrarComprobante && <th>Comprobante de pago</th>}
               <th>Eliminar</th>
             </tr>
           </thead>
@@ -227,66 +265,68 @@ const AlumnoListCoord = () => {
                   </button>
                 </td>
                 <td>{getEstatusIcon(alumno.estatus)}</td>
-                <td>
-                {comprobantes.includes(`Pago_${alumno.matricula}.pdf`) ? (
-                  alumno.estatusComprobante === "Rechazado" ? (
-                    // Rojo: Rechazado
-                    <button
-                      className="icon-button"
-                      onClick={() => handleNavigate4(alumno)}
-                      title="Comprobante rechazado"
-                      style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="red" viewBox="0 0 24 24">
-                        <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
-                      </svg>
-                    </button>
-                  ) : alumno.estatusComprobante === "Pendiente" ? (
-                    // Amarillo: Pendiente
-                    <button
-                      className="icon-button"
-                      onClick={() => handleNavigate4(alumno)}
-                      title="Comprobante pendiente de revisión"
-                      style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#FFD600" viewBox="0 0 24 24">
-                        <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
-                      </svg>
-                    </button>
-                  ) : alumno.estatusComprobante === "Revisado" || alumno.estatusComprobante === "Aceptado" ? (
-                    // Verde: Revisado/Aceptado
-                    <button
-                      className="icon-button"
-                      onClick={() => handleNavigate4(alumno)}
-                      title="Comprobante aceptado"
-                      style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" viewBox="0 0 24 24">
-                        <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
-                      </svg>
-                    </button>
-                  ) : (
-                    // Gris: Subido pero sin estatus válido
-                    <button
-                      className="icon-button"
-                      onClick={() => handleNavigate4(alumno)}
-                      title="Comprobante sin estatus"
-                      style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#BDBDBD" viewBox="0 0 24 24">
-                        <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
-                      </svg>
-                    </button>
-                  )
-                ) : (
-                  // Gris: No subido
-                  <span title="Sin comprobante">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#BDBDBD" viewBox="0 0 24 24">
-                      <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
-                    </svg>
-                  </span>
+                {mostrarComprobante && (
+                  <td>
+                    {comprobantes.includes(`Pago_${alumno.matricula}.pdf`) ? (
+                      alumno.estatusComprobante === "Rechazado" ? (
+                        // Rojo: Rechazado
+                        <button
+                          className="icon-button"
+                          onClick={() => handleNavigate4(alumno)}
+                          title="Comprobante rechazado"
+                          style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="red" viewBox="0 0 24 24">
+                            <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
+                          </svg>
+                        </button>
+                      ) : alumno.estatusComprobante === "Pendiente" ? (
+                        // Amarillo: Pendiente
+                        <button
+                          className="icon-button"
+                          onClick={() => handleNavigate4(alumno)}
+                          title="Comprobante pendiente de revisión"
+                          style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#FFD600" viewBox="0 0 24 24">
+                            <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
+                          </svg>
+                        </button>
+                      ) : alumno.estatusComprobante === "Revisado" || alumno.estatusComprobante === "Aceptado" ? (
+                        // Verde: Revisado/Aceptado
+                        <button
+                          className="icon-button"
+                          onClick={() => handleNavigate4(alumno)}
+                          title="Comprobante aceptado"
+                          style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" viewBox="0 0 24 24">
+                            <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
+                          </svg>
+                        </button>
+                      ) : (
+                        // Gris: Subido pero sin estatus válido
+                        <button
+                          className="icon-button"
+                          onClick={() => handleNavigate4(alumno)}
+                          title="Comprobante sin estatus"
+                          style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#BDBDBD" viewBox="0 0 24 24">
+                            <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
+                          </svg>
+                        </button>
+                      )
+                    ) : (
+                      // Gris: No subido
+                      <span title="Sin comprobante">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#BDBDBD" viewBox="0 0 24 24">
+                          <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
+                        </svg>
+                      </span>
+                    )}
+                  </td>
                 )}
-              </td>
                 <td>
                   <div className="action-buttons">
                     <button className="icon-button" onClick={() => handleModify(alumno)}>

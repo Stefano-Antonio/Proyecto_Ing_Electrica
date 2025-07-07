@@ -45,7 +45,25 @@ exports.createMateria = async (req, res) => {
         return res.status(400).json({ message: "Docente no encontrado" });
       }
 
-      docenteObjectId = docenteEncontrado._id;  // Usar el ObjectId del docente
+      docenteObjectId = docenteEncontrado._id;
+
+      // VALIDACIÓN DE HORARIO: Verificar si el docente ya tiene materia en el mismo horario
+      const materiasDocente = await Materia.find({ docente: docenteObjectId });
+      for (const mat of materiasDocente) {
+        for (const dia of ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado"]) {
+          // Solo validar si el horario no es "-" ni vacío ni null
+          if (
+            horarios[dia] && horarios[dia] !== "-" &&
+            mat.horarios &&
+            mat.horarios[dia] && mat.horarios[dia] !== "-" &&
+            horarios[dia] === mat.horarios[dia]
+          ) {
+            return res.status(400).json({
+              message: `Error: el docente ya tiene una materia asignada durante el horario seleccionado (${dia}: ${horarios[dia]})`
+            });
+          }
+        }
+      }
 
       console.log('Docente encontrado, matrícula:', docenteObjectId);
     } else {
@@ -63,7 +81,7 @@ exports.createMateria = async (req, res) => {
       grupo, 
       cupo, 
       laboratorio: laboratorio || false, // Aseguramos que laboratorio tenga un valor booleano
-      docente: docenteObjectId  // Guardamos la matrícula en lugar de ObjectId
+      docente: docenteObjectId  // Guardamos el ObjectId del docente
     });
 
     await newMateria.save();
@@ -84,7 +102,6 @@ exports.createMateria = async (req, res) => {
     res.status(500).json({ message: 'Error al crear la materia', error: error.message });
   }
 };
-
 
 
 // Obtener todas las materias
@@ -209,14 +226,27 @@ exports.updateMateria = async (req, res) => {
 
     
     if (docente) {
-      // Buscar el nuevo docente por personalMatricula
       const docenteEncontrado = await Docentes.findById(docente);
-
       if (!docenteEncontrado) {
         return res.status(400).json({ message: "Docente no encontrado" });
       }
+      docenteObjectId = docenteEncontrado._id;
 
-      docenteObjectId = docenteEncontrado._id; // Obtener ObjectId del docente
+      // VALIDACIÓN DE HORARIO EN UPDATE (excluyendo la materia actual)
+      const materiasDocente = await Materia.find({ docente: docenteObjectId, _id: { $ne: id } });
+      for (const mat of materiasDocente) {
+        for (const dia of ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado"]) {
+          // Solo validar si el horario no es "-" ni vacío ni null
+          if (
+            horarios[dia] && horarios[dia] !== "-" &&
+            mat.horarios &&
+            mat.horarios[dia] && mat.horarios[dia] !== "-" &&
+            horarios[dia] === mat.horarios[dia]
+          ) {
+            return res.status(400).json({ message: `Error: el docente ya tiene una materia asignada durante el horario seleccionado (${dia}: ${horarios[dia]})` });
+          }
+        }
+      }
     }
 
     // Actualizar la materia con el nuevo docente (si hay)

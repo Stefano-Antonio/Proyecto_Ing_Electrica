@@ -23,4 +23,9 @@ router.get('/horas/:id_carrera', coordinadorController.getHorasCoordinador);
 // Ruta para actualizar las horas de un coordinador
 router.put('/horas/:matricula', coordinadorController.updateHorasCoordinador);
 
+
+// Rutas para  habilitar o deshabilitar el comprobante de pago
+router.get('/comprobante-habilitado/:id_carrera', coordinadorController.getComprobantePagoHabilitado);
+router.put('/comprobante-habilitado/:id_carrera', coordinadorController.setComprobantePagoHabilitado);
+
 module.exports = router;
