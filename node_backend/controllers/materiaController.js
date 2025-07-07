@@ -45,25 +45,7 @@ exports.createMateria = async (req, res) => {
         return res.status(400).json({ message: "Docente no encontrado" });
       }
 
-      docenteObjectId = docenteEncontrado._id;
-
-      // VALIDACIÓN DE HORARIO: Verificar si el docente ya tiene materia en el mismo horario
-      const materiasDocente = await Materia.find({ docente: docenteObjectId });
-      for (const mat of materiasDocente) {
-        for (const dia of ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado"]) {
-          // Solo validar si el horario no es "-" ni vacío ni null
-          if (
-            horarios[dia] && horarios[dia] !== "-" &&
-            mat.horarios &&
-            mat.horarios[dia] && mat.horarios[dia] !== "-" &&
-            horarios[dia] === mat.horarios[dia]
-          ) {
-            return res.status(400).json({
-              message: `Error: el docente ya tiene una materia asignada durante el horario seleccionado (${dia}: ${horarios[dia]})`
-            });
-          }
-        }
-      }
+      docenteObjectId = docenteEncontrado._id;  // Usar el ObjectId del docente
 
       console.log('Docente encontrado, matrícula:', docenteObjectId);
     } else {
@@ -81,7 +63,7 @@ exports.createMateria = async (req, res) => {
       grupo, 
       cupo, 
       laboratorio: laboratorio || false, // Aseguramos que laboratorio tenga un valor booleano
-      docente: docenteObjectId  // Guardamos el ObjectId del docente
+      docente: docenteObjectId  // Guardamos la matrícula en lugar de ObjectId
     });
 
     await newMateria.save();
@@ -102,6 +84,7 @@ exports.createMateria = async (req, res) => {
     res.status(500).json({ message: 'Error al crear la materia', error: error.message });
   }
 };
+
 
 
 // Obtener todas las materias
@@ -226,27 +209,14 @@ exports.updateMateria = async (req, res) => {
 
     
     if (docente) {
+      // Buscar el nuevo docente por personalMatricula
       const docenteEncontrado = await Docentes.findById(docente);
+
       if (!docenteEncontrado) {
         return res.status(400).json({ message: "Docente no encontrado" });
       }
-      docenteObjectId = docenteEncontrado._id;
 
-      // VALIDACIÓN DE HORARIO EN UPDATE (excluyendo la materia actual)
-      const materiasDocente = await Materia.find({ docente: docenteObjectId, _id: { $ne: id } });
-      for (const mat of materiasDocente) {
-        for (const dia of ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado"]) {
-          // Solo validar si el horario no es "-" ni vacío ni null
-          if (
-            horarios[dia] && horarios[dia] !== "-" &&
-            mat.horarios &&
-            mat.horarios[dia] && mat.horarios[dia] !== "-" &&
-            horarios[dia] === mat.horarios[dia]
-          ) {
-            return res.status(400).json({ message: `Error: el docente ya tiene una materia asignada durante el horario seleccionado (${dia}: ${horarios[dia]})` });
-          }
-        }
-      }
+      docenteObjectId = docenteEncontrado._id; // Obtener ObjectId del docente
     }
 
     // Actualizar la materia con el nuevo docente (si hay)
@@ -505,6 +475,7 @@ exports.exportarMateriasCSVPorCarrera = async (req, res) => {
       grupo: m.grupo,
       cupo: m.cupo,
       docente: m.docente ? m.docente.personalMatricula : "Sin asignar", // Guardar matrícula del docente
+      laboratorio: m.laboratorio ? "Si" : "No", // <-- Aquí el cambio
       lunes: m.horarios.lunes || "-",
       martes: m.horarios.martes || "-",
       miercoles: m.horarios.miercoles || "-",
@@ -514,7 +485,7 @@ exports.exportarMateriasCSVPorCarrera = async (req, res) => {
     }));
 
     const fields = ["id_materia", "id_carrera", "nombre", "salon", "grupo", "cupo", "docente",
-                    "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"];
+                    "laboratorio", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"];
 
     const json2csvParser = new Parser({ fields });
     let csv = json2csvParser.parse(formattedData);
@@ -595,10 +566,9 @@ exports.subirMateriasCSVPorCarrera = async (req, res) => {
     .on("data", (data) => {
       const cleanedData = {};
       Object.keys(data).forEach((key) => {
-        const cleanKey = key.replace(/"/g, "").trim(); // Elimina comillas dobles
+        const cleanKey = key.replace(/"/g, "").trim();
         cleanedData[cleanKey] = data[key];
       });
-
       results.push(cleanedData);
     })
     .on("end", async () => {
@@ -609,31 +579,43 @@ exports.subirMateriasCSVPorCarrera = async (req, res) => {
 
         console.log("✅ Datos obtenidos del CSV después de limpiar:", results);
 
-        // 📌 Obtener la carrera del CSV (de la primera materia)
-        const id_carrera = results[0].id_carrera;
+        // Detectar carreras únicas en el CSV
+        const carrerasUnicasCSV = [...new Set(results.map(m => m.id_carrera?.trim()))];
+        const materiasPorCarrera = {};
 
-        if (!id_carrera) {
-          return res.status(400).json({ message: "No se encontró el ID de la carrera en el archivo CSV" });
-        }
-
-        const idsCSV = results.map((materia) => materia.id_materia?.toString().trim()).filter(Boolean);
+        results.forEach((materia) => {
+          const carrera = materia.id_carrera?.trim();
+          const id_materia = materia.id_materia?.toString().trim();
+          if (!carrera || !id_materia) return;
+          if (!materiasPorCarrera[carrera]) materiasPorCarrera[carrera] = new Set();
+          materiasPorCarrera[carrera].add(id_materia);
+        });
 
         await Promise.all(
           results.map(async (materiaData) => {
-            let { id_materia, nombre, salon, grupo, cupo, docente,
-                  lunes, martes, miercoles, jueves, viernes, sabado, laboratorio } = materiaData;
+            let {
+              id_materia, id_carrera, nombre, salon, grupo, cupo, docente,
+              lunes, martes, miercoles, jueves, viernes, sabado, laboratorio
+            } = materiaData;
 
             id_materia = id_materia ? id_materia.toString().trim() : null;
+            id_carrera = id_carrera ? id_carrera.trim() : null;
 
-            if (!id_materia) {
-              console.warn("⚠ Materia sin id_materia:", materiaData);
+            if (!id_materia || !id_carrera) {
+              console.warn("⚠ Materia sin id_materia o id_carrera:", materiaData);
               return;
             }
 
-            // 🔹 Buscar la materia actual antes de actualizarla
+            const materiaExistente = await Materia.findOne({ id_materia });
+
+            // Si la materia cambió de carrera, se elimina del plan anterior
+            if (materiaExistente && materiaExistente.id_carrera !== id_carrera) {
+              await Materia.findByIdAndDelete(materiaExistente._id);
+              console.log(`🔥 Materia ${id_materia} movida de ${materiaExistente.id_carrera} a ${id_carrera}`);
+            }
+
             const materiaActual = await Materia.findOne({ id_materia, id_carrera });
 
-            // 🔹 Buscar el nuevo docente por su matrícula
             let docenteObjectId = null;
             if (docente && docente !== "Sin asignar") {
               const docenteEncontrado = await Docentes.findOne({ personalMatricula: docente.trim() });
@@ -642,7 +624,6 @@ exports.subirMateriasCSVPorCarrera = async (req, res) => {
               }
             }
 
-            // 🔹 Formatear horarios
             const horariosFinal = {
               lunes: lunes !== "-" ? lunes : null,
               martes: martes !== "-" ? martes : null,
@@ -652,21 +633,24 @@ exports.subirMateriasCSVPorCarrera = async (req, res) => {
               sabado: sabado !== "-" ? sabado : null
             };
 
-            // 🔹 Convertir "Sí"/"No" a booleano para laboratorio
             let laboratorioBool = false;
             if (typeof laboratorio === "string") {
               laboratorioBool = laboratorio.trim().toLowerCase() === "sí" || laboratorio.trim().toLowerCase() === "si";
             }
 
-            // 🔹 Insertar o actualizar materia
             const materiaActualizada = await Materia.findOneAndUpdate(
-              { id_materia, id_carrera }, // Filtrar por ID de materia y carrera
-              { id_materia, id_carrera, nombre, horarios: horariosFinal, salon, grupo, cupo, docente: docenteObjectId, laboratorio: laboratorioBool },
+              { id_materia, id_carrera },
+              {
+                id_materia, id_carrera, nombre,
+                horarios: horariosFinal, salon, grupo, cupo,
+                docente: docenteObjectId, laboratorio: laboratorioBool
+              },
               { upsert: true, new: true }
             );
 
-            // 🔥 Si la materia ya tenía un docente y ha cambiado, eliminarla del docente anterior
-            if (materiaActual && materiaActual.docente && (!docenteObjectId || !materiaActual.docente.equals(docenteObjectId))) {
+            // Actualizar relación con docente si cambió
+            if (materiaActual && materiaActual.docente &&
+                (!docenteObjectId || !materiaActual.docente.equals(docenteObjectId))) {
               await Docentes.findByIdAndUpdate(
                 materiaActual.docente,
                 { $pull: { materias: materiaActual._id } }
@@ -674,30 +658,36 @@ exports.subirMateriasCSVPorCarrera = async (req, res) => {
               console.log(`Materia ${id_materia} eliminada del docente anterior.`);
             }
 
-            // 🔥 Si hay un nuevo docente, agregar la materia a su lista
             if (docenteObjectId) {
               await Docentes.findByIdAndUpdate(
                 docenteObjectId,
                 { $addToSet: { materias: materiaActualizada._id } },
                 { new: true }
               );
-              console.log(`Materia ${id_materia} agregada al docente ${docenteObjectId}`);
+              console.log(`Materia ${id_materia} asignada al docente ${docenteObjectId}`);
             }
           })
         );
 
-        // 🔥 Solo eliminar materias que sean de la misma carrera y no estén en el CSV
-        if (idsCSV.length > 0) {
-          console.log("✅ Eliminando materias no incluidas en el CSV de esta carrera.");
-          await Materia.deleteMany({ id_carrera, id_materia: { $nin: idsCSV } });
+        // 🔐 Realizar limpieza solo si el CSV contiene una sola carrera
+        if (carrerasUnicasCSV.length === 1) {
+          const carrera = carrerasUnicasCSV[0];
+          const idsCSV = Array.from(materiasPorCarrera[carrera]);
+          await Materia.deleteMany({
+            id_carrera: carrera,
+            id_materia: { $nin: idsCSV }
+          });
+          console.log(`🧹 Materias eliminadas del plan ${carrera} que no están en el CSV.`);
+        } else {
+          console.log("⚠ CSV contiene múltiples carreras. No se aplica limpieza para evitar pérdida de datos.");
         }
 
-        fs.unlinkSync(req.file.path); // Eliminar archivo después de procesarlo
-        res.status(200).json({ message: `Base de datos de materias de la carrera ${id_carrera} actualizada con éxito desde el CSV` });
+        fs.unlinkSync(req.file.path);
+        res.status(200).json({ message: "Base de datos actualizada con éxito desde el CSV" });
 
       } catch (error) {
         console.error("❌ Error al procesar el CSV:", error);
-        res.status(500).json({ message: "Error al actualizar la base de datos de materias desde el CSV", error });
+        res.status(500).json({ message: "Error al actualizar materias desde el CSV", error });
       }
     })
     .on("error", (err) => {

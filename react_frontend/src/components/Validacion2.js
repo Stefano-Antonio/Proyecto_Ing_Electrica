@@ -154,25 +154,32 @@ function Validacion2() {
             <div className="validacion-buttons">
               {/* Mostrar link y estatus si existe comprobante */}
               {comprobanteExiste && (
-                <div className="file-upload-container" style={{ marginBottom: 10 }}>
+                <div className="file-upload-container" style={{ display: "flex", alignItems: "center", gap: "20px", marginBottom: 10 }}>
                   <a
                     href={`http://localhost:5000/uploads/comprobantes/Pago_${matricula}.pdf`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    title="Ver comprobante"
+                    title="Ver comprobante de pago"
+                    style={{ display: "flex", alignItems: "center", textDecoration: "none", color: "#1976d2" }}
                   >
                     <svg width="32" height="32" fill="#1976d2" viewBox="0 0 24 24">
                       <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
                     </svg>
                     <span style={{ marginLeft: 8 }}>Ver comprobante</span>
                   </a>
-                  <span style={{ marginLeft: 16, color: 
-                    estatusComprobante === "Rechazado" ? "red" :
-                    estatusComprobante === "Pendiente" ? "#FFD600" :
-                    estatusComprobante === "Revisado" || estatusComprobante === "Aceptado" ? "green" : "#BDBDBD"
-                  }}>
-                    {estatusComprobante}
-                  </span>
+
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span style={{ color: "#000", fontWeight: "bold" }}>Estatus:</span>
+                    <span style={{
+                      fontWeight: "bold",
+                      color:
+                        estatusComprobante === "Rechazado" ? "red" :
+                        estatusComprobante === "Pendiente" ? "orange" :
+                        estatusComprobante === "Revisado" || estatusComprobante === "Aceptado" ? "green" : "#BDBDBD"
+                    }}>
+                      {estatusComprobante}
+                    </span>
+                  </div>
                 </div>
               )}
 
@@ -203,20 +210,6 @@ function Validacion2() {
                   </div>
                 </>
               )}
-
-              {/* Mensajes según el estatus */}
-              {comprobanteExiste && estatusComprobante === "Rechazado" && (
-                <div style={{ color: "red", marginTop: 8 }}>
-                  Tu comprobante fue rechazado. Debes volver a subirlo.
-                </div>
-              )}
-              {comprobanteExiste && (estatusComprobante === "Pendiente" || estatusComprobante === "Revisado" || estatusComprobante === "Aceptado") && (
-                <div style={{ color: estatusComprobante === "Pendiente" ? "#FFD600" : "green", marginTop: 8 }}>
-                  {estatusComprobante === "Pendiente"
-                    ? "Tu comprobante está pendiente de validación."
-                    : "Tu comprobante ha sido validado."}
-                </div>
-              )}
             </div>
             )}
                 {/* Si comprobante está deshabilitado, solo muestra el estado del horario */}
@@ -228,7 +221,7 @@ function Validacion2() {
             {/* Mensaje informativo si no puede subir */}
             {!mostrarControlesSubida && (
               <div style={{ color: "#888", marginTop: 8 }}>
-                Ya has subido un comprobante. Solo puedes volver a subir si tu comprobante fue rechazado.
+                Ya has subido un comprobante de pago. Espera a que sea validado por tu tutor.
               </div>
             )}
           </>

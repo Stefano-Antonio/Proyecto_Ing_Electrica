@@ -12,7 +12,7 @@ const Docente = require('../models/Docentes');
 const Coordinador = require('../models/Coordinadores');
 const Administrador = require('../models/Administradores');
 const generarPDFHorario = require('../utils/pdfHorario');
-const enviarCorreoConPDF = require('../utils/email');
+const { enviarCorreoConPDF, notificarAlumnoConTutorAsignado } = require('../utils/email');
 
 
 // Configurar multer para manejar el archivo CSV
@@ -94,6 +94,16 @@ exports.createAlumno = async (req, res) => {
     // Asignar el alumno al tutor
     await asignarAlumnoATutor(tutor, newAlumno._id);
 
+    //Enviar correo al alumno
+    const tutorInfo = await Personal.findById(tutor); // Ya usas esto en otros contextos
+    if (tutorInfo && correo) {
+      await notificarAlumnoConTutorAsignado(
+        correo,
+        nombre,
+        tutorInfo.nombre,
+        tutorInfo.correo
+      );
+    }
 
     res.status(201).json(newAlumno);
   } catch (error) {
@@ -366,6 +376,15 @@ exports.updateAlumno = async (req, res) => {
     if (!alumnoActualizado) {
       console.log('Alumno no encontrado');
       return res.status(404).json({ message: 'Alumno no encontrado' });
+    }
+
+    if (tutorAsignado && correo) {
+      await notificarAlumnoConTutorAsignado(
+        correo,
+        nombre,
+        tutorAsignado.nombre,
+        tutorAsignado.correo
+      );
     }
 
     return res.status(200).json(alumnoActualizado);
