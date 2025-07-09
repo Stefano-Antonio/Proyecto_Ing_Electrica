@@ -1,0 +1,13 @@
+﻿id_materia,id_carrera,nombre,salon,grupo,cupo,docente,lunes,martes,miercoles,jueves,viernes,sabado
+209,ICmp,Fundamentos de diseño digital,111,3A,35,Sin asignar,-,8:30-10:00,8:30-10:00,-,11:30-13:00,-
+211,ICmp,Analisis y diseño de algoritmos,111,3A,35,Sin asignar,-,-,-,-,-,-
+207,ICmp,Ecuaciones diferenciales,111,3A,35,Sin asignar,8:30-10:00,11:30-13:00,10:00-11:30,-,-,-
+210,ICmp,Circuitos eléctricos,111,3A,35,Sin asignar,10:00-11:30,-,-,11:30-13:00,13:00-14:30,-
+205,ICmp,Matematicas Discretas,101,1A,35,Sin asignar,10:00-11:30,11:30-13:00,11:30-13:00,13:00-14:30,-,-
+204,ICmp,Fundamentos de programación,101,1A,34,Sin asignar,7:00-8:30,-,8:30-10:00,-,10:00-11:30,-
+206,ICmp,Bases de datos,111,3A,35,Sin asignar,-,10:00-11:30,11:30-13:00,-,8:30-10:00,-
+208,ICmp,Calculo,101,1A,34,Sin asignar,8:30-10:00,10:00-11:30,10:00-11:30,-,-,-
+202,ICmp,Paradigmas de programación,111,3A,35,Sin asignar,7:00-8:30,-,7:00-8:30,-,10:00-11:30,-
+212,ICmp,Finanzas empresariales,111,3A,35,Sin asignar,11:30-13:00,13:00-14:30,-,13:00-14:30,-,-
+203,ICmp,Algebra Lineal,101,1A,34,Sin asignar,-,14:30-16:00,-,14:30-16:00,11:30-13:00,-
+201,ICmp,Estadistica,104,3A,34,P1233,10:00-12:00,16:00-18:00,12:00-14:00,12:00-14:00,12:00-14:00,-

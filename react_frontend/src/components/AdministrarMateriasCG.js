@@ -77,6 +77,17 @@ const AdministrarMateriasCG = () => {
       .trim() // Elimina espacios al inicio y al final
       .replace(/\s+/g, "-"); // Reemplaza espacios por guiones
   };
+
+  const enlacesPlanCarrera = {
+    ISftw: "https://www.uaz.edu.mx/oferta-educativa/educacion-superior/ingenieria-de-software/",
+    ICmp: "https://computacion.uaz.edu.mx/",
+    IEInd: "https://electronica.uaz.edu.mx/",
+    IDsr: "https://tucampus.edu.mx/planes-academicos/desarrollo-sistemas",
+    IRMca: "https://robmec.uaz.edu.mx/",
+    IElec: "https://tucampus.edu.mx/planes-academicos/electrica",
+    // Agrega los semiescolarizados si es necesario:
+    ISftwS: "https://www.uaz.edu.mx/oferta-educativa/educacion-superior/ingenieria-de-software/"
+  };
   
 
   const handleListaAlumnos = (materia) => {
@@ -152,7 +163,16 @@ const AdministrarMateriasCG = () => {
                     <td>{materia.grupo}</td>
                     <td>{materia.salon}</td>
                     <td>{materia.cupo}</td>
-                    <td>{materia.nombre}</td>
+                    <td>
+                      <a
+                        href={enlacesPlanCarrera[materia.id_carrera]}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: "blue", textDecoration: "underline", cursor: "pointer" }}
+                      >
+                        {materia.nombre}
+                      </a>
+                    </td>
                     <td c>{getDocenteNombre(materia)}</td>
                     <td>{materia.horarios.lunes || "-"}</td>
                     <td>{materia.horarios.martes || "-"}</td>

@@ -59,7 +59,7 @@ function RevisionComprobantePago() {
         `http://localhost:5000/api/alumnos/validar-comprobante/${matricula}`,
         { estatus: nuevoEstatus }
       );
-      toast.success(`Comprobante marcado como ${nuevoEstatus === "Revisado" ? "ACEPTADO" : "RECHAZADO"}`);
+      toast.success(`Comprobante marcado como ${nuevoEstatus === "Aceptado" ? "ACEPTADO" : "RECHAZADO"}`);
       // Opcional: recargar datos del alumno o navegar
       setAlumno({ ...alumno, estatusComprobante: nuevoEstatus });
     } catch (error) {

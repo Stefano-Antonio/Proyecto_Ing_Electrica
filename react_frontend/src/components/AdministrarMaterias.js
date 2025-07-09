@@ -82,6 +82,16 @@ const AdministrarMaterias = () => {
       .replace(/\s+/g, "-"); // Reemplaza espacios por guiones
   };
 
+  const enlacesPlanCarrera = {
+    ISftw: "https://www.uaz.edu.mx/oferta-educativa/educacion-superior/ingenieria-de-software/",
+    ICmp: "https://computacion.uaz.edu.mx/",
+    IEInd: "https://electronica.uaz.edu.mx/",
+    IDsr: "https://tucampus.edu.mx/planes-academicos/desarrollo-sistemas",
+    IRMca: "https://robmec.uaz.edu.mx/",
+    IElec: "https://tucampus.edu.mx/planes-academicos/electrica",
+    // Agrega los semiescolarizados si es necesario:
+    ISftwS: "https://tucampus.edu.mx/planes-academicos/ingenieria-software-semiescolarizado"
+  };
   const handleListaAlumnos = (materia) => {
     const materiaUrl = formatUrl(materia.nombre); // Formatea el nombre de la materia
     navigate(`/coordinador/materias/${materiaUrl}/lista-alumnos`, {
@@ -248,6 +258,7 @@ const AdministrarMaterias = () => {
                   <th>Cupo</th>
                   <th>Materia</th>
                   <th>Docente</th>
+                  <th>Laboratorio</th>
                   {esSemiescolarizada ? (
                     <>
                       <th>Paridad</th>
@@ -272,8 +283,18 @@ const AdministrarMaterias = () => {
                     <td>{materia.grupo}</td>
                     <td>{materia.salon}</td>
                     <td>{materia.cupo}</td>
-                    <td>{materia.nombre}</td>
+                    <td>
+                      <a
+                        href={enlacesPlanCarrera[materia.id_carrera]}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: "blue", textDecoration: "underline", cursor: "pointer" }}
+                      >
+                        {materia.nombre}
+                      </a>
+                    </td>
                     <td>{getDocenteNombre(materia)}</td>
+                    <td>{materia.laboratorio ? "Sí" : "No"}</td>
                     {esSemiescolarizada ? (
                       <>
                       <td>{materia.semi || "-"}</td>

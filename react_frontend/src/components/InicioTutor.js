@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom"; // Importar useLocation y useNavigate
 import "./InicioTutor.css";
 
@@ -6,6 +7,7 @@ function InicioTutor() {
   const [alumnos, setAlumnos] = useState([]);
   const [error, setError] = useState(null);
   const location = useLocation();
+  const [comprobantes, setComprobantes] = useState([]);
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const navigate = useNavigate();
   const { nombre, matricula, id_carrea } = location.state || {};
@@ -73,6 +75,16 @@ function InicioTutor() {
         console.error("Error al obtener los alumnos:", error);
         setError("Error al cargar los alumnos. Por favor, inténtalo de nuevo.");
       }
+
+      const fetchComprobantes = async () => {
+        try {
+          const response = await axios.get('http://localhost:5000/api/alumnos/comprobantes/lista');
+          setComprobantes(response.data);
+        } catch (error) {
+          console.error('Error al obtener la lista de comprobantes:', error);
+        }
+      };
+      fetchComprobantes();
     };
 
     fetchAlumnos();
@@ -80,7 +92,12 @@ function InicioTutor() {
 
   const handleRevisarHorario = (alumno) => {
     console.log("alumno:", alumno);
-    navigate(`/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaTutor , id_carrea: alumno.id_carrera } });
+    navigate(`/tutor/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaTutor , id_carrea: alumno.id_carrera } });
+  };
+
+  const handleValidate = (alumno) => {
+    console.log("Navegando a: ", `/validar-pago/${alumno.matricula}`);
+    navigate(`/tutor/validar-pago/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaTutor: matriculaTutor} });
   };
   
 
@@ -139,6 +156,7 @@ function InicioTutor() {
                 <th>Nombre del alumno</th>
                 <th>Revisar horario</th>
                 <th>Estatus</th>
+                <th>Comprobante</th>
               </tr>
             </thead>
             <tbody>
@@ -166,6 +184,66 @@ function InicioTutor() {
                     </button>
                   </td>
                   <td>{getEstatusIcon(alumno.estatus)}</td>
+                  <td>
+                {comprobantes.includes(`Pago_${alumno.matricula}.pdf`) ? (
+                  alumno.estatusComprobante === "Rechazado" ? (
+                    // Rojo: Rechazado
+                    <button
+                      className="icon-button"
+                      onClick={() => handleValidate(alumno)}
+                      title="Comprobante rechazado"
+                      style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="red" viewBox="0 0 24 24">
+                        <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
+                      </svg>
+                    </button>
+                  ) : alumno.estatusComprobante === "Pendiente" ? (
+                    // Amarillo: Pendiente
+                    <button
+                      className="icon-button"
+                      onClick={() => handleValidate(alumno)}
+                      title="Comprobante pendiente de revisión"
+                      style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#FFD600" viewBox="0 0 24 24">
+                        <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
+                      </svg>
+                    </button>
+                  ) : alumno.estatusComprobante === "Revisado" || alumno.estatusComprobante === "Aceptado" ? (
+                    // Verde: Revisado/Aceptado
+                    <button
+                      className="icon-button"
+                      onClick={() => handleValidate(alumno)}
+                      title="Comprobante aceptado"
+                      style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" viewBox="0 0 24 24">
+                        <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
+                      </svg>
+                    </button>
+                  ) : (
+                    // Gris: Subido pero sin estatus válido
+                    <button
+                      className="icon-button"
+                      onClick={() => handleValidate(alumno)}
+                      title="Comprobante sin estatus"
+                      style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#BDBDBD" viewBox="0 0 24 24">
+                        <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
+                      </svg>
+                    </button>
+                  )
+                ) : (
+                  // Gris: No subido
+                  <span title="Sin comprobante">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#BDBDBD" viewBox="0 0 24 24">
+                      <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
+                    </svg>
+                  </span>
+                )}
+              </td>
                 </tr>
               ))}
             </tbody>
