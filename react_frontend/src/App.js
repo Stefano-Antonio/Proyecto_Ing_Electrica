@@ -93,15 +93,17 @@ function App() {
               <Route path="/horario-seleccion" element={<PrivateRoute><HorarioSeleccion /></PrivateRoute>} />
               <Route path="/validacion" element={<PrivateRoute><Validacion1 /></PrivateRoute>} />
               <Route path="/validacion-estatus" element={<PrivateRoute><Validacion2 /></PrivateRoute>} />
-              <Route path="/inicio-tutor" element={<PrivateRoute><InicioTutor /></PrivateRoute>} />
+              <Route path="/tutor" element={<PrivateRoute><InicioTutor /></PrivateRoute>} />
+              <Route path="/docente/alumnos/validar-pago/:matricula" element={<PrivateRoute><RevisionComprobantePago /></PrivateRoute>} />
               <Route path="/docente/alumnos" element={<PrivateRoute><InicioDocente /></PrivateRoute>} />
+              <Route path="/tutor/validar-pago/:matricula" element={<PrivateRoute><RevisionComprobantePago /></PrivateRoute>} />
               <Route path="/docente/materias" element={<PrivateRoute><InicioDocente2 /></PrivateRoute>} />
-              <Route path="/revisar-horario/:matricula" element={<PrivateRoute><RevisionHorarioTutor /></PrivateRoute>} />
+              <Route path="/tutor/revisar-horario/:matricula" element={<PrivateRoute><RevisionHorarioTutor /></PrivateRoute>} />
               <Route path="/coordinador/revisar-horario/:matricula" element={<PrivateRoute><RevisionHorarioTutor /></PrivateRoute>} />
               <Route path="/docente/materias/:materia/lista-alumnos" element={<PrivateRoute><DocenteAlumnos/></PrivateRoute>}></Route>
               <Route path="/coordinador/revisar-horario/:matricula" element={<PrivateRoute><RevisionHorarioTutor /></PrivateRoute>} />
               <Route path="/coordinador/validar-pago/:matricula" element={<PrivateRoute><RevisionComprobantePago /></PrivateRoute>} />
-              <Route path="/coordinador/validar-pago/:matricula" element={<PrivateRoute><RevisionComprobantePago /></PrivateRoute>} />
+              <Route path="/tutor/validar-pago/:matricula" element={<PrivateRoute><RevisionComprobantePago /></PrivateRoute>} />
               <Route path="/administrador/revisar-horario/:matricula" element={<PrivateRoute><RevisionHorarioAdmin /></PrivateRoute>} />
               <Route path="/coordinador" element={<PrivateRoute><InicioCoordinador/></PrivateRoute>}>
                   <Route path="alumnos" element={<AlumnoListCoord/>}></Route>

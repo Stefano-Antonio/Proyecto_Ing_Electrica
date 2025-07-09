@@ -133,7 +133,7 @@ function Registro() {
             }
             navigate("/administrador", { state: { nombre, matricula, id_carrera } });
           } else if (roles.includes("T")) {
-            navigate("/inicio-tutor", { state: { nombre, matricula } });
+            navigate("/tutor", { state: { nombre, matricula } });
           } else if (roles.includes("CG")) {
             navigate("/inicio-coordinador-gen", { state: { nombre, matricula } });
           }
