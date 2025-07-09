@@ -91,6 +91,55 @@ const descargarArchivo = async (tipo) => {
     }
   };
 
+  // Calcular semestre actual según la fecha
+  const getSemestreActual = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1; // 0-indexed
+    const periodo = (month >= 8) ? 2 : 1;
+    return `${year}-${periodo}`;
+  };
+  const semestre = getSemestreActual();
+
+  const [fechaBorrado, setFechaBorrado] = React.useState('');
+  const [editFecha, setEditFecha] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    setLoading(true);
+    fetch(`http://localhost:5000/api/historial/fecha-borrado/${semestre}`)
+      .then(res => res.json())
+      .then(data => {
+        setFechaBorrado(data.fecha_de_borrado ? new Date(data.fecha_de_borrado).toLocaleString() : 'No registrada');
+        setEditFecha(data.fecha_de_borrado ? data.fecha_de_borrado.substring(0, 10) : '');
+      })
+      .catch(() => setFechaBorrado('Error al obtener fecha'))
+      .finally(() => setLoading(false));
+  }, [semestre]);
+
+  const handleActualizar = async () => {
+    if (!editFecha) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`http://localhost:5000/api/historial/fecha-borrado/${semestre}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ semestre, fecha_de_borrado: editFecha })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setFechaBorrado(new Date(editFecha).toLocaleString());
+        alert('Fecha de borrado actualizada');
+      } else {
+        alert(data.message || 'Error al actualizar fecha');
+      }
+    } catch {
+      alert('Error al actualizar fecha');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="historial-academico-container">
       <h2>Historial Académico</h2>
@@ -150,8 +199,141 @@ const descargarArchivo = async (tipo) => {
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '30px' }}>
         <button className="generar-historial-button" onClick={handleGenerarHistorialAcademico}>Generar historial académico</button>
       </div>
+      {/* Paneles de vaciado y fecha de borrado */}
+      <div style={{
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        gap: '30px',
+        marginTop: '40px',
+        flexWrap: 'wrap'
+      }}>
+        
+        {/* Apartado para vaciar la base de datos */}
+        <div style={{ textAlign: 'center', border: '1px solid #ccc', borderRadius: '8px', padding: '20px', maxWidth: '500px', minWidth: '260px', flex: '1 1 320px' }}>
+          <h3 style={{ marginBottom: '20px' }}>Vaciar base de datos</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center' }}>
+            <button onClick={async () => {
+              if(window.confirm('¿Seguro que deseas vaciar todas las materias?')){
+                try {
+                  const res = await fetch('http://localhost:5000/api/historial/vaciar-materias', { method: 'DELETE' });
+                  const data = await res.json();
+                  alert(data.message || 'Materias eliminadas');
+                } catch (err) { alert('Error al vaciar materias'); }
+              }
+            }} style={{ width: '220px' }}>Vaciar materias</button>
+            <button onClick={async () => {
+              if(window.confirm('¿Seguro que deseas vaciar todos los alumnos?')){
+                try {
+                  const res = await fetch('http://localhost:5000/api/historial/vaciar-alumnos', { method: 'DELETE' });
+                  const data = await res.json();
+                  alert(data.message || 'Alumnos eliminados');
+                } catch (err) { alert('Error al vaciar alumnos'); }
+              }
+            }} style={{ width: '220px' }}>Vaciar alumnos</button>
+            <button onClick={async () => {
+              if(window.confirm('¿Seguro que deseas vaciar todo el personal?')){
+                try {
+                  const res = await fetch('http://localhost:5000/api/historial/vaciar-personal', { method: 'DELETE' });
+                  const data = await res.json();
+                  alert(data.message || 'Personal eliminado');
+                } catch (err) { alert('Error al vaciar personal'); }
+              }
+            }} style={{ width: '220px' }}>Vaciar personal</button>
+            <button onClick={async () => {
+              if(window.confirm('¿Seguro que deseas vaciar materias, alumnos y personal?')){
+                try {
+                  const res1 = await fetch('http://localhost:5000/api/historial/vaciar-materias', { method: 'DELETE' });
+                  const data1 = await res1.json();
+                  const res2 = await fetch('http://localhost:5000/api/historial/vaciar-alumnos', { method: 'DELETE' });
+                  const data2 = await res2.json();
+                  const res3 = await fetch('http://localhost:5000/api/historial/vaciar-personal', { method: 'DELETE' });
+                  const data3 = await res3.json();
+                  alert((data1.message || '') + '\n' + (data2.message || '') + '\n' + (data3.message || ''));
+                } catch (err) { alert('Error al vaciar toda la base de datos'); }
+              }
+            }} style={{ width: '220px', background: '#c00', color: 'white', fontWeight: 'bold' }}>Vaciar TODO</button>
+          </div>
+        </div>
+        {/* Panel de fecha de borrado */}
+        <FechaBorradoPanel historiales={historiales} />
+      </div>
     </div>
   );
 }
 
 export default HistorialAcademico;
+
+// --- Componente FechaBorradoPanel ---
+function FechaBorradoPanel({ historiales }) {
+  // Calcular semestre actual según la fecha
+  const getSemestreActual = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1; // 0-indexed
+    const periodo = (month >= 8) ? 2 : 1;
+    return `${year}-${periodo}`;
+  };
+  const semestre = getSemestreActual();
+
+  const [fechaBorrado, setFechaBorrado] = React.useState('');
+  const [editFecha, setEditFecha] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    setLoading(true);
+    fetch(`http://localhost:5000/api/historial/fecha-borrado/${semestre}`)
+      .then(res => res.json())
+      .then(data => {
+        setFechaBorrado(data.fecha_de_borrado ? new Date(data.fecha_de_borrado).toLocaleString() : 'No registrada');
+        setEditFecha(data.fecha_de_borrado ? data.fecha_de_borrado.substring(0, 10) : '');
+      })
+      .catch(() => setFechaBorrado('Error al obtener fecha'))
+      .finally(() => setLoading(false));
+  }, [semestre]);
+
+  const handleActualizar = async () => {
+    if (!editFecha) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`http://localhost:5000/api/historial/fecha-borrado/${semestre}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ semestre, fecha_de_borrado: editFecha })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setFechaBorrado(new Date(editFecha).toLocaleString());
+        alert('Fecha de borrado actualizada');
+      } else {
+        alert(data.message || 'Error al actualizar fecha');
+      }
+    } catch {
+      alert('Error al actualizar fecha');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '20px', minWidth: '260px', maxWidth: '350px', flex: '1 1 320px', background: '#f9f9f9', textAlign: 'center' }}>
+      <h3>Fecha de borrado</h3>
+      <p style={{ fontSize: '0.95em', color: '#555' }}>Semestre actual: <b>{semestre}</b></p>
+      {loading ? <p>Cargando...</p> : (
+        <>
+          <p style={{ fontWeight: 'bold', fontSize: '1.1em' }}>{fechaBorrado}</p>
+          <input
+            type="date"
+            value={editFecha}
+            onChange={e => setEditFecha(e.target.value)}
+            style={{ margin: '10px 0', padding: '5px', width: '80%' }}
+          />
+          <br />
+          <button onClick={handleActualizar} disabled={!editFecha || loading} style={{ width: '120px' }}>
+            Actualizar fecha
+          </button>
+        </>
+      )}
+    </div>
+  );
+}

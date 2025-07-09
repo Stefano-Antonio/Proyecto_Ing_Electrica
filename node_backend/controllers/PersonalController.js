@@ -176,6 +176,7 @@ exports.getPersonalById = async (req, res) => {
 
 exports.updatePersonal = async (req, res) => {
   try {
+    console.log('Datos recibidos para actualizar:', req.body);
       const personal = await Personal.findByIdAndUpdate(
           req.params.id,
           { $set: req.body }, // Actualiza todos los campos enviados en la solicitud
@@ -183,6 +184,14 @@ exports.updatePersonal = async (req, res) => {
       );
       if (!personal) {
           return res.status(404).json({ message: 'Personal no encontrado' });
+      }
+
+      // Si el personal es coordinador y se envía un nuevo id_carrera, actualizarlo en la colección Coordinadores
+      if (personal.roles.includes('C') && req.body.id_carrera) {
+          await Coordinadores.findOneAndUpdate(
+          { personalMatricula: personal.matricula },
+          { $set: { id_carrera: req.body.id_carrera } }
+          );
       }
       res.status(200).json(personal);
   } catch (error) {
@@ -344,7 +353,7 @@ exports.subirPersonalCSV = async (req, res) => {
       });
   };
   
-  // 📤 Exportar datos a CSV
+  // Exportar datos a CSV
   exports.exportarPersonalCSV = async (req, res) => {
     try {
       const personal = await Personal.find(); // Obtén todos los registros

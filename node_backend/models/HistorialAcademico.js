@@ -8,7 +8,8 @@ const HistorialAcademicoSchema = new mongoose.Schema({
     alumnos: String,
     materias: String
   },
-  generado_por: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' } // Admin o coordinador
+  generado_por: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' }, // Admin o coordinador
+  fecha_de_borrado: { type: Date, default: null } // Fecha en que se borrara la base de datos 
 });
 
 module.exports = mongoose.model('HistorialAcademico', HistorialAcademicoSchema);

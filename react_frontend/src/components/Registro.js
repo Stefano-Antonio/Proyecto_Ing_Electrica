@@ -253,6 +253,7 @@ function Registro() {
                   placeholder="Contraseña"
                   required
                 />
+                
                 <button
                   className="forgot-button"
                   type="button"

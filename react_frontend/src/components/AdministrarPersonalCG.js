@@ -14,6 +14,7 @@ const AdministrarPersonalCG = () => {
   
   const navigate = useNavigate();
   const id_carrera = localStorage.getItem("id_carrera");
+
   useEffect(() => {
     const fetchPersonal = async () => {
       const matricula = localStorage.getItem("matricula");
@@ -217,7 +218,6 @@ const AdministrarPersonalCG = () => {
 
         <div className="add-delete-buttons">
           <button onClick={() => navigate("/crear-personal-cg")}>Agregar personal</button>
-          <button onClick={handleDownloadExcel}>Descargar Excel</button>
         </div>
       </div>
     </div>

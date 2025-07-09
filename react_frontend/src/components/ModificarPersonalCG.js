@@ -17,7 +17,7 @@ function ModificarPersonalCG() {
     telefono: personalSeleccionado.telefono || "",
     roles: personalSeleccionado.roles || "",
     password: "", // No se muestra la contraseña actual por seguridad
-    id_carrera: personalSeleccionado.id_carrera || "",
+    id_carrera: personalSeleccionado.id_carrera || ""
   });
 
   const carrerasPermitidas = {
@@ -143,11 +143,11 @@ function ModificarPersonalCG() {
               </div>
             </div>
             <div className="form-group">
-              {mostrarCarrera && (
+              {(mostrarCarrera || (form.roles === "C" && !form.id_carrera)) && (
                 <div className="input-wrapper short-field2">
                   <label htmlFor="id_carrera">Carrera</label>
-                  <select id="id_carrera" value={form.id_carrera} onChange={handleChange} required>
-                    <option value="" disabled hidden>
+                  <select id="id_carrera" value={form.id_carrera || ""} onChange={handleChange} required>
+                    <option value="" disabled>
                       Seleccione una carrera
                     </option>
                     {Object.entries(carrerasPermitidas).map(([key, value]) => (
@@ -159,6 +159,37 @@ function ModificarPersonalCG() {
                 </div>
               )}
             </div>
+            {/* Apartado especial para cambiar carrera si matrícula inicia con C */}
+            {form.matricula.startsWith('C') && (
+              <div className="form-group" style={{ marginTop: '20px', border: '1px solid #ccc', borderRadius: '8px', padding: '15px', background: '#f9f9f9' }}>
+                <label style={{ fontWeight: 'bold', marginBottom: '10px' }}>Cambiar carrera del coordinador</label>
+                <select
+                  value={form.id_carrera}
+                  onChange={e => setForm(prev => ({ ...prev, id_carrera: e.target.value }))}
+                  style={{ marginRight: '10px' }}
+                >
+                  <option value="" disabled>Seleccione nueva carrera</option>
+                  {Object.entries(carrerasPermitidas).map(([key, value]) => (
+                    <option key={key} value={key}>{value}</option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await axios.put(`http://localhost:5000/api/personal/${personalSeleccionado._id}`,
+                        { ...form, id_carrera: form.id_carrera });
+                      setForm(prev => ({ ...prev, id_carrera: form.id_carrera }));
+                      toast.success('Carrera actualizada correctamente');
+                    } catch (error) {
+                      toast.error('Error al actualizar la carrera');
+                    }
+                  }}
+                  style={{ padding: '6px 16px' }}
+                  disabled={!form.id_carrera}
+                >Actualizar carrera</button>
+              </div>
+            )}
             <div className="persona1-buttons">
               <button type="submit">Actualizar</button>
             </div>
