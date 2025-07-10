@@ -186,76 +186,102 @@ exports.getMateriaById = async (req, res) => {
   }
 };
 
-//Actualizar materia
+
+// Actualizar materia con validación de empalme de horarios
 exports.updateMateria = async (req, res) => {
   const { nombre, horarios, salon, semi, grupo, cupo, docente, laboratorio, id_materia } = req.body;
-  console.log('Datos recibidos para crear la materia:', req.body);
   const { id } = req.params;
-  
+  console.log('Datos recibidos para actualizar la materia:', req.body);
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: "ID de materia no válido" });
   }
 
   try {
-    // Buscar la materia antes de actualizarla
+    // Obtener materia previa
     const materiaAnterior = await Materia.findById(id);
-
     if (!materiaAnterior) {
       return res.status(404).json({ message: "Materia no encontrada" });
     }
 
     let docenteObjectId = null;
 
-    
     if (docente) {
-      // Buscar el nuevo docente por personalMatricula
-      const docenteEncontrado = await Docentes.findById(docente);
+      // Buscar el nuevo docente por personalMatricula o _id
+      const docenteEncontrado = await Docentes.findById(docente) ||
+                                 await Docentes.findOne({ personalMatricula: docente });
 
       if (!docenteEncontrado) {
         return res.status(400).json({ message: "Docente no encontrado" });
       }
 
-      docenteObjectId = docenteEncontrado._id; // Obtener ObjectId del docente
+      docenteObjectId = docenteEncontrado._id;
+
+      // Validar que los nuevos horarios no empalmen con otras materias del mismo docente
+      if (horarios && typeof horarios === "object") {
+        const horariosEntrada = Object.entries(horarios).filter(
+          ([dia, hora]) => hora && hora !== "-"
+        );
+
+        const materiasDocente = await Materia.find({
+          docente: docenteObjectId,
+          _id: { $ne: id } // Excluir la materia que estamos actualizando
+        });
+
+        for (const materia of materiasDocente) {
+          const horariosExistentes = Object.entries(materia.horarios || {}).filter(
+            ([dia, hora]) => hora && hora !== "-"
+          );
+
+          for (const [diaNuevo, horaNueva] of horariosEntrada) {
+            for (const [diaExistente, horaExistente] of horariosExistentes) {
+              if (diaNuevo === diaExistente && horaNueva === horaExistente) {
+                return res.status(400).json({
+                  message: `Error: el docente ya tiene una materia asignada el ${diaNuevo} a las ${horaNueva}.`
+                });
+              }
+            }
+          }
+        }
+      }
     }
 
-    // Actualizar la materia con el nuevo docente (si hay)
+    // Actualizar la materia
     const materia = await Materia.findByIdAndUpdate(id,
-      { 
-        id_materia, 
-        nombre, 
-        horarios, 
-        salon, 
-        semi, 
-        grupo, 
-        cupo, 
-        laboratorio: laboratorio === true || laboratorio === "true", // Asegurar que sea booleano
-        docente: docenteObjectId 
+      {
+        id_materia,
+        nombre,
+        horarios,
+        salon,
+        semi,
+        grupo,
+        cupo,
+        laboratorio: laboratorio === true || laboratorio === "true",
+        docente: docenteObjectId
       },
       { new: true }
     );
 
     if (!materia) {
-      return res.status(404).json({ message: "Materia no encontrada" });
+      return res.status(404).json({ message: "Materia no encontrada después de actualizar." });
     }
 
-    // Si la materia tenía un docente anterior diferente, eliminarla de su lista de materias
-    if (materiaAnterior.docente && (!docenteObjectId || !materiaAnterior.docente.equals(docenteObjectId))) {
+    // Remover materia del docente anterior si fue reasignado
+    if (materiaAnterior.docente &&
+        (!docenteObjectId || !materiaAnterior.docente.equals(docenteObjectId))) {
       await Docentes.findByIdAndUpdate(
         materiaAnterior.docente,
-        { $pull: { materias: materiaAnterior._id } } // Remueve la materia de la lista del docente anterior
+        { $pull: { materias: materiaAnterior._id } }
       );
-      
     }
 
-    // Si hay un nuevo docente, agregar la materia a su lista
+    // Asignar materia al nuevo docente si corresponde
     if (docenteObjectId) {
       await Docentes.findByIdAndUpdate(
         docenteObjectId,
-        { $addToSet: { materias: materia._id } }, // Asegura que no se duplique
+        { $addToSet: { materias: materia._id } },
         { new: true }
       );
-      
     }
 
     console.log("Materia actualizada correctamente:", materia);
@@ -265,8 +291,6 @@ exports.updateMateria = async (req, res) => {
     res.status(500).json({ message: "Error al actualizar la materia", error });
   }
 };
-
-
 
 
 // Eliminar una materia

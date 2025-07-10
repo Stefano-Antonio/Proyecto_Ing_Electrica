@@ -5,7 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./AdministrarMaterias.css";
 
-const AdministrarMaterias = () => {
+const AdministrarMateriasCoordinador = () => {
   const [materias, setMaterias] = useState([]);
   const [docentes, setDocentes] = useState([]);
   const [searchTerm, setSearchTerm] = useState(""); // Filtro de búsqueda
@@ -387,4 +387,4 @@ const AdministrarMaterias = () => {
   );
 };
 
-export default AdministrarMaterias;
+export default AdministrarMateriasCoordinador;
