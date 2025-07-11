@@ -439,6 +439,9 @@ exports.subirPersonalCSV = async (req, res) => {
     }
   };
 
+ 
+
+  // Exportar CSV de personal filtrado por carrera
   exports.exportarCSVPorCarreraFiltrado = async (req, res) => {
   try {
     const { id_carrera } = req.params;
@@ -477,6 +480,45 @@ exports.subirPersonalCSV = async (req, res) => {
     res.status(500).json({ message: "Error interno al exportar", error });
   }
 };
+
+  // Esporta el CSV filtrado
+  exports.exportarCSVPersonalFiltrado = async (req, res) => {
+    try {
+      const { matriculas } = req.body;
+
+      if (!matriculas || !Array.isArray(matriculas) || matriculas.length === 0) {
+        return res.status(400).json({ message: "Se requiere un array de matrículas para exportar." });
+      }
+
+      const personal = await Personal.find({
+        matricula: { $in: matriculas }
+      });
+
+      if (personal.length === 0) {
+        return res.status(404).json({ message: "No se encontró personal para los filtros aplicados." });
+      }
+
+      const formattedData = personal.map((p) => ({
+        matricula: p.matricula,
+        nombre: p.nombre,
+        password: p.password,
+        roles: p.roles.join(", "),
+        telefono: p.telefono || "Sin teléfono",
+        correo: p.correo || "Sin correo"
+      }));
+
+      const fields = ["matricula", "nombre", "password", "roles", "telefono", "correo"];
+      const json2csvParser = new Parser({ fields });
+      const csv = "\ufeff" + json2csvParser.parse(formattedData); // BOM para Excel
+
+      res.header("Content-Type", "text/csv; charset=utf-8");
+      res.attachment("personal_filtrado.csv");
+      res.send(csv);
+    } catch (error) {
+      console.error("❌ Error al exportar CSV de personal filtrado:", error);
+      res.status(500).json({ message: "Error interno al exportar", error });
+    }
+  };
 
   // Subir personal desde CSV por carrera
   exports.subirPersonalCSVPorCarrera = async (req, res) => {

@@ -53,22 +53,29 @@ const AdministrarMateriasAG = () => {
   };
 
   const handleDownloadCSV = async () => {
+    const ids = materiasFiltradas.map(m => m._id);
+    if (ids.length === 0) {
+      toast.error("No hay materias filtradas para exportar.");
+      return;
+    }
+
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/materias/exportar-csv", // Cambiar la URL a 'materias'
+      const response = await axios.post(
+        "http://localhost:5000/api/materias/exportar-csv/filtrados",
+        { ids },
         { responseType: "blob" }
       );
-  
+
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "materias.csv");
+      link.setAttribute("download", "materias_filtradas.csv");
       document.body.appendChild(link);
       link.click();
-      link.remove();
+      document.body.removeChild(link);
     } catch (error) {
-      console.error("Error al descargar el archivo CSV:", error);
-      alert("No se pudo descargar el archivo");
+      console.error("❌ Error al descargar materias filtradas:", error);
+      toast.error("No se pudo exportar el CSV.");
     }
   };
 

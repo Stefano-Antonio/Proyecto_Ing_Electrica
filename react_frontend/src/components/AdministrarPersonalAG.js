@@ -82,28 +82,30 @@ const AdministrarPersonalAG = () => {
   );
   
     const handleDownloadCSV = async () => {
-      const id_carrera = localStorage.getItem("id_carrera");
-      if (!id_carrera) {
-        toast.error("ID de carrera no encontrado.");
+      const matriculas = personalFiltrado.map(p => p.matricula); // Asumiendo que el estado se llama personalFiltrado
+
+      if (matriculas.length === 0) {
+        toast.error("No hay registros filtrados de personal para exportar.");
         return;
       }
-    
+
       try {
-        const response = await axios.get(
-          `http://localhost:5000/api/personal/exportar-csv/`,
-          { responseType: "blob" } // Recibir como blob para descarga
+        const response = await axios.post(
+          "http://localhost:5000/api/personal/exportar-csv/filtrados",
+          { matriculas },
+          { responseType: "blob" }
         );
-    
+
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", "personal.csv");
+        link.setAttribute("download", "personal_filtrado.csv");
         document.body.appendChild(link);
         link.click();
-        link.remove();
+        document.body.removeChild(link);
       } catch (error) {
-        console.error("Error al descargar el archivo CSV:", error);
-        toast.error("No se pudo descargar el archivo.");
+        console.error("❌ Error al descargar CSV de personal:", error);
+        toast.error("No se pudo generar el archivo.");
       }
     };
 

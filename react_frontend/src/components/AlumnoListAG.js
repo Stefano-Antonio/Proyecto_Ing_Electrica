@@ -17,8 +17,6 @@ const AlumnoListAG = () => {
   const matriculaCord = localStorage.getItem("matricula");
   const navigate = useNavigate();
 
-
-
   useEffect(() => {
     const fetchAlumnos = async () => {
       try {
@@ -79,24 +77,29 @@ const AlumnoListAG = () => {
 
 
     const handleDownloadCSV = async () => {
+      const matriculas = alumnosFiltrados.map(a => a.matricula);
+      if (matriculas.length === 0) {
+        toast.error("No hay alumnos filtrados para exportar.");
+        return;
+      }
+
       try {
-        const response = await axios.get(
-          "http://localhost:5000/api/alumnos/exportar-csv",
-          {
-            responseType: "blob", // Asegúrate de recibir el archivo como blob
-          }
+        const response = await axios.post(
+          "http://localhost:5000/api/alumnos/exportar-csv/filtrados",
+          { matriculas },
+          { responseType: "blob" }
         );
-  
+
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", "alumnos.csv");
+        link.setAttribute("download", `alumnos_filtrados.csv`);
         document.body.appendChild(link);
         link.click();
-        link.remove();
+        document.body.removeChild(link);
       } catch (error) {
-        console.error("Error al descargar el archivo CSV:", error);
-        alert("No se pudo descargar el archivo");
+        console.error("❌ Error al descargar CSV:", error);
+        toast.error("Error al descargar la lista filtrada.");
       }
     };
   

@@ -9,7 +9,10 @@ router.get('/exportar-csv', personalController.exportarPersonalCSV);
 //Rutas para importar/exportar CSV por carrera
 router.get("/exportar-csv/carrera/:id_carrera", personalController.exportarPersonalCSVPorCarrera);
 router.post("/subir-csv/carrera/:id_carrera", personalController.upload.single("csv"), personalController.subirPersonalCSVPorCarrera);
+router.post("/exportar-csv/filtrados", personalController.exportarCSVPersonalFiltrado);
 router.post('/exportar-csv/carrera-filtrados/:id_carrera', personalController.exportarCSVPorCarreraFiltrado);
+
+
 
 router.post('/', personalController.createPersonal);
 router.get('/', personalController.getPersonal);
