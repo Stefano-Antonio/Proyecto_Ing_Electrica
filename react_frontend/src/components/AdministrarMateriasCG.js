@@ -147,6 +147,7 @@ const AdministrarMateriasCG = () => {
                   <th>Cupo</th>
                   <th>Materia</th>
                   <th>Docente</th>
+                  <th>Laboratorio</th>
                   <th>Lunes</th>
                   <th>Martes</th>
                   <th>Miércoles</th>
@@ -173,7 +174,8 @@ const AdministrarMateriasCG = () => {
                         {materia.nombre}
                       </a>
                     </td>
-                    <td c>{getDocenteNombre(materia)}</td>
+                    <td>{getDocenteNombre(materia)}</td>
+                    <td>{materia.laboratorio ? "Sí" : "No"}</td>
                     <td>{materia.horarios.lunes || "-"}</td>
                     <td>{materia.horarios.martes || "-"}</td>
                     <td>{materia.horarios.miercoles || "-"}</td>

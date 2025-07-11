@@ -87,11 +87,11 @@ function CrearMateriaCG() {
           { headers: { "Content-Type": "multipart/form-data" } }
         );
     
-        alert("Base de datos de materias actualizada con éxito desde el archivo CSV");
+        toast.success("Base de datos de materias actualizada con éxito desde el archivo CSV");
         setMostrarModal(false);
       } catch (error) {
         console.error("Error al subir el archivo CSV:", error);
-        alert("Hubo un error al actualizar la base de datos");
+        toast.error("Hubo un error al actualizar la base de datos");
       }
     };
     
@@ -111,7 +111,7 @@ function CrearMateriaCG() {
         link.remove();
       } catch (error) {
         console.error("Error al descargar el archivo CSV:", error);
-        alert("No se pudo descargar el archivo");
+        toast.error("No se pudo descargar el archivo");
       }
     };
     

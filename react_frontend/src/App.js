@@ -142,7 +142,8 @@ function App() {
 
               <Route path="/crear-alumno-cg" element={<PrivateRoute><CrearAlumnoCG/></PrivateRoute>}></Route>
               <Route path="/modificar-alumno-cg" element={<PrivateRoute><ModificarAlumnoCG/></PrivateRoute>}></Route>
-
+              <Route path="/validar-pago-cg/:matricula" element={<PrivateRoute><RevisionComprobantePago /></PrivateRoute>} />
+              
               <Route path="/crear-personal-cg" element={<PrivateRoute><CrearPersonalCG/></PrivateRoute>}></Route>
               <Route path="/modificar-personal-cg" element={<PrivateRoute><ModificarPersonalCG/></PrivateRoute>}></Route>
 
