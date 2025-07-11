@@ -46,31 +46,6 @@ app.use('/descargas', express.static(path.join(__dirname, 'exports')));
 //Ruta para los comprobantes
 app.use('/uploads/comprobantes', express.static('uploads/comprobantes'));
 
-function obtenerSemestreActual() {
-  const hoy = new Date();
-  const año = hoy.getFullYear();
-  const mes = hoy.getMonth() + 1;
-  const periodo = mes >= 1 && mes <= 6 ? '1' : '2';
-  return `${año}-${periodo}`;
-}
-
-function calcularFechaDeBorrado(semestre) {
-  // semestre es string tipo "2025-1" o "2025-2"
-  const [anioStr, periodo] = semestre.split('-');
-  const anio = parseInt(anioStr, 10);
-  if (periodo === '1') {
-    return new Date(anio, 5, 1); // 1 Junio (mes 5 porque Enero=0)
-  } else if (periodo === '2') {
-    return new Date(anio, 11, 1); // 1 Diciembre (mes 11)
-  }
-  return null;
-}
-
-async function descargarYGuardar(url, outputPath) {
-  const response = await axios.get(url, { responseType: 'arraybuffer' });
-  fs.writeFileSync(outputPath, response.data);
-}
-
 // Conexión a MongoDB
 mongoose.connect('mongodb+srv://Stefano117:Mixbox360@cluster0.qgw2j.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
 
@@ -81,15 +56,13 @@ mongoose.connect('mongodb+srv://Stefano117:Mixbox360@cluster0.qgw2j.mongodb.net/
   console.error('Error al conectar a MongoDB:', error);
 });
 
-console.log('Hora del sistema actual:', new Date().toString());
-
-
+//Apartado para generar el historial académico automáticamente 
 cron.schedule('0 0 * * *', async () => {
   try {
     const hoyStr = new Date().toISOString().split('T')[0];
     const semestreActual = obtenerSemestreActual();
 
-    console.log(`⏰ Cron: Verificando/creando historial para semestre ${semestreActual}...`);
+    console.log(`Cron: Verificando/creando historial para semestre ${semestreActual}...`);
 
     let historial = await HistorialAcademico.findOne({ semestre: semestreActual });
 
@@ -116,7 +89,7 @@ cron.schedule('0 0 * * *', async () => {
       });
       await historial.save();
 
-      console.log(`📄 Historial creado para semestre ${semestreActual} con fecha_de_borrado: ${fechaDeBorrado.toISOString().split('T')[0]}`);
+      console.log(`Historial creado para semestre ${semestreActual} con fecha_de_borrado: ${fechaDeBorrado.toISOString().split('T')[0]}`);
     }
 
     if (historial.fecha_de_borrado) {
@@ -175,3 +148,30 @@ cron.schedule('0 0 * * *', async () => {
 app.listen(PORT, () => {
   console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
 });
+
+
+// Funciones auxiliares
+function obtenerSemestreActual() {
+  const hoy = new Date();
+  const año = hoy.getFullYear();
+  const mes = hoy.getMonth() + 1;
+  const periodo = mes >= 1 && mes <= 6 ? '1' : '2';
+  return `${año}-${periodo}`;
+}
+
+function calcularFechaDeBorrado(semestre) {
+  // semestre es string tipo "2025-1" o "2025-2"
+  const [anioStr, periodo] = semestre.split('-');
+  const anio = parseInt(anioStr, 10);
+  if (periodo === '1') {
+    return new Date(anio, 5, 1); // 1 Junio (mes 5 porque Enero=0)
+  } else if (periodo === '2') {
+    return new Date(anio, 11, 1); // 1 Diciembre (mes 11)
+  }
+  return null;
+}
+
+async function descargarYGuardar(url, outputPath) {
+  const response = await axios.get(url, { responseType: 'arraybuffer' });
+  fs.writeFileSync(outputPath, response.data);
+}

@@ -12,17 +12,14 @@
     overflow-x: auto; /* Permite el desplazamiento lateral */
   }
   
-  .header-logo_uaz {
-    width: 120px; /* Ajusta el tamaño del logo según tus necesidades */
-    height: auto;
-    margin-right: 15px;
-  }
-  
-  .header-logo_uaei {
-    width: 100px; /* Ajusta el tamaño del logo según tus necesidades */
-    height: auto;
-    margin-right: 15px;
-  }
+.header-logo_uaz,
+.header-logo_uaei {
+  width: 350px;
+  height: auto;
+  margin-right: 15px;
+  max-width: none;
+}
+
 
   .header-title {
     font-size: 2.5rem;
