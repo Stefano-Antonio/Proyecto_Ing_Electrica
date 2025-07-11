@@ -150,6 +150,26 @@ const vaciarPersonal = async (req, res) => {
     }
 };
 
+// Borra personal, docentes, tutores, coordinadores y administrativos
+const vaciarPersonalAut = async () => {
+    try {
+        await Personal.deleteMany({
+            matricula: { $not: { $regex: /^(CG|AC)/ } }
+        });
+        await Docentes.deleteMany({});
+        await Tutores.deleteMany({});
+        await Coordinadores.deleteMany({});
+        await Administrativos.deleteMany({});
+
+        // Vacía los arreglos docentes y tutores en alumnos, horarios y materias
+        await Alumnos.updateMany({}, { $set: { docentes: [], tutores: [] } });
+        await Horarios.updateMany({}, { $set: { docentes: [] } });
+        await Materias.updateMany({}, { $set: { docentes: [], docente: null } });
+    } catch (err) {
+        console.error(err);
+    }
+};
+
 // Obtener la fecha de borrado del historial académico
 const obtenerFechaBorrado = async (req, res) => {
     const { semestre } = req.query;
@@ -191,5 +211,6 @@ module.exports = {
     vaciarAlumnos,
     vaciarPersonal,
     actualizarFechaBorrado,
-    obtenerFechaBorrado
+    obtenerFechaBorrado,
+  vaciarPersonalAut
 };

@@ -25,8 +25,7 @@ const HistorialAcademico = require('./models/HistorialAcademico');
 const Alumno = require('./models/Alumno');
 const Personal = require('./models/Personal');
 const Materia = require('./models/Materia');
-const { generarHistorial } = require('./controllers/historialAcademicoController');
-
+const { generarHistorial, vaciarPersonalAut } = require('./controllers/historialAcademicoController');
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -57,7 +56,7 @@ mongoose.connect('mongodb+srv://Stefano117:Mixbox360@cluster0.qgw2j.mongodb.net/
 });
 
 //Apartado para generar el historial académico automáticamente 
-cron.schedule('0 0 * * *', async () => {
+cron.schedule('53 11 * * *', async () => {
   try {
     const hoyStr = new Date().toISOString().split('T')[0];
     const semestreActual = obtenerSemestreActual();
@@ -128,7 +127,7 @@ cron.schedule('0 0 * * *', async () => {
 
         await Promise.all([
           Alumno.deleteMany({}),
-          Personal.deleteMany({}),
+          vaciarPersonalAut(),
           Materia.deleteMany({})
         ]);
 
@@ -143,6 +142,7 @@ cron.schedule('0 0 * * *', async () => {
     console.error('Error en cron job de historial:', error);
   }
 });
+
 
 // Iniciar el servidor
 app.listen(PORT, () => {

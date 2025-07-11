@@ -4,7 +4,6 @@ import { Outlet, useNavigate,useLocation } from "react-router-dom";
 import AlumnoListCG from './AlumnoListCG';
 import AdministrarPersonalCG from './AdministrarPersonalCG';
 import AdministrarMateriasCG from './AdministrarMateriasCG';
-
 function InicioCoordinadorGen() {
 
     const [componenteActivo, setComponenteActivo] = useState('');
@@ -42,9 +41,6 @@ function InicioCoordinadorGen() {
         <div className="top-right"> 
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
         </div>
-        <div className="top-left"> 
-          <button className="historial-button" onClick={() => navigate("/inicio-coordinador-gen/historial-academico")}>Historial académico</button>
-        </div>
 
         <h2>Coordinador General</h2>
         <h4>{`Bienvenido, ${nombre}`}</h4>
@@ -54,6 +50,7 @@ function InicioCoordinadorGen() {
           <button onClick={() => navigate("/inicio-coordinador-gen/alumnos")}>Administrar alumno</button>
           <button onClick={() => navigate("/inicio-coordinador-gen/personal")}>Administrar personal</button>
           <button onClick={() => navigate("/inicio-coordinador-gen/materias")}>Administrar materias</button>
+          <button onClick={() => navigate("/inicio-coordinador-gen/historial-academico")}>Historial académico</button>
         </div>
   
         {/* Aquí se mostrará el componente de la ruta anidada */}
