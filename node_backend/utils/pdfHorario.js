@@ -10,7 +10,9 @@ function generarPDFHorario(nombreAlumno, carrera, materias) {
   doc.on('data', buffers.push.bind(buffers));
 
   // Título
-  doc.fontSize(20).text(`Horario de ${nombreAlumno}`, { align: 'center' });
+  doc.fontSize(25).text(`UNIVERSIDAD AUTONOMA DE ZACATECAS`, { align: 'center' });
+  doc.moveDown(0.5);
+  doc.fontSize(20).text(`Alumno:  ${nombreAlumno}`, { align: 'center' });
   doc.moveDown(0.5);
   doc.fontSize(14).text(`Carrera: ${carrera}`, { align: 'center' });
   doc.moveDown(1.5);
