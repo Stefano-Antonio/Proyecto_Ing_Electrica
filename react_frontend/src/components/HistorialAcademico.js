@@ -2,11 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import './HistorialAcademico.css';
 
+// Mueve esta función fuera de los componentes para reutilizarla
+function getSemestreActual() {
+  const hoy = new Date();
+  const año = hoy.getFullYear();
+  const mes = hoy.getMonth() + 1;
+  const periodo = mes >= 1 && mes <= 6 ? '1' : '2';
+  return `${año}-${periodo}`;
+}
+
 function HistorialAcademico() {
-  const [semestres, setSemestres] = useState([
-    "2025-1", "2024-2", "2024-1", "2023-2", "2023-1"
-  ]);
-  const [semestreSeleccionado, setSemestreSeleccionado] = useState(semestres[0]);
   const [historiales, setHistoriales] = useState([]);
   const navigate = useNavigate();
 
@@ -75,7 +80,7 @@ const descargarArchivo = async (tipo) => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          semestre: semestreSeleccionado,
+          semestre: semestre,
           matricula: localStorage.getItem('matricula')
         })
       });
@@ -91,26 +96,18 @@ const descargarArchivo = async (tipo) => {
     }
   };
 
-  // Calcular semestre actual según la fecha
-  const getSemestreActual = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth() + 1; // 0-indexed
-    const periodo = (month >= 8) ? 2 : 1;
-    return `${year}-${periodo}`;
-  };
   const semestre = getSemestreActual();
-
+  console.log(`Semestre actual: ${semestre}`);
   const [fechaBorrado, setFechaBorrado] = React.useState('');
   const [editFecha, setEditFecha] = React.useState('');
   const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
     setLoading(true);
-    fetch(`http://localhost:5000/api/historial/fecha-borrado/${semestre}`)
+    fetch(`http://localhost:5000/api/historial/fecha-borrado?semestre=${semestre}`)
       .then(res => res.json())
       .then(data => {
-        setFechaBorrado(data.fecha_de_borrado ? new Date(data.fecha_de_borrado).toLocaleString() : 'No registrada');
+        setFechaBorrado(data.fecha_de_borrado ? data.fecha_de_borrado.substring(0, 10) : 'No registrada');
         setEditFecha(data.fecha_de_borrado ? data.fecha_de_borrado.substring(0, 10) : '');
       })
       .catch(() => setFechaBorrado('Error al obtener fecha'))
@@ -121,7 +118,7 @@ const descargarArchivo = async (tipo) => {
     if (!editFecha) return;
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/historial/fecha-borrado/${semestre}`, {
+      const res = await fetch('http://localhost:5000/api/historial/fecha-borrado', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ semestre, fecha_de_borrado: editFecha })
@@ -153,17 +150,17 @@ const descargarArchivo = async (tipo) => {
               <th>Personal</th>
               <th>Alumnos</th>
               <th>Materias</th>
+              <th>Descargar todo</th>
             </tr>
           </thead>
           <tbody>
             {Array.isArray(historiales) && historiales.length > 0
               ? historiales
-                  .filter(h => h && h.semestre) // Filtra elementos undefined o sin semestre
+                  .filter(h => h && h.semestre)
                   .map(h => (
                     <tr key={h._id}>
                       <td>{h.semestre}</td>
                       <td>{new Date(h.fecha_generacion).toLocaleString()}</td>
-                      {/* Busca archivos .csv en el backend y descarga como .csv */}
                       <td>
                         <a
                           href={`http://localhost:5000/descargas/${h.semestre}/personal.csv`}
@@ -185,11 +182,36 @@ const descargarArchivo = async (tipo) => {
                           type="text/csv"
                         >Descargar</a>
                       </td>
+                      <td>
+                        <button onClick={async () => {
+                          try {
+                            const files = [
+                              { url: `http://localhost:5000/descargas/${h.semestre}/personal.csv`, name: 'personal.csv' },
+                              { url: `http://localhost:5000/descargas/${h.semestre}/alumnos.csv`, name: 'alumnos.csv' },
+                              { url: `http://localhost:5000/descargas/${h.semestre}/materias.csv`, name: 'materias.csv' }
+                            ];
+                            for (const f of files) {
+                              const response = await fetch(f.url);
+                              if (!response.ok) throw new Error('Error al descargar ' + f.name);
+                              const blob = await response.blob();
+                              const link = document.createElement('a');
+                              link.href = window.URL.createObjectURL(blob);
+                              link.download = f.name;
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                            }
+                            alert(`Archivos descargados`);
+                          } catch (error) {
+                            alert('Error al descargar archivos: ' + error.message);
+                          }
+                        }}>Descargar todo</button>
+                      </td>
                     </tr>
                   ))
               : (
                 <tr>
-                  <td colSpan={5} style={{ textAlign: 'center' }}>No hay historiales disponibles</td>
+                  <td colSpan={6} style={{ textAlign: 'center' }}>No hay historiales disponibles</td>
                 </tr>
               )
             }
@@ -256,7 +278,7 @@ const descargarArchivo = async (tipo) => {
           </div>
         </div>
         {/* Panel de fecha de borrado */}
-        <FechaBorradoPanel historiales={historiales} />
+        <FechaBorradoPanel semestre={semestre || getSemestreActual()} historiales={historiales} />
       </div>
     </div>
   );
@@ -265,38 +287,42 @@ const descargarArchivo = async (tipo) => {
 export default HistorialAcademico;
 
 // --- Componente FechaBorradoPanel ---
-function FechaBorradoPanel({ historiales }) {
-  // Calcular semestre actual según la fecha
-  const getSemestreActual = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth() + 1; // 0-indexed
-    const periodo = (month >= 8) ? 2 : 1;
-    return `${year}-${periodo}`;
-  };
-  const semestre = getSemestreActual();
+function formatFechaDMY(fechaStr) {
+  if (!fechaStr || fechaStr === 'No registrada' || fechaStr === 'Error al obtener fecha') return fechaStr;
+  const [year, month, day] = fechaStr.split('-');
+  return `${day}/${month}/${year}`;
+}
 
+function FechaBorradoPanel({ semestre, historiales }) {
   const [fechaBorrado, setFechaBorrado] = React.useState('');
   const [editFecha, setEditFecha] = React.useState('');
   const [loading, setLoading] = React.useState(false);
 
-  React.useEffect(() => {
+  // Función para obtener la fecha de borrado
+  const obtenerFechaBorrado = async () => {
     setLoading(true);
-    fetch(`http://localhost:5000/api/historial/fecha-borrado/${semestre}`)
-      .then(res => res.json())
-      .then(data => {
-        setFechaBorrado(data.fecha_de_borrado ? new Date(data.fecha_de_borrado).toLocaleString() : 'No registrada');
-        setEditFecha(data.fecha_de_borrado ? data.fecha_de_borrado.substring(0, 10) : '');
-      })
-      .catch(() => setFechaBorrado('Error al obtener fecha'))
-      .finally(() => setLoading(false));
+    try {
+      console.log(`Obteniendo fecha de borrado para semestre: ${semestre}`);
+      const res = await fetch(`http://localhost:5000/api/historial/fecha-borrado?semestre=${semestre}`);
+      const data = await res.json();
+      setFechaBorrado(data.fecha_de_borrado ? data.fecha_de_borrado.substring(0, 10) : 'No registrada');
+      setEditFecha(data.fecha_de_borrado ? data.fecha_de_borrado.substring(0, 10) : '');
+    } catch {
+      setFechaBorrado('Error al obtener fecha');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    obtenerFechaBorrado();
   }, [semestre]);
 
   const handleActualizar = async () => {
     if (!editFecha) return;
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/historial/fecha-borrado/${semestre}`, {
+      const res = await fetch('http://localhost:5000/api/historial/fecha-borrado', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ semestre, fecha_de_borrado: editFecha })
@@ -305,6 +331,9 @@ function FechaBorradoPanel({ historiales }) {
       if (res.ok) {
         setFechaBorrado(new Date(editFecha).toLocaleString());
         alert('Fecha de borrado actualizada');
+        
+        // Vuelve a obtener la fecha actualizada del backend
+        obtenerFechaBorrado();
       } else {
         alert(data.message || 'Error al actualizar fecha');
       }
@@ -317,11 +346,12 @@ function FechaBorradoPanel({ historiales }) {
 
   return (
     <div style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '20px', minWidth: '260px', maxWidth: '350px', flex: '1 1 320px', background: '#f9f9f9', textAlign: 'center' }}>
-      <h3>Fecha de borrado</h3>
+      <h3>Fecha de corte</h3>
       <p style={{ fontSize: '0.95em', color: '#555' }}>Semestre actual: <b>{semestre}</b></p>
+      <p style={{ fontSize: '0.95em', color: '#555' }}>Hora de eliminación: 12:00am </p>
       {loading ? <p>Cargando...</p> : (
         <>
-          <p style={{ fontWeight: 'bold', fontSize: '1.1em' }}>{fechaBorrado}</p>
+          <p style={{ fontWeight: 'bold', fontSize: '1.1em' }}>{formatFechaDMY(fechaBorrado)}</p>
           <input
             type="date"
             value={editFecha}

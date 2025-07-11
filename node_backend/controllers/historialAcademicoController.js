@@ -11,74 +11,74 @@ const Administrativos = require('../models/Administradores');
 const Coordinadores = require('../models/Coordinadores');
 const Horarios = require('../models/Horario');
 
+
+async function generarHistorialCore({ semestre, matricula, fecha_generacion = new Date() }) {
+  const folderPath = path.join(__dirname, '..', 'exports', semestre);
+  if (!fs.existsSync(folderPath)) {
+    fs.mkdirSync(folderPath, { recursive: true });
+  }
+
+  const descargarYGuardar = async (url, outputPath) => {
+    const response = await axios.get(url, { responseType: 'arraybuffer' });
+    fs.writeFileSync(outputPath, response.data);
+  };
+
+  const urlAlumnos = 'http://localhost:5000/api/alumnos/exportar-csv';
+  const urlMaterias = 'http://localhost:5000/api/materias/exportar-csv';
+  const urlPersonal = 'http://localhost:5000/api/personal/exportar-csv';
+
+  const rutaAlumnos = path.join(folderPath, 'alumnos.csv');
+  const rutaMaterias = path.join(folderPath, 'materias.csv');
+  const rutaPersonal = path.join(folderPath, 'personal.csv');
+
+  await Promise.all([
+    descargarYGuardar(urlAlumnos, rutaAlumnos),
+    descargarYGuardar(urlMaterias, rutaMaterias),
+    descargarYGuardar(urlPersonal, rutaPersonal),
+  ]);
+
+  const personal = await Personal.findOne({ matricula });
+  if (!personal) throw new Error('Usuario no encontrado en la colección personal');
+
+  let historial = await Historial.findOne({ semestre });
+  if (historial) {
+    historial.fecha_generacion = fecha_generacion;
+    historial.generado_por = personal._id;
+    historial.archivos = {
+      alumnos: `/descargas/${semestre}/alumnos.csv`,
+      materias: `/descargas/${semestre}/materias.csv`,
+      personal: `/descargas/${semestre}/personal.csv`,
+    };
+    await historial.save();
+  } else {
+    historial = new Historial({
+      semestre,
+      fecha_generacion,
+      generado_por: personal._id,
+      archivos: {
+        alumnos: `/descargas/${semestre}/alumnos.csv`,
+        materias: `/descargas/${semestre}/materias.csv`,
+        personal: `/descargas/${semestre}/personal.csv`,
+      },
+    });
+    await historial.save();
+  }
+
+  return historial;
+}
+
 const generarHistorial = async (req, res) => {
-    const { semestre, matricula, fecha_generacion } = req.body;
-
-    try {
-        const folderPath = path.join(__dirname, '..', 'exports', semestre);
-        if (!fs.existsSync(folderPath)) {
-            fs.mkdirSync(folderPath, { recursive: true });
-        }
-
-        // Descargar archivos desde las rutas existentes (usando axios)
-        const descargarYGuardar = async (url, outputPath) => {
-            const response = await axios.get(url, { responseType: 'arraybuffer' });
-            fs.writeFileSync(outputPath, response.data);
-        };
-
-        // URLs para descarga
-        const urlAlumnos = 'http://localhost:5000/api/alumnos/exportar-csv';
-        const urlMaterias = 'http://localhost:5000/api/materias/exportar-csv';
-        const urlPersonal = `http://localhost:5000/api/personal/exportar-csv`;
-
-        // Rutas de salida (ahora .csv)
-        const rutaAlumnos = path.join(folderPath, 'alumnos.csv');
-        const rutaMaterias = path.join(folderPath, 'materias.csv');
-        const rutaPersonal = path.join(folderPath, 'personal.csv');
-
-        // Descargar y guardar archivos
-        await Promise.all([
-            descargarYGuardar(urlAlumnos, rutaAlumnos),
-            descargarYGuardar(urlMaterias, rutaMaterias),
-            descargarYGuardar(urlPersonal, rutaPersonal),
-        ]);
-
-        const personal = await Personal.findOne({ matricula });
-        if (!personal) {
-            return res.status(404).json({ message: 'Usuario no encontrado en la colección personal' });
-        }
-
-        // Buscar historial existente y actualizarlo, o crear uno nuevo si no existe
-        let historial = await Historial.findOne({ semestre });
-        if (historial) {
-            historial.fecha_generacion = fecha_generacion || new Date();
-            historial.generado_por = personal._id;
-            historial.archivos = {
-                alumnos: `/descargas/${semestre}/alumnos.csv`,
-                materias: `/descargas/${semestre}/materias.csv`,
-                personal: `/descargas/${semestre}/personal.csv`
-            };
-            await historial.save();
-        } else {
-            historial = new Historial({
-                semestre,
-                fecha_generacion: fecha_generacion || new Date(),
-                generado_por: personal._id,
-                archivos: {
-                    alumnos: `/descargas/${semestre}/alumnos.csv`,
-                    materias: `/descargas/${semestre}/materias.csv`,
-                    personal: `/descargas/${semestre}/personal.csv`
-                }
-            });
-            await historial.save();
-        }
-
-        res.status(200).json(historial);
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Error al generar historial académico', error: err.message });
-    }
+  try {
+    const historial = await generarHistorialCore({
+      semestre: req.body.semestre,
+      matricula: req.body.matricula,
+      fecha_generacion: req.body.fecha_generacion,
+    });
+    res.status(200).json(historial);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error al generar historial académico', error: err.message });
+  }
 };
 
 const listarHistoriales = async (req, res) => {
@@ -152,7 +152,7 @@ const vaciarPersonal = async (req, res) => {
 
 // Obtener la fecha de borrado del historial académico
 const obtenerFechaBorrado = async (req, res) => {
-    const { semestre } = req.params;
+    const { semestre } = req.query;
     console.log(`Obteniendo fecha de borrado para el semestre: ${semestre}`);
     try {
         const historial = await Historial.findOne({ semestre });
