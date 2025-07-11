@@ -87,7 +87,7 @@ function CrearMateriaCG() {
           { headers: { "Content-Type": "multipart/form-data" } }
         );
     
-        toast.csv("Base de datos de materias actualizada con éxito desde el archivo CSV");
+        toast.success("Base de datos de materias actualizada con éxito desde el archivo CSV");
         setMostrarModal(false);
       } catch (error) {
         console.error("Error al subir el archivo CSV:", error);
