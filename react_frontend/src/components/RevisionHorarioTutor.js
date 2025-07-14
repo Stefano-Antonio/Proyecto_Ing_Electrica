@@ -13,7 +13,7 @@ function RevisionHorarioTutor() {
   // Recuperar el estado (nombre y matricula) desde la navegación
   const location = useLocation();
   const id_carrera = localStorage.getItem("id_carrera");
-  const { nombre , matricula, matriculaTutor } = location.state || {};
+  const { nombre, matricula, matriculaTutor, matriculaDocente, origen } = location.state || {};
   const carrerasPermitidasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
   console.log("Nombre y matrícula del tutor:", nombre, matricula, matriculaTutor, id_carrera);
   useEffect(() => {
@@ -92,6 +92,7 @@ function RevisionHorarioTutor() {
     navigate(-1, { state: { nombre, matricula: matriculaTutor || storedMatriculaTutor } });
   };
 
+  
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("userType");

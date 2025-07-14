@@ -113,6 +113,35 @@ function InicioTutor() {
     navigate(`/tutor/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaTutor , id_carrea: alumno.id_carrera } });
   };
   
+  const handleDownloadCSV = async () => {
+    const matriculas = alumnosFiltrados.map((a) => a.matricula);
+    if (matriculas.length === 0) {
+      alert("No hay alumnos filtrados para exportar.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/alumnos/exportar-csv/filtrados",
+        { matriculas },
+        { responseType: "blob" }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `alumnos_${matriculaTutor || storedMatriculaTutor}.csv`
+      );
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("❌ Error al descargar CSV:", error);
+      alert("Error al descargar la lista filtrada.");
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
@@ -154,6 +183,7 @@ function InicioTutor() {
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
         </div>
         <h2>Tutor</h2>
+        <h3>Bienvenido, {nombre || "Tutor"}</h3>
         <h4>A continuación, se muestra una lista de alumnos asignados.</h4>
 
         {/* Input de búsqueda */}
@@ -263,7 +293,9 @@ function InicioTutor() {
           <p className="no-alumnos-message">No se encontraron resultados.</p>
         )}
         <div className="horario-buttons">
-          <button className="button">
+          <button className="button"
+            onClick={handleDownloadCSV}
+            disabled={alumnosFiltrados.length === 0}>
             Descargar Lista de alumnos
           </button>
           

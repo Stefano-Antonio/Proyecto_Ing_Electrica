@@ -14,6 +14,7 @@ function InicioDocente() {
   const navigate = useNavigate();
 
   const { nombre, matricula: matriculaDocente } = location.state || {};
+  const nombreDocente = location.state?.nombre;
 
     // Guardar la matrícula del tutor en localStorage
     useEffect(() => {
@@ -22,9 +23,8 @@ function InicioDocente() {
       }
     }, [matriculaDocente]);
   
-    // Obtener la matrícula del tutor desde localStorage si no está en location.state
+    // Obtener la matrícula y nombre del docente desde localStorage si no está en location.state
     const storedMatriculaDocente = localStorage.getItem("matriculaDocente");
-  
     // 🔒 Evitar que el usuario regrese a la pantalla anterior con el botón de retroceso
     useEffect(() => {
       const bloquearAtras = () => {
@@ -74,6 +74,20 @@ function InicioDocente() {
           };
   
           const alumnosConEstatus = await Promise.all(data.alumnos.map(fetchEstatus));
+          const carrerasUnicas = [...new Set(alumnosConEstatus.map(a => a.id_carrera))];
+          const comprobanteCarreraTemp = {};
+
+          await Promise.all(carrerasUnicas.map(async (carrera) => {
+            try {
+              const res = await axios.get(`http://localhost:5000/api/coordinadores/comprobante-habilitado/${carrera}`);
+              comprobanteCarreraTemp[carrera] = res.data.comprobantePagoHabilitado;
+            } catch (error) {
+              comprobanteCarreraTemp[carrera] = true;
+            }
+          }));
+
+          setComprobantePorCarrera(comprobanteCarreraTemp);
+          
           setAlumnos(alumnosConEstatus);
         } catch (error) {
           console.error("Error al obtener los alumnos:", error);
@@ -104,9 +118,42 @@ function InicioDocente() {
     navigate(`/docente/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaDocente, id_carrera: alumno.id_carrera} });
   };
 
+  const handleDownloadCSV = async () => {
+    const matriculas = alumnosFiltrados.map((a) => a.matricula);
+    if (matriculas.length === 0) {
+      alert("No hay alumnos filtrados para exportar.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/alumnos/exportar-csv/filtrados",
+        { matriculas },
+        { responseType: "blob" }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `alumnos_${matriculaDocente || storedMatriculaDocente}.csv`
+      );
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("❌ Error al descargar CSV:", error);
+      alert("Error al descargar la lista filtrada.");
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("userType");
+    localStorage.removeItem("tutorId");
+    localStorage.removeItem("matriculaTutor"); // Limpiar la matrícula del tutor al cerrar sesión
+    localStorage.removeItem("nombreTutor");
     navigate("/");
   };
 
@@ -150,7 +197,7 @@ function InicioDocente() {
         </div>
 
         <h2>Docente</h2>
-        <h4>{`Bienvenido, ${nombre}`}</h4>
+        <h4>{`Bienvenido, ${nombre || nombreDocente}`}</h4>
         <h4>A continuación, seleccione la lista que desee visualizar</h4>
 
         <div className="docente-buttons">
@@ -178,6 +225,7 @@ function InicioDocente() {
                     <th>Nombre del alumno</th>
                     <th>Revisar horario</th>
                     <th>Estatus</th>
+                    <th>Comprobante de pago</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -268,7 +316,9 @@ function InicioDocente() {
         )}
 
         <div className="horario-buttons">
-          <button className="button">
+          <button className="button"
+            onClick={handleDownloadCSV}
+             disabled={alumnosFiltrados.length === 0}>
             Descargar Lista de alumnos
           </button>
         </div>
