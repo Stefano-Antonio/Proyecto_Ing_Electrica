@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation  } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import './App.css';
 import AlumnoListCG from './components/AlumnoListCG';
 import Encabezado from './components/Encabezado';
@@ -75,11 +76,29 @@ import './components/ModificarPersonal.css';
 import RevisionComprobantePago from './components/RevisionComprobantePago';
 import HistorialAcademico from './components/HistorialAcademico';
 
+ function AppWrapper() {
+  return (
+      <App />
+  );
+}
+
 function App() {
-  const userType = localStorage.getItem("userType") || "alumno"; // Puede ser "alumno" o "personal"
+  const location = useLocation();
+  const userType = localStorage.getItem("userType") || "alumno";
+ const [esMovil, setEsMovil] = useState(window.innerWidth <= 768);
+  const esRegistro = location.pathname === '/' || location.pathname === '/login';
+
+ const [esMovil2, setEsMovil2] = useState(window.innerWidth <= 768);
+
+useEffect(() => {
+  const manejarResize = () => {
+    setEsMovil(window.innerWidth <= 768);
+  };
+  window.addEventListener('resize', manejarResize);
+  return () => window.removeEventListener('resize', manejarResize);
+}, []);
 
   return (
-    <Router>
       <div className="App">
         <div className="Header-wrapper"> {/* Wrapper para espacio debajo del encabezado */}
           <Encabezado />
@@ -100,6 +119,7 @@ function App() {
               <Route path="/tutor/validar-pago/:matricula" element={<PrivateRoute><RevisionComprobantePago /></PrivateRoute>} />
               {/* RUTAS DE DOCENTE */}
               <Route path="/docente/alumnos" element={<PrivateRoute><InicioDocente /></PrivateRoute>} />
+              <Route path="/docente/revisar-horario/:matricula" element={<PrivateRoute><RevisionHorarioTutor /></PrivateRoute>} />
               <Route path="/docente/alumnos/validar-pago/:matricula" element={<PrivateRoute><RevisionComprobantePago /></PrivateRoute>} />
               <Route path="/docente/materias" element={<PrivateRoute><InicioDocente2 /></PrivateRoute>} />
               <Route path="/docente/materias/:materia/lista-alumnos" element={<PrivateRoute><DocenteAlumnos/></PrivateRoute>}></Route>
@@ -171,10 +191,9 @@ function App() {
           </div>
           <div className="Lat_derecha"></div> {/* Barra lateral derecha */}
         </div>
-        <Pie_pagina />
+      {esMovil && esRegistro && <Pie_pagina />}
       </div>
-    </Router>
   );
 }
 
-export default App;
+export default AppWrapper;

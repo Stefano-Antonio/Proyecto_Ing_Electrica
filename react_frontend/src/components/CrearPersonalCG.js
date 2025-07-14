@@ -40,7 +40,7 @@ function CrearPersonal() {
   };
   
 
-  
+  // Manejo de roles y matricula
   const handleRoleChange = (e) => {
     const selectedRole = e.target.value;
     let prefix = "";
@@ -78,6 +78,7 @@ function CrearPersonal() {
     setMostrarCarrera(selectedRole === "C" || selectedRole === "A");
   };
   
+  // Manejo de cambios en el formulario
   const handleChange = (e) => {
     const { id, value } = e.target;
     

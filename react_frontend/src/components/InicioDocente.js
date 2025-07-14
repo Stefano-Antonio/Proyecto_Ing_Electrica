@@ -101,7 +101,7 @@ function InicioDocente() {
 
   const handleRevisarHorario = (alumno) => {
     console.log("Navegando a: ", `/revisar-horario/${alumno.matricula}`);
-    navigate(`/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaDocente, id_carrera: alumno.id_carrera} });
+    navigate(`/docente/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaDocente, id_carrera: alumno.id_carrera} });
   };
 
   const handleLogout = () => {

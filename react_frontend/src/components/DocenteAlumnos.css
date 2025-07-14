@@ -4,29 +4,44 @@
 }
 
 .sidebar {
-  width: 200px; /* Ajusta el ancho de las barras laterales */
-  background-color: #e0e0e0; /* Color de fondo de las barras laterales */
+  width: 200px;
+  background-color: #e0e0e0;
 }
+
+.back-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 10px 20px;
+  margin: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  background-color: #002a5c;
+  color: white;
+  border: none;
+}
+
 .top-right {
   position: absolute;
   top: 10px;
   right: 10px;
-  z-index: 1; /* Asegura que se mantenga en la parte superior */
+  z-index: 1;
 }
+
 .docente-container {
-  flex: 1; /* Hace que el contenido principal ocupe el espacio restante */
+  flex: 1;
   padding: 20px;
   text-align: center;
   background-color: white;
-  position: relative; /* Permite el posicionamiento relativo del botón */
+  position: relative;
 }
 
 .docente-header {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  max-width: 1200px; /* Limita el ancho del header */
-  margin-bottom: 20px; /* Añade espacio inferior */
+  max-width: 1200px;
+  margin-bottom: 20px;
 }
 
 .docente-container h2 {
@@ -41,24 +56,15 @@
 
 .docente-content {
   margin: 0 auto;
-}
-
-.docente-table-1 {
+  overflow-x: auto; /* Scroll horizontal si es necesario */
   width: 100%;
-  table-layout: fixed; /* Hace que las columnas tengan un ancho fijo */
-}
-
-.docente-table-1 th,
-.docente-table-1 td {
-  width: 33.33%; /* Asegura que cada columna tenga el mismo ancho */
-  text-align: center; /* Centra el contenido */
 }
 
 .docente-table-1 {
+  min-width: 600px; /* Puedes aumentar si necesitas más espacio */
   width: 100%;
   border-collapse: collapse;
-  margin: 20px 0;
-  overflow-x: auto;
+  table-layout: fixed; /* Ancho fijo de columnas */
 }
 
 .docente-table-1 th,
@@ -66,6 +72,8 @@
   border: 1px solid #9c9c9c;
   padding: 10px;
   text-align: center;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 .docente-table-1 th {
@@ -73,14 +81,34 @@
   font-weight: bold;
 }
 
+.docente-table-1 th:nth-child(1),
+.docente-table-1 td:nth-child(1) {
+  width: 20%;
+}
+
+.docente-table-1 th:nth-child(2),
+.docente-table-1 td:nth-child(2) {
+  width: 30%;
+}
+
+.docente-table-1 th:nth-child(3),
+.docente-table-1 td:nth-child(3) {
+  width: 35%;
+}
+
+.docente-table-1 th:nth-child(4),
+.docente-table-1 td:nth-child(4) {
+  width: 15%;
+}
+
 .actions {
-  text-align: center; /* Centra el contenido en las celdas de acciones */
+  text-align: center;
 }
 
 .docente-table-1 img {
-  width: 24px; /* Ajusta el tamaño según sea necesario */
-  height: 24px; /* Ajusta el tamaño según sea necesario */
-  vertical-align: middle; /* Alinea los íconos verticalmente al centro */
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
 }
 
 .docente-buttons {
@@ -93,14 +121,16 @@
 .button {
   padding: 10px 20px;
   font-size: 1rem;
-  background-color:white;
-  color: white;
-  border: none;
+  background-color: white;
+  color: #002a5c;
+  border: 1px solid #002a5c;
   cursor: pointer;
+  border-radius: 8px;
 }
 
 .button:hover {
   background-color: #003a8c;
+  color: white;
 }
 
 .button:disabled {
@@ -110,7 +140,7 @@
 
 .field-group {
   display: flex;
-  flex-wrap: wrap; /* Permite que el contenido se ajuste en columnas */
+  flex-wrap: wrap;
   align-items: center;
   margin-bottom: 5px;
 }
@@ -118,13 +148,13 @@
 .field-group label {
   width: 100px;
   margin-right: 10px;
-  text-align: left; /* Alinea el texto a la derecha */
+  text-align: left;
 }
 
 .field-group input,
 .field-group select {
   flex: 1;
-  min-width: 0; /* Evita que el input se expanda fuera del contenedor */
+  min-width: 0;
   padding: 8px;
   margin-top: 5px;
 }
@@ -136,8 +166,8 @@
 }
 
 .icon-button svg {
-  width: 24px; /* Ajusta el tamaño según sea necesario */
-  height: 24px; /* Ajusta el tamaño según sea necesario */
+  width: 24px;
+  height: 24px;
   vertical-align: middle;
 }
 
@@ -172,22 +202,20 @@
   background-color: gray;
 }
 
-
-
 .logout-button {
-  background-color: #f44336; /* Color de fondo del botón */
-  color: white; /* Color del texto */
-  border: none; /* Sin borde */
-  padding: 10px 20px; /* Espaciado interno */
-  text-align: center; /* Alineación del texto */
-  text-decoration: none; /* Sin subrayado */
-  display: inline-block; /* Mostrar en línea */
-  font-size: 16px; /* Tamaño de la fuente */
-  margin: 4px 2px; /* Margen */
-  cursor: pointer; /* Cambiar el cursor al pasar sobre el botón */
-  border-radius: 12px; /* Bordes redondeados */
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 12px;
 }
 
 .logout-button:hover {
-  background-color: #d32f2f; /* Color de fondo al pasar el cursor */
+  background-color: #d32f2f;
 }

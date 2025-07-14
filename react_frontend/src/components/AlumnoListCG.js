@@ -100,7 +100,8 @@ const AlumnoListCG = () => {
   };
 
   const handleNavigate3 = (alumno) => {
-    navigate(`/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
+    console.log("Navegando a: ", `/revisar-horario/${alumno.matricula}`);
+    navigate(`/coordinador/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
   };
 
   const handleModify = (alumno) => {

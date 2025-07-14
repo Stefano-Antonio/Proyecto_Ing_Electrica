@@ -1,4 +1,5 @@
 .horario-layout {
+    position: relative;
     display: flex;
     width: 100%;
   }
@@ -9,12 +10,31 @@
   }
   
   .horario-container {
+    position: relative;
     flex: 1; /* Hace que el contenido principal ocupe el espacio restante */
-    padding: 20px;
-    text-align: center;
+    padding: 20px 0 20px 0;
     background-color: white;
   }
-  
+
+  .horario-container h2,
+.horario-container p {
+  text-align: center;
+}
+
+
+
+.back-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 10px 20px;
+  margin: 0;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+
+
   .horario-container h2 {
     font-size: 1.8rem;
     font-weight: bold;

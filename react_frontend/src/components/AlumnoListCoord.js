@@ -224,7 +224,7 @@ const AlumnoListCoord = () => {
             className="toggle-comprobante-btn"
             onClick={handleToggleComprobante}
           >
-            {mostrarComprobante ? "Ocultar comprobante de pago" : "Mostrar comprobante de pago"}
+            {mostrarComprobante ? "Descativar comprobante de pago" : "Activar comprobante de pago"}
           </button>
         </div>
 

@@ -89,9 +89,7 @@ function DocenteAlumnos() {
   return (
     <div className="docente-layout">
       <div className="docente-container">
-        <div className="top-left">
           <button className="back-button" onClick={handleBack}>Regresar</button>
-        </div>
         <div className="top-right">
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
         </div>

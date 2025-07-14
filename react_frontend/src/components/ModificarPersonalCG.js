@@ -107,7 +107,7 @@ function ModificarPersonalCG() {
                 />
               </div>
               <div className="input-wrapper short-field2">
-                <label htmlFor="matricula">ID del usuario</label>
+                <label htmlFor="matricula">Matricula</label>
                 <input
                   type="text"
                   id="matricula"

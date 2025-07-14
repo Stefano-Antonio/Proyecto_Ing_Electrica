@@ -62,6 +62,7 @@ function RevisionComprobantePago() {
       toast.success(`Comprobante marcado como ${nuevoEstatus === "Aceptado" ? "ACEPTADO" : "RECHAZADO"}`);
       // Opcional: recargar datos del alumno o navegar
       setAlumno({ ...alumno, estatusComprobante: nuevoEstatus });
+      navigate(-1);
     } catch (error) {
       toast.error("Error al actualizar el estatus del comprobante");
     }

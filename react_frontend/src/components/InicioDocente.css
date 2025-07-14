@@ -42,15 +42,15 @@
   }
   
   .docente-content {
-    margin: 0 auto;
-  }
-  
-  .docente-scrollable-table {
-    max-height: 280px;
-    overflow-y: auto;
+  margin: 0 auto;
+  overflow-x: auto;
+  width: 100%;
+
   }
 
+
   .docente-tabla {
+    min-width: 600px; /* Puedes aumentar si necesitas más espacio */
     width: 100%;
     table-layout: fixed; /* Hace que las columnas tengan un ancho fijo */
   }

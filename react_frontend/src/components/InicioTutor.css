@@ -42,24 +42,16 @@
 
 .tutor-content {
   margin: 0 auto;
-}
-
-.tutor-table {
+  overflow-x: auto; /* Habilita scroll horizontal si es necesario */
   width: 100%;
-  table-layout: fixed; /* Hace que las columnas tengan un ancho fijo */
-}
-
-.tutor-table th,
-.tutor-table td {
-  width: 33.33%; /* Asegura que cada columna tenga el mismo ancho */
-  text-align: center; /* Centra el contenido */
 }
 
 .tutor-table {
+  min-width: 600px; /* Puedes aumentar si necesitas más espacio */
   width: 100%;
   border-collapse: collapse;
   margin: 20px 0;
-  overflow-x: auto;
+  table-layout: fixed; /* Columnas de ancho fijo */
 }
 
 .tutor-table th,
@@ -67,12 +59,30 @@
   border: 1px solid #ddd;
   padding: 10px;
   text-align: center;
+  word-break: break-word;       /* Rompe palabras largas */
+  white-space: normal;          /* Permite múltiples líneas si es necesario */
 }
 
-.tutor-table th {
-  background-color: #f2f2f2;
-  font-weight: bold;
+.tutor-table th:nth-child(1),
+.tutor-table td:nth-child(1) {
+  width: 20%;
 }
+
+.tutor-table th:nth-child(2),
+.tutor-table td:nth-child(2) {
+  width: 30%;
+}
+
+.tutor-table th:nth-child(3),
+.tutor-table td:nth-child(3) {
+  width: 35%;
+}
+
+.tutor-table th:nth-child(4),
+.tutor-table td:nth-child(4) {
+  width: 15%;
+}
+
 
 
 
