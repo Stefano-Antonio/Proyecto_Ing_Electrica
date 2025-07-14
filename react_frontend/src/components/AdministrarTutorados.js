@@ -149,9 +149,7 @@ function AdministrarTutorados() {
   return (
     <div className="tutorados-layout">
       <div className="tutorados-container">
-        <div className="top-left">
           <button className="back-button" onClick={handleBack}>Regresar</button>
-        </div>
         <div className="top-right">
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
         </div>

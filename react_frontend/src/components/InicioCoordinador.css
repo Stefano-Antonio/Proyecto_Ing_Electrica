@@ -20,19 +20,47 @@
 }
 
 .header h2 {
-  margin: 5px 0 0 0;
+  margin: 20px 0 0 0;
 }
 
 .coordinador-container {
   position: relative; /* Permite el posicionamiento absoluto de elementos hijos */
-  flex: 1; /* Hace que el contenido principal ocupe el espacio restante */
   padding: 20px;
   text-align: center;
   background-color: white;
+  padding: 80px 20px 20px; /* <-- esto agrega espacio arriba para el botón */
   margin: 20px auto;
   padding: 20px;
   max-width: 1500px;
 }
+
+.logout-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px; /* Deja espacio debajo del botón */
+}
+
+
+  
+  .logout-button {
+    background-color: #f44336; /* Color de fondo del botón */
+    color: white; /* Color del texto */
+    border: none; /* Sin borde */
+    padding: 10px 20px; /* Espaciado interno */
+    text-align: center; /* Alineación del texto */
+    text-decoration: none; /* Sin subrayado */
+    display: inline-block; /* Mostrar en línea */
+    font-size: 16px; /* Tamaño de la fuente */
+    margin: 4px 2px; /* Margen */
+    cursor: pointer; /* Cambiar el cursor al pasar sobre el botón */
+    border-radius: 12px; /* Bordes redondeados */
+  }
+  
+  .logout-button:hover {
+    background-color: #d32f2f; /* Color de fondo al pasar el cursor */
+  }
+  
 
 .buttons {
   text-align: center;
@@ -50,4 +78,19 @@ button {
 
 button:hover {
   background-color: #0055a5;
+}
+
+/* Ajustes para móviles */
+@media (max-width: 600px) {
+  .logout-button {
+    top: 5px;
+    right: 5px;
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+
+  .header h2 {
+    margin-top: 50px; /* bajar más para que no choque con el botón */
+  }
+
 }

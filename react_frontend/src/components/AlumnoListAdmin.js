@@ -193,7 +193,6 @@ const AlumnoListAdmin = () => {
 
         <div className="add-delete-buttons">
           <button onClick={handleDownloadDB}>Descargar lista de alumnos</button>
-          <button onClick={handleNavigate2}>Administrar tutorados</button>
         </div>
 
         <ul>

@@ -69,6 +69,14 @@
     text-align: center; /* Centra el contenido en las celdas de acciones */
   }
   
+  .logout-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px; /* Deja espacio debajo del botón */
+}
+
+
   .docente-table img {
     width: 24px; /* Ajusta el tamaño según sea necesario */
     height: 24px; /* Ajusta el tamaño según sea necesario */

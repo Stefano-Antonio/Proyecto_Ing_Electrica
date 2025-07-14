@@ -33,6 +33,7 @@
   cursor: pointer;
 }
 
+
 .horario-header {
   display: flex;
   justify-content: space-between;
@@ -187,7 +188,7 @@
   background-color: #1900ff; /* Color de fondo del botón */
   color: white; /* Color del texto */
   border: none; /* Sin borde */
-  padding: 10px 20px; /* Espaciado interno */
+  padding: 0px 0px; /* Espaciado interno */
   text-align: center; /* Alineación del texto */
   text-decoration: none; /* Sin subrayado */
   display: inline-block; /* Mostrar en línea */
@@ -195,12 +196,21 @@
   margin: 4px 2px; /* Margen */
   cursor: pointer; /* Cambiar el cursor al pasar sobre el botón */
   border-radius: 12px; /* Bordes redondeados */
+  margin-bottom: 20px; /* Deja espacio debajo del botón */
 }
 
 .top-right {
   position: relative;
   top: 10px;
   right: 10px;
+  margin-top: 100px; /* O el valor que necesites */
+}
+
+.logout-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: -10px; /* Deja espacio debajo del botón */
 }
 
 .logout-button {

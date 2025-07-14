@@ -18,8 +18,8 @@ const InicioCoordinador = () => {
 
     return (
       <div className="coordinador-container">
-        <div className="top-right"> 
-          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
+        <div className="logout-wrapper">
+          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
         </div>
         <h2>Coordinador</h2>
         <p>A continuación, seleccione la lista que desee visualizar</p>

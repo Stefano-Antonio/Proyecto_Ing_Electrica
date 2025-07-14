@@ -23,11 +23,9 @@ function InicioAdministradorGen() {
   return (
     <div className="docente-layout">
       <div className="docente-container">
-
-        <div className="top-right"> 
-          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
+        <div className="logout-wrapper">
+          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
         </div>
-
         <h2>Administrador General</h2>
         <h4>{`Bienvenido, ${nombre}`}</h4>
         <h4>A continuacion, seleccione la lista que desee visualizar</h4>

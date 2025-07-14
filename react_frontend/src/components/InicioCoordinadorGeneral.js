@@ -4,6 +4,7 @@ import { Outlet, useNavigate,useLocation } from "react-router-dom";
 import AlumnoListCG from './AlumnoListCG';
 import AdministrarPersonalCG from './AdministrarPersonalCG';
 import AdministrarMateriasCG from './AdministrarMateriasCG';
+
 function InicioCoordinadorGen() {
 
     const [componenteActivo, setComponenteActivo] = useState('');
@@ -38,8 +39,8 @@ function InicioCoordinadorGen() {
       )}
       <div className="docente-container">
 
-        <div className="top-right"> 
-          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
+        <div className="logout-wrapper">
+          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
         </div>
 
         <h2>Coordinador General</h2>

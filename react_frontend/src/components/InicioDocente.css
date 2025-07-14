@@ -47,7 +47,11 @@
   width: 100%;
 
   }
-
+  
+  .docente-scrollable-table {
+    max-height: 280px;
+    overflow-y: auto;
+  }
 
   .docente-tabla {
     min-width: 600px; /* Puedes aumentar si necesitas más espacio */

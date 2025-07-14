@@ -133,9 +133,7 @@ function CrearAlumno() {
     <div className="alumno-layout">
       <ToastContainer position="top-right" autoClose={3000} />
       <div className="alumno-container">
-        <div className="top-left"> 
           <button className="back-button" onClick={handleBack}>Regresar</button> 
-        </div>
         <div className="top-right"> 
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
         </div>

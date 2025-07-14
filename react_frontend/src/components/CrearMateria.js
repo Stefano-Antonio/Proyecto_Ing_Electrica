@@ -174,9 +174,7 @@ function CrearMateria() {
     <div className="materia-layout">
       <ToastContainer position="top-right" autoClose={3000} />
       <div className="materia-container">
-        <div className="top-left">
           <button className="back-button" onClick={handleBack}>Regresar</button>
-        </div>
         <div className="top-right">
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
         </div>
