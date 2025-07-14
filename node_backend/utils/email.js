@@ -47,11 +47,27 @@ async function notificarAlumnoConTutorAsignado(destinatario, nombreAlumno, nombr
 
 async function enviarCorreoConPDF(destinatario, pdfBuffer, nombreAlumno) {
   const mailOptions = {
-    from: '"Control Escolar" rogerzma500@gmail.com',
+    from: '"Control Escolar" <rogerzma500@gmail.com>',
     to: destinatario,
     subject: 'Horario de materias inscritas',
-    text: `Hola , se adjunta tu horario de materias inscritas.`,
-    html: `<p>Hola <strong>${nombreAlumno}</strong>,<br> Se adjunta tu horario de materias inscritas.</p>`,
+    html: `
+      <div style="font-family: Arial, sans-serif; color: #333; padding: 10px;">
+        <h2 style="color: #005288;">Universidad Autonoma de Zacatecas</h2>
+        <p>Hola <strong>${nombreAlumno}</strong>,</p>
+
+        <p>Adjunto encontrarás el archivo con tu <strong>horario de materias inscritas</strong>.</p>
+
+        <p>Recuerda que este horario es de caracter informativo y aun no tiene validez oficial, por lo que te pedimos, estés al pendiente de la validación de tu tutor.</p>
+        <p>Si tienes alguna duda o necesitas más información, ponte en contacto con Control escolar.</p>
+        <p style="margin-top: 20px;">¡Te deseamos mucho éxito en este ciclo escolar!</p>
+
+        <p style="margin-top: 30px; font-size: 0.9em; color: #555;">
+          Atentamente,<br>
+          <strong>Departamento de Control Escolar</strong><br>
+          INIFAP C.E. Zacatecas
+        </p>
+      </div>
+    `,
     attachments: [
       {
         filename: `Horario_${nombreAlumno}.pdf`,
@@ -60,7 +76,6 @@ async function enviarCorreoConPDF(destinatario, pdfBuffer, nombreAlumno) {
       },
     ],
   };
-
   return transporter.sendMail(mailOptions);
 }
 

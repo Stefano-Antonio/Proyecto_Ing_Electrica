@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./InicioDocente2.css";
 
 function InicioDocente2() {
@@ -104,8 +107,34 @@ function InicioDocente2() {
     navigate('/docente/alumnos', { state: { nombre: nombreDocente || storedNombreDocente, matricula: matriculaDocente || storedMatriculaDocente } });
   };
 
-  const handleBack = () => {
-    navigate(-1); // Navegar a la página anterior
+  const handleDownloadCSV = async () => {
+    const ids = materiasFiltradas.map(m => m._id);
+    if (ids.length === 0) {
+      toast.error("No hay materias filtradas para exportar.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/materias/exportar-csv/filtrados",
+        { ids },
+        { responseType: "blob" }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `materias_${matriculaDocente || storedMatriculaDocente}.csv`
+      );
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("❌ Error al descargar materias filtradas:", error);
+      toast.error("No se pudo exportar el CSV.");
+    }
   };
 
   // Filtrar materias por búsqueda
@@ -187,7 +216,9 @@ function InicioDocente2() {
           <p className="no-alumnos-message">No se encontraron resultados.</p>
         )}
         <div className="horario-buttons">
-          <button className="button">
+          <button className="button"
+            onClick={handleDownloadCSV}
+            disabled={materiasFiltradas.length === 0}>
             Descargar Lista de materias
           </button>
           
