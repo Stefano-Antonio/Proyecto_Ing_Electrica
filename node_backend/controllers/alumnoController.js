@@ -664,6 +664,54 @@ exports.exportarAlumnosCSVPorCarrera = async (req, res) => {
   }
 };
 
+ 
+ // Exportar CSV con filtros aplicados
+  exports.exportarAlumnosCSVFiltrado = async (req, res) => {
+    try {
+      const { matriculas } = req.body;
+
+      if (!matriculas || !Array.isArray(matriculas) || matriculas.length === 0) {
+        return res.status(400).json({ message: "Se requiere un array de matrículas para exportar." });
+      }
+
+      const alumnos = await require("../models/Alumno").find({
+        matricula: { $in: matriculas }
+      }).populate("tutor");
+
+      if (alumnos.length === 0) {
+        return res.status(404).json({ message: "No se encontraron alumnos para exportar." });
+      }
+
+      const formattedData = alumnos.map((alumno) => ({
+        matricula: alumno.matricula,
+        nombre: alumno.nombre,
+        id_carrera: alumno.id_carrera,
+        grupo: alumno.grupo,
+        correo: alumno.correo || "Sin correo",
+        telefono: alumno.telefono || "Sin teléfono",
+        tutor: alumno.tutor?.nombre || "Sin asignar",
+        estatusHorario: alumno.estatusHorario || "Sin estatus",
+        estatusComprobante: alumno.estatusComprobante || "Sin comprobante"
+      }));
+
+      const fields = [
+        "matricula", "nombre", "id_carrera", "grupo",
+        "correo", "telefono", "tutor",
+        "estatusHorario", "estatusComprobante"
+      ];
+
+      const json2csvParser = new Parser({ fields });
+      const csv = "\ufeff" + json2csvParser.parse(formattedData);
+
+      res.header("Content-Type", "text/csv; charset=utf-8");
+      res.attachment("alumnos_filtrados.csv");
+      res.send(csv);
+    } catch (error) {
+      console.error("❌ Error al exportar alumnos filtrados:", error);
+      res.status(500).json({ message: "Error al exportar CSV de alumnos filtrados", error });
+    }
+  };
+
 exports.exportarAlumnosCSVPorCarreraFiltrados = async (req, res) => {
   try {
     const { id_carrera } = req.params;
