@@ -1,64 +1,106 @@
 const PDFDocument = require('pdfkit');
-const { Readable } = require('stream');
 
 function generarPDFHorario(nombreAlumno, carrera, materias) {
   if (!Array.isArray(materias)) materias = [];
-  // 1. Documento en horizontal
+
   const doc = new PDFDocument({ margin: 40, size: 'A4', layout: 'landscape' });
   let buffers = [];
 
   doc.on('data', buffers.push.bind(buffers));
 
-  // Título
-  doc.fontSize(25).text(`UNIVERSIDAD AUTONOMA DE ZACATECAS`, { align: 'center' });
+  // === Encabezado ===
+  doc.fontSize(25).font('Helvetica-Bold').text('UNIVERSIDAD AUTÓNOMA DE ZACATECAS', { align: 'center' });
   doc.moveDown(0.5);
-  doc.fontSize(20).text(`Alumno:  ${nombreAlumno}`, { align: 'center' });
-  doc.moveDown(0.5);
+  doc.fontSize(20).font('Helvetica').text(`Alumno: ${nombreAlumno}`, { align: 'center' });
+  doc.moveDown(0.3);
   doc.fontSize(14).text(`Carrera: ${carrera}`, { align: 'center' });
-  doc.moveDown(1.5);
+  doc.moveDown(0.3);
+  doc.fontSize(12).fillColor('gray')
+    .text('Este documento es de carácter informativo y carece de validez oficial.', { align: 'center' });
+  doc.fillColor('black');
+  doc.moveDown(1.2);
 
-  // 2. Encabezados de la tabla
-  const tableTop = doc.y;
-  const col1 = 40, col2 = 180, col3 = 260;
-  const colDias = [340, 420, 500, 580, 660, 740]; // Lunes a Sábado
+  // === Configuración de columnas ===
+  const startY = doc.y;
+  const colWidths = {
+    materia: 120,
+    grupo: 60,
+    salon: 60,
+    dias: 70, // ancho por día
+  };
 
-  doc.fontSize(12).text('Materia', col1, tableTop, { bold: true });
-  doc.text('Grupo', col2, tableTop);
-  doc.text('Salón', col3, tableTop);
+  const colPositions = {
+    materia: 40,
+    grupo: 40 + colWidths.materia + 10,
+    salon: 40 + colWidths.materia + 10 + colWidths.grupo + 10,
+  };
 
   const diasSemana = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
-  diasSemana.forEach((dia, idx) => {
-    doc.text(dia.charAt(0).toUpperCase() + dia.slice(1), colDias[idx], tableTop);
+  diasSemana.forEach((dia, i) => {
+    colPositions[dia] = colPositions.salon + colWidths.salon + 10 + i * (colWidths.dias + 5);
   });
 
+  // === Encabezados de la tabla ===
+  doc.fontSize(11).font('Helvetica-Bold');
+  doc.text('Materia', colPositions.materia, startY, { width: colWidths.materia });
+  doc.text('Grupo', colPositions.grupo, startY, { width: colWidths.grupo });
+  doc.text('Salón', colPositions.salon, startY, { width: colWidths.salon });
+
+  diasSemana.forEach((dia) => {
+    doc.text(dia.charAt(0).toUpperCase() + dia.slice(1), colPositions[dia], startY, {
+      width: colWidths.dias,
+      align: 'center',
+    });
+  });
+
+  // Línea debajo del encabezado
   doc.moveDown(0.5);
-  doc.moveTo(col1, doc.y).lineTo(820, doc.y).stroke();
+  doc.moveTo(40, doc.y).lineTo(800, doc.y).stroke();
 
-  // 3. Filas de la tabla
+  // === Filas de datos ===
+  doc.font('Helvetica');
   materias.forEach((materia) => {
-    const y = doc.y + 5;
-    doc.fontSize(11)
-      .text(materia.nombre || '', col1, y)
-      .text(materia.grupo || '', col2, y)
-      .text(materia.salon || '', col3, y);
+    const rowTop = doc.y + 4;
 
-    diasSemana.forEach((dia, idx) => {
-      const hora = materia.horarios && materia.horarios[dia] ? materia.horarios[dia] : '';
-      doc.text(hora, colDias[idx], y);
+    // Verificación de salto de página
+    if (rowTop > doc.page.height - 60) {
+      doc.addPage();
+    }
+
+    // Ajuste de texto con salto de línea automático
+    doc.fontSize(10);
+    doc.text(materia.nombre || '', colPositions.materia, rowTop, {
+      width: colWidths.materia,
+      lineGap: 2,
     });
 
-    doc.moveDown(1.2);
-    doc.moveTo(col1, doc.y).lineTo(820, doc.y).strokeColor('#cccccc').stroke();
+    doc.text(materia.grupo || '', colPositions.grupo, rowTop, {
+      width: colWidths.grupo,
+      align: 'center',
+    });
+
+    doc.text(materia.salon || '', colPositions.salon, rowTop, {
+      width: colWidths.salon,
+      align: 'center',
+    });
+
+    diasSemana.forEach((dia) => {
+      const hora = materia.horarios?.[dia] || '';
+      doc.text(hora, colPositions[dia], rowTop, {
+        width: colWidths.dias,
+        align: 'center',
+      });
+    });
+
+    doc.moveDown(2);
+    doc.moveTo(40, doc.y).lineTo(800, doc.y).strokeColor('#e0e0e0').stroke();
     doc.strokeColor('black');
   });
 
   doc.end();
 
   return new Promise((resolve, reject) => {
-    doc.on('end', () => {
-      const pdfData = Buffer.concat(buffers);
-      resolve(pdfData);
-    });
+    doc.on('end', () => resolve(Buffer.concat(buffers)));
     doc.on('error', reject);
   });
 }

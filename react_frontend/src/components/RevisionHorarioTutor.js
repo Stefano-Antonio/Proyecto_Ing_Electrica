@@ -84,11 +84,13 @@ function RevisionHorarioTutor() {
       alert("Hubo un error al actualizar el estatus.");
     }
   };
+
+  const storedMatriculaTutor = localStorage.getItem("matriculaTutor");
   
 
-  const handleBack = () => { 
-    navigate(-1); // Navegar a la página anterior 
-  }
+  const handleBack = () => {
+    navigate(-1, { state: { nombre, matricula: matriculaTutor || storedMatriculaTutor } });
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
