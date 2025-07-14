@@ -196,7 +196,6 @@
   margin: 4px 2px; /* Margen */
   cursor: pointer; /* Cambiar el cursor al pasar sobre el botón */
   border-radius: 12px; /* Bordes redondeados */
-  margin-bottom: 20px; /* Deja espacio debajo del botón */
 }
 
 .top-right {

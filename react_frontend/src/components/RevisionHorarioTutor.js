@@ -72,13 +72,13 @@ function RevisionHorarioTutor() {
       if (!response.ok) {
         throw new Error("Error al actualizar el estatus");
       }
-  
+      //esperar 1 segundo antes de navegar
       navigate(-1); // Regresar a la página anterior
   
       if (nuevoEstatus === 0) { // Si está rechazado
         await eliminarHorario(); // Esperar a que se complete
   
-        await enviarComentarioCorreo(); // Esperar a que se complete
+        //await enviarComentarioCorreo(); // Esperar a que se complete
       }
     } catch (error) {
       alert("Hubo un error al actualizar el estatus.");
