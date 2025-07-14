@@ -108,6 +108,20 @@ const AlumnoListCG = () => {
     navigate("/modificar-alumno-cg", { state: { alumno, matriculaCord: matriculaCord } });
   };
 
+  // Función para validar el comprobante de pago
+  const handleValidate = (alumno) => {
+    console.log("Navegando a: ", `/validar-pago-cg/${alumno.matricula}`);
+    navigate(`/validar-pago-cg/${alumno.matricula}`, {
+      state: {
+        nombre: alumno.nombre,
+        matricula: alumno.matricula,
+        id_carrera: alumno.id_carrera,
+        matriculaCord: matriculaCord
+      }
+    });
+  };
+
+
   const setModal = (id) => {
     setAlumnoAEliminar(id);
     setMostrarModal(true);
@@ -199,36 +213,57 @@ const AlumnoListCG = () => {
                     </td>
                     <td>{getEstatusIcon(alumno.estatus)}</td>
                     <td>
-                      {!comprobantePorCarrera[alumno.id_carrera] ? (
-                        <span style={{ color: "#888" }}>Deshabilitado</span>
-                      ) : (
-                        comprobantes.includes(`Pago_${alumno.matricula}.pdf`) ? (
-                          alumno.estatusComprobante === "Rechazado" ? (
-                            <svg width="20" height="20" fill="red" viewBox="0 0 24 24" title="Rechazado">
+                    {!comprobantePorCarrera[alumno.id_carrera] ? (
+                      <span style={{ color: "#888" }}>Deshabilitado</span>
+                    ) : (
+                      comprobantes.includes(`Pago_${alumno.matricula}.pdf`) ? (
+                        alumno.estatusComprobante === "Rechazado" ? (
+                          <button
+                            className="icon-button"
+                            onClick={() => handleValidate(alumno)}
+                            title="Comprobante rechazado"
+                            style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                          >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="red" viewBox="0 0 24 24">
+                            <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
+                          </svg>
+                        </button>
+                        ) : alumno.estatusComprobante === "Pendiente" ? (
+                          <button
+                            className="icon-button"
+                            onClick={() => handleValidate(alumno)}
+                            title="Comprobante pendiente de revisión"
+                            style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                          >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#FFD600" viewBox="0 0 24 24">
+                            <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
+                          </svg>
+                        </button>
+                        ) : alumno.estatusComprobante === "Revisado" || alumno.estatusComprobante === "Aceptado" ? (
+                          <button
+                            className="icon-button"
+                            onClick={() => handleValidate(alumno)}
+                            title="Comprobante aceptado"
+                            style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" viewBox="0 0 24 24">
                               <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
                             </svg>
-                          ) : alumno.estatusComprobante === "Pendiente" ? (
-                            <svg width="20" height="20" fill="#FFD600" viewBox="0 0 24 24" title="Pendiente">
-                              <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
-                            </svg>
-                          ) : alumno.estatusComprobante === "Revisado" || alumno.estatusComprobante === "Aceptado" ? (
-                            <svg width="20" height="20" fill="green" viewBox="0 0 24 24" title="Aceptado">
-                              <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
-                            </svg>
-                          ) : (
-                            <svg width="20" height="20" fill="#BDBDBD" viewBox="0 0 24 24" title="Sin estatus">
-                              <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
-                            </svg>
-                          )
+                          </button>
                         ) : (
-                          <span title="Sin comprobante">
-                            <svg width="20" height="20" fill="#BDBDBD" viewBox="0 0 24 24">
-                              <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
-                            </svg>
-                          </span>
+                          <svg width="20" height="20" fill="#BDBDBD" viewBox="0 0 24 24" title="Sin estatus">
+                            <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
+                          </svg>
                         )
-                      )}
-                    </td>
+                      ) : (
+                        <span title="Sin comprobante">
+                          <svg width="20" height="20" fill="#BDBDBD" viewBox="0 0 24 24">
+                            <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
+                          </svg>
+                        </span>
+                      )
+                    )}
+                  </td>
                     <td>
                       <div className="action-buttons">
                         <button className="icon-button" onClick={() => handleModify(alumno)}>
