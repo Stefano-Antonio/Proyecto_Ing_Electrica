@@ -54,26 +54,35 @@ function CrearMateria() {
 
   const handleSubmitCSV = async (e) => {
     e.preventDefault();
+
     if (!file) {
       toast.warn("Por favor selecciona un archivo CSV");
       return;
     }
-  
+
+    console.log("📁 Archivo seleccionado:", file);
+
     const formData = new FormData();
     formData.append("csv", file);
-  
+
     try {
-      await axios.post(
-        `http://localhost:5000/api/materias/subir-csv-por-carrera?id_carrera=${id_carrera}`, // Solo actualiza materias de la carrera
+      const response = await axios.post(
+        `http://localhost:5000/api/materias/subir-csv-por-carrera?id_carrera=${id_carrera}`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
-  
-      toast.success("Base de datos de materias actualizada con éxito desde el archivo CSV");
+
+      toast.success(response.data.message || "Base de datos actualizada con éxito desde el archivo CSV");
       setMostrarModal(false);
     } catch (error) {
-      console.error("Error al subir el archivo CSV:", error);
-      toast.error("Hubo un error al actualizar la base de datos");
+      console.error("❌ Error al subir el archivo CSV:", error);
+
+      const mensaje =
+        error.response?.data?.message ||
+        error.message ||
+        "Ocurrió un error al subir el archivo CSV";
+
+      toast.error(`❌ ${mensaje}`);
     }
   };
   
