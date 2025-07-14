@@ -106,10 +106,8 @@ function RevisionHorarioTutor() {
   return (
     <div className="horario-layout">
       <div className="horario-container">
-          <button className="back-button" onClick={handleBack}>Regresar</button>
-        <div className="logout-wrapper">
-          <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
-        </div>
+  <button className="button-small logout-button" onClick={handleLogout}>Cerrar sesión</button>
+  <button className="button-small back-button" onClick={() => navigate(-1)}>Regrsar</button>
 
         <h1>Revisión de horario</h1>
         {alumno ? (

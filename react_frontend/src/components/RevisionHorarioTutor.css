@@ -184,19 +184,6 @@
   left: 10px;
 }
 
-.back-button {
-  background-color: #1900ff; /* Color de fondo del botón */
-  color: white; /* Color del texto */
-  border: none; /* Sin borde */
-  padding: 0px 0px; /* Espaciado interno */
-  text-align: center; /* Alineación del texto */
-  text-decoration: none; /* Sin subrayado */
-  display: inline-block; /* Mostrar en línea */
-  font-size: 16px; /* Tamaño de la fuente */
-  margin: 4px 2px; /* Margen */
-  cursor: pointer; /* Cambiar el cursor al pasar sobre el botón */
-  border-radius: 12px; /* Bordes redondeados */
-}
 
 .top-right {
   position: relative;
@@ -212,18 +199,28 @@
   margin-bottom: -10px; /* Deja espacio debajo del botón */
 }
 
+.button-small {
+  font-size: 14px;
+  padding: 6px 12px;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  position: absolute;
+  top: 10px;
+}
+
 .logout-button {
-  background-color: #f44336; /* Color de fondo del botón */
-  color: white; /* Color del texto */
-  border: none; /* Sin borde */
-  padding: 10px 20px; /* Espaciado interno */
-  text-align: center; /* Alineación del texto */
-  text-decoration: none; /* Sin subrayado */
-  display: inline-block; /* Mostrar en línea */
-  font-size: 16px; /* Tamaño de la fuente */
-  margin: 4px 2px; /* Margen */
-  cursor: pointer; /* Cambiar el cursor al pasar sobre el botón */
-  border-radius: 12px; /* Bordes redondeados */
+  background-color: #f44336;
+  right: 10px;
+}
+
+.back-button {
+  background-color: #1900ff;
+  left: 10px;
 }
 
 
