@@ -1,0 +1,8 @@
+﻿id_materia,id_carrera,nombre,salon,grupo,cupo,docente,laboratorio,lunes,martes,miercoles,jueves,viernes,sabado
+5,IEInd,Taller de Microcontroladores,L201,A,35,Sin asignar,Si,10:00-12:00,-,10:00-12:00,-,10:00-12:00,-
+2,IEInd,Electrónica Digital,A102,A,35,Sin asignar,Si,-,10:00-12:00,-,12:00-14:00,-,-
+3,IEInd,Instrumentación Industrial,A103,A,35,Sin asignar,Si,-,-,12:00-14:00,-,07:30-09:30,-
+4,IEInd,Control Automático,A104,A,35,Sin asignar,No,-,12:00-14:00,-,14:00-16:00,-,-
+1,IEInd,Circuitos Eléctricos I,A101,A,35,Sin asignar,No,07:30-09:30,-,07:30-09:30,-,12:00-14:00,-
+6,IEInd,Sistemas de Potencia,A105,A,35,Sin asignar,No,-,07:30-09:30,-,10:00-12:00,-,-
+7,ISftw,Redes de computadoras,A101,A,35,Sin asignar,No,-,07:30-09:30,-,10:00-12:00,-,-

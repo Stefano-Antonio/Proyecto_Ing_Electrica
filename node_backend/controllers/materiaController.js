@@ -651,9 +651,13 @@ exports.subirMateriasCSVPorCarrera = async (req, res) => {
           return res.status(400).json({ message: "El archivo CSV está vacío" });
         }
 
+        const carreraPermitida = req.user?.id_carrera || req.query.id_carrera;
+          if (!carreraPermitida) {
+            return res.status(403).json({ message: "No se pudo determinar la carrera del usuario." });
+          }
+
         console.log("✅ Datos obtenidos del CSV después de limpiar:", results);
 
-        // Detectar carreras únicas en el CSV
         const carrerasUnicasCSV = [...new Set(results.map(m => m.id_carrera?.trim()))];
         const materiasPorCarrera = {};
 
@@ -665,8 +669,18 @@ exports.subirMateriasCSVPorCarrera = async (req, res) => {
           materiasPorCarrera[carrera].add(id_materia);
         });
 
+        // Filtrar solo materias con la carrera autorizada
+        const materiasFiltradas = results.filter((materia) => {
+          const carreraCSV = materia.id_carrera?.trim();
+          if (carreraCSV !== carreraPermitida) {
+            console.warn(`❌ Materia ignorada por carrera inválida: ${materia.id_materia}, carrera en CSV: ${carreraCSV}`);
+            return false;
+          }
+          return true;
+        });
+
         await Promise.all(
-          results.map(async (materiaData) => {
+          materiasFiltradas.map(async (materiaData) => {
             let {
               id_materia, id_carrera, nombre, salon, grupo, cupo, docente,
               lunes, martes, miercoles, jueves, viernes, sabado, laboratorio
@@ -682,13 +696,15 @@ exports.subirMateriasCSVPorCarrera = async (req, res) => {
 
             const materiaExistente = await Materia.findOne({ id_materia });
 
-            // Si la materia cambió de carrera, se elimina del plan anterior
-            if (materiaExistente && materiaExistente.id_carrera !== id_carrera) {
-              await Materia.findByIdAndDelete(materiaExistente._id);
-              console.log(`🔥 Materia ${id_materia} movida de ${materiaExistente.id_carrera} a ${id_carrera}`);
+            // Si ya existe pero con otra carrera, no se modifica
+            if (materiaExistente && materiaExistente.id_carrera !== carreraPermitida) {
+              console.log(`⚠ Materia ${id_materia} ya existe con otra carrera (${materiaExistente.id_carrera}). Se ignora.`);
+              return;
             }
 
-            const materiaActual = await Materia.findOne({ id_materia, id_carrera });
+            const carreraFinal = materiaExistente ? materiaExistente.id_carrera : carreraPermitida;
+
+            const materiaActual = await Materia.findOne({ id_materia, id_carrera: carreraFinal });
 
             let docenteObjectId = null;
             if (docente && docente !== "Sin asignar") {
@@ -713,18 +729,17 @@ exports.subirMateriasCSVPorCarrera = async (req, res) => {
             }
 
             const materiaActualizada = await Materia.findOneAndUpdate(
-              { id_materia, id_carrera },
+              { id_materia, id_carrera: carreraFinal },
               {
-                id_materia, id_carrera, nombre,
+                id_materia, id_carrera: carreraFinal, nombre,
                 horarios: horariosFinal, salon, grupo, cupo,
                 docente: docenteObjectId, laboratorio: laboratorioBool
               },
               { upsert: true, new: true }
             );
 
-            // Actualizar relación con docente si cambió
             if (materiaActual && materiaActual.docente &&
-                (!docenteObjectId || !materiaActual.docente.equals(docenteObjectId))) {
+              (!docenteObjectId || !materiaActual.docente.equals(docenteObjectId))) {
               await Docentes.findByIdAndUpdate(
                 materiaActual.docente,
                 { $pull: { materias: materiaActual._id } }
@@ -743,8 +758,8 @@ exports.subirMateriasCSVPorCarrera = async (req, res) => {
           })
         );
 
-        // 🔐 Realizar limpieza solo si el CSV contiene una sola carrera
-        if (carrerasUnicasCSV.length === 1) {
+        // 🔐 Limpieza: solo si el CSV contiene una sola carrera y es la permitida
+        if (carrerasUnicasCSV.length === 1 && carrerasUnicasCSV[0] === carreraPermitida) {
           const carrera = carrerasUnicasCSV[0];
           const idsCSV = Array.from(materiasPorCarrera[carrera]);
           await Materia.deleteMany({
@@ -753,7 +768,7 @@ exports.subirMateriasCSVPorCarrera = async (req, res) => {
           });
           console.log(`🧹 Materias eliminadas del plan ${carrera} que no están en el CSV.`);
         } else {
-          console.log("⚠ CSV contiene múltiples carreras. No se aplica limpieza para evitar pérdida de datos.");
+          console.log("⚠ No se realiza limpieza. CSV contiene múltiples carreras o carrera no autorizada.");
         }
 
         fs.unlinkSync(req.file.path);

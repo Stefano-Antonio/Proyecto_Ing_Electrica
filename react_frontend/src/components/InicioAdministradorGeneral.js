@@ -10,7 +10,7 @@ function InicioAdministradorGen() {
 
   console.log("Estado recibido:", location.state);
 
-  const nombre = location.state?.nombre || "Coordinador";
+  const nombre = location.state?.nombre || "Administrador";
 
 
   const handleLogout = () => {
