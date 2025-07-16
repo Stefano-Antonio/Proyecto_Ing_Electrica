@@ -95,9 +95,10 @@ router.post('/personal/login', async (req, res) => {
     return res.status(200).json({
       mensaje: 'Inicio de sesión exitoso',
       nombre: personal.nombre,
+      matricula: personal.matricula,
       roles: personal.roles,
       id_carrera: id_carrera,
-      token: 'mock-token', // Genera un token real si usas JWT
+      token: 'mock-token' // Genera un token real si usas JWT
     });
   } catch (error) {
     console.error('Error en loginPersonal:', error);

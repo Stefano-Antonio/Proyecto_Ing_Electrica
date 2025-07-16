@@ -161,23 +161,17 @@ function CrearPersonal() {
       toast.error("Por favor selecciona un archivo CSV.");
       return;
     }
-  
-    const id_carrera = localStorage.getItem("id_carrera");
-    if (!id_carrera) {
-      toast.error("ID de carrera no encontrado.");
-      return;
-    }
-  
+
     const formData = new FormData();
     formData.append("csv", file);
-  
+
     try {
       await axios.post(
-        `http://localhost:5000/api/personal/subir-csv/carrera/${id_carrera}`, // Ahora se pasa en la URL
+        "http://localhost:5000/api/personal/subir-csv",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
-  
+
       toast.success("Base de datos actualizada con éxito desde el archivo CSV");
       setMostrarModal(false);
     } catch (error) {
@@ -193,18 +187,12 @@ function CrearPersonal() {
   };
   
   const handleDownloadCSV = async () => {
-    const id_carrera = localStorage.getItem("id_carrera");
-    if (!id_carrera) {
-      toast.error("ID de carrera no encontrado.");
-      return;
-    }
-  
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/personal/exportar-csv/carrera/${id_carrera}`,
-        { responseType: "blob" } // Recibir como blob para descarga
+        "http://localhost:5000/api/personal/exportar-csv",
+        { responseType: "blob" }
       );
-  
+
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
@@ -223,7 +211,9 @@ function CrearPersonal() {
     <div className="persona1-layout">
       <ToastContainer position="top-right" autoClose={3000} />
       <div className="persona1-container">
+        <div className="top-left"> 
           <button className="back-button" onClick={handleBack}>Regresar</button> 
+        </div>
         <div className="top-right"> 
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
         </div>

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const personalController = require('../controllers/personalController');
+const personalController = require('../controllers/PersonalController');
 
 // Rutas para importar/exportar CSV
 router.post('/subir-csv', personalController.upload.single('csv'), personalController.subirPersonalCSV);

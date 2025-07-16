@@ -311,74 +311,200 @@ exports.deletePersonalCord = async (req, res) => {
 
 // Subir datos desde CSV
 exports.subirPersonalCSV = async (req, res) => {
-    if (!req.file) {
-      return res.status(400).json({ message: 'No se ha enviado ningún archivo CSV' });
-    }
-  
-    const results = [];
-    
-    fs.createReadStream(req.file.path)
-      .pipe(csv())
-      .on('data', (data) => {
-        results.push(data);
-      })
-      .on('end', async () => {
-        try {
-          const matriculasCSV = results.map((personal) => personal.matricula);
-  
-          for (const personalData of results) {
-            const { matricula, nombre, password, roles, correo, telefono } = personalData;
-  
-            await Personal.findOneAndUpdate(
-              { matricula },
-              { nombre, telefono, correo, roles, password }, 
+  if (!req.file) {
+    return res.status(400).json({ message: 'No se ha enviado ningún archivo CSV' });
+  }
+
+  const results = [];
+
+  fs.createReadStream(req.file.path)
+    .pipe(csv())
+    .on('data', (data) => {
+      const cleanedData = {};
+      Object.keys(data).forEach((key) => {
+        cleanedData[key.replace(/"/g, "").trim()] = data[key];
+      });
+      results.push(cleanedData);
+    })
+    .on('end', async () => {
+      try {
+        const matriculasCSV = results.map((p) => p.matricula?.trim()).filter(Boolean);
+
+        // Obtener al coordinador general actual para protegerlo completamente
+        const coordinadorGeneral = await Personal.findOne({ roles: "CG" });
+
+        for (const personalData of results) {
+          let { matricula, nombre, password, roles, correo, telefono, id_carrera } = personalData;
+          if (!matricula || !nombre || !password || !roles || !correo || !telefono) continue;
+
+          matricula = matricula.trim();
+
+          // Si es el coordinador general, ignorar por completo
+          if (coordinadorGeneral && matricula === coordinadorGeneral.matricula) {
+            console.log(`🛡️ Coordinador General protegido: ${matricula}`);
+            continue;
+          }
+
+          if (typeof roles === "string") {
+            roles = roles.split(",").map(r => r.trim().toUpperCase());
+          }
+
+          // Actualizar o crear personal
+          await Personal.findOneAndUpdate(
+            { matricula },
+            { nombre, telefono, correo, roles, password },
+            { upsert: true, new: true }
+          );
+
+          // Crear documentos secundarios por rol
+          if (roles.includes("D")) {
+            await Docentes.findOneAndUpdate(
+              { personalMatricula: matricula },
+              { personalMatricula: matricula },
               { upsert: true, new: true }
             );
           }
-  
-          // Eliminar registros que ya no estén en el CSV
-          await Personal.deleteMany({ matricula: { $nin: matriculasCSV } });
-  
-          fs.unlinkSync(req.file.path); // Eliminar el archivo CSV tras procesarlo
-          res.status(200).json({ message: 'Base de datos actualizada con éxito desde el archivo CSV' });
-  
-        } catch (error) {
-          console.error('Error al procesar el CSV:', error);
-          res.status(500).json({ message: 'Error al actualizar la base de datos desde el CSV', error });
+
+          if (roles.includes("T")) {
+            await Tutores.findOneAndUpdate(
+              { personalMatricula: matricula },
+              { personalMatricula: matricula },
+              { upsert: true, new: true }
+            );
+          }
+
+          if (roles.includes("C") && id_carrera && id_carrera.trim()) {
+            await Coordinadores.findOneAndUpdate(
+              { personalMatricula: matricula },
+              { personalMatricula: matricula, id_carrera: id_carrera.trim() },
+              { upsert: true, new: true }
+            );
+          }
+
+          if (roles.includes("A") && id_carrera && id_carrera.trim()) {
+            await Administradores.findOneAndUpdate(
+              { personalMatricula: matricula },
+              { personalMatricula: matricula, id_carrera: id_carrera.trim() },
+              { upsert: true, new: true }
+            );
+          }
         }
-      })
-      .on('error', (err) => {
-        console.error('Error al leer el CSV:', err);
-        res.status(500).json({ message: 'Error al procesar el archivo CSV', error: err });
-      });
-  };
+
+        // 🔐 Proteger CG, coordinadores generales y administradores generales
+        const coordinadoresGenerales = await Coordinadores.find({ id_carrera: { $exists: false } }).select("personalMatricula");
+        const administradoresGenerales = await Administradores.find({ id_carrera: { $exists: false } }).select("personalMatricula");
+
+        const protegidos = new Set([
+          ...(coordinadoresGenerales.map(c => c.personalMatricula)),
+          ...(administradoresGenerales.map(a => a.personalMatricula)),
+          ...(coordinadorGeneral ? [coordinadorGeneral.matricula] : [])
+        ]);
+
+        const personalAEliminar = await Personal.find({
+          $and: [
+            { matricula: { $nin: matriculasCSV } },
+            { matricula: { $nin: Array.from(protegidos) } }
+          ]
+        });
+
+        await Promise.all(
+          personalAEliminar.map(async (p) => {
+            const { matricula } = p;
+            await Personal.findByIdAndDelete(p._id);
+            await Promise.all([
+              Docentes.findOneAndDelete({ personalMatricula: matricula }),
+              Tutores.findOneAndDelete({ personalMatricula: matricula }),
+              Coordinadores.findOneAndDelete({ personalMatricula: matricula }),
+              Administradores.findOneAndDelete({ personalMatricula: matricula })
+            ]);
+            console.log(`🗑️ Personal eliminado: ${matricula}`);
+          })
+        );
+
+        fs.unlinkSync(req.file.path);
+        res.status(200).json({ message: 'Base de datos de personal actualizada con éxito desde el archivo CSV' });
+
+      } catch (error) {
+        console.error('Error al procesar el CSV:', error);
+        res.status(500).json({ message: 'Error al actualizar la base de datos desde el CSV', error });
+      }
+    })
+    .on('error', (err) => {
+      console.error('Error al leer el CSV:', err);
+      res.status(500).json({ message: 'Error al procesar el archivo CSV', error: err });
+    });
+};
+
+
   
-  // Exportar datos a CSV
-  exports.exportarPersonalCSV = async (req, res) => {
-    try {
-      const personal = await Personal.find(); // Obtén todos los registros
-  
-      // Modificar la estructura de los datos antes de convertirlos a CSV
-      const formattedData = personal.map((p) => ({
+exports.exportarPersonalCSV = async (req, res) => {
+  try {
+    // 🔍 Buscar relaciones de carrera para coordinadores y administradores
+    const [coordinadores, administradores] = await Promise.all([
+      Coordinadores.find({}).select("personalMatricula id_carrera"),
+      Administradores.find({}).select("personalMatricula id_carrera")
+    ]);
+
+    // 🔗 Mapeo de matrícula a conjunto de carreras
+    const carreraPorMatricula = {};
+
+    const agregarCarrera = (matricula, carrera) => {
+      if (!carreraPorMatricula[matricula]) {
+        carreraPorMatricula[matricula] = new Set();
+      }
+      carreraPorMatricula[matricula].add(carrera);
+    };
+
+    coordinadores.forEach(c => {
+      if (c.personalMatricula && c.id_carrera) {
+        agregarCarrera(c.personalMatricula, c.id_carrera);
+      }
+    });
+
+    administradores.forEach(a => {
+      if (a.personalMatricula && a.id_carrera) {
+        agregarCarrera(a.personalMatricula, a.id_carrera);
+      }
+    });
+
+    // 👤 Obtener personal que NO sea CG (Coordinador General)
+    const personal = await Personal.find({
+      $and: [
+        { roles: { $in: ["D", "T", "C", "A", "AG"] } },
+        { roles: { $ne: "CG" } }
+      ]
+    });
+
+    const formattedData = personal.map(p => {
+      const idCarreras = (p.roles.includes("C") || p.roles.includes("A"))
+        ? Array.from(carreraPorMatricula[p.matricula] || []).join(", ")
+        : "";
+
+      return {
         matricula: p.matricula,
         nombre: p.nombre,
         password: p.password,
-        roles: p.roles.join(""), // 🔹 Convierte ["D", "T"] en "DT"
+        roles: p.roles.join(""),
+        id_carrera: idCarreras,
         telefono: p.telefono,
-        correo: p.correo,
-      }));
-  
-      const fields = ["matricula", "nombre", "password", "roles", "telefono", "correo"];
-      const json2csvParser = new Parser({ fields });
-      const csv = json2csvParser.parse(formattedData);
-  
-      res.header("Content-Type", "text/csv");
-      res.attachment("personal.csv");
-      res.send(csv);
-    } catch (error) {
-      res.status(500).json({ message: "Error al exportar a CSV", error });
-    }
-  };
+        correo: p.correo
+      };
+    });
+
+    const fields = ["matricula", "nombre", "password", "roles", "id_carrera", "telefono", "correo"];
+    const json2csvParser = new Parser({ fields });
+    const csv = "\ufeff" + json2csvParser.parse(formattedData); // BOM para Excel
+
+    res.header("Content-Type", "text/csv; charset=utf-8");
+    res.attachment("personal.csv");
+    res.send(csv);
+
+  } catch (error) {
+    console.error("❌ Error al exportar CSV:", error);
+    res.status(500).json({ message: "Error al exportar a CSV", error });
+  }
+};
+
   
   // Exportar personal por carrera a CSV
   exports.exportarPersonalCSVPorCarrera = async (req, res) => {
@@ -414,16 +540,25 @@ exports.subirPersonalCSV = async (req, res) => {
       }
   
       // Formatear datos para el CSV
-      const formattedData = personal.map((p) => ({
+      const formattedData = personal.map((p) => {
+      const base = {
         matricula: p.matricula,
         nombre: p.nombre,
         password: p.password,
-        roles: p.roles.join(""), // 🔹 Convierte ["D", "T"] en "DT"
+        roles: p.roles.join(""),
         telefono: p.telefono,
         correo: p.correo,
-      }));
-  
-      const fields = ["matricula", "nombre", "password", "roles", "telefono", "correo"];
+      };
+
+      // Solo coordinadores y administradores deben incluir id_carrera
+      if (p.roles.includes("C") || p.roles.includes("A")) {
+        base.id_carrera = id_carrera;
+      }
+
+      return base;
+    });
+
+    const fields = ["matricula", "nombre", "password", "roles", "id_carrera", "telefono", "correo"];
       const json2csvParser = new Parser({ fields });
       let csv = json2csvParser.parse(formattedData);
   
@@ -520,19 +655,22 @@ exports.subirPersonalCSV = async (req, res) => {
     }
   };
 
-  // Subir personal desde CSV por carrera
+// Subir datos desde CSV por carrera
   exports.subirPersonalCSVPorCarrera = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "No se ha enviado ningún archivo CSV" });
     }
-  
-    const { id_carrera } = req.params; // Obtener id_carrera desde la URL
+
+    const { id_carrera } = req.params;
     if (!id_carrera) {
       return res.status(400).json({ message: "Se requiere el ID de la carrera en la URL" });
     }
-  
+
+    const matriculaActual = req.headers["x-matricula-coordinador"] || req.user?.matricula;
+    console.log("✅ Matrícula coordinador recibida:", matriculaActual);
+
     const results = [];
-  
+    console.log("Procesando archivo CSV...");
     fs.createReadStream(req.file.path, { encoding: "utf-8" })
       .pipe(csv())
       .on("data", (data) => {
@@ -541,7 +679,7 @@ exports.subirPersonalCSV = async (req, res) => {
           const cleanKey = key.replace(/"/g, "").trim();
           cleanedData[cleanKey] = data[key];
         });
-  
+
         results.push(cleanedData);
       })
       .on("end", async () => {
@@ -549,81 +687,103 @@ exports.subirPersonalCSV = async (req, res) => {
           if (results.length === 0) {
             return res.status(400).json({ message: "El archivo CSV está vacío" });
           }
-  
-          const matriculasCSV = results.map((p) => p.matricula?.toString().trim()).filter(Boolean);
-  
+
+          const matriculasCSV = results
+            .map((p) => p.matricula?.toString().trim())
+            .filter(Boolean);
+
           await Promise.all(
             results.map(async (personalData) => {
               let { matricula, nombre, password, roles, correo, telefono } = personalData;
               matricula = matricula ? matricula.toString().trim() : null;
-  
-              if (!matricula) {
-                return;
-              }
-  
-              if (!roles) {
-                return;
-              }
-  
+
+              if (!matricula || !roles) return;
+
               if (typeof roles === "string") {
                 roles = roles.split(",").map((r) => r.trim().toUpperCase());
               }
-  
-              // 🔹 Insertar o actualizar personal
+
+              // Crear o actualizar Personal
               const personalActualizado = await Personal.findOneAndUpdate(
                 { matricula },
                 { nombre, telefono, correo, roles, password },
                 { upsert: true, new: true }
               );
-  
-  
-              // 🔥 Manejo de roles
+
+              // Asignar roles
               if (roles.includes("D")) {
                 await Docentes.findOneAndUpdate(
                   { personalMatricula: matricula },
-                  { $set: { personalMatricula: matricula } }, // Solo actualizar personalMatricula
+                  { $set: { personalMatricula: matricula } },
                   { upsert: true, new: true }
                 );
               }
-  
+
               if (roles.includes("T")) {
                 await Tutores.findOneAndUpdate(
                   { personalMatricula: matricula },
-                  { $set: { personalMatricula: matricula } }, // Solo actualizar personalMatricula
+                  { $set: { personalMatricula: matricula } },
                   { upsert: true, new: true }
                 );
               }
-  
+
               if (roles.includes("C")) {
                 await Coordinadores.findOneAndUpdate(
                   { personalMatricula: matricula },
-                  { $set: { personalMatricula: matricula, id_carrera } }, // Solo actualizar personalMatricula e id_carrera
+                  { $set: { personalMatricula: matricula, id_carrera } },
                   { upsert: true, new: true }
                 );
               }
-  
+
               if (roles.includes("A")) {
                 await Administradores.findOneAndUpdate(
                   { personalMatricula: matricula },
-                  { $set: { personalMatricula: matricula, id_carrera } }, // Solo actualizar personalMatricula e id_carrera
+                  { $set: { personalMatricula: matricula, id_carrera } },
                   { upsert: true, new: true }
                 );
               }
             })
           );
-  
-          // Eliminar registros que ya no estén en el CSV y que pertenezcan a la carrera
+
+          // Verificar y eliminar registros que ya no estén en el CSV
           const personalAEliminar = await Personal.find({ matricula: { $nin: matriculasCSV } });
+
           await Promise.all(
             personalAEliminar.map(async (personal) => {
               const { matricula } = personal;
-  
-              // Verificar si el personal pertenece a la carrera
+
+              // No eliminar al coordinador actual
+              if (matricula === matriculaActual) {
+                console.log("🔐 Coordinador actual no se elimina.");
+                return;
+              }
+
               const esDocente = await Docentes.findOne({ personalMatricula: matricula });
               const esTutor = await Tutores.findOne({ personalMatricula: matricula });
               const esCoordinador = await Coordinadores.findOne({ personalMatricula: matricula, id_carrera });
               const esAdministrador = await Administradores.findOne({ personalMatricula: matricula, id_carrera });
-  
+
+              // Si es docente, verificar si tiene materias en otras carreras
+              if (esDocente) {
+                const materias = await Materia.find({ docente: esDocente._id });
+                const tieneOtrasCarreras = materias.some(m => m.id_carrera !== id_carrera);
+                if (tieneOtrasCarreras) {
+                  console.log(`🧷 Docente ${matricula} tiene materias en otras carreras. No se elimina.`);
+                  return;
+                }
+              }
+
+              // Si es tutor, verificar si tiene alumnos en otras carreras
+              if (esTutor) {
+                const alumnos = await Alumnos.find({ tutor: esTutor._id });
+                const tieneOtrasCarreras = alumnos.some(a => a.id_carrera !== id_carrera);
+                if (tieneOtrasCarreras) {
+                  console.log(`🧷 Tutor ${matricula} tiene alumnos en otras carreras. No se elimina.`);
+                  return;
+                }
+              }
+
+              // Solo eliminar si pertenece a esta carrera
               if (esDocente || esTutor || esCoordinador || esAdministrador) {
                 await Personal.findByIdAndDelete(personal._id);
                 await Promise.all([
@@ -632,20 +792,23 @@ exports.subirPersonalCSV = async (req, res) => {
                   Coordinadores.findOneAndDelete({ personalMatricula: matricula, id_carrera }),
                   Administradores.findOneAndDelete({ personalMatricula: matricula, id_carrera })
                 ]);
+                console.log(`🗑️ Personal eliminado: ${matricula}`);
               }
             })
           );
-  
+
           fs.unlinkSync(req.file.path);
-          res.status(200).json({ message: `Base de datos de personal de la carrera ${id_carrera} actualizada con éxito desde el CSV` });
-  
+          res.status(200).json({
+            message: `Base de datos de personal de la carrera ${id_carrera} actualizada con éxito desde el CSV`
+          });
+
         } catch (error) {
-          console.error("Error al procesar el CSV:", error);
+          console.error("❌ Error al procesar el CSV:", error);
           res.status(500).json({ message: "Error al actualizar la base de datos de personal desde el CSV", error });
         }
       })
       .on("error", (err) => {
-        console.error("Error al leer el CSV:", err);
+        console.error("❌ Error al leer el CSV:", err);
         res.status(500).json({ message: "Error al procesar el archivo CSV", error: err });
       });
   };

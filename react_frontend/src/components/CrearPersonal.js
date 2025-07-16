@@ -17,6 +17,8 @@ function CrearPersonal() {
     password: ""
   });
   const id_carrera = localStorage.getItem("id_carrera");
+  const matriculaCoord = localStorage.getItem("matricula");
+  console.log("Matrícula del coordinador:", matriculaCoord); // Agregar console
   console.log("ID de la carrera:", id_carrera); // Agregar console.log aquí
 
   const navigate = useNavigate();
@@ -126,7 +128,9 @@ function CrearPersonal() {
       await axios.post(
         `http://localhost:5000/api/personal/subir-csv/carrera/${id_carrera}`, // ✅ Ahora se pasa en la URL
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        { headers: { "Content-Type": "multipart/form-data", 
+          "x-matricula-coordinador": matriculaCoord  // ✅ enviar matrícula del coordinador
+        } }
       );
   
       toast.success("Base de datos actualizada con éxito desde el archivo CSV");
@@ -159,7 +163,7 @@ function CrearPersonal() {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "personal.csv");
+      link.setAttribute("download", `personal_${id_carrera}.csv`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -174,12 +178,15 @@ function CrearPersonal() {
     <div className="persona1-layout">
       <ToastContainer position="top-right" autoClose={3000} />
       <div className="persona1-container">
+        <div className="top-left"> 
           <button className="back-button" onClick={handleBack}>Regresar</button> 
+        </div>
         <div className="top-right"> 
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 
         </div>
         <h1>Agregar personal</h1>
         <div className="persona1-content">
+          <p>Bienvenido </p>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <div className="input-wrapper short-field">
