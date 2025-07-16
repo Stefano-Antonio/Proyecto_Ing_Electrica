@@ -130,10 +130,10 @@ const AdministrarPersonalAG = () => {
             <table className="personal-table">
               <thead>
                 <tr>
-            <th>Programa</th>
-            <th>Nombre</th>
-            <th>Matricula</th>
-            <th>Permisos</th>
+                    <th>Programa</th>
+                    <th>Nombre</th>
+                    <th>Matricula</th>
+                    <th>Permisos</th>
                 </tr>
               </thead>
               <tbody>

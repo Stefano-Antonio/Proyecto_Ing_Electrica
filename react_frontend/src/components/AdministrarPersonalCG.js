@@ -150,11 +150,11 @@ const AdministrarPersonalCG = () => {
             <table className="personal-table">
               <thead>
                 <tr>
-            <th>Programa</th>
-            <th>Nombre</th>
-            <th>Matricula</th>
-            <th>Permisos</th>
-            <th>Acciones</th>
+                    <th>Programa</th>
+                    <th>Nombre</th>
+                    <th>Matricula</th>
+                    <th>Permisos</th>
+                    <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>

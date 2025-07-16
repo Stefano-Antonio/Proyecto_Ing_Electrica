@@ -87,7 +87,6 @@ function InicioDocente() {
           }));
 
           setComprobantePorCarrera(comprobanteCarreraTemp);
-          
           setAlumnos(alumnosConEstatus);
         } catch (error) {
           console.error("Error al obtener los alumnos:", error);
@@ -143,7 +142,7 @@ function InicioDocente() {
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error("❌ Error al descargar CSV:", error);
+      console.error(" Error al descargar CSV:", error);
       alert("Error al descargar la lista filtrada.");
     }
   };
@@ -177,10 +176,17 @@ function InicioDocente() {
 
   
   // Filtrar alumnos por búsqueda
-  const alumnosFiltrados = alumnos.filter(alumno => 
-    alumno.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    alumno.estatus.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const alumnosFiltrados = alumnos.filter(alumno => {
+  const nombreCoincide = alumno.nombre.toLowerCase().includes(searchTerm.toLowerCase());
+  const estatusCoincide = alumno.estatus.toLowerCase() === searchTerm.toLowerCase();
+  
+  // Si searchTerm coincide exactamente con un estatus conocido, filtramos solo por estatus
+  const esFiltroPorEstatus = ["falta de revisar", "revisado", "en espera"].includes(searchTerm.toLowerCase());
+
+  return esFiltroPorEstatus ? estatusCoincide : nombreCoincide || estatusCoincide;
+});
+
+  console.log("Alumnos filtrados:", alumnosFiltrados);
 
     const handleValidate = (alumno) => {
       console.log("Navegando a: ", `/validar-pago/${alumno.matricula}`);
@@ -213,15 +219,17 @@ function InicioDocente() {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="search-bar"
         />
-        
+  <button onClick={() => setSearchTerm("")} className="clear-filter-button">
+    Limpiar filtro
+  </button>
         {error && <p className="error-message">{error}</p>}
-        
         {alumnosFiltrados.length > 0 ? (
           <div className="docente-content">
             <div className="docente-scrollable-table">
               <table className="docente-tabla">
                 <thead>
                   <tr>
+                    <th>Matricula</th>
                     <th>Nombre del alumno</th>
                     <th>Revisar horario</th>
                     <th>Estatus</th>
@@ -231,6 +239,7 @@ function InicioDocente() {
                 <tbody>
                   {alumnosFiltrados.map((alumno) => (
                     <tr key={alumno._id}>
+                      <td>{alumno.matricula}</td>
                       <td>{alumno.nombre}</td>
                       <td>
                         <button
@@ -252,7 +261,11 @@ function InicioDocente() {
                           </svg>
                         </button>
                       </td>
-                      <td>{getEstatusIcon(alumno.estatus)}</td>
+                  <td
+                      className="estatus"
+                      onClick={() => setSearchTerm(alumno.estatus)}
+                      style={{ cursor: "pointer", color: getEstatusIcon(alumno.estatus) }}
+                    >{getEstatusIcon(alumno.estatus)}</td>
                       <td>
                         {!comprobantePorCarrera[alumno.id_carrera] ? (
                           <span style={{ color: "#888" }}>Deshabilitado</span>

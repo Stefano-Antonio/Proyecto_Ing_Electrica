@@ -6,14 +6,23 @@
   }
   
   
-  .search-bar {
-    width: 100%; /* Ajusta el ancho al 100% del contenedor */
-    max-width: 800px; /* Define un ancho máximo para el search bar */
-    padding: 10px;
-    margin-bottom: 20px;
-    font-size: 16px;
-    box-sizing: border-box; /* Incluye el padding y el borde en el ancho total */
-  }
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Espacio entre input y botón */
+  margin-bottom: 1rem;
+}
+
+.search-bar {
+  width: 250px;
+  min-width: 250px; /* Ancho mínimo del input */
+  height: 38px; /* Altura del input */
+  padding: 8px;
+
+  flex: 1;
+  padding: 8px;
+  font-size: 1rem;
+}
 
   .header img {
     width: 60px;
@@ -213,4 +222,18 @@
 .materia-table th:last-child, 
 .materia-table td:last-child {
     width: 180px; /* Adjust width of the "Actions" column */
+}
+
+.clear-filter-button {
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  background-color: #002060;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.clear-filter-button:hover {
+  background-color: #002060;
 }

@@ -155,28 +155,45 @@ const AlumnoListCG = () => {
     return <div className="loading">Cargando información de alumnos...</div>;
   }
 
-  const alumnosFiltrados = alumnos.filter(alumno =>
-    (alumno.matricula || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (alumno.nombre || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (alumno.id_carrera || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-    ((tutoresNombres[alumno._id] || "").toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (alumno.estatus || "").toLowerCase().includes(searchTerm.toLowerCase())
-  );
+
+    // Filtrar alumnos por búsqueda
+  const alumnosFiltrados = alumnos.filter(alumno => {
+    const search = searchTerm.toLowerCase();
+    const nombreCoincide = alumno.nombre.toLowerCase().includes(search);
+    const matriculaCoincide = alumno.matricula.toLowerCase().includes(search);
+    const tutorCoincide =
+      tutoresNombres[alumno._id] &&
+      tutoresNombres[alumno._id].toLowerCase().includes(search);
+    const estatusCoincide = alumno.estatus.toLowerCase() === search;
+
+    // Si el término de búsqueda es un estatus exacto, solo filtrar por estatus
+    const esFiltroPorEstatus = ["falta de revisar", "revisado", "en espera"].includes(search);
+
+    return esFiltroPorEstatus
+      ? estatusCoincide
+      : nombreCoincide || matriculaCoincide || tutorCoincide || alumno.estatus.toLowerCase().includes(search);
+  });
 
   return (
-    <div className="alumno-layout">
-      <ToastContainer position="top-right" autoClose={3000} />
-      <div className="alumno-container">
-        <h3>Administrar alumnos</h3>
-        <p>Lista de alumnos asociados al programa académico</p>
-        <input
-          type="text"
-          placeholder="Buscar por matrícula, nombre, tutor o estatus..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-bar"
-        />
+  <div className="alumno-layout">
+  <ToastContainer position="top-right" autoClose={3000} />
+  <div className="alumno-container">
+    <h3>Administrar alumnos</h3>
+    <p>Lista de alumnos asociados al programa académico</p>
 
+    {/* Contenedor de la barra de búsqueda y el botón */}
+    <div className="search-container">
+      <input
+        type="text"
+        placeholder="Buscar por matrícula, nombre, tutor o estatus..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="search-bar"
+      />
+      <button onClick={() => setSearchTerm("")} className="clear-filter-button">
+        Limpiar filtro
+      </button>
+    </div>
         {alumnosFiltrados.length > 0 ? (
           <div className="alumno-scrollable-table">
             <table className="alumnos-table">
@@ -211,7 +228,11 @@ const AlumnoListCG = () => {
                         </svg>
                       </button>
                     </td>
-                    <td>{getEstatusIcon(alumno.estatus)}</td>
+                  <td
+                      className="estatus"
+                      onClick={() => setSearchTerm(alumno.estatus)}
+                      style={{ cursor: "pointer", color: getEstatusIcon(alumno.estatus) }}
+                    >{getEstatusIcon(alumno.estatus)}</td>
                     <td>
                     {!comprobantePorCarrera[alumno.id_carrera] ? (
                       <span style={{ color: "#888" }}>Deshabilitado</span>

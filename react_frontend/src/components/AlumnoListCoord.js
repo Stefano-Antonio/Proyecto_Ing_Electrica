@@ -192,14 +192,25 @@ const AlumnoListCoord = () => {
   if (loading) {
     return <div className="loading">Cargando información de alumnos...</div>;
   }
-  
-  // Filtrar alumnos por búsqueda
-  const alumnosFiltrados = alumnos.filter(alumno => 
-    alumno.matricula.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    alumno.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (tutoresNombres[alumno._id] && tutoresNombres[alumno._id].toLowerCase().includes(searchTerm.toLowerCase())) ||
-    alumno.estatus.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+
+    // Filtrar alumnos por búsqueda
+  const alumnosFiltrados = alumnos.filter(alumno => {
+    const search = searchTerm.toLowerCase();
+    const nombreCoincide = alumno.nombre.toLowerCase().includes(search);
+    const matriculaCoincide = alumno.matricula.toLowerCase().includes(search);
+    const tutorCoincide =
+      tutoresNombres[alumno._id] &&
+      tutoresNombres[alumno._id].toLowerCase().includes(search);
+    const estatusCoincide = alumno.estatus.toLowerCase() === search;
+    const idCarreraCoincide = alumno.id_carrera.toLowerCase().includes(search);
+    // Si el término de búsqueda es un estatus exacto, solo filtrar por estatus
+    const esFiltroPorEstatus = ["falta de revisar", "revisado", "en espera"].includes(search);
+
+    return esFiltroPorEstatus
+      ? estatusCoincide
+      : nombreCoincide || matriculaCoincide || tutorCoincide || idCarreraCoincide || alumno.estatus.toLowerCase().includes(search);
+  });
+
 
   return (
     <div className="alumno-layout">
@@ -209,7 +220,7 @@ const AlumnoListCoord = () => {
       <p>Lista de alumnos asociados al programa académico</p>
       
         
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
           {/* Input de búsqueda */}
           <input
             type="text"
@@ -217,14 +228,16 @@ const AlumnoListCoord = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-bar"
-            style={{ flex: 1, minWidth: "250px", height: "38px" }} // Más ancho y alto fijo
+            style={{ flex: 1, minWidth: "450px", height: "50px" }} // Más ancho y alto fijo
           />
-          {/* Boton para deshabilitar comprobante de pago */}
           <button
-            className="toggle-comprobante-btn"
+           className="clear-filter-button"
             onClick={handleToggleComprobante}
           >
-            {mostrarComprobante ? "Descativar comprobante de pago" : "Activar comprobante de pago"}
+            {mostrarComprobante ? "Descativar comp. de pago" : "Activar comp. de pago"}
+          </button>
+          <button onClick={() => setSearchTerm("")} className="clear-filter-button">
+            Limpiar filtro
           </button>
         </div>
 
@@ -264,7 +277,11 @@ const AlumnoListCoord = () => {
                     </svg>
                   </button>
                 </td>
-                <td>{getEstatusIcon(alumno.estatus)}</td>
+                  <td
+                      className="estatus"
+                      onClick={() => setSearchTerm(alumno.estatus)}
+                      style={{ cursor: "pointer", color: getEstatusIcon(alumno.estatus) }}
+                    >{getEstatusIcon(alumno.estatus)}</td>
                 {mostrarComprobante && (
                   <td>
                     {comprobantes.includes(`Pago_${alumno.matricula}.pdf`) ? (

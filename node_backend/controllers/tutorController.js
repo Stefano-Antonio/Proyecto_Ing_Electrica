@@ -23,6 +23,7 @@ exports.getAlumnosAsignados = async (req, res) => {
 
         // Devolver la lista de alumnos asociados al tutor
         res.status(200).json({ alumnos: tutor.alumnos });
+        console.log('Alumnos encontrados:', tutor.alumnos);
     } catch (error) {
         console.error("Error al obtener los alumnos del tutor:", error);
         res.status(500).json({ message: "Error al obtener los alumnos del tutor" });

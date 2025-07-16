@@ -22,54 +22,82 @@ function HorarioSeleccion() {
   const carrerasPermitidasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
   const [horasMaximas, setHorasMaximas] = useState("");
 
-    // Evitar que el usuario regrese a la pantalla anterior con el botón de retroceso
-    useEffect(() => {
-      const bloquearAtras = () => {
-        window.history.pushState(null, null, window.location.href);
-      };
-  
-      bloquearAtras();
-      window.addEventListener("popstate", bloquearAtras);
-      
-      fetchHorasCoordinador();
-      return () => {
-        window.removeEventListener("popstate", bloquearAtras);
-      };
-    }, []);
-    
-  
-  // Función para obtener las materias desde el backend
-  useEffect(() => {
-    const fetchMaterias = async () => {
-      try {
-        const id_carrera = location.state?.id_carrera; // Obtener el id_carrera desde la navegación
-        console.error("id_carrera:",id_carrera);
-        if (!id_carrera) {
-          console.error("ID de carrera no encontrado");
-          return;
-        }
-        // Usamos la nueva ruta con el parámetro id_carrera
-        const response = await fetch(`http://localhost:5000/api/materias/carrera/${id_carrera}`);
-        const data = await response.json();
+// 1. Obtener y sincronizar id_carrera desde localStorage o location.state
+useEffect(() => {
+  const carrera = location.state?.id_carrera || localStorage.getItem("id_carrera");
+  if (carrera) {
+    setIDCarrera(carrera);
+    localStorage.setItem("id_carrera", carrera);
+  }
+}, [location.state]);
 
-        console.log("Materias recibidas:", data); // Verificar qué datos llegan
+// 2. Obtener materias cuando id_carrera esté listo
+useEffect(() => {
+  const fetchMaterias = async () => {
+    if (!id_carrera) {
+      console.error("ID de carrera no disponible para fetchMaterias");
+      return;
+    }
 
-        const sortedData = data.sort((a, b) => a.grupo.localeCompare(b.grupo));
-        setMaterias(sortedData);
+    try {
+      const response = await fetch(`http://localhost:5000/api/materias/carrera/${id_carrera}`);
+      const data = await response.json();
+      const sortedData = data.sort((a, b) => a.grupo.localeCompare(b.grupo));
+      setMaterias(sortedData);
+      setGrupos([...new Set(data.map((materia) => materia.grupo))]);
+    } catch (error) {
+      console.error("Error al obtener materias:", error);
+    }
+  };
 
-        const uniqueGroups = [...new Set(data.map((materia) => materia.grupo))];
-        setGrupos(uniqueGroups);
-      } catch (error) {
-        console.error("Error al obtener las materias:", error);
-      }
-    };
-    fetchMaterias();
-  }, []);
+  fetchMaterias();
+}, [id_carrera]); // ✅ se dispara cuando id_carrera está definido
 
-  useEffect(() => {
-    const nombre = location.state?.nombre || localStorage.getItem("nombreAlumno");
-    setNombreAlumno(nombre || "Alumno desconocido");
-  }, [location.state]);
+// 3. Cargar materias seleccionadas desde localStorage cuando se tengan las materias
+useEffect(() => {
+  const stored = localStorage.getItem("materiasSeleccionadas");
+  if (stored && materias.length > 0) {
+    const seleccionadasGuardadas = JSON.parse(stored);
+
+    const coinciden = materias.filter(m =>
+      seleccionadasGuardadas.some(s =>
+        s.nombre === m.nombre && s.grupo === m.grupo
+      )
+    );
+
+    setMateriasSeleccionadas(coinciden);
+  }
+}, [materias]);
+
+// 4. Guardar materias seleccionadas en localStorage cuando cambien
+useEffect(() => {
+  localStorage.setItem("materiasSeleccionadas", JSON.stringify(materiasSeleccionadas));
+}, [materiasSeleccionadas]);
+
+// 5. Guardar nombre también en localStorage (si aplica)
+useEffect(() => {
+  const nombre = location.state?.nombre || localStorage.getItem("nombreAlumno");
+  if (nombre) {
+    setNombreAlumno(nombre);
+    localStorage.setItem("nombreAlumno", nombre);
+  }
+}, [location.state]);
+
+// 6. Al cargar, evitar retroceso y cargar horas máximas
+useEffect(() => {
+  const bloquearAtras = () => {
+    window.history.pushState(null, null, window.location.href);
+  };
+
+  bloquearAtras();
+  window.addEventListener("popstate", bloquearAtras);
+
+  fetchHorasCoordinador(); // No olvides que esto depende de id_carrera también
+
+  return () => {
+    window.removeEventListener("popstate", bloquearAtras);
+  };
+}, []);
 
   const handleDesactivarTodas = () => {
     setMateriasSeleccionadas([]); // Vaciar las seleccionadas
@@ -78,6 +106,7 @@ function HorarioSeleccion() {
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("userType");
+    localStorage.removeItem("materiasSeleccionadas");
     navigate("/");
   }
 
@@ -196,6 +225,7 @@ function HorarioSeleccion() {
   
     // Si no hay conflictos y las horas son válidas, navegar a la siguiente página
     console.log("Datos", id_carrera, nombre, matricula, id);
+    localStorage.removeItem("materiasSeleccionadas");
     navigate("/validacion", { state: { materiasSeleccionadas, nombre, matricula, id, id_carrera } });
   };
 
@@ -233,7 +263,6 @@ function HorarioSeleccion() {
         <p>Bienvenido(a): <strong>{nombre || "Cargando..."}</strong></p>
         <h4>Matricula <strong>{matricula || "Cargando..."}</strong></h4>
         <p>A continuación, seleccione las materias que va a cargar en el semestre</p>
-
         <div className="filter-container">
         {/* Input de búsqueda */}
           <input
@@ -243,62 +272,57 @@ function HorarioSeleccion() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-bar"
           />
-
           {/* Recuadro para el número máximo de horas permitidas */}
           <div className="max-hours-box">
             <label>Número máximo de horas permitidas: </label>
             <span className="max-hours-value">{horasMaximas || "Cargando..."}</span>
           </div>
           </div>
-
           <div className="horario-content">
           {!isSemiescolarizada && (
           <>
           <table className="horario-table">
             <thead>
-            <tr>
-                <th>Seleccionar</th>
-                <th>Grupo</th>
-                <th>Salón</th>
-                <th>Cupo</th>
-                <th>Materia</th>
-                <th>Lunes</th>
-                <th>Martes</th>
-                <th>Miércoles</th>
-                <th>Jueves</th>
-                <th>Viernes</th>
-                <th>Horas</th> {/* nueva columna */}
-          </tr>
+                <tr>
+                    <th>Seleccionar</th>
+                    <th>Grupo</th>
+                    <th>Salón</th>
+                    <th>Cupo</th>
+                    <th>Materia</th>
+                    <th>Lunes</th>
+                    <th>Martes</th>
+                    <th>Miércoles</th>
+                    <th>Jueves</th>
+                    <th>Viernes</th>
+                    <th>Horas</th> 
+              </tr>
           </thead>
           <tbody>
-          {materiasFiltradas.map((materia, index) => (
-            <tr key={index}>
-            <td>
-              <input
-              type="checkbox"
-              checked={isMateriaSeleccionada(materia)} // Vincula con el estado
-              onChange={(e) => handleCheckboxChange(materia, e.target.checked)}
-              disabled={materia.cupo === 0} // Deshabilitar si el cupo es 0
-              />
-            </td>
-            <td>{materia.grupo || "N/A"}</td>
-            <td>{materia.salon}</td>
-            <td>{materia.cupo}</td>
-            <td>{materia.nombre}</td>
-            <td>{materia.horarios.lunes || "—"}</td>
-            <td>{materia.horarios.martes || "—"}</td>
-            <td>{materia.horarios.miercoles || "—"}</td>
-            <td>{materia.horarios.jueves || "—"}</td>
-            <td>{materia.horarios.viernes || "—"}</td>
-            <td>{materia.laboratorio ? 8 : 4}</td> {/* Mostrar las horas aquí */}
-            </tr>
-          ))}
+          {materiasFiltradas.map((materia, index) => {
+            return (
+              <tr key={index}>
+                <td><input type="checkbox"
+                  checked={isMateriaSeleccionada(materia)}
+                  onChange={(e) => handleCheckboxChange(materia, e.target.checked)}
+                  disabled={materia.cupo === 0}
+                /></td>
+                <td>{materia.grupo || "N/A"}</td>
+                <td>{materia.salon}</td>
+                <td>{materia.cupo}</td>
+                <td>{materia.nombre}</td>
+                <td>{materia.horarios.lunes || "—"}</td>
+                <td>{materia.horarios.martes || "—"}</td>
+                <td>{materia.horarios.miercoles || "—"}</td>
+                <td>{materia.horarios.jueves || "—"}</td>
+                <td>{materia.horarios.viernes || "—"}</td>
+                <td>{materia.laboratorio ? 8 : 4}</td>
+              </tr>
+            );
+          })}
           </tbody>
         </table>
-        
         </>
       )}
-
       {isSemiescolarizada && (
         <table className="horario-table">
           <thead>
@@ -315,30 +339,30 @@ function HorarioSeleccion() {
             </tr>
           </thead>
           <tbody>
-            {materiasFiltradas.map((materia, index) => (
-              <tr key={index}>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={isMateriaSeleccionada(materia)} // Vincula con el estado
+            {materiasFiltradas.map((materia, index) => {
+              return (
+                <tr key={index}>
+                  <td><input type="checkbox"
+                    checked={isMateriaSeleccionada(materia)}
                     onChange={(e) => handleCheckboxChange(materia, e.target.checked)}
-                    // Deshabilitar si el cupo es 0
-                  />
-                </td>
-                <td>{materia.grupo || "N/A"}</td>
-                <td>{materia.salon}</td>
-                <td>{materia.cupo}</td>
-                <td>{materia.nombre}</td>
-                <td>{materia.semi || "—"}</td>
-                <td>{materia.horarios.viernes || "—"}</td>
-                <td>{materia.horarios.sabado || "—"}</td>
-                <td>{materia.laboratorio ? 8 : 4}</td> {/* Mostrar las horas aquí */}
-              </tr>
-            ))}
+                    disabled={materia.cupo === 0}
+                  /></td>
+                  <td>{materia.grupo || "N/A"}</td>
+                  <td>{materia.salon}</td>
+                  <td>{materia.cupo}</td>
+                  <td>{materia.nombre}</td>
+                  <td>{materia.horarios.lunes || "—"}</td>
+                  <td>{materia.horarios.martes || "—"}</td>
+                  <td>{materia.horarios.miercoles || "—"}</td>
+                  <td>{materia.horarios.jueves || "—"}</td>
+                  <td>{materia.horarios.viernes || "—"}</td>
+                  <td>{materia.laboratorio ? 8 : 4}</td>
+                </tr>
+              );
+            })}
           </tbody>
-        </table>
+            </table>
                    )}
-
                   </div>
                   {mostrarModal && (
                   <div className="modal">
@@ -346,7 +370,6 @@ function HorarioSeleccion() {
                     <h3>TRASLAPE DE MATERIAS</h3>
                     <p>Existe un empalme en las siguientes materias:</p>
                     <ul>
-                    {/* Crear una lista única de materias involucradas en conflictos */}
             {[...new Set(conflictos.flatMap(conflicto => [conflicto.materiaA, conflicto.materiaB]))].map((materia, index) => (
             <li key={index}>
               - <strong>{materia}</strong>
@@ -360,7 +383,6 @@ function HorarioSeleccion() {
           </div>
         </div>
         )}
-
         {mostrarModalHoras && (
         <div className="modal">
           <div className="modal-content">
@@ -371,7 +393,6 @@ function HorarioSeleccion() {
           </div>
         </div>
       )}
-
         <div className="horario-buttons">
         <button className="button" onClick={handleDesactivarTodas}>
           Desactivar todas

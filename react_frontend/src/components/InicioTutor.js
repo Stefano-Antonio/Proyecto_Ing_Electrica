@@ -42,7 +42,7 @@ function InicioTutor() {
     const fetchComprobantes = async () => {
       try {
         const response = await axios.get("http://localhost:5000/api/alumnos/comprobantes/lista");
-        setComprobantes(response.data); // 👈 Aquí llenas la lista
+        setComprobantes(response.data); 
       } catch (error) {
         console.error("Error al obtener la lista de comprobantes:", error);
         setComprobantes([]);
@@ -138,7 +138,7 @@ function InicioTutor() {
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error("❌ Error al descargar CSV:", error);
+      console.error("Error al descargar CSV:", error);
       alert("Error al descargar la lista filtrada.");
     }
   };
@@ -170,11 +170,17 @@ function InicioTutor() {
   };
 
   // Filtrar alumnos por búsqueda
-  const alumnosFiltrados = alumnos.filter(alumno => 
-    alumno.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    alumno.estatus.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const alumnosFiltrados = alumnos.filter(alumno => {
+  const nombreCoincide = alumno.nombre.toLowerCase().includes(searchTerm.toLowerCase());
+  const estatusCoincide = alumno.estatus.toLowerCase() === searchTerm.toLowerCase();
+  
+  // Si searchTerm coincide exactamente con un estatus conocido, filtramos solo por estatus
+  const esFiltroPorEstatus = ["falta de revisar", "revisado", "en espera"].includes(searchTerm.toLowerCase());
 
+  return esFiltroPorEstatus ? estatusCoincide : nombreCoincide || estatusCoincide;
+});
+
+  console.log("Alumnos filtrados:", alumnosFiltrados);
 
   return (
     <div className="tutor-layout">
@@ -194,13 +200,16 @@ function InicioTutor() {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="search-bar"
         />
-
+  <button onClick={() => setSearchTerm("")} className="clear-filter-button">
+    Limpiar filtro
+  </button>
         {error && <p className="error-message">{error}</p>}
         {alumnosFiltrados.length > 0 ? (
         <div className="tutor-content">
           <table className="tutor-table">
             <thead>
               <tr>
+                <th>Matricula</th>
                 <th>Nombre del alumno</th>
                 <th>Revisar horario</th>
                 <th>Estatus</th>
@@ -210,13 +219,13 @@ function InicioTutor() {
             <tbody>
               {alumnosFiltrados.map((alumno) => (
                 <tr key={alumno._id}>
+                  <td>{alumno.matricula}</td>
                   <td>{alumno.nombre}</td>
                   <td>
                     <button
                       className="icon-button"
                       onClick={() => handleRevisarHorario(alumno)}
-                      disabled={alumno.estatus === "En espera"} // Deshabilitar botón si el estatus es "En espera"
-                    >
+                      disabled={alumno.estatus === "En espera"} >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -224,14 +233,17 @@ function InicioTutor() {
                         stroke="blue"
                         strokeWidth="2"
                         strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
+                        strokeLinejoin="round">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                         <circle cx="12" cy="12" r="3"></circle>
                       </svg>
                     </button>
                   </td>
-                  <td>{getEstatusIcon(alumno.estatus)}</td>
+                  <td
+                      className="estatus"
+                      onClick={() => setSearchTerm(alumno.estatus)}
+                      style={{ cursor: "pointer", color: getEstatusIcon(alumno.estatus) }}
+                    >{getEstatusIcon(alumno.estatus)}</td>
                   <td>
                     {!comprobantePorCarrera[alumno.id_carrera] ? (
                       <span style={{ color: "#888" }}>Deshabilitado</span>
@@ -242,8 +254,7 @@ function InicioTutor() {
                             className="icon-button"
                             onClick={() => handleValidate(alumno)}
                             title="Comprobante rechazado"
-                            style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
-                          >
+                            style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}>
                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="red" viewBox="0 0 24 24">
                             <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
                           </svg>
@@ -253,8 +264,7 @@ function InicioTutor() {
                             className="icon-button"
                             onClick={() => handleValidate(alumno)}
                             title="Comprobante pendiente de revisión"
-                            style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
-                          >
+                            style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}>
                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#FFD600" viewBox="0 0 24 24">
                             <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
                           </svg>
@@ -264,8 +274,7 @@ function InicioTutor() {
                             className="icon-button"
                             onClick={() => handleValidate(alumno)}
                             title="Comprobante aceptado"
-                            style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
-                          >
+                            style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" viewBox="0 0 24 24">
                               <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.828A2 2 0 0 0 19.414 7.414l-4.828-4.828A2 2 0 0 0 12.172 2H6zm7 1.414L18.586 9H15a2 2 0 0 1-2-2V3.414z"/>
                             </svg>
