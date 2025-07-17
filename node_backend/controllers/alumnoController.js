@@ -545,60 +545,115 @@ exports.deleteAlumno = async (req, res) => {
   }
 };
 
-
-// Subir datos desde CSV a la base de datos
+// Subir CSV de alumnos
 exports.subirAlumnosCSV = async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: 'No se ha enviado ningún archivo CSV' });
   }
 
   const results = [];
-  
-  fs.createReadStream(req.file.path)
+  const alumnosRechazados = [];
+
+  fs.createReadStream(req.file.path, { encoding: "utf-8" })
     .pipe(csv())
-    .on('data', (data) => {
-      results.push(data);
+    .on("data", (data) => {
+      const cleanedData = {};
+      Object.keys(data).forEach((key) => {
+        cleanedData[key.replace(/"/g, "").trim()] = data[key];
+      });
+      results.push(cleanedData);
     })
-    .on('end', async () => {
+    .on("end", async () => {
       try {
-        const matriculasCSV = results.map((alumno) => alumno.matricula); // Guardamos solo las matrículas del CSV
-
-        for (const alumnoData of results) {
-          const { id_carrera, matricula, nombre, telefono, correo } = alumnoData;
-
-          // Busca y actualiza, si no existe lo crea
-          await Alumno.findOneAndUpdate(
-            { matricula }, // Busca por matrícula
-            { id_carrera, nombre, telefono, correo }, // Actualiza estos campos
-            { upsert: true, new: true } // upsert: true -> crea si no existe
-          );
+        if (results.length === 0) {
+          fs.unlinkSync(req.file.path);
+          return res.status(400).json({ message: "El archivo CSV está vacío" });
         }
 
-        // Eliminar registros de la BD que ya no estén en el CSV
+        const matriculasCSV = results.map(a => a.matricula?.toString().trim()).filter(Boolean);
+
+        for (const alumnoData of results) {
+          let { id_carrera, matricula, nombre, telefono, correo, matricula_tutor } = alumnoData;
+
+          matricula = matricula?.toString().trim();
+          id_carrera = id_carrera?.toString().trim();
+
+          if (!matricula || !id_carrera) {
+            alumnosRechazados.push({ matricula, motivo: "Faltan datos obligatorios" });
+            continue;
+          }
+
+          let tutorId = null;
+          if (matricula_tutor) {
+            const tutorEncontrado = await Personal.findOne({ matricula: matricula_tutor.trim() });
+            if (tutorEncontrado) {
+              tutorId = tutorEncontrado._id;
+            } else {
+              console.warn(`⚠ Tutor con matrícula ${matricula_tutor} no encontrado`);
+              alumnosRechazados.push({ matricula, motivo: "Tutor no válido o inexistente" });
+              continue;
+            }
+          }
+
+          const alumnoExistente = await Alumno.findOne({ matricula });
+
+          if (alumnoExistente && alumnoExistente.id_carrera !== id_carrera) {
+            alumnosRechazados.push({
+              matricula,
+              motivo: `No se permite cambiar id_carrera (${alumnoExistente.id_carrera} → ${id_carrera})`
+            });
+            continue;
+          }
+
+          await Alumno.findOneAndUpdate(
+            { matricula },
+            { nombre, telefono, correo, id_carrera, tutor: tutorId },
+            { upsert: true, new: true }
+          );
+
+          console.log(`✅ Alumno insertado/actualizado: ${matricula}`);
+        }
+
+        // 🔍 Eliminar alumnos que ya no están en el CSV
         await Alumno.deleteMany({ matricula: { $nin: matriculasCSV } });
 
-        fs.unlinkSync(req.file.path); // Eliminar el archivo una vez procesado
-        res.status(200).json({ message: 'Base de datos actualizada con éxito desde el archivo CSV' });
+        fs.unlinkSync(req.file.path);
+        res.status(200).json({
+          message: 'Base de datos de alumnos actualizada con éxito desde el archivo CSV',
+          rechazados: alumnosRechazados
+        });
 
       } catch (error) {
-        console.error('Error al procesar el CSV:', error);
+        console.error('❌ Error al procesar el CSV:', error);
         res.status(500).json({ message: 'Error al actualizar la base de datos desde el CSV', error });
       }
     })
-    .on('error', (err) => {
-      console.error('Error al leer el CSV:', err);
-      res.status(500).json({ message: 'Error al procesar el archivo CSV', error: err });
+    .on("error", (err) => {
+      console.error("❌ Error al leer el CSV:", err);
+      res.status(500).json({ message: "Error al procesar el archivo CSV", error: err });
     });
 };
 
 exports.exportarAlumnosCSV = async (req, res) => {
   try {
-    const alumnos = await Alumno.find(); // Obtén todos los alumnos
-    const fields = ['id_carrera', 'matricula', 'nombre', 'telefono', 'correo', 'id_carrera']; // Campos del CSV
-    const json2csvParser = new Parser({ fields });
-    const csv = json2csvParser.parse(alumnos);
+    const alumnos = await Alumno.find();
 
-    res.header('Content-Type', 'text/csv');
+    const formattedData = alumnos.map((a) => ({
+      id_carrera: a.id_carrera,
+      matricula: a.matricula,
+      nombre: a.nombre,
+      telefono: a.telefono,
+      correo: a.correo,
+      tutor: a.tutor || "",  // Exporta la matrícula del tutor si existe
+    }));
+
+    const fields = ['id_carrera', 'matricula', 'nombre', 'telefono', 'correo', 'tutor'];
+    const json2csvParser = new Parser({ fields });
+    let csv = json2csvParser.parse(formattedData);
+
+    csv = "\ufeff" + csv; // Para Excel
+
+    res.header('Content-Type', 'text/csv; charset=utf-8');
     res.attachment('alumnos.csv');
     res.send(csv);
   } catch (error) {
@@ -628,32 +683,36 @@ exports.getEstatusHorario = async (req, res) => {
 
 exports.exportarAlumnosCSVPorCarrera = async (req, res) => {
   try {
-    const { id_carrera } = req.params; // Obtener el id_carrera desde la URL
+    const { id_carrera } = req.params;
+    if (!id_carrera) return res.status(400).json({ message: "Se requiere el id_carrera" });
 
-    if (!id_carrera) {
-      return res.status(400).json({ message: "Se requiere el id_carrera" });
-    }
-
-    const alumnos = await Alumno.find({ id_carrera }); // Filtrar solo por la carrera
+    const alumnos = await Alumno.find({ id_carrera });
 
     if (alumnos.length === 0) {
       return res.status(404).json({ message: "No hay alumnos registrados para esta carrera" });
     }
+
+    // Obtener tutores para incluir la matrícula del tutor
+    const tutoresIds = alumnos.map(a => a.tutor).filter(Boolean);
+    const tutores = await Personal.find({ _id: { $in: tutoresIds } });
+    const mapTutorMatricula = {};
+    tutores.forEach(t => {
+      mapTutorMatricula[t._id] = t.matricula;
+    });
 
     const formattedData = alumnos.map((a) => ({
       matricula: a.matricula,
       nombre: a.nombre,
       telefono: a.telefono,
       correo: a.correo,
-      id_carrera: a.id_carrera
+      matricula_tutor: mapTutorMatricula[a.tutor] || "" // incluir solo la matrícula
     }));
 
-    const fields = ["matricula", "nombre", "telefono", "correo", "id_carrera"];
+    const fields = ["matricula", "nombre", "matricula_tutor", "telefono", "correo"];
     const json2csvParser = new Parser({ fields });
     let csv = json2csvParser.parse(formattedData);
 
-    // Agregar BOM para compatibilidad con Excel
-    csv = "\ufeff" + csv;
+    csv = "\ufeff" + csv; // BOM para Excel
 
     res.header("Content-Type", "text/csv; charset=utf-8");
     res.attachment(`alumnos_carrera_${id_carrera}.csv`);
@@ -757,6 +816,9 @@ exports.subirAlumnosCSVPorCarrera = async (req, res) => {
     return res.status(400).json({ message: "No se ha enviado ningún archivo CSV" });
   }
 
+  const { id_carrera } = req.params;
+  if (!id_carrera) return res.status(400).json({ message: "Se requiere el ID de la carrera en la URL" });
+
   const results = [];
 
   fs.createReadStream(req.file.path, { encoding: "utf-8" })
@@ -764,57 +826,55 @@ exports.subirAlumnosCSVPorCarrera = async (req, res) => {
     .on("data", (data) => {
       const cleanedData = {};
       Object.keys(data).forEach((key) => {
-        const cleanKey = key.replace(/"/g, "").trim(); // Elimina comillas dobles
+        const cleanKey = key.replace(/"/g, "").trim();
         cleanedData[cleanKey] = data[key];
       });
-
       results.push(cleanedData);
     })
     .on("end", async () => {
       try {
-        if (results.length === 0) {
-          return res.status(400).json({ message: "El archivo CSV está vacío" });
-        }
+        if (results.length === 0) return res.status(400).json({ message: "El archivo CSV está vacío" });
 
         console.log("Datos obtenidos del CSV después de limpiar:", results);
 
-        // Obtener la carrera del CSV (de la primera alumno)
-        const id_carrera = results[0].id_carrera;
-
-        if (!id_carrera) {
-          return res.status(400).json({ message: "No se encontró el ID de la carrera en el archivo CSV" });
-        }
-
         const matriculasCSV = results.map((alumno) => alumno.matricula?.toString().trim()).filter(Boolean);
 
-        await Promise.all(
-          results.map(async (alumnoData) => {
-            let { matricula, nombre, telefono, correo } = alumnoData;
-            matricula = matricula ? matricula.toString().trim() : null;
+        await Promise.all(results.map(async (alumnoData) => {
+          let { matricula, nombre, telefono, correo, matricula_tutor } = alumnoData;
+          matricula = matricula ? matricula.toString().trim() : null;
 
-            if (!matricula) {
-              console.warn("⚠ Alumno sin matrícula:", alumnoData);
-              return;
+          if (!matricula) {
+            console.warn("⚠ Alumno sin matrícula:", alumnoData);
+            return;
+          }
+
+          let tutorId = null;
+
+          if (matricula_tutor) {
+            const tutor = await Personal.findOne({ matricula: matricula_tutor.toString().trim() });
+            if (tutor) {
+              tutorId = tutor._id;
+            } else {
+              console.warn(`⚠ Tutor con matrícula ${matricula_tutor} no encontrado`);
             }
+          }
 
-            // 🔹 Insertar o actualizar alumno
-            const alumnoActualizado = await Alumno.findOneAndUpdate(
-              { matricula, id_carrera }, // Filtrar por matrícula y carrera
-              { nombre, telefono, correo, id_carrera },
-              { upsert: true, new: true }
-            );
+          await Alumno.findOneAndUpdate(
+            { matricula, id_carrera },
+            { nombre, telefono, correo, id_carrera, tutor: tutorId },
+            { upsert: true, new: true }
+          );
 
-            console.log(`Alumno actualizado/insertado: ${matricula}`);
-          })
-        );
+          console.log(`Alumno actualizado/insertado: ${matricula}`);
+        }));
 
-        // Solo eliminar alumnos que sean de la misma carrera y no estén en el CSV
+        // Eliminar los alumnos no incluidos
         if (matriculasCSV.length > 0) {
           console.log("Eliminando alumnos no incluidos en el CSV de esta carrera.");
           await Alumno.deleteMany({ id_carrera, matricula: { $nin: matriculasCSV } });
         }
 
-        fs.unlinkSync(req.file.path); // Eliminar archivo después de procesarlo
+        fs.unlinkSync(req.file.path);
         res.status(200).json({ message: `Base de datos de alumnos de la carrera ${id_carrera} actualizada con éxito desde el CSV` });
 
       } catch (error) {
@@ -827,6 +887,7 @@ exports.subirAlumnosCSVPorCarrera = async (req, res) => {
       res.status(500).json({ message: "Error al procesar el archivo CSV", error: err });
     });
 };
+
 
 // Subir comprobante de pago del alumno
 exports.subirComprobantePago = async (req, res) => {

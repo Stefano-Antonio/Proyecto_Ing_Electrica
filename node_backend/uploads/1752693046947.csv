@@ -1,0 +1,16 @@
+﻿matricula,nombre,password,roles,id_carrera,telefono,correo
+A1002,Admin,segura123,A,ISftw,4921456666,correo@personal.com
+C0004,Coordinador software 2,segura123,C,ISftw,4921456666,correo@personal.com
+P1000,Damian,segura123,D,,4921456666,docente@gmail.com
+P1001,Maria Carolina Estrada Lopez,segura123,D,,4921456666,correo@personal.com
+P1002,Sandra Esthela Rios Huerta,segura123,D,,4921456666,correo@personal.com
+P1003,Jose Daniel Campos,segura123,D,,4921456666,correo@personal.com
+P1004,Stefano,segura123,D,,4021326553,stimpabo27@gmail.com
+P1005,Rafa2,segura123,D,,4021326553,stimpabo27@gmail.com
+P1006,docenteSemi,segura123,D,,5553123344,ejemplo@gmail.com
+P1007,Rafa,segura123,D,,4922425671,stimpabo27@gmail.com
+T0014,Alessandra,segura123,T,,4921456666,correo@personal.com
+T1111,Juan,segura123,T,,4921325678,tutor@gmail.com
+T1234,Tutor,SEGURA123,T,,1231231231,ejemplo@gmail.com
+T2322,tutorSemi,segura123,T,,1231231231,tutor@gmail.com
+T3453,ejemplo,segura123,T,,1231231231,tutor@gmail.com

@@ -67,7 +67,7 @@ function CrearMateria() {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/materias/subir-csv-por-carrera?id_carrera=${id_carrera}`,
+        `http://localhost:5000/api/materias/subir-csv`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -86,13 +86,10 @@ function CrearMateria() {
     }
   };
 
-
-  
-
   const handleDownloadCSV = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/materias/exportar-csv-por-carrera?id_carrera=${id_carrera}`, // Solo descarga materias de la carrera
+        `http://localhost:5000/api/materias/exportar-csv`, // Solo descarga materias de la carrera
         { responseType: "blob" }
       );
   
