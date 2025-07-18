@@ -191,7 +191,7 @@ useEffect(() => {
           </div>
           <div className="Lat_derecha"></div> {/* Barra lateral derecha */}
         </div>
-      {esMovil && esRegistro && <Pie_pagina />}
+      {(!esMovil || esRegistro) && <Pie_pagina />}
       </div>
   );
 }

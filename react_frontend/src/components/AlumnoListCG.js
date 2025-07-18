@@ -189,10 +189,8 @@ const AlumnoListCG = () => {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className="search-bar"
+        style={{ width: "800px" }}
       />
-      <button onClick={() => setSearchTerm("")} className="clear-filter-button">
-        Limpiar filtro
-      </button>
     </div>
         {alumnosFiltrados.length > 0 ? (
           <div className="alumno-scrollable-table">

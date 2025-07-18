@@ -17,10 +17,11 @@ function ModificarPersonalCG() {
     telefono: personalSeleccionado.telefono || "",
     roles: personalSeleccionado.roles || "",
     password: "", // No se muestra la contraseña actual por seguridad
-    id_carrera: personalSeleccionado.id_carrera || ""
+    id_carrera: personalSeleccionado.id_carrera ? personalSeleccionado.id_carrera : "" // <-- fuerza vacío si null/undefined
   });
 
   const carrerasPermitidas = {
+    Defect: "Seleccione una carrera",
     ISftw: "Ing. en Software",
     IDsr: "Ing. en Desarrollo",
     IEInd: "Ing. Electrónica Industrial",
@@ -164,7 +165,7 @@ function ModificarPersonalCG() {
               <div className="form-group" style={{ marginTop: '20px', border: '1px solid #ccc', borderRadius: '8px', padding: '15px', background: '#f9f9f9' }}>
                 <label style={{ fontWeight: 'bold', marginBottom: '10px' }}>Cambiar carrera del coordinador</label>
                 <select
-                  value={form.id_carrera}
+                  value={form.id_carrera || ""}
                   onChange={e => setForm(prev => ({ ...prev, id_carrera: e.target.value }))}
                   style={{ marginRight: '10px' }}
                 >
