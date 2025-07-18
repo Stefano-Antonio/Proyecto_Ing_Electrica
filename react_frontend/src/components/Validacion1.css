@@ -1,3 +1,25 @@
+
+/* Agrupación horizontal para los campos de correo y teléfono */
+.form-group {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.form-group label {
+  margin-right: -500px;
+  font-weight: 500;
+}
+
+.form-group input {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  min-width: 200px;
+}
 .horario-layout {
     position: relative;
     display: flex;

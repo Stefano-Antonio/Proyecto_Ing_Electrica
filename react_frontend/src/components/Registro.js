@@ -248,15 +248,25 @@ function Registro() {
               <div className="field-group">
                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   Contraseña
+                </label>
                   <button
                     type="button"
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2em', padding: 0, marginLeft: '-5px' }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginLeft: '-5px', display: 'flex', alignItems: 'center' }}
                     onClick={() => setShowPassword((prev) => !prev)}
                     aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                   >
-                    {showPassword ? "\u{1F441}" : "\u{1F648}"}
+                    {showPassword ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.77 21.77 0 0 1 5.06-7.06" />
+                        <path d="M1 1l22 22" />
+                      </svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#002a5c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                    )}
                   </button>
-                </label>
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
