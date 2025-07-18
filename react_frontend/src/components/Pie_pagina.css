@@ -59,28 +59,36 @@
 
 /* Media query para versiones móviles */
 @media (max-width: 768px) {
+  .footer {
+    width: 100%;
+    min-width: 650px;
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: 0 0 10px 10px;
+    font-size: 13px;
+    padding: 10px 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
   .footer-container {
-    flex-direction: column; /* Cambia la dirección a columna para mejor visualización en móviles */
-    padding: 0 10px; /* Reduce el padding lateral en móviles */
-    width: 100%; /* Asegura que el pie de página ocupe todo el ancho de la pantalla */
-    padding: 10px; /* Ajusta el padding para mejor visualización en móviles */
-    box-sizing: border-box; /* Incluye el padding en el ancho total */
+    flex-direction: column;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
-
   .footer-content {
-    text-align: center; /* Centra el contenido en móviles */
+    text-align: center;
   }
-
   .footer-image-1,
   .footer-image-2 {
     display: block;
-    margin: 0 auto; /* Centra las imágenes horizontalmente */
+    margin: 0 auto;
   }
-
   .footer-image-1 img, .footer-image-2 img {
-    width: 80px; /* Ajusta el tamaño de las imágenes en móviles */
-    margin: 5px; /* Reduce el margen en móviles */
+    width: 80px;
+    margin: 5px;
   }
-
-  
 }
