@@ -9,17 +9,25 @@
     left: 0;
     width: 100%; /* Asegura que ocupe todo el ancho de la pantalla */
     z-index: 1000; /* Asegura que el encabezado esté por encima de otros elementos */
-    overflow-x: auto; /* Permite el desplazamiento lateral */
   }
   
 .header-logo_uaz,
 .header-logo_uaei {
-  width: 350px;
+  /* width: 700px;  <-- Elimina esta línea */
+  min-width: 100px;
+  max-width: 100px;
   height: auto;
-  margin-right: 15px;
-  max-width: none;
 }
 
+.header-logo_uaz {
+  margin-left: auto;
+  margin-right: 15px;
+}
+
+.header-logo_uaei {
+  margin-left: auto; /* Empuja el logo a la derecha */
+  margin-right: 15px; /* Deja margen con el borde derecho */
+}
 
   .header-title {
     font-size: 2.5rem;
@@ -41,8 +49,8 @@
 
     .header-logo_uaz,
     .header-logo_uaei {
-      width: 40px; /* Reduce el tamaño de los logos */
-      height: auto;
+  min-width: 50px;
+  max-width: 50px;
     }
 
     .header-title {
