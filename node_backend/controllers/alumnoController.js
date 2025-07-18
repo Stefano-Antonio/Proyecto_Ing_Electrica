@@ -44,22 +44,21 @@ const asignarAlumnoATutor = async (tutorId, alumnoId) => {
     const CoordinadorModel = await Coordinador.findOne({ personalMatricula: tutorAsignado.matricula });
     const AdministradorModel = await Administrador.findOne({ personalMatricula: tutorAsignado.matricula });
 
-    if (TutorModel) {
+    if (TutorModel && !TutorModel.alumnos.includes(alumnoId)) { // verifica si el alumno ya está en la lista
       TutorModel.alumnos.push(alumnoId);
       await TutorModel.save();
-      console.log('Alumno agregado a la lista de alumnos del tutor');
     }
-    if (DocenteModel) {
+    if (DocenteModel && !DocenteModel.alumnos.includes(alumnoId)) { // verifica si el alumno ya está en la lista
       DocenteModel.alumnos.push(alumnoId);
       await DocenteModel.save();
       console.log('Alumno agregado a la lista de alumnos del docente');
     }
-    if (CoordinadorModel) {
+    if (CoordinadorModel && !CoordinadorModel.alumnos.includes(alumnoId)) { // verifica si el alumno ya está en la lista
       CoordinadorModel.alumnos.push(alumnoId);
       await CoordinadorModel.save();
       console.log('Alumno agregado a la lista de alumnos del coordinador');
     }
-    if (AdministradorModel) {
+    if (AdministradorModel && !AdministradorModel.alumnos.includes(alumnoId)) { // verifica si el alumno ya está en la lista
       AdministradorModel.alumnos.push(alumnoId);
       await AdministradorModel.save();
       console.log('Alumno agregado a la lista de alumnos del administrador');
@@ -545,7 +544,31 @@ exports.deleteAlumno = async (req, res) => {
   }
 };
 
-// Subir CSV de alumnos
+// Función para eliminar al alumno del tutor anterior si este se cambia
+const eliminarAlumnoDeTutor = async (tutorId, alumnoId) => {
+  try {
+    const tutor = await Personal.findById(tutorId);
+    if (!tutor) return;
+
+    const roles = ["Tutor", "Docente", "Coordinador", "Administrador"];
+    const modelos = [Tutor, Docente, Coordinador, Administrador];
+
+    for (let i = 0; i < modelos.length; i++) {
+      const modelo = modelos[i];
+      const instancia = await modelo.findOne({ personalMatricula: tutor.matricula });
+      if (instancia && instancia.alumnos.includes(alumnoId)) {
+        instancia.alumnos = instancia.alumnos.filter(id => id.toString() !== alumnoId.toString());
+        await instancia.save();
+        console.log(`Alumno ${alumnoId} eliminado de ${roles[i]}`);
+      }
+    }
+  } catch (error) {
+    console.error('Error al eliminar el alumno del tutor anterior:', error);
+  }
+};
+
+
+// Subir CSV de alumnos (coordinador general)
 exports.subirAlumnosCSV = async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: 'No se ha enviado ningún archivo CSV' });
@@ -583,20 +606,9 @@ exports.subirAlumnosCSV = async (req, res) => {
             continue;
           }
 
-          let tutorId = null;
-          if (matricula_tutor) {
-            const tutorEncontrado = await Personal.findOne({ matricula: matricula_tutor.trim() });
-            if (tutorEncontrado) {
-              tutorId = tutorEncontrado._id;
-            } else {
-              console.warn(`⚠ Tutor con matrícula ${matricula_tutor} no encontrado`);
-              alumnosRechazados.push({ matricula, motivo: "Tutor no válido o inexistente" });
-              continue;
-            }
-          }
-
           const alumnoExistente = await Alumno.findOne({ matricula });
 
+          // No permitir cambio de carrera
           if (alumnoExistente && alumnoExistente.id_carrera !== id_carrera) {
             alumnosRechazados.push({
               matricula,
@@ -605,16 +617,40 @@ exports.subirAlumnosCSV = async (req, res) => {
             continue;
           }
 
-          await Alumno.findOneAndUpdate(
+          // Buscar nuevo tutor
+          let nuevoTutorId = null;
+          if (matricula_tutor) {
+            const nuevoTutor = await Personal.findOne({ matricula: matricula_tutor.trim() });
+            if (nuevoTutor) {
+              nuevoTutorId = nuevoTutor._id;
+            } else {
+              console.warn(`⚠ Tutor con matrícula ${matricula_tutor} no encontrado`);
+              alumnosRechazados.push({ matricula, motivo: "Tutor no válido o inexistente" });
+              continue;
+            }
+          }
+
+          // Eliminar del tutor anterior si es distinto
+          if (alumnoExistente && alumnoExistente.tutor && alumnoExistente.tutor.toString() !== nuevoTutorId?.toString()) {
+            await eliminarAlumnoDeTutor(alumnoExistente.tutor, alumnoExistente._id);
+          }
+
+          // Insertar o actualizar alumno
+          const alumno = await Alumno.findOneAndUpdate(
             { matricula },
-            { nombre, telefono, correo, id_carrera, tutor: tutorId },
+            { nombre, telefono, correo, id_carrera, tutor: nuevoTutorId },
             { upsert: true, new: true }
           );
+
+          // Asignar alumno al nuevo tutor
+          if (nuevoTutorId && alumno?._id) {
+            await asignarAlumnoATutor(nuevoTutorId, alumno._id);
+          }
 
           console.log(`✅ Alumno insertado/actualizado: ${matricula}`);
         }
 
-        // 🔍 Eliminar alumnos que ya no están en el CSV
+        // Eliminar alumnos no incluidos en el CSV
         await Alumno.deleteMany({ matricula: { $nin: matriculasCSV } });
 
         fs.unlinkSync(req.file.path);
@@ -634,30 +670,47 @@ exports.subirAlumnosCSV = async (req, res) => {
     });
 };
 
+
 exports.exportarAlumnosCSV = async (req, res) => {
   try {
     const alumnos = await Alumno.find();
 
-    const formattedData = alumnos.map((a) => ({
+    if (alumnos.length === 0) {
+      return res.status(404).json({ message: "No hay alumnos registrados" });
+    }
+
+    // Obtener IDs de tutores únicos
+    const tutoresIds = alumnos.map(a => a.tutor).filter(Boolean);
+    const tutores = await Personal.find({ _id: { $in: tutoresIds } });
+
+    // Crear mapa tutorId => matricula
+    const mapTutorMatricula = {};
+    tutores.forEach(t => {
+      mapTutorMatricula[t._id] = t.matricula;
+    });
+
+    const formattedData = alumnos.map(a => ({
       id_carrera: a.id_carrera,
       matricula: a.matricula,
       nombre: a.nombre,
       telefono: a.telefono,
       correo: a.correo,
-      tutor: a.tutor || "",  // Exporta la matrícula del tutor si existe
+      matricula_tutor: mapTutorMatricula[a.tutor] || ""
     }));
 
-    const fields = ['id_carrera', 'matricula', 'nombre', 'telefono', 'correo', 'tutor'];
+    const fields = ['id_carrera', 'matricula', 'nombre', 'matricula_tutor', 'telefono', 'correo'];
     const json2csvParser = new Parser({ fields });
     let csv = json2csvParser.parse(formattedData);
 
-    csv = "\ufeff" + csv; // Para Excel
+    // Añadir BOM para Excel
+    csv = "\ufeff" + csv;
 
-    res.header('Content-Type', 'text/csv; charset=utf-8');
-    res.attachment('alumnos.csv');
+    res.header("Content-Type", "text/csv; charset=utf-8");
+    res.attachment("alumnos.csv");
     res.send(csv);
   } catch (error) {
-    res.status(500).json({ message: 'Error al exportar a CSV', error });
+    console.error("Error al exportar CSV general:", error);
+    res.status(500).json({ message: "Error al exportar a CSV", error });
   }
 };
 
@@ -848,24 +901,36 @@ exports.subirAlumnosCSVPorCarrera = async (req, res) => {
             return;
           }
 
-          let tutorId = null;
+          // 🟡 Buscar alumno actual (si existe)
+          const alumnoActual = await Alumno.findOne({ matricula, id_carrera });
 
+          // 🟡 Tutor nuevo (por CSV)
+          let nuevoTutorId = null;
           if (matricula_tutor) {
-            const tutor = await Personal.findOne({ matricula: matricula_tutor.toString().trim() });
-            if (tutor) {
-              tutorId = tutor._id;
+            const nuevoTutor = await Personal.findOne({ matricula: matricula_tutor.toString().trim() });
+            if (nuevoTutor) {
+              nuevoTutorId = nuevoTutor._id;
             } else {
               console.warn(`⚠ Tutor con matrícula ${matricula_tutor} no encontrado`);
             }
           }
 
-          await Alumno.findOneAndUpdate(
+          // 🔁 Si existe alumno y tenía tutor anterior distinto, eliminarlo de su lista
+          if (alumnoActual && alumnoActual.tutor && alumnoActual.tutor.toString() !== nuevoTutorId?.toString()) {
+            await eliminarAlumnoDeTutor(alumnoActual.tutor, alumnoActual._id);
+          }
+
+          // 🆕 Actualizar o insertar alumno con nuevo tutor
+          const alumno = await Alumno.findOneAndUpdate(
             { matricula, id_carrera },
-            { nombre, telefono, correo, id_carrera, tutor: tutorId },
+            { nombre, telefono, correo, id_carrera, tutor: nuevoTutorId },
             { upsert: true, new: true }
           );
 
-          console.log(`Alumno actualizado/insertado: ${matricula}`);
+          // ➕ Agregar alumno al nuevo tutor
+          if (nuevoTutorId && alumno?._id) {
+            await asignarAlumnoATutor(nuevoTutorId, alumno._id);
+          }
         }));
 
         // Eliminar los alumnos no incluidos
