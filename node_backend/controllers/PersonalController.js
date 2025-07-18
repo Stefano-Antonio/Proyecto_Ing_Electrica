@@ -29,7 +29,8 @@ const storage = multer.diskStorage({
 
   exports.upload = upload;
 
-  exports.createPersonal = async (req, res) => {
+// Crear personal y sus documentos relacionados
+exports.createPersonal = async (req, res) => {
     console.log('Personal:', req.body);
     const { matricula, nombre, password, roles, correo, telefono, id_carrera } = req.body;
 

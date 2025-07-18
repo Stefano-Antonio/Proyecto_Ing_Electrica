@@ -47,7 +47,7 @@ function CrearPersonal() {
           break;
         default:
           prefix = "";
-      }
+      }  //message
       
       setForm((prevState) => ({
         ...prevState,
@@ -82,10 +82,13 @@ function CrearPersonal() {
       // Verifica si el error es por matrícula duplicada
       if (
         error.response &&
-        (error.response.data?.message?.toLowerCase().includes("matricula") ||
-        error.response.data?.error?.code === 11000)
+        (
+          error.response.data?.message === "Error de duplicado" ||
+          error.response.data?.duplicado === "matricula" ||
+          error.response.data?.error?.code === 11000
+        )
       ) {
-        toast.error("La matrícula ingresada ya existe. Por favor, ingrese una diferente.");
+        toast.error("La matrícula ingresada ya existe en el sistema");
       } else {
         toast.error("Hubo un error al agregar el usuario");
       }
