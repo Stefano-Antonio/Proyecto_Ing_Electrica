@@ -14,6 +14,7 @@ function Registro() {
   const [mensaje, setMensaje] = useState("");
   const [id_carrera, setIdCarrera] = useState("");
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
   
   const carrerasPermitidas = {
     ISftw: "Ing. en Software",
@@ -245,15 +246,25 @@ function Registro() {
             </div>
             {tipoUsuario === "personal" && (
               <div className="field-group">
-                <label>Contraseña </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  Contraseña
+                  <button
+                    type="button"
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2em', padding: 0, marginLeft: '-5px' }}
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  >
+                    {showPassword ? "\u{1F441}" : "\u{1F648}"}
+                  </button>
+                </label>
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Contraseña"
                   required
+                  style={{ width: '100%' }}
                 />
-                
                 <button
                   className="forgot-button"
                   type="button"

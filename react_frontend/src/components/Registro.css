@@ -84,6 +84,7 @@
 }
 .forgot-button {
   width: 20%; /* Reduce el ancho del botón */
+  height: 30px; /* Ajusta la altura del botón */
   font-size: 0.7rem; /* Reduce font size further */
   padding: 3px 8px; /* Make padding slimmer */
 }
