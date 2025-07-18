@@ -249,9 +249,17 @@ function Registro() {
                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   Contraseña
                 </label>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Contraseña"
+                  required
+                  style={{ width: '100%' }}
+                />
                   <button
                     type="button"
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginLeft: '-5px', display: 'flex', alignItems: 'center' }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginLeft: '-30px', display: 'flex', alignItems: 'center' }}
                     onClick={() => setShowPassword((prev) => !prev)}
                     aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                   >
@@ -267,14 +275,6 @@ function Registro() {
                       </svg>
                     )}
                   </button>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Contraseña"
-                  required
-                  style={{ width: '100%' }}
-                />
                 <button
                   className="forgot-button"
                   type="button"
