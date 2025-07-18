@@ -160,6 +160,7 @@ useEffect(() => {
                   <Route path="historial-academico" element={<PrivateRoute><HistorialAcademico /></PrivateRoute>} />
                 </Route>
 
+              <Route path="/coordinador-gen/revisar-horario/:matricula" element={<PrivateRoute><RevisionHorarioTutor /></PrivateRoute>} />
               <Route path="/crear-alumno-cg" element={<PrivateRoute><CrearAlumnoCG/></PrivateRoute>}></Route>
               <Route path="/modificar-alumno-cg" element={<PrivateRoute><ModificarAlumnoCG/></PrivateRoute>}></Route>
               <Route path="/validar-pago-cg/:matricula" element={<PrivateRoute><RevisionComprobantePago /></PrivateRoute>} />

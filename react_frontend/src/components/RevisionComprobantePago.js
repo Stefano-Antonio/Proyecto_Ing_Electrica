@@ -14,8 +14,8 @@ function RevisionComprobantePago() {
   const [alumnoCargado, setAlumnoCargado] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const id_carrera = localStorage.getItem("id_carrera");
-  const { nombre, matricula, matriculaTutor } = location.state || {};
+  const { nombre, matricula, matriculaTutor, id_carrera: idCarreraState } = location.state || {};
+  const id_carrera = idCarreraState || localStorage.getItem("id_carrera");
 
   useEffect(() => {
     // Obtener datos del alumno (no dependas del horario)
