@@ -135,25 +135,30 @@
   .top-right {
     position: absolute;
     top: 10px;
-    right: 10px;
+    right: 0;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    pointer-events: none; /* Para evitar que el contenedor capture eventos */
   }
-  
+
   .logout-button {
-    background-color: #f44336; /* Color de fondo del botón */
-    color: white; /* Color del texto */
-    border: none; /* Sin borde */
-    padding: 10px 20px; /* Espaciado interno */
-    text-align: center; /* Alineación del texto */
-    text-decoration: none; /* Sin subrayado */
-    display: inline-block; /* Mostrar en línea */
-    font-size: 16px; /* Tamaño de la fuente */
-    margin: 4px 2px; /* Margen */
-    cursor: pointer; /* Cambiar el cursor al pasar sobre el botón */
-    border-radius: 12px; /* Bordes redondeados */
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 20px 4px 2px; /* margen derecho mayor */
+    cursor: pointer;
+    border-radius: 12px;
+    pointer-events: auto; /* Permite que el botón capture eventos */
   }
-  
+
   .logout-button:hover {
-    background-color: #d32f2f; /* Color de fondo al pasar el cursor */
+    background-color: #d32f2f;
   }
 
   

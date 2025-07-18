@@ -128,14 +128,14 @@ function Validacion2() {
     <div className="validacion-layout">
       <ToastContainer />
       <div className="validacion-container">
-        <h2>Validación de horario</h2>
-        <h4><strong>{nombreAlumno || "Cargando..."}</strong></h4>
-        <h4>Matricula: <strong>{matricula || "Cargando..."}</strong></h4>
-        <div className="top-right">
+        <div style={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
           <button className="logout-button" onClick={handleLogout}>
             Cerrar sesión
           </button>
         </div>
+        <h2>Validación de horario</h2>
+        <h4><strong>{nombreAlumno || "Cargando..."}</strong></h4>
+        <h4>Matricula: <strong>{matricula || "Cargando..."}</strong></h4>
 
         {estatusHorario === 0 ? (
           <>

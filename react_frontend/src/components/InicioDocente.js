@@ -12,9 +12,10 @@ function InicioDocente() {
   const [comprobantePorCarrera, setComprobantePorCarrera] = useState({});
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const navigate = useNavigate();
+  
+  const nombreDocente = localStorage.getItem("matricula");
 
   const { nombre, matricula: matriculaDocente } = location.state || {};
-  const nombreDocente = location.state?.nombre;
 
     // Guardar la matrícula del tutor en localStorage
     useEffect(() => {
@@ -25,7 +26,7 @@ function InicioDocente() {
   
     // Obtener la matrícula y nombre del docente desde localStorage si no está en location.state
     const storedMatriculaDocente = localStorage.getItem("matriculaDocente");
-    // 🔒 Evitar que el usuario regrese a la pantalla anterior con el botón de retroceso
+    // Evitar que el usuario regrese a la pantalla anterior con el botón de retroceso
     useEffect(() => {
       const bloquearAtras = () => {
         window.history.pushState(null, null, window.location.href);
@@ -39,7 +40,7 @@ function InicioDocente() {
       };
     }, []);
 
-  console.log("Estado recibido:", location.state);
+  console.log("Estado recibido:", location.state, matriculaDocente, storedMatriculaDocente);
 
     useEffect(() => {
       const fetchAlumnos = async () => {
@@ -93,9 +94,16 @@ function InicioDocente() {
           setError("Error al cargar los alumnos. Por favor, inténtalo de nuevo.");
         }
       };
-  
-      fetchAlumnos();
-    }, [matriculaDocente, storedMatriculaDocente]);
+
+      // Recarga si location.state.reload es true, igual que en InicioTutor
+      if (location.state && location.state.reload) {
+        fetchAlumnos();
+        // Limpiar la bandera para evitar recargas infinitas
+        navigate(location.pathname, { replace: true, state: { ...location.state, reload: false } });
+      } else {
+        fetchAlumnos();
+      }
+    }, [matriculaDocente, storedMatriculaDocente, location.state]);
 
 
     useEffect(() => {
@@ -113,8 +121,8 @@ function InicioDocente() {
     }, []);
 
   const handleRevisarHorario = (alumno) => {
-    console.log("Navegando a: ", `/revisar-horario/${alumno.matricula}`);
-    navigate(`/docente/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaDocente, id_carrera: alumno.id_carrera} });
+    console.log("Navegando a: ", `/revisar-horario/${alumno.matricula}, ${matriculaDocente}`);
+    navigate(`/docente/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaTutor: matriculaDocente, id_carrera: alumno.id_carrera} });
   };
 
   const handleDownloadCSV = async () => {

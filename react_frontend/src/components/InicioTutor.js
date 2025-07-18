@@ -105,8 +105,15 @@ function InicioTutor() {
       }
     };
 
-    fetchAlumnos();
-  }, [matriculaTutor, storedMatriculaTutor]);
+    // Si location.state.reload es true, recargar los datos
+    if (location.state && location.state.reload) {
+      fetchAlumnos();
+      // Limpiar la bandera para evitar recargas infinitas
+      navigate(location.pathname, { replace: true, state: { ...location.state, reload: false } });
+    } else {
+      fetchAlumnos();
+    }
+  }, [matriculaTutor, storedMatriculaTutor, location.state]);
 
   const handleRevisarHorario = (alumno) => {
     console.log("alumno:", alumno);

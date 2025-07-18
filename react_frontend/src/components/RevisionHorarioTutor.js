@@ -13,9 +13,10 @@ function RevisionHorarioTutor() {
   // Recuperar el estado (nombre y matricula) desde la navegación
   const location = useLocation();
   const id_carrera = localStorage.getItem("id_carrera");
-  const { nombre, matricula, matriculaTutor, matriculaDocente, origen } = location.state || {};
+  const { nombre, matricula, matriculaTutor, origen } = location.state || {};
   const carrerasPermitidasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
   console.log("Nombre y matrícula del tutor:", nombre, matricula, matriculaTutor, id_carrera);
+
   useEffect(() => {
     fetch(`http://localhost:5000/api/tutores/horario/${matricula}`)
       .then(response => response.json())
@@ -72,16 +73,28 @@ function RevisionHorarioTutor() {
       if (!response.ok) {
         throw new Error("Error al actualizar el estatus");
       }
-      //esperar 1 segundo antes de navegar
-      navigate(-1); // Regresar a la página anterior
   
+      // Usar matriculaTutor de props o de localStorage como fallback
+      const tutorMatricula = matriculaTutor || localStorage.getItem("matriculaTutor") || "";
+
+      
+      // Filtrar por la matrícula para determinar el tipo de usuario
+      if (tutorMatricula.startsWith("T")) {
+        navigate("/tutor", { state: { reload: true } });
+      } else if (tutorMatricula.startsWith("P")) {
+        // Regresar a la vista principal de docente (no a /docente/alumnos)
+        navigate("/docente/alumnos", { state: { reload: true } });
+      } else {
+        navigate(-1);
+      }
+
       if (nuevoEstatus === 0) { // Si está rechazado
         await eliminarHorario(); // Esperar a que se complete
-  
         //await enviarComentarioCorreo(); // Esperar a que se complete
       }
     } catch (error) {
       alert("Hubo un error al actualizar el estatus.");
+      console.error("Error al actualizar el estatus:", error);
     }
   };
 
