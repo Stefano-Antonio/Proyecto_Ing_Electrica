@@ -101,7 +101,7 @@ const AlumnoListCG = () => {
 
   const handleNavigate3 = (alumno) => {
     console.log("Navegando a: ", `/revisar-horario/${alumno.matricula}`);
-    navigate(`/coordinador/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
+    navigate(`/coordinador-gen/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
   };
 
   const handleModify = (alumno) => {

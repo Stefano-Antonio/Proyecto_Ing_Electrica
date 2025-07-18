@@ -188,12 +188,18 @@ function InicioDocente() {
 
   console.log("Alumnos filtrados:", alumnosFiltrados);
 
-    const handleValidate = (alumno) => {
-      console.log("Navegando a: ", `/validar-pago/${alumno.matricula}`);
-      navigate(`/tutor/validar-pago/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaDocente: matriculaDocente} });
-    };
-
-
+  // Manejar la validación del pago
+  const handleValidate = (alumno) => {
+    console.log("Navegando a: ", `/validar-pago/${alumno.matricula}`);
+    navigate(`/tutor/validar-pago/${alumno.matricula}`, { 
+      state: { 
+        nombre: alumno.nombre, 
+        matricula: alumno.matricula, 
+        matriculaDocente: matriculaDocente,
+        id_carrera: alumno.id_carrera // AGREGADO
+      } 
+    });
+  };
 
   return (
     <div className="docente-layout">
