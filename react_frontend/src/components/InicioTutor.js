@@ -173,8 +173,16 @@ function InicioTutor() {
 
   const handleValidate = (alumno) => {
     console.log("Navegando a: ", `/validar-pago/${alumno.matricula}`);
-    navigate(`/tutor/validar-pago/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaTutor: matriculaTutor} });
+    navigate(`/tutor/validar-pago/${alumno.matricula}`, { 
+      state: { 
+        nombre: alumno.nombre, 
+        matricula: alumno.matricula, 
+        matriculaTutor: matriculaTutor, 
+        id_carrera: alumno.id_carrera // AGREGADO
+      } 
+    });
   };
+
 
   // Filtrar alumnos por búsqueda
   const alumnosFiltrados = alumnos.filter(alumno => {
