@@ -25,7 +25,8 @@ const Pie_pagina = () => {
         <div className="footer-content">
           <p>© 2024-2025 Labsol Network.</p>
           <a href="https://www.linkedin.com/in/rogelio-zamarripa-mart%C3%ADnez-518aa6335/">© Rogelio Zamarripa Martínez  (Desarrollador) </a>
-          <p>© Stefano Antonio Valdez Peña  (Desarrollador) </p>
+          <p> </p>
+          <a href="https://www.linkedin.com/in/stefano-valdez-603a751b0/">© Stefano Antonio Valdez Peña  (Desarrollador) </a>
         </div>
         <div className="footer-image-2">
           <img src="/images/LogoGPL.png" alt="GPL"></img>
