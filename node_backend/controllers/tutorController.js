@@ -8,22 +8,18 @@ const enviarCorreo = require('../utils/emailHorario');
 
 // Ruta para obtener los alumnos de un tutor específico
 exports.getAlumnosAsignados = async (req, res) => {
-    console.log('Obteniendo alumnos asignados a un tutor');
     try {
         const { matricula } = req.params;
-        console.log('Matrícula del tutor:', matricula);
 
         // Buscar al tutor directamente por matrícula
         const tutor = await Tutor.findOne({ personalMatricula: matricula }).populate('alumnos');
 
         if (!tutor) {
-            console.log('Tutor no encontrado');
             return res.status(404).json({ message: "Tutor no encontrado" });
         }
 
         // Devolver la lista de alumnos asociados al tutor
         res.status(200).json({ alumnos: tutor.alumnos });
-        console.log('Alumnos encontrados:', tutor.alumnos);
     } catch (error) {
         console.error("Error al obtener los alumnos del tutor:", error);
         res.status(500).json({ message: "Error al obtener los alumnos del tutor" });
@@ -32,10 +28,8 @@ exports.getAlumnosAsignados = async (req, res) => {
 
 // Ruta para obtener el horario completo de un alumno por matrícula
 exports.getHorarioAlumno = async (req, res) => {
-    console.log('Obteniendo horario de un alumno');
     try {
         const { matricula } = req.params;
-        console.log('Matrícula del alumno:', matricula);
 
         // Buscar al alumno y poblar el horario con las materias
         const alumno = await Alumno.findOne({ matricula }).populate({
@@ -47,7 +41,6 @@ exports.getHorarioAlumno = async (req, res) => {
         });
 
         if (!alumno || !alumno.horario) {
-            console.log('Horario no encontrado para este alumno');
             return res.status(404).json({ message: 'Horario no encontrado para este alumno' });
         }
 
@@ -78,7 +71,6 @@ exports.getHorarioAlumno = async (req, res) => {
 exports.getEstatusHorario = async (req, res) => {
     try {
         const { matricula } = req.params;
-        console.log('Obteniendo el estatus del horario para matrícula:', matricula);
 
         // Buscar al alumno por su matrícula
         const alumno = await Alumno.findOne({ matricula }).populate('horario');
@@ -117,19 +109,14 @@ exports.getEstatusHorario = async (req, res) => {
 
 // Ruta para actualizar el estatus del horario por matrícula
 exports.updateEstatusHorario = async (req, res) => {
-    console.log('Actualizando el estatus del horario por matrícula');
     try {
       const { matricula } = req.params;
       const { estatus, comentario } = req.body;
-      console.log('Matrícula del alumno:', matricula);
-      console.log('Nuevo estatus:', estatus);
-      console.log('Comentario:', comentario);
 
       // Buscar al alumno por su matrícula
       const alumno = await Alumno.findOne({ matricula });
 
       if (!alumno) {
-        console.log('Alumno no encontrado');
         return res.status(404).json({ message: "Alumno no encontrado" });
       }
 
@@ -137,7 +124,6 @@ exports.updateEstatusHorario = async (req, res) => {
       const horarioId = alumno.horario;
 
       if (!horarioId) {
-        console.log('El alumno no tiene un horario asignado');
         return res.status(400).json({ message: "El alumno no tiene un horario asignado" });
       }
 
@@ -152,12 +138,10 @@ exports.updateEstatusHorario = async (req, res) => {
       );
 
       if (!horarioActualizado) {
-        console.log('Horario no encontrado');
         return res.status(404).json({ message: "Horario no encontrado" });
       }
 
       // Enviar correo al alumno
-      console.log('Enviando comentario por correo al alumno');
       await enviarCorreo({
         to: alumno.correo,
         subject: "Actualización de estatus de horario",
@@ -166,7 +150,6 @@ exports.updateEstatusHorario = async (req, res) => {
                Tu horario ha sido actualizado con el siguiente estatus: <b>${estatus === 1 ? 'Aceptado' : 'Rechazado'}</b>.<br>
                <b>Comentario:</b> ${comentario}<br><br>Saludos.</p>`
       });
-      console.log('Correo enviado correctamente');
 
       res.json({ message: "Estatus y comentario actualizados correctamente", horario: horarioActualizado });
     } catch (error) {
@@ -177,19 +160,14 @@ exports.updateEstatusHorario = async (req, res) => {
 
 // Ruta para actualizar el estatus del horario por matrícula
 exports.updateEstatusHorarioAdmin = async (req, res) => {
-    console.log('Actualizando el estatus del horario por matrícula');
     try {
       const { matricula } = req.params;
       const { estatus, comentario } = req.body;
-      console.log('Matrícula del alumno:', matricula);
-      console.log('Nuevo estatus:', estatus);
-      console.log('Comentario:', comentario);
 
       // Buscar al alumno por su matrícula
       const alumno = await Alumno.findOne({ matricula });
 
       if (!alumno) {
-        console.log('Alumno no encontrado');
         return res.status(404).json({ message: "Alumno no encontrado" });
       }
 
@@ -197,7 +175,6 @@ exports.updateEstatusHorarioAdmin = async (req, res) => {
       const horarioId = alumno.horario;
 
       if (!horarioId) {
-        console.log('El alumno no tiene un horario asignado');
         return res.status(400).json({ message: "El alumno no tiene un horario asignado" });
       }
 
@@ -212,12 +189,10 @@ exports.updateEstatusHorarioAdmin = async (req, res) => {
       );
 
       if (!horarioActualizado) {
-        console.log('Horario no encontrado');
         return res.status(404).json({ message: "Horario no encontrado" });
       }
 
       // Enviar correo al alumno
-      console.log('Enviando comentario por correo al alumno');
       await enviarCorreo({
         to: alumno.correo,
         subject: "Actualización de estatus de horario",
@@ -227,7 +202,6 @@ exports.updateEstatusHorarioAdmin = async (req, res) => {
                Con las siguientes observaciones:<br><br>
                <b>Comentario:</b> ${comentario}<br><br>Saludos.</p>`
       });
-      console.log('Correo enviado correctamente');
 
       res.json({ message: "Estatus y comentario actualizados correctamente", horario: horarioActualizado });
     } catch (error) {
@@ -240,10 +214,8 @@ exports.updateEstatusHorarioAdmin = async (req, res) => {
 
 // Ruta para eliminar un horario de un alumno y de la base de datos
 exports.deleteHorarioAlumno = async (req, res) => {
-    console.log('Eliminando horario de un alumno');
     try {
         const { matricula } = req.params;
-        console.log('Matricula:', matricula);
 
         // Buscar al alumno por su matrícula
         const alumno = await Alumno.findOne({ matricula: matricula }); 
@@ -254,7 +226,6 @@ exports.deleteHorarioAlumno = async (req, res) => {
         // Obtener las materias asociadas al horario del alumno
         const horario = await Horario.findById(horarioId).populate('materias');
         if (!horario || !horario.materias) {
-            console.log('No se encontraron materias asociadas al horario');
             return res.status(404).json({ message: "No se encontraron materias asociadas al horario" });
         }
 
@@ -268,23 +239,18 @@ exports.deleteHorarioAlumno = async (req, res) => {
         );
 
         if (materias.modifiedCount > 0) {
-            console.log('Alumno eliminado de las materias del horario');
         } else {
-            console.log('No se realizaron cambios en las materias');
         }
 
 
         if (materias){
-            console.log('Alumno eliminado de la materia');
         }
 
         // Eliminar el horario de la colección Horario
         await Horario.findByIdAndDelete(horarioId);
-        console.log('Horario eliminado correctamente', horarioId);
 
         // Establecer el campo 'horario' del alumno en null
         alumno.horario = null;
-        console.log('Horario eliminado del el alumno');
         await alumno.save();
         res.status(200).json({ message: "Horario eliminado correctamente" });
 
@@ -296,17 +262,13 @@ exports.deleteHorarioAlumno = async (req, res) => {
 
 // Ruta para enviar comentarios por correo al alumno
 exports.enviarComentarioAlumno = async (req, res) => {
-    console.log('Enviando comentario por correo al alumno');
     try {
         const { alumnoId } = req.params;
         const { comentario } = req.body;
-        console.log('ID del alumno:', alumnoId);
-        console.log('Comentario:', comentario);
 
         // Buscar al alumno
         const alumno = await Alumno.findById(alumnoId);
         if (!alumno) {
-            console.log('Alumno no encontrado');
             return res.status(404).json({ message: "Alumno no encontrado" });
         }
 

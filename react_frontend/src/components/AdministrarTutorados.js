@@ -9,7 +9,6 @@ function AdministrarTutorados() {
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const navigate = useNavigate();
   const { matriculaCord } = location.state || {};
-  console.log("Matrícula del tutor:", matriculaCord);
 
   useEffect(() => {
     if (matriculaCord) {
@@ -34,7 +33,6 @@ function AdministrarTutorados() {
 
   const fetchAlumnoDetails = async (alumnoId) => {
     try {
-      console.log("Obteniendo detalles del alumno con ID:", alumnoId);
       const alumnoResponse = await fetch(`http://localhost:5000/api/alumnos/${alumnoId}`);
       
       if (!alumnoResponse.ok) {
@@ -106,7 +104,6 @@ function AdministrarTutorados() {
   
 
   const handleRevisarHorario = (alumno) => {
-    console.log("Revisar horario para el alumno:", alumno);
     navigate(`/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord } });
   };
 

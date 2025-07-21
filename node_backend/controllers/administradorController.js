@@ -8,14 +8,11 @@ const Materia = require('../models/Materia');
 // Ruta para obtener los alumnos de un tutor específico
 exports.getAlumnosAsignados = async (req, res) => {
   const { id } = req.params;
-  console.log('ID de la persona:', id);
   try {
     const persona = await Personal.findOne({ _id: id });
     if (persona) {
-      console.log('Persona encontrada'+ persona.nombre);
       return res.json({ nombre: persona.nombre });
     }
-    console.log('ID no encontrado');
     res.status(404).json({ message: 'ID no encontrado' });
   } catch (error) {
     res.status(500).json({ message: 'Error al buscar el ID', error: error.message });
@@ -24,14 +21,12 @@ exports.getAlumnosAsignados = async (req, res) => {
 
 exports.getAlumnosAsignadosAdmin = async (req, res) => {
   const { matricula } = req.params;
-  console.log("Matrícula del administrador:", matricula);
   try {
     const administrador = await Administradores.findOne({ personalMatricula: matricula });
     if (!administrador) {
       return res.status(404).json({ message: "Administrador no encontrado" });
     }
     const alumnos = administrador.alumnos || [];
-    console.log("Alumnos encontrados:", alumnos);
     res.status(200).json({ alumnos });
   } catch (error) {
     console.error("Error al obtener alumnos:", error);
@@ -59,7 +54,6 @@ exports.getAdministradores = async (req, res) => {
 exports.getEstatusHorario = async (req, res) => {
     try {
         const { matricula } = req.params;
-        console.log('Obteniendo el estatus del horario para matrícula:', matricula);
         const alumno = await Alumno.findOne({ matricula }).populate('horario');
         if (!alumno) {
             return res.status(404).json({ message: "Alumno no encontrado" });
@@ -87,21 +81,16 @@ exports.getEstatusHorario = async (req, res) => {
 exports.getTutores = async (req, res) => {
   try {
     const { matricula } = req.params;
-    console.log("Matrícula del administrador:", matricula);
     const administrador = await Administradores.findOne({ personalMatricula: matricula }).select("id_carrera");
     if (!administrador) {
       return res.status(404).json({ message: "Administrador no encontrado" });
     }
-    console.log("ID de carrera del administrador:", administrador.id_carrera);
     const alumnos = await Alumno.find({ id_carrera: administrador.id_carrera }).select("_id");
     const alumnosIds = alumnos.map(alumno => alumno._id);
-    console.log("Alumnos en la carrera:", alumnosIds);
     const materias = await Materia.find({ id_carrera: administrador.id_carrera }).select("_id");
     const materiasIds = materias.map(materia => materia._id);
-    console.log("Materias en la carrera:", materiasIds);
     const docentesPorAlumnos = await Docentes.find({ alumnos: { $in: alumnosIds } }).select("personalMatricula");
     const docentesPorMaterias = await Docentes.find({ materias: { $in: materiasIds } }).select("personalMatricula");
-    console.log("Docentes encontrados:", [...docentesPorAlumnos, ...docentesPorMaterias]);
     const docentes = [...docentesPorAlumnos, ...docentesPorMaterias].reduce((acc, docente) => {
       if (!acc.some(d => d.personalMatricula === docente.personalMatricula)) {
         acc.push(docente);
@@ -109,7 +98,6 @@ exports.getTutores = async (req, res) => {
       return acc;
     }, []);
     const tutores = await Tutores.find({ alumnos: { $in: alumnosIds } }).select("personalMatricula");
-    console.log("Tutores encontrados:", tutores.map(t => t.personalMatricula));
     const personalMatriculasSet = new Set([
       ...docentes.map(d => d.personalMatricula),
       ...tutores.map(t => t.personalMatricula)
@@ -118,7 +106,6 @@ exports.getTutores = async (req, res) => {
     if (personalMatriculas.length === 0) {
       return res.status(404).json({ message: "No hay personal en esta carrera" });
     }
-    console.log("Personal encontrado (sin duplicados):", personalMatriculas);
     const personal = await Personal.find({ matricula: { $in: personalMatriculas } });
     res.status(200).json(personal);
   } catch (error) {

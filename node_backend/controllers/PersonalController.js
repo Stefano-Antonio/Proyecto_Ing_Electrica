@@ -31,7 +31,6 @@ const storage = multer.diskStorage({
 
 // Crear personal y sus documentos relacionados
 exports.createPersonal = async (req, res) => {
-    console.log('Personal:', req.body);
     const { matricula, nombre, password, roles, correo, telefono, id_carrera } = req.body;
 
     try {
@@ -177,7 +176,6 @@ exports.getPersonalById = async (req, res) => {
 
 exports.updatePersonal = async (req, res) => {
   try {
-    console.log('Datos recibidos para actualizar:', req.body);
       const personal = await Personal.findByIdAndUpdate(
           req.params.id,
           { $set: req.body }, // Actualiza todos los campos enviados en la solicitud
@@ -342,7 +340,6 @@ exports.subirPersonalCSV = async (req, res) => {
 
           // Si es el coordinador general, ignorar por completo
           if (coordinadorGeneral && matricula === coordinadorGeneral.matricula) {
-            console.log(`🛡️ Coordinador General protegido: ${matricula}`);
             continue;
           }
 
@@ -418,7 +415,6 @@ exports.subirPersonalCSV = async (req, res) => {
               Coordinadores.findOneAndDelete({ personalMatricula: matricula }),
               Administradores.findOneAndDelete({ personalMatricula: matricula })
             ]);
-            console.log(`🗑️ Personal eliminado: ${matricula}`);
           })
         );
 
@@ -668,10 +664,8 @@ exports.exportarPersonalCSV = async (req, res) => {
     }
 
     const matriculaActual = req.headers["x-matricula-coordinador"] || req.user?.matricula;
-    console.log("✅ Matrícula coordinador recibida:", matriculaActual);
 
     const results = [];
-    console.log("Procesando archivo CSV...");
     fs.createReadStream(req.file.path, { encoding: "utf-8" })
       .pipe(csv())
       .on("data", (data) => {
@@ -755,7 +749,6 @@ exports.exportarPersonalCSV = async (req, res) => {
 
               // No eliminar al coordinador actual
               if (matricula === matriculaActual) {
-                console.log("🔐 Coordinador actual no se elimina.");
                 return;
               }
 
@@ -769,7 +762,6 @@ exports.exportarPersonalCSV = async (req, res) => {
                 const materias = await Materia.find({ docente: esDocente._id });
                 const tieneOtrasCarreras = materias.some(m => m.id_carrera !== id_carrera);
                 if (tieneOtrasCarreras) {
-                  console.log(`🧷 Docente ${matricula} tiene materias en otras carreras. No se elimina.`);
                   return;
                 }
               }
@@ -779,7 +771,6 @@ exports.exportarPersonalCSV = async (req, res) => {
                 const alumnos = await Alumnos.find({ tutor: esTutor._id });
                 const tieneOtrasCarreras = alumnos.some(a => a.id_carrera !== id_carrera);
                 if (tieneOtrasCarreras) {
-                  console.log(`🧷 Tutor ${matricula} tiene alumnos en otras carreras. No se elimina.`);
                   return;
                 }
               }
@@ -793,7 +784,6 @@ exports.exportarPersonalCSV = async (req, res) => {
                   Coordinadores.findOneAndDelete({ personalMatricula: matricula, id_carrera }),
                   Administradores.findOneAndDelete({ personalMatricula: matricula, id_carrera })
                 ]);
-                console.log(`🗑️ Personal eliminado: ${matricula}`);
               }
             })
           );

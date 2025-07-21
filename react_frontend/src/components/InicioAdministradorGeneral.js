@@ -8,7 +8,6 @@ function InicioAdministradorGen() {
 
   const location = useLocation();
 
-  console.log("Estado recibido:", location.state);
 
   const nombre = location.state?.nombre || "Coordinador";
 

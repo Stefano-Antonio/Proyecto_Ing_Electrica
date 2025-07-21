@@ -36,14 +36,12 @@ function CrearAlumnoCG() {
     IRMcaS: "Ing. Robótica y Mecatrónica (Semiescolarizado)",
     IElecS: "Ing. Electricista (Semiescolarizado)",
   };
-  
-  console.log("Matricula del tutor:", matriculaCord);
+
 // Obtener la lista de tutores desde la API
 useEffect(() => {
     const fetchTutores = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/cordgen/tutores`);
-        console.log("Respuesta de tutores:", response.data);
         
         // Asegurar que la respuesta tenga la propiedad tutors y sea un array antes de actualizar el estado
         if (Array.isArray(response.data.tutors)) {
@@ -114,7 +112,6 @@ useEffect(() => {
     e.preventDefault();
     try {
       const response = await axios.post("http://localhost:5000/api/cordgen/alumnos", form);
-      console.log("Alumno agregado:", response.data);
       toast.success("Alumno agregado con éxito");
       setForm({ nombre: "", matricula: "", correo: "", telefono: "", tutor: "" }); // Reset form
       navigate(-1); // Regresar a la página anterior

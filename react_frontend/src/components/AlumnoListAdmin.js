@@ -25,14 +25,12 @@ const AlumnoListAdmin = () => {
         // Obtener los alumnos asociados al administrador
         const response = await axios.get(`http://localhost:5000/api/alumnos/carrera-admin/${matriculaAdmin}`);
         const alumnosData = response.data;
-        console.log("Alumnos:", response.data);
 
         // Obtener los detalles del tutor para cada alumno
         const tutoresNombresTemp = {};
         await Promise.all(alumnosData.map(async (alumno) => {
           if (alumno.tutor) {
             const tutorResponse = await axios.get(`http://localhost:5000/api/administradores/alumnos/${alumno.tutor}`);
-            console.log("Tutor response:", tutorResponse);
             tutoresNombresTemp[alumno._id] = tutorResponse.data.nombre; // Extraer el nombre del tutor
           }
         }));
@@ -70,7 +68,6 @@ const AlumnoListAdmin = () => {
     fetchAlumnos();
   }, [matriculaAdmin]);
 
-  console.log("matriculaCord:", matriculaAdmin);
 
   const handleDownloadCSV = async () => {
       const ids = alumnosFiltrados.map(a => a._id);
@@ -89,18 +86,15 @@ const AlumnoListAdmin = () => {
     };
 
   const handleNavigate2 = () => {
-    console.log("Navegando a: ", `/coordinador-tutor`);
     navigate("/administrador/admin-tutor", { state: { matriculaAdmin: matriculaAdmin } });
   };
 
   const handleNavigate3 = (alumno) => {
-    console.log("Navegando a: ", `/revisar-horario/${alumno.matricula}`);
     navigate(`/administrador/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaAdmin: matriculaAdmin} });
   };
 
 
   const getEstatusIcon = (estatus) => {
-    console.log("Estatus:", estatus);
     switch (estatus) {
       case "Sin revisar":
         return <span className="status-icon yellow"></span>; 

@@ -166,11 +166,8 @@ function CrearMateriaCG() {
           )
         };
 
-        console.log("Datos enviados al backend:", finalData); // Agrega este log para depuración
-
         if (id_carrera === "ISftwS" || id_carrera === "IDsrS" || id_carrera === "IEIndS" || id_carrera === "ICmpS" || id_carrera === "IRMcaS" || id_carrera === "IElecS") {
           const response = await axios.post('http://localhost:5000/api/materias', finalData);
-          console.log("Materia actualizada:", response.data);
           toast.success('Materia creada con éxito');
           setFormData({
             id_materia: '',
@@ -185,7 +182,6 @@ function CrearMateriaCG() {
           });
         } else {
           const response = await axios.post('http://localhost:5000/api/materias', finalData);
-          console.log("Materia actualizada:", response.data);
           toast.success('Materia creada con éxito');
           setFormData({
             id_materia: '',

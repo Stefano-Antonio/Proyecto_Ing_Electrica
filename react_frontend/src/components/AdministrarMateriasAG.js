@@ -48,7 +48,6 @@ const AdministrarMateriasAG = () => {
 
   // Obtener nombre del docente asignado
   const getDocenteNombre = (materia) => {
-    //console.log("nombre doscente:", getDocenteNombre(materia));
     return materia && materia.docenteNombre ? materia.docenteNombre : "Sin asignar";
   };
 

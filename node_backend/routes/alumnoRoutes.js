@@ -23,12 +23,10 @@ const storageComprobantes = multer.diskStorage({
     if (fs.existsSync(rutaArchivo)) {
       try {
         fs.unlinkSync(rutaArchivo);
-        console.log(`Archivo anterior eliminado: ${rutaArchivo}`);
       } catch (err) {
         console.error(`Error al eliminar archivo anterior: ${rutaArchivo}`, err);
       }
     }
-    console.log("Nombre final del archivo:", nombreArchivo);
     cb(null, nombreArchivo);
   }
 });

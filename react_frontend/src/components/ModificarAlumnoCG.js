@@ -59,7 +59,6 @@ useEffect(() => {
     const fetchTutores = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/cordgen/tutores`);
-        console.log("Respuesta de tutores:", response.data);
         
         // Asegurar que la respuesta tenga la propiedad tutors y sea un array antes de actualizar el estado
         if (Array.isArray(response.data.tutors)) {
@@ -137,7 +136,6 @@ useEffect(() => {
           tutor: form.tutor // Enviar el tutor seleccionado
         }
       );
-      console.log("Alumno actualizado:", response.data);
       toast.success("Alumno actualizado con éxito");
       navigate(-1);
     } catch (error) {

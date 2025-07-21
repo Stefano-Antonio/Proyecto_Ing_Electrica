@@ -18,8 +18,6 @@ router.post('/alumno/login', async (req, res) => {
       return res.status(400).json({ mensaje: 'Alumno no encontrado' });
     }
 
-    // **Console log para verificar los datos**
-    console.log("Alumno encontrado:", alumno);
 
     // Verifica si tiene un horario
     const tieneHorario = alumno.horario !== null;
@@ -88,8 +86,6 @@ router.post('/personal/login', async (req, res) => {
         }
       }
     }
-
-    console.log('ID de carrera:', id_carrera);
 
     // Respuesta exitosa
     return res.status(200).json({

@@ -18,8 +18,6 @@ function CrearPersonal() {
   });
   const id_carrera = localStorage.getItem("id_carrera");
   const matriculaCoord = localStorage.getItem("matricula");
-  console.log("Matrícula del coordinador:", matriculaCoord); // Agregar console
-  console.log("ID de la carrera:", id_carrera); // Agregar console.log aquí
 
   const navigate = useNavigate();
 
@@ -75,7 +73,6 @@ function CrearPersonal() {
     try {
       const formData = { ...form, id_carrera };
       const response = await axios.post("http://localhost:5000/api/personal", formData);
-      console.log("Usuario agregado:", response.data);
       toast.success("Usuario agregado con éxito");
       setForm({ nombre: "", matricula: "", correo: "", telefono: "", roles: "", password: "" });
     } catch (error) {

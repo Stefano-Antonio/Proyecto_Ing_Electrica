@@ -61,7 +61,6 @@ cron.schedule('53 11 * * *', async () => {
     const hoyStr = new Date().toISOString().split('T')[0];
     const semestreActual = obtenerSemestreActual();
 
-    console.log(`Cron: Verificando/creando historial para semestre ${semestreActual}...`);
 
     let historial = await HistorialAcademico.findOne({ semestre: semestreActual });
 
@@ -88,8 +87,7 @@ cron.schedule('53 11 * * *', async () => {
       });
       await historial.save();
 
-      console.log(`Historial creado para semestre ${semestreActual} con fecha_de_borrado: ${fechaDeBorrado.toISOString().split('T')[0]}`);
-    }
+     }
 
     if (historial.fecha_de_borrado) {
       const fechaBorradoStr = new Date(historial.fecha_de_borrado).toISOString().split('T')[0];
@@ -136,7 +134,7 @@ cron.schedule('53 11 * * *', async () => {
         console.log('Hoy no es la fecha de borrado, no se hace nada.');
       }
     } else {
-      console.log('No hay fecha_de_borrado configurada, no se hace nada.');
+      console.log('No hay fecha_de_borrado configurada, actualizarla.');
     }
   } catch (error) {
     console.error('Error en cron job de historial:', error);

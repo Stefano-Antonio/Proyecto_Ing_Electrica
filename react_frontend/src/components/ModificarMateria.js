@@ -90,8 +90,6 @@ function ModificarMateria() {
       return;
     }
 
-    console.log("📁 Archivo seleccionado:", file);
-
     const formData = new FormData();
     formData.append("csv", file);
 

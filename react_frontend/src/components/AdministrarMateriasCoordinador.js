@@ -52,7 +52,6 @@ const AdministrarMateriasCoordinador = () => {
 
   // Obtener nombre del docente asignado
   const getDocenteNombre = (materia) => {
-    //console.log("nombre doscente:", getDocenteNombre(materia));
     return materia && materia.docenteNombre ? materia.docenteNombre : "Sin asignar";
   };
 
@@ -160,8 +159,7 @@ const AdministrarMateriasCoordinador = () => {
         toast.error("Error: Matricula no encontrada.");
         return;
       }
-
-      console.log(`Actualizando horas para la matrícula: ${matricula}`);
+      
       await axios.put(`http://localhost:5000/api/coordinadores/horas/${matricula}`, {
         horas: horasMaximas,
       });

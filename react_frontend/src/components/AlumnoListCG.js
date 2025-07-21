@@ -100,7 +100,6 @@ const AlumnoListCG = () => {
   };
 
   const handleNavigate3 = (alumno) => {
-    console.log("Navegando a: ", `/revisar-horario/${alumno.matricula}`);
     navigate(`/coordinador-gen/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
   };
 
@@ -110,7 +109,6 @@ const AlumnoListCG = () => {
 
   // Función para validar el comprobante de pago
   const handleValidate = (alumno) => {
-    console.log("Navegando a: ", `/validar-pago-cg/${alumno.matricula}`);
     navigate(`/validar-pago-cg/${alumno.matricula}`, {
       state: {
         nombre: alumno.nombre,

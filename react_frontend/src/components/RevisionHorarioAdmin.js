@@ -53,7 +53,6 @@ function RevisionHorarioAdmin() {
         throw new Error("Error al enviar el comentario por correo");
       }
 
-      console.log("Comentario enviado por correo correctamente.");
     } catch (error) {
       console.error("Error al enviar comentario:", error);
     }

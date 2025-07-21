@@ -10,23 +10,19 @@ const Docentes = require('../models/Docentes');
 // obtener el id_carrera del personal
 module.exports.getIdCarrera = async (req, res) => {
     const { matricula } = req.params;
-    console.log("Matrícula:", matricula);
     try {
         const coordinador = await Coordinadores.findOne({ personalMatricula: matricula });
         if (coordinador) {
-            console.log("Carrera encontrada:", coordinador.id_carrera);
             return res.json({ id_carrera: coordinador.id_carrera });
         }
 
         const administrador = await Administradores.findOne({ personalMatricula: matricula });
         if (administrador) {
-            console.log("Carrera encontrada:", administrador.id_carrera);
             return res.json({ id_carrera: administrador.id_carrera });
         }
 
         const personal = await Personal.findOne({ matricula });
         if (personal) {
-            console.log("Carrera encontrada:", personal.id_carrera);
             return res.json({ id_carrera: personal.id_carrera });
         }
 
@@ -39,7 +35,6 @@ module.exports.getIdCarrera = async (req, res) => {
 
 // Ruta para obtener tutores
 module.exports.getTutores = async (req, res) => {
-    console.log("Obteniendo tutores");
     try {
         const personal = await Personal.find({});
         
@@ -48,7 +43,6 @@ module.exports.getTutores = async (req, res) => {
             p.roles.some(role => ['T', 'D', 'C', 'CG'].includes(role))
         );
         
-        console.log("Tutores encontrados:", filteredTutors);
         return res.json({ tutors: filteredTutors }); // Devolver un objeto con la propiedad 'tutors'
     } catch (error) {
         console.error("Error al obtener tutores:", error);

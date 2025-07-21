@@ -23,8 +23,6 @@ function CrearAlumno() {
   });
 
 
-  console.log("Matricula del tutor:", matriculaCord);
-
   // Obtener la lista de tutores desde la API
   useEffect(() => {
     const fetchTutores = async () => {
@@ -91,7 +89,6 @@ function CrearAlumno() {
     e.preventDefault();
     try {
       const response = await axios.post("http://localhost:5000/api/alumnos", form);
-      console.log("Alumno agregado:", response.data);
       toast.success("Alumno agregado con éxito");
       setForm({ nombre: "", matricula: "", correo: "", telefono: "", tutor: "" }); // Reset form
       toast.success("Alumno creado con exito");

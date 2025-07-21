@@ -60,8 +60,6 @@ function CrearMateria() {
       return;
     }
 
-    console.log("📁 Archivo seleccionado:", file);
-
     const formData = new FormData();
     formData.append("csv", file);
 
@@ -158,7 +156,6 @@ function CrearMateria() {
       };
 
       const response = await axios.post('http://localhost:5000/api/materias', finalData);
-      console.log("Materia actualizada:", response.data);
       toast.success('Materia creada con éxito');
       setFormData({
         id_materia: '',

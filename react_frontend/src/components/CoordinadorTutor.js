@@ -16,7 +16,6 @@ function CoordinadorTutor() {
             localStorage.setItem("matriculaCoordinador", matriculaCoordinador);
         }
     }, [matriculaCoordinador]);
-    console.log("Matrícula del coordinador:", nombre, matriculaCoordinador);
     // Obtener la matrícula del coordinador desde localStorage si no está en location.state
     const storedMatriculaCoordinador = localStorage.getItem("matriculaCoordinador");
 
@@ -50,7 +49,6 @@ function CoordinadorTutor() {
                 }
 
                 const data = await response.json();
-                console.log("Alumnos recibidos:", data.alumnos);
 
                 const fetchEstatus = async (alumno) => {
                     try {
@@ -78,7 +76,6 @@ function CoordinadorTutor() {
     }, [matriculaCoordinador, storedMatriculaCoordinador]);
 
     const handleRevisarHorario = (matriculaAlumno) => {
-        console.log("Navegando a: ", `/revisar-horario/${matriculaAlumno}`);
         navigate(`/revisar-horario/${matriculaAlumno}`, { state: { nombre, matricula: matriculaCoordinador || storedMatriculaCoordinador } });
     };
 

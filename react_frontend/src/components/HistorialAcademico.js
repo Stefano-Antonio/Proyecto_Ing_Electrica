@@ -97,7 +97,6 @@ const descargarArchivo = async (tipo) => {
   };
 
   const semestre = getSemestreActual();
-  console.log(`Semestre actual: ${semestre}`);
   const [fechaBorrado, setFechaBorrado] = React.useState('');
   const [editFecha, setEditFecha] = React.useState('');
   const [loading, setLoading] = React.useState(false);
@@ -302,7 +301,6 @@ function FechaBorradoPanel({ semestre, historiales }) {
   const obtenerFechaBorrado = async () => {
     setLoading(true);
     try {
-      console.log(`Obteniendo fecha de borrado para semestre: ${semestre}`);
       const res = await fetch(`http://localhost:5000/api/historial/fecha-borrado?semestre=${semestre}`);
       const data = await res.json();
       setFechaBorrado(data.fecha_de_borrado ? data.fecha_de_borrado.substring(0, 10) : 'No registrada');

@@ -17,7 +17,6 @@ exports.getAlumnosAsignados = async (req, res) => {
         const docente = await Docentes.findOne({ personalMatricula: matricula }).populate('alumnos');
 
         if (!docente) {
-            console.log('Docente no encontrado');
             return res.status(404).json({ message: "Docente no encontrado" });
         }
 
@@ -65,16 +64,13 @@ exports.getDocenteById = async (req, res) => {
 
 // Ruta para obtener las materias asignadas al docente
 exports.getMateriasAsignadas = async (req, res) => {
-    console.log('Obteniendo materias asignadas a un docente');
     try {
         const { matricula } = req.params;
-        console.log('Matrícula del docente:', matricula);
 
         // Buscar al tutor directamente por matrícula
         const docente = await Docentes.findOne({ personalMatricula: matricula }).populate('materias');
 
         if (!docente) {
-            console.log('Docente no encontrado');
             return res.status(404).json({ message: "Docente no encontrado" });
         }
 
@@ -88,10 +84,8 @@ exports.getMateriasAsignadas = async (req, res) => {
 
 // Ruta para obtener el horario completo de un alumno por matrícula
 exports.getHorarioAlumno = async (req, res) => {
-    console.log('Obteniendo horario de un alumno');
     try {
         const { matricula } = req.params;
-        console.log('Matrícula del alumno:', matricula);
 
         // Buscar al alumno y poblar el horario con las materias
         const alumno = await Alumno.findOne({ matricula }).populate({
@@ -103,7 +97,6 @@ exports.getHorarioAlumno = async (req, res) => {
         });
 
         if (!alumno || !alumno.horario) {
-            console.log('Horario no encontrado para este alumno');
             return res.status(404).json({ message: 'Horario no encontrado para este alumno' });
         }
 
@@ -131,10 +124,8 @@ exports.getHorarioAlumno = async (req, res) => {
 
 // Ruta para obtener los alumnos inscritos en una materia
 exports.getAlumnosInscritosEnMateria = async (req, res) => {
-    console.log('Obteniendo alumnos inscritos en una materia');
     try {
         const { materiaId } = req.params;
-        console.log('ID de la materia:', materiaId);
 
         // Buscar alumnos que tengan la materia en su horario
         const alumnos = await Alumno.find().populate({
@@ -151,7 +142,6 @@ exports.getAlumnosInscritosEnMateria = async (req, res) => {
         );
 
         if (!alumnosInscritos || alumnosInscritos.length === 0) {
-            console.log('No se encontraron alumnos inscritos en esta materia');
             return res.status(404).json({ message: 'No se encontraron alumnos inscritos en esta materia' });
         }
 
@@ -166,7 +156,6 @@ exports.getAlumnosInscritosEnMateria = async (req, res) => {
 exports.getEstatusHorario = async (req, res) => {
     try {
         const { matricula } = req.params;
-        console.log('Obteniendo el estatus del horario para matrícula:', matricula);
 
         // Buscar al alumno por su matrícula
         const alumno = await Alumno.findOne({ matricula }).populate('horario');
@@ -205,19 +194,14 @@ exports.getEstatusHorario = async (req, res) => {
 
 // Ruta para actualizar el estatus del horario por matrícula
 exports.updateEstatusHorario = async (req, res) => {
-    console.log('Actualizando el estatus del horario por matrícula');
     try {
       const { matricula } = req.params;
       const { estatus, comentario } = req.body; // Extraer el comentario junto con el estatus
-      console.log('Matrícula del alumno:', matricula);
-      console.log('Nuevo estatus:', estatus);
-      console.log('Comentario:', comentario); // Mostrar el comentario recibido
   
       // Buscar al alumno por su matrícula
       const alumno = await Alumno.findOne({ matricula });
   
       if (!alumno) {
-        console.log('Alumno no encontrado');
         return res.status(404).json({ message: "Alumno no encontrado" });
       }
   
@@ -225,7 +209,6 @@ exports.updateEstatusHorario = async (req, res) => {
       const horarioId = alumno.horario;
   
       if (!horarioId) {
-        console.log('El alumno no tiene un horario asignado');
         return res.status(400).json({ message: "El alumno no tiene un horario asignado" });
       }
   
@@ -240,7 +223,6 @@ exports.updateEstatusHorario = async (req, res) => {
       );
   
       if (!horarioActualizado) {
-        console.log('Horario no encontrado');
         return res.status(404).json({ message: "Horario no encontrado" });
       }
   
@@ -249,7 +231,6 @@ exports.updateEstatusHorario = async (req, res) => {
 
     
         // Envio de correo al alumno
-        console.log('Enviando comentario por correo al alumno');
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
@@ -265,8 +246,6 @@ exports.updateEstatusHorario = async (req, res) => {
             text: `Hola ${alumno.nombre},\n\nTu horario ha sido actualizado con el siguiente estatus: "${estatus}".\nComentario: "${comentario}".\n\nSaludos.`
         };
 
-        //await transporter.sendMail(mailOptions);
-        console.log('Correo enviado correctamente');
     } catch (error) {
         console.error("Error al actualizar el estatus del horario:", error);
         res.status(500).json({ message: "Error interno del servidor" });
@@ -276,10 +255,8 @@ exports.updateEstatusHorario = async (req, res) => {
 
 // Ruta para eliminar un horario de un alumno y de la base de datos
 exports.deleteHorarioAlumno = async (req, res) => {
-    console.log('Eliminando horario de un alumno');
     try {
         const { matricula } = req.params;
-        console.log('Matricula:', matricula);
 
         // Buscar al alumno por su matrícula
         const alumno = await Alumno.findOne({ matricula: matricula }); 
@@ -289,11 +266,9 @@ exports.deleteHorarioAlumno = async (req, res) => {
 
         // Eliminar el horario de la colección Horario
         await Horario.findByIdAndDelete(horarioId);
-        console.log('Horario eliminado correctamente', horarioId);
 
         // Establecer el campo 'horario' del alumno en null
         alumno.horario = null;
-        console.log('Horario eliminado del el alumno');
         await alumno.save();
         res.status(200).json({ message: "Horario eliminado correctamente" });
 
@@ -305,17 +280,13 @@ exports.deleteHorarioAlumno = async (req, res) => {
 
 // Ruta para enviar comentarios por correo al alumno
 exports.enviarComentarioAlumno = async (req, res) => {
-    console.log('Enviando comentario por correo al alumno');
     try {
         const { alumnoId } = req.params;
         const { comentario } = req.body;
-        console.log('ID del alumno:', alumnoId);
-        console.log('Comentario:', comentario);
 
         // Buscar al alumno
         const alumno = await Alumno.findById(alumnoId);
         if (!alumno) {
-            console.log('Alumno no encontrado');
             return res.status(404).json({ message: "Alumno no encontrado" });
         }
 

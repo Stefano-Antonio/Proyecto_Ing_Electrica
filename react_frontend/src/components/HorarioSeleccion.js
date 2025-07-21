@@ -224,7 +224,6 @@ useEffect(() => {
     }
   
     // Si no hay conflictos y las horas son válidas, navegar a la siguiente página
-    console.log("Datos", id_carrera, nombre, matricula, id);
     localStorage.removeItem("materiasSeleccionadas");
     navigate("/validacion", { state: { materiasSeleccionadas, nombre, matricula, id, id_carrera } });
   };

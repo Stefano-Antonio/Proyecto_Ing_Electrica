@@ -28,7 +28,6 @@ const storage = multer.diskStorage({
 // Crear una nueva materia
 exports.createMateria = async (req, res) => {
   const { id_materia, id_carrera, nombre, semi, horarios, salon, grupo, cupo, laboratorio, docente } = req.body;
-  console.log('Datos recibidos para crear la materia:', req.body);
 
   try {
     if (!id_carrera) {
@@ -47,7 +46,6 @@ exports.createMateria = async (req, res) => {
 
       docenteObjectId = docenteEncontrado._id;  // Usar el ObjectId del docente
 
-      console.log('Docente encontrado, matrícula:', docenteObjectId);
     } else {
       console.error('Docente no encontrado:', docenteObjectId);
     }
@@ -67,7 +65,6 @@ exports.createMateria = async (req, res) => {
     });
 
     await newMateria.save();
-    console.log('Materia creada:', newMateria);
 
     if (docenteObjectId) {
       await Docentes.findByIdAndUpdate(
@@ -75,7 +72,6 @@ exports.createMateria = async (req, res) => {
         { $addToSet: { materias: newMateria._id } }, // Evita duplicados
         { new: true }
       );
-      console.log(`Materia ${newMateria._id} agregada al docente ${docenteObjectId}`);
     }
 
     res.status(201).json(newMateria);
@@ -125,7 +121,6 @@ exports.getMaterias = async (req, res) => {
 // Obtener materias por id_carrera e incluir el nombre del docente
 exports.getMateriasByCarreraId = async (req, res) => {
   const { id_carrera } = req.params;
-  console.log("ID de carrera recibido:", id_carrera);
 
   // Verificar si el id_carrera está en la lista permitida
   if (!carrerasPermitidas.includes(id_carrera)) {
@@ -191,7 +186,6 @@ exports.getMateriaById = async (req, res) => {
 exports.updateMateria = async (req, res) => {
   const { nombre, horarios, salon, semi, grupo, cupo, docente, laboratorio, id_materia } = req.body;
   const { id } = req.params;
-  console.log('Datos recibidos para actualizar la materia:', req.body);
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: "ID de materia no válido" });
@@ -284,7 +278,6 @@ exports.updateMateria = async (req, res) => {
       );
     }
 
-    console.log("Materia actualizada correctamente:", materia);
     res.status(200).json(materia);
   } catch (error) {
     console.error("Error en updateMateria:", error);
@@ -306,14 +299,12 @@ exports.deleteMateria = async (req, res) => {
       { materias: materia._id },
       { $pull: { materias: materia._id } }
     );
-    console.log('Materia eliminada de los horarios');
 
     // Eliminar la materia de la lista de materias de los docentes
     await Docentes.updateMany(
       { materias: materia._id },
       { $pull: { materias: materia._id } }
     );
-    console.log('Materia eliminada de la lista de materias de los docentes');
 
     // Eliminar la materia
     await Materia.findByIdAndDelete(req.params.id);
@@ -402,7 +393,6 @@ exports.subirMateriasCSV = async (req, res) => {
                 materiaActual.docente,
                 { $pull: { materias: materiaActual._id } }
               );
-              console.log(`Materia ${id_materia} eliminada del docente anterior.`);
             }
 
             if (docenteObjectId) {
@@ -411,7 +401,6 @@ exports.subirMateriasCSV = async (req, res) => {
                 { $addToSet: { materias: materiaActualizada._id } },
                 { new: true }
               );
-              console.log(`Materia ${id_materia} agregada al docente ${docenteObjectId}`);
             }
           })
         );
@@ -655,7 +644,6 @@ exports.subirMateriasCSVPorCarrera = async (req, res) => {
             return res.status(403).json({ message: "No se pudo determinar la carrera del usuario." });
           }
 
-        console.log("✅ Datos obtenidos del CSV después de limpiar:", results);
 
         const carrerasUnicasCSV = [...new Set(results.map(m => m.id_carrera?.trim()))];
         const materiasPorCarrera = {};
@@ -697,7 +685,6 @@ exports.subirMateriasCSVPorCarrera = async (req, res) => {
 
             // Si ya existe pero con otra carrera, no se modifica
             if (materiaExistente && materiaExistente.id_carrera !== carreraPermitida) {
-              console.log(`⚠ Materia ${id_materia} ya existe con otra carrera (${materiaExistente.id_carrera}). Se ignora.`);
               return;
             }
 
@@ -743,7 +730,6 @@ exports.subirMateriasCSVPorCarrera = async (req, res) => {
                 materiaActual.docente,
                 { $pull: { materias: materiaActual._id } }
               );
-              console.log(`Materia ${id_materia} eliminada del docente anterior.`);
             }
 
             if (docenteObjectId) {
@@ -752,7 +738,6 @@ exports.subirMateriasCSVPorCarrera = async (req, res) => {
                 { $addToSet: { materias: materiaActualizada._id } },
                 { new: true }
               );
-              console.log(`Materia ${id_materia} asignada al docente ${docenteObjectId}`);
             }
           })
         );
@@ -765,10 +750,7 @@ exports.subirMateriasCSVPorCarrera = async (req, res) => {
             id_carrera: carrera,
             id_materia: { $nin: idsCSV }
           });
-          console.log(`🧹 Materias eliminadas del plan ${carrera} que no están en el CSV.`);
-        } else {
-          console.log("⚠ No se realiza limpieza. CSV contiene múltiples carreras o carrera no autorizada.");
-        }
+        } 
 
         fs.unlinkSync(req.file.path);
         res.status(200).json({ message: "Base de datos actualizada con éxito desde el CSV" });

@@ -138,7 +138,6 @@ function ModificarAlumno() {
           tutor: form.tutor // Enviar el tutor seleccionado
         }
       );
-      console.log("Alumno actualizado:", response.data);
       toast.success("Alumno actualizado con éxito");
       navigate(-1);
     } catch (error) {

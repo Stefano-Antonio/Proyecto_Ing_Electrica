@@ -116,7 +116,6 @@ function CrearPersonal() {
   
     try {
       const response = await axios.post("http://localhost:5000/api/personal", form);
-      console.log("Usuario agregado:", response.data);
       toast.success("Usuario agregado con éxito");
       setForm({
         nombre: "",

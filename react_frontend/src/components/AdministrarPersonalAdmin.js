@@ -21,7 +21,6 @@ const AdministrarPersonalAdmin = () => {
 
       try {
         const response = await axios.get(`http://localhost:5000/api/personal/carrera/${matricula}`);
-        console.log("Personal encontrado:", response.data);
         setPersonal(response.data);
       } catch (error) {
         console.error("Error al obtener datos del personal:", error.message);

@@ -22,7 +22,6 @@ const AdministrarPersonalAG = () => {
 
       try {
         const response = await axios.get(`http://localhost:5000/api/personal`);
-        console.log("Personal encontrado:", response.data);
         const personalConCarrera = await Promise.all(response.data.map(async (persona) => {
           try {
         const carreraResponse = await axios.get(`http://localhost:5000/api/admingen/carrera/${persona.matricula}`);

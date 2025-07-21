@@ -173,7 +173,6 @@ const vaciarPersonalAut = async () => {
 // Obtener la fecha de borrado del historial académico
 const obtenerFechaBorrado = async (req, res) => {
     const { semestre } = req.query;
-    console.log(`Obteniendo fecha de borrado para el semestre: ${semestre}`);
     try {
         const historial = await Historial.findOne({ semestre });
         if (!historial) {
@@ -189,7 +188,6 @@ const obtenerFechaBorrado = async (req, res) => {
 //Actualizar la fecha de borrado del hisotrial académico
 const actualizarFechaBorrado = async (req, res) => {
     const { semestre, fecha_de_borrado } = req.body;
-    console.log(`Actualizando fecha de borrado para el semestre: ${semestre}, fecha: ${fecha_de_borrado}`);
     try {
         const historial = await Historial.findOne({ semestre });
         if (!historial) {

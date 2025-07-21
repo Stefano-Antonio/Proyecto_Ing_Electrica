@@ -28,7 +28,6 @@ const AlumnoListCoord = () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/alumnos/carrera/${matriculaCord}`);
         const alumnosData = response.data;
-        console.log("Alumnos:", alumnosData);
 
         // Obtener los nombres de los tutores
         const tutoresNombresTemp = {};
@@ -97,7 +96,6 @@ const AlumnoListCoord = () => {
     fetchData();
   }, [matriculaCord, id_carrera]);
 
-  console.log("matriculaCord:", matriculaCord);
 
   const handleNavigate1 = () => {
     navigate("/coordinador/crear-alumno", { state: { matriculaCord: matriculaCord } });
@@ -120,17 +118,14 @@ const AlumnoListCoord = () => {
     };
 
   const handleNavigate2 = () => {
-    console.log("Navegando a: ", `/coordinador-tutor`);
     navigate("/coordinador/admin-tutor", { state: { matriculaCord: matriculaCord } });
   };
 
   const handleNavigate3 = (alumno) => {
-    console.log("Navegando a: ", `/revisar-horario/${alumno.matricula}`);
     navigate(`/coordinador/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
   };
 
   const handleNavigate4 = (alumno) => {
-    console.log("Navegando a: ", `/validar-pago/${alumno.matricula}`);
     navigate(`/coordinador/validar-pago/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
   };
 
@@ -175,7 +170,6 @@ const AlumnoListCoord = () => {
   };
 
   const getEstatusIcon = (estatus) => {
-    console.log("Estatus:", estatus);
     switch (estatus) {
       case "Sin revisar":
         return <span className="status-icon yellow"></span>; 

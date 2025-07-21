@@ -21,7 +21,6 @@ function AsignarTutor() {
   useEffect(() => {
     axios.get('http://localhost:5000/api/alumnos')
       .then(response => {
-        console.log(response.data); // Verificar los datos recibidos
         setAlumnos(response.data);
       })
       .catch(error => console.error('Error al obtener alumnos:', error));
