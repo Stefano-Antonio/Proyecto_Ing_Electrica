@@ -2,15 +2,30 @@
 /* Agrupación horizontal para los campos de correo y teléfono */
 .form-group {
   display: flex;
-  flex-direction: row;
-  gap: 2rem;
+  gap: 40px; /* separa los bloques "correo" y "teléfono" */
   align-items: center;
-  justify-content: center;
-  margin: 20px 0;
+  margin-bottom: 10px;
 }
 
+.form-item {
+  display: flex;
+  align-items: center;
+}
+
+.form-item label {
+  margin-right: 8px;
+  white-space: nowrap;
+}
+
+.form-item input {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+
 .form-group label {
-  margin-right: -800px;
+  margin-right: 8px;
   font-weight: 500;
 }
 

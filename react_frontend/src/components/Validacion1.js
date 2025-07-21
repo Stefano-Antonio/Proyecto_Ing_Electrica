@@ -213,27 +213,31 @@ function Validacion1() {
         )}
 
         </div>
+          <div className="form-group">
+            <div className="form-item">
+              <label htmlFor="email">Correo electrónico:</label>
+              <input
+                type="email"
+                id="email"
+                placeholder="alguien@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
 
-        <div className="form-group">
-          <label htmlFor="email">Correo electrónico: </label>
-          <input
-            type="email"
-            id="email"
-            placeholder="alguien@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+            <div className="form-item">
+              <label htmlFor="phone">Teléfono:</label>
+              <input
+                type="tel"
+                id="phone"
+                placeholder="000-000-0000"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
+          </div>
 
-          <label htmlFor="phone">Teléfono: </label>
-          <input
-            type="tel"
-            id="phone"
-            placeholder='000-000-0000'
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-        </div>
 
         <div className="horario-buttons">
           <button className="button" onClick={handleContinuarValidacion}>
