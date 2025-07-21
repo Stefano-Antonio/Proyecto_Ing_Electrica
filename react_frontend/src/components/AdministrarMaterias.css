@@ -23,11 +23,10 @@
 }
 
 .materia-container {
-  flex: 1; /* Hace que el contenido principal ocupe el espacio restante */
   padding: 20px;
   text-align: center;
   background-color: white;
-  margin: 20px auto;
+  margin: -10px auto; /* Reduce el margen superior */
   max-width: 1500px;
 }
 

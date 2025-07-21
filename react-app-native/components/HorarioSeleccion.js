@@ -20,7 +20,7 @@ function HorarioSeleccion() {
   useEffect(() => {
     const fetchMaterias = async () => {
       try {
-        const response = await fetch("http://192.168.1.145:5000/api/materias");
+        const response = await fetch("http://localhost:5000/api/materias");
         const data = await response.json();
         const sortedData = data.sort((a, b) => a.grupo.localeCompare(b.grupo));
         setMaterias(sortedData);
