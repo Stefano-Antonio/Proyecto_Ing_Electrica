@@ -119,6 +119,21 @@ function InicioTutor() {
     console.log("alumno:", alumno);
     navigate(`/tutor/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaTutor , id_carrea: alumno.id_carrera } });
   };
+
+  const carrerasPermitidas = {
+    ISftw: "Ing. en Software",
+    IDsr: "Ing. en Desarrollo",
+    IEInd: "Ing. Electrónica Industrial",
+    ICmp: "Ing. Computación",
+    IRMca: "Ing. Robótica y Mecatrónica",
+    IElec: "Ing. Electricista",
+    ISftwS: "Ing. en Software (Semiescolarizado)",
+    IDsrS: "Ing. en Desarrollo (Semiescolarizado)",
+    IEIndS: "Ing. Electrónica Industrial(Semiescolarizado)",
+    ICmpS: "Ing. Computación (Semiescolarizado)",
+    IRMcaS: "Ing. Robótica y Mecatrónica (Semiescolarizado)",
+    IElecS: "Ing. Electricista (Semiescolarizado)",
+  };
   
   const handleDownloadCSV = async () => {
     const matriculas = alumnosFiltrados.map((a) => a.matricula);
@@ -226,6 +241,7 @@ function InicioTutor() {
               <tr>
                 <th>Matricula</th>
                 <th>Nombre del alumno</th>
+                <th>Carrera</th>
                 <th>Revisar horario</th>
                 <th>Estatus</th>
                 <th>Comprobante</th>
@@ -236,6 +252,7 @@ function InicioTutor() {
                 <tr key={alumno._id}>
                   <td>{alumno.matricula}</td>
                   <td>{alumno.nombre}</td>
+                  <td>{carrerasPermitidas[alumno.id_carrera] || alumno.id_carrera}</td>
                   <td>
                     <button
                       className="icon-button"

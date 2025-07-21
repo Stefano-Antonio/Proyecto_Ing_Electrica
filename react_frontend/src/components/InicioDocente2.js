@@ -137,6 +137,22 @@ function InicioDocente2() {
     }
   };
 
+  // Carreras permitidas para una carrera
+  const carrerasPermitidas = {
+      ISftw: "Software",
+      IDsr: "Desarrollo",
+      IEInd: "Electrónica Industrial",
+      ICmp: "Computación",
+      IRMca: "Robótica y Mecatrónica",
+      IElec: "Electricista",
+      ISftwS: "Software (Semiescolarizado)",
+      IDsrS: "Desarrollo (Semiescolarizado)",
+      IEIndS: "Electrónica Industrial(Semiescolarizado)",
+      ICmpS: "Computación (Semiescolarizado)",
+      IRMcaS: "Robótica y Mecatrónica (Semiescolarizado)",
+      IElecS: "Electricista (Semiescolarizado)",
+    };
+
   // Filtrar materias por búsqueda
   const materiasFiltradas = materias.filter(materias => 
     materias.grupo.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -177,6 +193,7 @@ function InicioDocente2() {
               <tr>
                 <th style={{ textAlign: "center" }}>Grupo</th>
                 <th style={{ textAlign: "center" }}>Salón</th>
+                <th style={{ textAlign: "center" }}>Carrera</th>
                 <th style={{ textAlign: "center" }}>Alumnos</th>
                 <th style={{ textAlign: "center" }}>Cupo</th>
                 <th style={{ textAlign: "center" }}>Materia</th>
@@ -193,6 +210,7 @@ function InicioDocente2() {
                 <tr key={materia._id}>
                   <td>{materia.grupo}</td>
                   <td>{materia.salon}</td>
+                  <td>{carrerasPermitidas[materia.id_carrera] || materia.id_carrera}</td>
                   <td><button className="icon-button" onClick={() => handleListaAlumnos(materia)}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>

@@ -155,6 +155,23 @@ function InicioDocente() {
     }
   };
 
+  // Carreras permitidas para una carrera
+  const carrerasPermitidas = {
+      ISftw: "Software",
+      IDsr: "Desarrollo",
+      IEInd: "Electrónica Industrial",
+      ICmp: "Computación",
+      IRMca: "Robótica y Mecatrónica",
+      IElec: "Electricista",
+      ISftwS: "Software (Semiescolarizado)",
+      IDsrS: "Desarrollo (Semiescolarizado)",
+      IEIndS: "Electrónica Industrial(Semiescolarizado)",
+      ICmpS: "Computación (Semiescolarizado)",
+      IRMcaS: "Robótica y Mecatrónica (Semiescolarizado)",
+      IElecS: "Electricista (Semiescolarizado)",
+    };
+
+
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("userType");
@@ -245,6 +262,7 @@ function InicioDocente() {
                   <tr>
                     <th>Matricula</th>
                     <th>Nombre del alumno</th>
+                    <th>Carrera</th>
                     <th>Revisar horario</th>
                     <th>Estatus</th>
                     <th>Comprobante de pago</th>
@@ -255,6 +273,7 @@ function InicioDocente() {
                     <tr key={alumno._id}>
                       <td>{alumno.matricula}</td>
                       <td>{alumno.nombre}</td>
+                      <td>{carrerasPermitidas[alumno.id_carrera] || alumno.id_carrera}</td>
                       <td>
                         <button
                           className="icon-button"

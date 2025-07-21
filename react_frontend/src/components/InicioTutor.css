@@ -101,6 +101,13 @@
   text-align: center;
 }
 
+.tutor-table th:nth-child(6),
+.tutor-table td:nth-child(6) {
+  width: 15%;
+  min-width: 120px;
+  text-align: center;
+}
+
 
 
 .tutor-table img {
