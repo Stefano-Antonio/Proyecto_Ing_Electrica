@@ -66,13 +66,19 @@ s
 .docente-table {
   background-color: #002060;
   color: white;
-}
+  font-weight: bold;
+  height: 50px; /* Reduce la altura de las filas al 75% */
+  }
 
 
-.docente-table th {
-  background-color: #002060;
+
+
+.docente-table-2 th {
+  background-color: #002a5c; /* Azul UAZ */
   color: white;
   text-align: center;
+  height: 50px; /* Igual que las filas de abajo */
+  vertical-align: middle;
 }
 
 .actions {
