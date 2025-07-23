@@ -19,6 +19,7 @@ function Validacion2() {
   const [comprobanteExiste, setComprobanteExiste] = useState(false);
   const [comprobanteHabilitado, setComprobanteHabilitado] = useState(true);
   const id_carrera = localStorage.getItem("id_carrera");
+  const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de tener configurada la URL base en tu .env
 
   useEffect(() => {
     const bloquearAtras = () => {
@@ -45,7 +46,7 @@ function Validacion2() {
     // Obtener el estatus del horario del alumno
     const obtenerEstatusHorario = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/alumnos/estatus/${matricula}`);
+        const response = await axios.get(`${API_URL}/api/alumnos/estatus/${matricula}`);
         setEstatusHorario(response.data); // Guardar el estatus recibido (0 o 1)
       } catch (error) {
         console.error("Error al obtener el estatus del horario:", error);
@@ -57,7 +58,7 @@ function Validacion2() {
   useEffect(() => {
     const fetchComprobanteHabilitado = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/coordinadores/comprobante-habilitado/${id_carrera}`);
+        const res = await axios.get(`${API_URL}/api/coordinadores/comprobante-habilitado/${id_carrera}`);
         setComprobanteHabilitado(res.data.comprobantePagoHabilitado);
       } catch (error) {
         setComprobanteHabilitado(true); // Por defecto true si falla
@@ -70,7 +71,7 @@ function Validacion2() {
     // Consultar si ya hay comprobante y su estatus usando la nueva ruta optimizada
     const fetchComprobanteYEstado = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/alumnos/comprobante/${matricula}`);
+        const response = await axios.get(`${API_URL}/api/alumnos/comprobante/${matricula}`);
         setComprobanteExiste(response.data.existe);
         setEstatusComprobante(response.data.estatus || "Pendiente");
       } catch (error) {
@@ -102,7 +103,7 @@ function Validacion2() {
 
     try {
       await axios.post(
-        `http://localhost:5000/api/alumnos/subir-comprobante/${matricula}`,
+        `${API_URL}/api/alumnos/subir-comprobante/${matricula}`,
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
@@ -156,7 +157,7 @@ function Validacion2() {
               {comprobanteExiste && (
                 <div className="file-upload-container" style={{ display: "flex", alignItems: "center", gap: "20px", marginBottom: 10 }}>
                   <a
-                    href={`http://localhost:5000/uploads/comprobantes/Pago_${matricula}.pdf`}
+                    href={`${API_URL}/uploads/comprobantes/Pago_${matricula}.pdf`}
                     target="_blank"
                     rel="noopener noreferrer"
                     title="Ver comprobante de pago"

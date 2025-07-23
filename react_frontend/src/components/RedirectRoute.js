@@ -8,6 +8,7 @@ const RedirectRoute = ({ children, userType }) => {
     const [horario, setHorario] = useState(null); // Estado para el horario
     const [loading, setLoading] = useState(true); // Estado de carga para asegurarnos de que los datos se hayan cargado
     const [validacionCompleta, setValidacionCompleta] = useState(false);
+    const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de tener configurada la URL base en tu .env
 
     const getPersonalRedirectRoute = () => {
         if (roles.includes("D")) {
@@ -31,7 +32,7 @@ const RedirectRoute = ({ children, userType }) => {
         if (isAuthenticated && userType === "alumno") {
             const fetchAlumnoData = async () => {
                 try {
-                    const response = await axios.get(`/api/alumnos/${localStorage.getItem("IDAlumno")}`);
+                    const response = await axios.get(`${API_URL}/api/alumnos/${localStorage.getItem("IDAlumno")}`);
                     setHorario(response.data.horario);  // Establecer el horario
                     setValidacionCompleta(response.data.validacionCompleta); // Nuevo estado
                     setLoading(false); // Datos cargados

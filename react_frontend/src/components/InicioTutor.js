@@ -13,6 +13,7 @@ function InicioTutor() {
   const navigate = useNavigate();
   const { nombre, matricula, id_carrera } = location.state || {};
   const matriculaTutor = localStorage.getItem("matricula");
+  const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de tener configurada la URL base en tu .env
 
   // Guardar la matrícula del tutor en localStorage
   useEffect(() => {
@@ -41,7 +42,7 @@ function InicioTutor() {
   useEffect(() => {
     const fetchComprobantes = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/alumnos/comprobantes/lista");
+        const response = await axios.get("${API_URL}/api/alumnos/comprobantes/lista");
         setComprobantes(response.data); 
       } catch (error) {
         console.error("Error al obtener la lista de comprobantes:", error);
@@ -62,7 +63,7 @@ function InicioTutor() {
           return;
         }
 
-        const response = await fetch(`http://localhost:5000/api/tutores/${matricula}`);
+        const response = await fetch(`${API_URL}/api/tutores/${matricula}`);
         if (!response.ok) {
           throw new Error("Error al obtener los alumnos");
         }
@@ -72,7 +73,7 @@ function InicioTutor() {
 
         const fetchEstatus = async (alumno) => {
           try {
-            const estatusResponse = await fetch(`http://localhost:5000/api/tutores/estatus/${alumno.matricula}`);
+            const estatusResponse = await fetch(`${API_URL}/api/tutores/estatus/${alumno.matricula}`);
             if (!estatusResponse.ok) {
               throw new Error("Error al obtener el estatus del horario");
             }
@@ -90,7 +91,7 @@ function InicioTutor() {
 
         await Promise.all(carrerasUnicas.map(async (carrera) => {
           try {
-            const res = await axios.get(`http://localhost:5000/api/coordinadores/comprobante-habilitado/${carrera}`);
+            const res = await axios.get(`${API_URL}/api/coordinadores/comprobante-habilitado/${carrera}`);
             comprobanteCarreraTemp[carrera] = res.data.comprobantePagoHabilitado;
           } catch (error) {
             comprobanteCarreraTemp[carrera] = true;
@@ -144,7 +145,7 @@ function InicioTutor() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/alumnos/exportar-csv/filtrados",
+        "${API_URL}/api/alumnos/exportar-csv/filtrados",
         { matriculas },
         { responseType: "blob" }
       );

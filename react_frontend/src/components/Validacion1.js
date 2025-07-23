@@ -21,6 +21,8 @@ function Validacion1() {
   const { materiasSeleccionadas = [] } = location.state || {};
   const carrerasPermitidasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
 
+  const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de tener configurada la URL base en tu .env
+  
   useEffect(() => {
     const fetchAlumnoData = async () => {
       const id = location.state?.id || localStorage.getItem("id");
@@ -31,7 +33,7 @@ function Validacion1() {
 
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/alumnos/${id}`
+          `${API_URL}/api/alumnos/${id}`
         );
         const { _id, nombre, correo, telefono } = response.data;
         setNombreAlumno(nombre);
@@ -99,7 +101,7 @@ function Validacion1() {
 
     try {
       // Actualizar los datos del alumno
-      await axios.put(`http://localhost:5000/api/alumnos/horario/${id}`, {
+      await axios.put(`${API_URL}/api/alumnos/horario/${id}`, {
         nombre: nombre,
         correo: email,
         telefono: phone,
