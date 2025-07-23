@@ -8,7 +8,8 @@ function DocenteAlumnos() {
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const location = useLocation();
   const { nombre, matricula: matriculaDocente, materiaId, materiaNombre } = location.state || {};
-
+  const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de tener configurada la URL base en tu .env
+  
   // Guardar la matrícula del tutor en localStorage
   useEffect(() => {
     if (matriculaDocente) {
@@ -27,7 +28,7 @@ function DocenteAlumnos() {
           return;
         }
         // Obtener los alumnos de la materia
-        const response = await fetch(`http://localhost:5000/api/docentes/materia/${materiaId}/alumnos`);
+        const response = await fetch(`${API_URL}/api/docentes/materia/${materiaId}/alumnos`);
         if (!response.ok) {
           throw new Error("Error al obtener los alumnos");
         }

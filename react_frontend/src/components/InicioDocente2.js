@@ -11,6 +11,7 @@ function InicioDocente2() {
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const location = useLocation();
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de tener configurada la URL base en tu .env
 
   const { nombre: nombreDocente, matricula: matriculaDocente } = location.state || {};
 
@@ -53,7 +54,7 @@ function InicioDocente2() {
         }
 
         //  OBTENER MATERIAS DEL DOCENTE 
-        const response = await fetch(`http://localhost:5000/api/docentes/materias/${matricula}`);
+        const response = await fetch(`${API_URL}/api/docentes/materias/${matricula}`);
         if (!response.ok) {
           throw new Error("Error al obtener las materias");
         }
@@ -116,7 +117,7 @@ function InicioDocente2() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/materias/exportar-csv/filtrados",
+        `${API_URL}/api/materias/exportar-csv/filtrados`,
         { ids },
         { responseType: "blob" }
       );
