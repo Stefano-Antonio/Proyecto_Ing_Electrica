@@ -12,6 +12,7 @@ function InicioDocente() {
   const [comprobantePorCarrera, setComprobantePorCarrera] = useState({});
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL;
   
   const nombreDocente = localStorage.getItem("matricula");
 
@@ -51,7 +52,7 @@ function InicioDocente() {
             return;
           }
   
-          const response = await fetch(`http://localhost:5000/api/docentes/alumnos/${matricula}`);
+          const response = await fetch(`${API_URL}/api/docentes/alumnos/${matricula}`);
           if (!response.ok) {
             throw new Error("Error al obtener los alumnos");
           }
@@ -60,7 +61,7 @@ function InicioDocente() {
   
           const fetchEstatus = async (alumno) => {
             try {
-              const estatusResponse = await fetch(`http://localhost:5000/api/docentes/estatus/${alumno.matricula}`);
+              const estatusResponse = await fetch(`${API_URL}/api/docentes/estatus/${alumno.matricula}`);
               if (!estatusResponse.ok) {
                 throw new Error("Error al obtener el estatus del horario");
               }
@@ -78,7 +79,7 @@ function InicioDocente() {
 
           await Promise.all(carrerasUnicas.map(async (carrera) => {
             try {
-              const res = await axios.get(`http://localhost:5000/api/coordinadores/comprobante-habilitado/${carrera}`);
+              const res = await axios.get(`${API_URL}/api/coordinadores/comprobante-habilitado/${carrera}`);
               comprobanteCarreraTemp[carrera] = res.data.comprobantePagoHabilitado;
             } catch (error) {
               comprobanteCarreraTemp[carrera] = true;
@@ -107,7 +108,7 @@ function InicioDocente() {
     useEffect(() => {
       const fetchComprobantes = async () => {
         try {
-          const response = await axios.get("http://localhost:5000/api/alumnos/comprobantes/lista");
+          const response = await axios.get(`${API_URL}/api/alumnos/comprobantes/lista`);
           setComprobantes(response.data); // 👈 Aquí llenas la lista
         } catch (error) {
           console.error("Error al obtener la lista de comprobantes:", error);
@@ -131,7 +132,7 @@ function InicioDocente() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/alumnos/exportar-csv/filtrados",
+        `${API_URL}/api/alumnos/exportar-csv/filtrados`,
         { matriculas },
         { responseType: "blob" }
       );

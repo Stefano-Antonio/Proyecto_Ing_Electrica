@@ -9,6 +9,7 @@ function RevisionHorarioTutor() {
   const [estatus, setEstatus] = useState(null);
   const [alumno, setAlumno] = useState(null); // Inicializar como null
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de tener configurada la URL base en tu .env
 
   // Recuperar el estado (nombre y matricula) desde la navegación
   const location = useLocation();
@@ -17,7 +18,7 @@ function RevisionHorarioTutor() {
   const carrerasPermitidasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/tutores/horario/${matricula}`)
+    fetch(`${API_URL}/api/tutores/horario/${matricula}`)
       .then(response => response.json())
       .then(data => {
         setAlumno(data.alumno);
@@ -28,7 +29,7 @@ function RevisionHorarioTutor() {
 
   const eliminarHorario = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/tutores/eliminar/${alumno.matricula}`, {
+      const response = await fetch(`${API_URL}/api/tutores/eliminar/${alumno.matricula}`, {
         method: "DELETE",
       });
 
@@ -44,7 +45,7 @@ function RevisionHorarioTutor() {
 
   const enviarComentarioCorreo = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/tutores/${alumno._id}/comentario`, {
+      const response = await fetch(`${API_URL}/api/tutores/${alumno._id}/comentario`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ comentario }),
@@ -62,7 +63,8 @@ function RevisionHorarioTutor() {
 
   const actualizarEstatus = async (nuevoEstatus) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/tutores/estatus/actualizar/${matricula}`, {
+      console.log("Actualizando estatus...");
+      const response = await fetch(`${API_URL}/api/tutores/estatus/actualizar/${matricula}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ estatus: nuevoEstatus, comentario }),

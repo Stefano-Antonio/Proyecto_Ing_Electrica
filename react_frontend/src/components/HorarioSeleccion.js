@@ -22,6 +22,9 @@ function HorarioSeleccion() {
   const carrerasPermitidasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
   const [horasMaximas, setHorasMaximas] = useState("");
 
+  // Asegúrate de que la URL base esté configurada en tu archivo .env
+  const API_URL = process.env.REACT_APP_API_URL;
+
 // 1. Obtener y sincronizar id_carrera desde localStorage o location.state
 useEffect(() => {
   const carrera = location.state?.id_carrera || localStorage.getItem("id_carrera");
@@ -40,7 +43,7 @@ useEffect(() => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/materias/carrera/${id_carrera}`);
+      const response = await fetch(`${API_URL}/api/materias/carrera/${id_carrera}`);
       const data = await response.json();
       const sortedData = data.sort((a, b) => a.grupo.localeCompare(b.grupo));
       setMaterias(sortedData);
@@ -235,7 +238,7 @@ useEffect(() => {
   const fetchHorasCoordinador = async () => {
     try {
       const id_carrera = localStorage.getItem("id_carrera");
-      const response = await axios.get(`http://localhost:5000/api/coordinadores/horas/${id_carrera}`);
+      const response = await axios.get(`${API_URL}/api/coordinadores/horas/${id_carrera}`);
       setHorasMaximas(response.data.horas); // Suponiendo que el backend regresa { horas: 40 }
     } catch (error) {
       console.error("Error al obtener las horas del coordinador:", error);

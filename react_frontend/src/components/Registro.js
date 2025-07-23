@@ -15,7 +15,9 @@ function Registro() {
   const [id_carrera, setIdCarrera] = useState("");
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
-  
+  // Variable para guardar la url de la api
+  const API_URL = process.env.REACT_APP_API_URL;
+
   const carrerasPermitidas = {
     ISftw: "Ing. en Software",
     IDsr: "Ing. en Desarrollo",
@@ -42,7 +44,7 @@ function Registro() {
   
   const HandleForgotPassword = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/personal/password/${matricula}`);
+      const response = await axios.get(`${API_URL}/api/personal/password/${matricula}`);
       if (response.status === 200) {
         toast.success("Se ha enviado un correo para la recuperación de contraseña.", {
           position: "top-right",
@@ -70,8 +72,8 @@ function Registro() {
     try {
       const endpoint =
         tipoUsuario === "alumno"
-          ? "http://localhost:5000/api/auth/alumno/login"
-          : "http://localhost:5000/api/auth/personal/login";
+          ? `${API_URL}/api/auth/alumno/login`
+          : `${API_URL}/api/auth/personal/login`;
   
       const payload =
         tipoUsuario === "alumno"
