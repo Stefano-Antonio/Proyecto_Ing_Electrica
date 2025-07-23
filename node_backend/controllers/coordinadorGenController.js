@@ -5,6 +5,7 @@ const Administradores = require('../models/Administradores');
 const Personal = require('../models/Personal');
 const Tutores = require('../models/Tutores');
 const Docentes = require('../models/Docentes');
+const CoordinadorGen = require('../models/Coordinador_Gen');
 
 
 // obtener el id_carrera del personal
@@ -34,37 +35,44 @@ module.exports.getIdCarrera = async (req, res) => {
 
 // Función para asignar un alumno a un tutor
 const asignarAlumnoATutor = async (tutorId, alumnoId) => {
-    try {
-      const tutorAsignado = await Personal.findById(tutorId);
-      if (!tutorAsignado) {
-        return;
-      }
-  
-      const TutorModel = await Tutores.findOne({ personalMatricula: tutorAsignado.matricula });
-      const DocenteModel = await Docentes.findOne({ personalMatricula: tutorAsignado.matricula });
-      const CoordinadorModel = await Coordinadores.findOne({ personalMatricula: tutorAsignado.matricula });
-      const AdministradorModel = await Administradores.findOne({ personalMatricula: tutorAsignado.matricula });
-  
-      if (TutorModel) {
-        TutorModel.alumnos.push(alumnoId);
-        await TutorModel.save();
-      }
-      if (DocenteModel) {
-        DocenteModel.alumnos.push(alumnoId);
-        await DocenteModel.save();
-      }
-      if (CoordinadorModel) {
-        CoordinadorModel.alumnos.push(alumnoId);
-        await CoordinadorModel.save();
-      }
-      if (AdministradorModel) {
-        AdministradorModel.alumnos.push(alumnoId);
-        await AdministradorModel.save();
-      }
-    } catch (error) {
-      console.error('Error al asignar el alumno al tutor:', error);
+  try {
+    const tutorAsignado = await Personal.findById(tutorId);
+    if (!tutorAsignado) {
+    return;
     }
-  };
+
+    console.log(`Asignando alumno ${alumnoId} al tutor ${tutorAsignado.matricula}`);
+  
+    const TutorModel = await Tutores.findOne({ personalMatricula: tutorAsignado.matricula });
+    const DocenteModel = await Docentes.findOne({ personalMatricula: tutorAsignado.matricula });
+    const CoordinadorModel = await Coordinadores.findOne({ personalMatricula: tutorAsignado.matricula });
+    const AdministradorModel = await Administradores.findOne({ personalMatricula: tutorAsignado.matricula });
+    const CoordinadorGenModel = await CoordinadorGen.findOne({ personalMatricula: tutorAsignado.matricula });
+  
+    if (TutorModel) {
+    TutorModel.alumnos.push(alumnoId);
+    await TutorModel.save();
+    }
+    if (DocenteModel) {
+    DocenteModel.alumnos.push(alumnoId);
+    await DocenteModel.save();
+    }
+    if (CoordinadorModel) {
+    CoordinadorModel.alumnos.push(alumnoId);
+    await CoordinadorModel.save();
+    }
+    if (AdministradorModel) {
+    AdministradorModel.alumnos.push(alumnoId);
+    await AdministradorModel.save();
+    }
+    if (CoordinadorGenModel) {
+    CoordinadorGenModel.alumnos.push(alumnoId);
+    await CoordinadorGenModel.save();
+    }
+  } catch (error) {
+    console.error('Error al asignar el alumno al tutor:', error);
+  }
+};
 
 // Ruta para crear un alumno 
 module.exports.createAlumno = async (req, res) => {
@@ -104,19 +112,27 @@ exports.updateAlumno = async (req, res) => {
         const DocenteModel = await Docentes.findOne({ personalMatricula: tutorAnteriorAsignado.matricula });
         const CoordinadorModel = await Coordinadores.findOne({ personalMatricula: tutorAnteriorAsignado.matricula });
         const AdministradorModel = await Administradores.findOne({ personalMatricula: tutorAnteriorAsignado.matricula });
+        const CoordinadorGenModel = await CoordinadorGen.findOne({ personalMatricula: tutorAnteriorAsignado.matricula });
 
         if (TutorModel) {
           TutorModel.alumnos = TutorModel.alumnos.filter(alumnoId => alumnoId.toString() !== alumno._id.toString());
           await TutorModel.save();
-        } else if (DocenteModel) {
+        }
+        if (DocenteModel) {
           DocenteModel.alumnos = DocenteModel.alumnos.filter(alumnoId => alumnoId.toString() !== alumno._id.toString());
           await DocenteModel.save();
-        } else if (CoordinadorModel) {
+        }
+        if (CoordinadorModel) {
           CoordinadorModel.alumnos = CoordinadorModel.alumnos.filter(alumnoId => alumnoId.toString() !== alumno._id.toString());
           await CoordinadorModel.save();
-        } else if (AdministradorModel) {
+        }
+        if (AdministradorModel) {
           AdministradorModel.alumnos = AdministradorModel.alumnos.filter(alumnoId => alumnoId.toString() !== alumno._id.toString());
           await AdministradorModel.save();
+        }
+        if (CoordinadorGenModel) {
+          CoordinadorGenModel.alumnos = CoordinadorGenModel.alumnos.filter(alumnoId => alumnoId.toString() !== alumno._id.toString());
+          await CoordinadorGenModel.save();
         }
       }
     }
@@ -126,13 +142,14 @@ exports.updateAlumno = async (req, res) => {
     if (!tutorAsignado) {
     }
 
-    // Buscar el tutor en las colecciones Tutor, Docente y Coordinador
+    // Buscar el tutor en las colecciones Tutor, Docente, Coordinador, Administrador y Coordinador General
     const TutorModel = await Tutores.findOne({ personalMatricula: tutorAsignado.matricula });
     const DocenteModel = await Docentes.findOne({ personalMatricula: tutorAsignado.matricula });
     const CoordinadorModel = await Coordinadores.findOne({ personalMatricula: tutorAsignado.matricula });
     const AdministradorModel = await Administradores.findOne({ personalMatricula: tutorAsignado.matricula });
+    const CoordinadorGenModel = await CoordinadorGen.findOne({ personalMatricula: tutorAsignado.matricula });
 
-    if (!TutorModel && !DocenteModel && !CoordinadorModel && !AdministradorModel) {
+    if (!TutorModel && !DocenteModel && !CoordinadorModel && !AdministradorModel && !CoordinadorGenModel) {
     }
 
     // Agregar el alumno al nuevo tutor
@@ -151,6 +168,10 @@ exports.updateAlumno = async (req, res) => {
     if (AdministradorModel) {
       AdministradorModel.alumnos.push(alumno._id);
       await AdministradorModel.save();
+    }
+    if (CoordinadorGenModel) {
+      CoordinadorGenModel.alumnos.push(alumno._id);
+      await CoordinadorGenModel.save();
     }
 
     // Actualizar el alumno con los nuevos datos

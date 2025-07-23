@@ -5,6 +5,7 @@ const Personal = require('../models/Personal');
 const Administradores = require('../models/Administradores');
 const Alumno = require('../models/Alumno');
 const Materia = require('../models/Materia');
+const CoordinadorGeneral = require('../models/Coordinador_Gen');
 
 // Ruta para obtener los alumnos de un tutor específico
 exports.getAlumnosAsignados = async (req, res) => {
@@ -23,21 +24,26 @@ exports.getAlumnosAsignados = async (req, res) => {
   }
 };
 
-//Ruta para obtener los alumnos asignados a un coordinador
+//Ruta para obtener los alumnos asignados a un coordinador o coordinador general
 exports.getAlumnosAsignadosCord = async (req, res) => {
   const { matricula } = req.params;
   try {
-    // Buscar en la colección de Coordinadores
-    const coordinador = await Coordinadores.findOne({ personalMatricula: matricula });
-
-    if (!coordinador) {
-      return res.status(404).json({ message: "Coordinador no encontrado" });
+    let alumnos = [];
+    if (matricula.startsWith("CG")) {
+      // Buscar en la colección de Coordinador General
+      const coordinadorGeneral = await CoordinadorGeneral.findOne({ personalMatricula: matricula });
+      if (!coordinadorGeneral) {
+        return res.status(404).json({ message: "Coordinador general no encontrado" });
+      }
+      alumnos = coordinadorGeneral.alumnos || [];
+    } else {
+      // Buscar en la colección de Coordinadores
+      const coordinador = await Coordinadores.findOne({ personalMatricula: matricula });
+      if (!coordinador) {
+        return res.status(404).json({ message: "Coordinador no encontrado" });
+      }
+      alumnos = coordinador.alumnos || [];
     }
-
-    // Buscar alumnos de la carrera del coordinador
-    const alumnos = coordinador.alumnos || []; // Evitar que sea undefined
-
-    // Enviar como objeto con la clave "alumnos"
     res.status(200).json({ alumnos });
   } catch (error) {
     console.error("Error al obtener alumnos:", error);

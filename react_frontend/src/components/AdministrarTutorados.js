@@ -103,8 +103,9 @@ function AdministrarTutorados() {
   }, [matriculaCord, storedMatriculaTutor]);
   
 
-  const handleRevisarHorario = (alumno) => {
-    navigate(`/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord } });
+
+    const handleRevisarHorario = (alumno) => {
+    navigate(`/coordinador/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
   };
 
   const handleLogout = () => {
