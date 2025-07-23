@@ -63,7 +63,7 @@
   }
 
   .alumno-scrollable-table {
-    max-height: 540px;
+    max-height: 750px;
     overflow-y: auto;
   }
   

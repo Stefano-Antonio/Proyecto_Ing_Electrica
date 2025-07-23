@@ -120,13 +120,65 @@ const AdministrarPersonalCG = () => {
     rolesTexto: getRoleText(persona.roles).toLowerCase()
   }));
   
-  const personalFiltrado = personalConRoles.filter(persona => 
-    persona.matricula?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    persona.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    persona.id_carrera?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    persona.rolesTexto.includes(searchTerm.toLowerCase())
-  );
-  
+  // Diccionario de carreras permitidas
+  const carrerasPermitidas = {
+    ISftw: "Ing. en Software",
+    IDsr: "Ing. en Desarrollo",
+    IEInd: "Ing. Electrónica Industrial",
+    ICmp: "Ing. Computación",
+    IRMca: "Ing. Robótica y Mecatrónica",
+    IElec: "Ing. Electricista",
+    ISftwS: "Ing. en SoftwareSemiescolarizado",
+    IDsrS: "Ing. en DesarrolloSemiescolarizado",
+    IEIndS: "Ing. Electrónica IndustrialSemiescolarizado",
+    ICmpS: "Ing. ComputaciónSemiescolarizado",
+    IRMcaS: "Ing. Robótica y MecatrónicaSemiescolarizado",
+    IElecS: "Ing. ElectricistaSemiescolarizado",
+  };
+
+  // Palabras clave para carreras
+  const carreraClaves = Object.values(carrerasPermitidas).map(nombre => {
+    return nombre
+      .replace(/^Ing\. en\s*/i, "")
+      .replace(/^Ing\.\s*/i, "")
+      .replace(/\s*\(Semiescolarizado\)/i, "")
+      .trim()
+      .toLowerCase();
+  });
+
+  // Filtrar personal por búsqueda
+  const personalFiltrado = personalConRoles.filter(persona => {
+    const search = searchTerm.toLowerCase();
+
+    // Obtener nombre de carrera sin "Ing. en" y sin " (Semiescolarizado)"
+    let nombreCarreraCompleto = carrerasPermitidas[persona.id_carrera] || "";
+    let nombreCarreraClave = nombreCarreraCompleto
+      .replace(/^Ing\. en\s*/i, "")
+      .replace(/^Ing\.\s*/i, "")
+      .replace(/\s*\(Semiescolarizado\)/i, "")
+      .trim()
+      .toLowerCase();
+
+    // Filtro por carrera clave
+    if (carreraClaves.includes(search)) {
+      return nombreCarreraClave === search;
+    }
+
+    // Filtros anteriores
+    const nombreCoincide = persona.nombre?.toLowerCase().includes(search);
+    const matriculaCoincide = persona.matricula?.toLowerCase().includes(search);
+    const idCarreraCoincide = persona.id_carrera?.toLowerCase().includes(search);
+    const carreraNombreCoincide = nombreCarreraClave.includes(search);
+    const rolesCoincide = persona.rolesTexto.includes(search);
+
+    return (
+      nombreCoincide ||
+      matriculaCoincide ||
+      idCarreraCoincide ||
+      carreraNombreCoincide ||
+      rolesCoincide
+    );
+  });
 
   return (
     <div className="personal-layout">

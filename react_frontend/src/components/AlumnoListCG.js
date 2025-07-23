@@ -153,33 +153,87 @@ const AlumnoListCG = () => {
     return <div className="loading">Cargando información de alumnos...</div>;
   }
 
+  // Diccionario de carreras permitidas
+  const carrerasPermitidas = {
+    ISftw: "Ing. en Software",
+    IDsr: "Ing. en Desarrollo",
+    IEInd: "Ing. Electrónica Industrial",
+    ICmp: "Ing. Computación",
+    IRMca: "Ing. Robótica y Mecatrónica",
+    IElec: "Ing. Electricista",
+    ISftwS: "Ing. en SoftwareSemiescolarizado",
+    IDsrS: "Ing. en DesarrolloSemiescolarizado",
+    IEIndS: "Ing. Electrónica IndustrialSemiescolarizado",
+    ICmpS: "Ing. ComputaciónSemiescolarizado",
+    IRMcaS: "Ing. Robótica y MecatrónicaSemiescolarizado",
+    IElecS: "Ing. ElectricistaSemiescolarizado",
+  };
 
-    // Filtrar alumnos por búsqueda
+  // Palabras clave para estatus y carreras
+  const estatusClaves = [
+    { clave: "sin revisar", valor: "Sin revisar" },
+    { clave: "revisado", valor: "Revisado" },
+    { clave: "en espera", valor: "En espera" }
+  ];
+
+  const carreraClaves = Object.values(carrerasPermitidas).map(nombre => {
+    return nombre
+      .replace(/^Ing\. en\s*/i, "")
+      .replace(/^Ing\.\s*/i, "")
+      .replace(/\s*\(Semiescolarizado\)/i, "")
+      .trim()
+      .toLowerCase();
+  });
+
+  // Filtrar alumnos por búsqueda
   const alumnosFiltrados = alumnos.filter(alumno => {
     const search = searchTerm.toLowerCase();
+
+    // Obtener nombre de carrera sin "Ing. en" y sin " (Semiescolarizado)"
+    let nombreCarreraCompleto = carrerasPermitidas[alumno.id_carrera] || "";
+    let nombreCarreraClave = nombreCarreraCompleto
+      .replace(/^Ing\. en\s*/i, "")
+      .replace(/^Ing\.\s*/i, "")
+      .replace(/\s*\(Semiescolarizado\)/i, "")
+      .trim()
+      .toLowerCase();
+
+    // Filtro por estatus
+    const estatusFiltro = estatusClaves.find(e => e.clave === search);
+    if (estatusFiltro) {
+      return alumno.estatus.toLowerCase() === estatusFiltro.valor.toLowerCase();
+    }
+
+    // Filtro por carrera clave
+    if (carreraClaves.includes(search)) {
+      return nombreCarreraClave === search;
+    }
+
+    // Filtros anteriores
     const nombreCoincide = alumno.nombre.toLowerCase().includes(search);
     const matriculaCoincide = alumno.matricula.toLowerCase().includes(search);
     const tutorCoincide =
       tutoresNombres[alumno._id] &&
       tutoresNombres[alumno._id].toLowerCase().includes(search);
-    const estatusCoincide = alumno.estatus.toLowerCase() === search;
+    const idCarreraCoincide = alumno.id_carrera && alumno.id_carrera.toLowerCase().includes(search);
+    const carreraNombreCoincide = nombreCarreraClave.includes(search);
 
-    // Si el término de búsqueda es un estatus exacto, solo filtrar por estatus
-    const esFiltroPorEstatus = ["falta de revisar", "revisado", "en espera"].includes(search);
-
-    return esFiltroPorEstatus
-      ? estatusCoincide
-      : nombreCoincide || matriculaCoincide || tutorCoincide || alumno.estatus.toLowerCase().includes(search);
+    return (
+      nombreCoincide ||
+      matriculaCoincide ||
+      tutorCoincide ||
+      idCarreraCoincide ||
+      carreraNombreCoincide
+    );
   });
 
   return (
-  <div className="alumno-layout">
-  <ToastContainer position="top-right" autoClose={3000} />
-  <div className="alumno-container">
-    <h3>Administrar alumnos</h3>
-    <p>Lista de alumnos asociados al programa académico</p>
-
-    {/* Contenedor de la barra de búsqueda y el botón */}
+    <div className="alumno-layout">
+      <ToastContainer position="top-right" autoClose={3000} />
+      <div className="alumno-container">
+        <h3>Administrar alumnos</h3>
+        <p>Lista de alumnos asociados al programa académico</p>
+        {/* Contenedor de la barra de búsqueda y el botón */}
     <div className="search-container">
       <input
         type="text"

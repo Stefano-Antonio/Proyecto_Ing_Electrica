@@ -14,30 +14,38 @@
 .personal-container {
   flex: 1; /* Hace que el contenido principal ocupe el espacio restante */
   padding: 20px;
+  width: 100%;
   text-align: center;
   background-color: white;
   position: relative; /* Permite el posicionamiento relativo del botón */
 }
 
 .personal-scrollable-1 {
-  max-height: 540px;
+  width: 50%;
+  max-height: 750px;
+  text-align: center;
+  margin: 0 auto; /* Centra el contenedor */
   overflow-y: auto;
 }
 
 .personal-table {
-  width: 100%;
-  height: 700px;
+  width: 50%;
   border-collapse: collapse;
   margin-bottom: 0px;
   text-align: left;
+}
+
+.personal-table tr {
+  height: auto; /* Permite que la altura de la fila se adapte al contenido */
 }
 
 .personal-table, th, td {
   border: 1px solid #ccc;
 }
 
-.personal-table th, td {
-  padding: 10px;
+.personal-table th,
+.personal-table td {
+  padding: 4px 6px; /* antes era 10px */
   text-align: center;
 }
 
@@ -45,6 +53,8 @@
   background-color: #002060;
   color: white;
 }
+
+
 
 .search-bar {
   width: 100%; /* Ajusta el ancho al 100% del contenedor */
@@ -110,6 +120,8 @@ button:hover, input[type="button"]:hover {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  display: block;
+  margin: 20px auto 0 auto; /* Centra el botón debajo de la tabla */
 }
 
 .add-delete-buttons button:hover {

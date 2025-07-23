@@ -59,7 +59,6 @@ function InicioDocente2() {
         }
 
         const data = await response.json();
-        console.log("Materias recibidas:", data.materias);
 
         // 🔹 GUARDAR MATERIAS EN EL ESTADO
         setMaterias(data.materias);

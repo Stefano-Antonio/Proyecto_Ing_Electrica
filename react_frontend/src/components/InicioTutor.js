@@ -20,7 +20,6 @@ function InicioTutor() {
       localStorage.setItem("matriculaTutor", matriculaTutor);
     }
   }, [matriculaTutor]);
-  console.log("Matrícula del tutor:", nombre, matriculaTutor);
   // Obtener la matrícula del tutor desde localStorage si no está en location.state
   const storedMatriculaTutor = localStorage.getItem("matriculaTutor");
 
@@ -68,7 +67,6 @@ function InicioTutor() {
         }
 
         const data = await response.json();
-        console.log("Alumnos recibidos:", data.alumnos);
 
         const fetchEstatus = async (alumno) => {
           try {
@@ -116,7 +114,6 @@ function InicioTutor() {
   }, [matriculaTutor, storedMatriculaTutor, location.state]);
 
   const handleRevisarHorario = (alumno) => {
-    console.log("alumno:", alumno);
     navigate(`/tutor/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaTutor , id_carrea: alumno.id_carrera } });
   };
 
@@ -187,7 +184,6 @@ function InicioTutor() {
   };
 
   const handleValidate = (alumno) => {
-    console.log("Navegando a: ", `/validar-pago/${alumno.matricula}`);
     navigate(`/tutor/validar-pago/${alumno.matricula}`, { 
       state: { 
         nombre: alumno.nombre, 
@@ -210,7 +206,6 @@ function InicioTutor() {
   return esFiltroPorEstatus ? estatusCoincide : nombreCoincide || estatusCoincide;
 });
 
-  console.log("Alumnos filtrados:", alumnosFiltrados);
 
   return (
     <div className="tutor-layout">

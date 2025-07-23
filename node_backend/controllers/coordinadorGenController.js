@@ -41,7 +41,6 @@ const asignarAlumnoATutor = async (tutorId, alumnoId) => {
     return;
     }
 
-    console.log(`Asignando alumno ${alumnoId} al tutor ${tutorAsignado.matricula}`);
   
     const TutorModel = await Tutores.findOne({ personalMatricula: tutorAsignado.matricula });
     const DocenteModel = await Docentes.findOne({ personalMatricula: tutorAsignado.matricula });
@@ -95,7 +94,6 @@ module.exports.createAlumno = async (req, res) => {
 // Actualizar un alumno
 exports.updateAlumno = async (req, res) => {
   const { matricula, nombre, correo, telefono, materiasSeleccionadas, tutor, id_carrera } = req.body;
-
   try {
     let horarioGuardado = null;
 

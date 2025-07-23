@@ -40,7 +40,6 @@ function InicioDocente() {
       };
     }, []);
 
-  console.log("Estado recibido:", location.state, matriculaDocente, storedMatriculaDocente);
 
     useEffect(() => {
       const fetchAlumnos = async () => {
@@ -58,7 +57,6 @@ function InicioDocente() {
           }
   
           const data = await response.json();
-          console.log("Alumnos recibidos:", data.alumnos);
   
           const fetchEstatus = async (alumno) => {
             try {
@@ -121,7 +119,6 @@ function InicioDocente() {
     }, []);
 
   const handleRevisarHorario = (alumno) => {
-    console.log("Navegando a: ", `/revisar-horario/${alumno.matricula}, ${matriculaDocente}`);
     navigate(`/docente/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaTutor: matriculaDocente, id_carrera: alumno.id_carrera} });
   };
 
@@ -211,11 +208,9 @@ function InicioDocente() {
   return esFiltroPorEstatus ? estatusCoincide : nombreCoincide || estatusCoincide;
 });
 
-  console.log("Alumnos filtrados:", alumnosFiltrados);
 
   // Manejar la validación del pago
   const handleValidate = (alumno) => {
-    console.log("Navegando a: ", `/validar-pago/${alumno.matricula}`);
     navigate(`/tutor/validar-pago/${alumno.matricula}`, { 
       state: { 
         nombre: alumno.nombre, 

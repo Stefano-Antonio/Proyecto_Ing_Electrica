@@ -8,7 +8,7 @@ router.get('/carrera/:matricula', coordinadorGenController.getIdCarrera);
 // Ruta para crear alumnos
 router.post('/alumnos', coordinadorGenController.createAlumno);
 
-// Ruta para crear alumnos
+// Ruta para crear actualizar alumnos
 router.put('/alumnos/:id', coordinadorGenController.updateAlumno);
 
 // Ruta para obtener tutores

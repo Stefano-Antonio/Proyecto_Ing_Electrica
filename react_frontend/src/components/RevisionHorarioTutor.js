@@ -15,7 +15,6 @@ function RevisionHorarioTutor() {
   const id_carrera = localStorage.getItem("id_carrera");
   const { nombre, matricula, matriculaTutor, origen } = location.state || {};
   const carrerasPermitidasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
-  console.log("Nombre y matrícula del tutor:", nombre, matricula, matriculaTutor, id_carrera);
 
   useEffect(() => {
     fetch(`http://localhost:5000/api/tutores/horario/${matricula}`)
@@ -63,7 +62,6 @@ function RevisionHorarioTutor() {
 
   const actualizarEstatus = async (nuevoEstatus) => {
     try {
-      console.log("Actualizando estatus...");
       const response = await fetch(`http://localhost:5000/api/tutores/estatus/actualizar/${matricula}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

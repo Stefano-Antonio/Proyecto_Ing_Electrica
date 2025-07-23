@@ -105,18 +105,67 @@ const AdministrarMateriasCG = () => {
     return <div className="loading">Cargando información de materias...</div>;
   }
 
-  // Filtrar materias por búsqueda
-  const materiasFiltradas = materias.filter((materia) =>
-    [
-      materia.salon,
-      materia.nombre,
-      materia.grupo,
-      materia.id_carrera,
-      getDocenteNombre(materia),
-    ].some((campo) => campo.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  // Diccionario de carreras permitidas
+  const carrerasPermitidas = {
+    ISftw: "Ing. en Software",
+    IDsr: "Ing. en Desarrollo",
+    IEInd: "Ing. Electrónica Industrial",
+    ICmp: "Ing. Computación",
+    IRMca: "Ing. Robótica y Mecatrónica",
+    IElec: "Ing. Electricista",
+    ISftwS: "Ing. en SoftwareSemiescolarizado",
+    IDsrS: "Ing. en DesarrolloSemiescolarizado",
+    IEIndS: "Ing. Electrónica IndustrialSemiescolarizado",
+    ICmpS: "Ing. ComputaciónSemiescolarizado",
+    IRMcaS: "Ing. Robótica y MecatrónicaSemiescolarizado",
+    IElecS: "Ing. ElectricistaSemiescolarizado",
+  };
 
-  
+  // Palabras clave para carreras
+  const carreraClaves = Object.values(carrerasPermitidas).map(nombre => {
+    return nombre
+      .replace(/^Ing\. en\s*/i, "")
+      .replace(/^Ing\.\s*/i, "")
+      .replace(/\s*\(Semiescolarizado\)/i, "")
+      .trim()
+      .toLowerCase();
+  });
+
+  // Filtrar materias por búsqueda y carrera
+  const materiasFiltradas = materias.filter((materia) => {
+    const search = searchTerm.toLowerCase();
+
+    // Obtener nombre de carrera sin "Ing. en" y sin " (Semiescolarizado)"
+    let nombreCarreraCompleto = carrerasPermitidas[materia.id_carrera] || "";
+    let nombreCarreraClave = nombreCarreraCompleto
+      .replace(/^Ing\. en\s*/i, "")
+      .replace(/^Ing\.\s*/i, "")
+      .replace(/\s*\(Semiescolarizado\)/i, "")
+      .trim()
+      .toLowerCase();
+
+    // Filtro por carrera clave
+    if (carreraClaves.includes(search)) {
+      return nombreCarreraClave === search;
+    }
+
+    // Filtros anteriores
+    const salonCoincide = materia.salon?.toLowerCase().includes(search);
+    const nombreCoincide = materia.nombre?.toLowerCase().includes(search);
+    const grupoCoincide = materia.grupo?.toLowerCase().includes(search);
+    const idCarreraCoincide = materia.id_carrera?.toLowerCase().includes(search);
+    const carreraNombreCoincide = nombreCarreraClave.includes(search);
+    const docenteCoincide = getDocenteNombre(materia).toLowerCase().includes(search);
+
+    return (
+      salonCoincide ||
+      nombreCoincide ||
+      grupoCoincide ||
+      idCarreraCoincide ||
+      carreraNombreCoincide ||
+      docenteCoincide
+    );
+  });
 
   return (
     <div className="admin-materias">
