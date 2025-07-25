@@ -35,6 +35,8 @@ function CrearPersonal() {
   
   const navigate = useNavigate();
 
+  const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de que esta variable esté definida en tu entorno
+
   const validarMatricula = (matricula) => {
     return /^(CG|AG)\d{4}$|^[A-Z]\d{4}$/.test(matricula);
   };
@@ -115,7 +117,7 @@ function CrearPersonal() {
     }
   
     try {
-      const response = await axios.post("http://localhost:5000/api/personal", form);
+      const response = await axios.post(`${API_URL}/api/personal`, form);
       toast.success("Usuario agregado con éxito");
       setForm({
         nombre: "",
@@ -166,7 +168,7 @@ function CrearPersonal() {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/personal/subir-csv",
+        `${API_URL}/api/personal/subir-csv`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -188,7 +190,7 @@ function CrearPersonal() {
   const handleDownloadCSV = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/personal/exportar-csv",
+        `${API_URL}/api/personal/exportar-csv`,
         { responseType: "blob" }
       );
 

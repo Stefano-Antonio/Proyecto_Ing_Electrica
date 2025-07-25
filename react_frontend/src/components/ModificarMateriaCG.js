@@ -57,10 +57,12 @@ function ModificarMateriaCG() {
     "IElecS",
   ];
 
+  const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de tener configurada la URL base en tu .env
+
   useEffect(() => {
     const fetchDocentes = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/docentes");
+        const response = await axios.get(`${API_URL}/api/docentes`);
         setDocentes(response.data); // Guardamos la lista de docentes con el nombre incluido
       } catch (error) {
         console.error("Error al obtener los docentes:", error);
@@ -86,7 +88,7 @@ function ModificarMateriaCG() {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/materias/subir-csv",
+        `${API_URL}/api/materias/subir-csv`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -102,7 +104,7 @@ function ModificarMateriaCG() {
   const handleDownloadCSV = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/materias/exportar-csv",
+        `${API_URL}/api/materias/exportar-csv`,
         { responseType: "blob" }
       );
 
@@ -166,7 +168,7 @@ function ModificarMateriaCG() {
       };
 
       const response = await axios.put(
-        `http://localhost:5000/api/materias/${materiaSeleccionada._id}`,
+        `${API_URL}/api/materias/${materiaSeleccionada._id}`,
         finalData
       );
       toast.success("Materia actualizada con éxito");

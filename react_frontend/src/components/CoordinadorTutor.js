@@ -7,6 +7,7 @@ function CoordinadorTutor() {
     const [error, setError] = useState(null);
     const location = useLocation();
     const navigate = useNavigate();
+    const API_URL = process.env.REACT_APP_API_URL;
 
     const { nombre, matricula: matriculaCoordinador } = location.state || {};
 
@@ -43,7 +44,7 @@ function CoordinadorTutor() {
                     return;
                 }
 
-                const response = await fetch(`http://localhost:5000/api/coordinadores/${matricula}`);
+                const response = await fetch(`${API_URL}/api/coordinadores/${matricula}`);
                 if (!response.ok) {
                     throw new Error("Error al obtener los alumnos");
                 }
@@ -52,7 +53,7 @@ function CoordinadorTutor() {
 
                 const fetchEstatus = async (alumno) => {
                     try {
-                        const estatusResponse = await fetch(`http://localhost:5000/api/coordinadores/estatus/${alumno.matricula}`);
+                        const estatusResponse = await fetch(`${API_URL}/api/coordinadores/estatus/${alumno.matricula}`);
                         if (!estatusResponse.ok) {
                             throw new Error("Error al obtener el estatus del horario");
                         }

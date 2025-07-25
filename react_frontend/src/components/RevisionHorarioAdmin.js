@@ -16,7 +16,7 @@ function RevisionHorarioAdmin() {
   const { nombre , matricula, matriculaTutor } = location.state || {};
   const carrerasPermitidasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
   useEffect(() => {
-    fetch(`http://localhost:5000/api/tutores/horario/${matricula}`)
+    fetch(`${API_URL}/api/tutores/horario/${matricula}`)
       .then(response => response.json())
       .then(data => {
         setAlumno(data.alumno);
@@ -24,10 +24,11 @@ function RevisionHorarioAdmin() {
       })
       .catch(error => console.error("Error al cargar el horario:", error));
   }, [matricula]);
+  const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de tener configurada la URL base en tu .env
 
   const eliminarHorario = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/tutores/eliminar/${alumno.matricula}`, {
+      const response = await fetch(`${API_URL}/api/tutores/eliminar/${alumno.matricula}`, {
         method: "DELETE",
       });
 
@@ -43,7 +44,7 @@ function RevisionHorarioAdmin() {
 
   const enviarComentarioCorreo = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/tutores/enviarCorreo`, {
+      const response = await fetch(`${API_URL}/api/tutores/enviarCorreo`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ alumnoId: alumno._id, comentario }),
@@ -61,7 +62,7 @@ function RevisionHorarioAdmin() {
 
 const actualizarEstatus = async (nuevoEstatus) => {
   try {
-    const response = await fetch(`http://localhost:5000/api/tutores/estatus/actualizar-admin/${matricula}`, {
+    const response = await fetch(`${API_URL}/api/tutores/estatus/actualizar-admin/${matricula}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ estatus: nuevoEstatus, comentario }),

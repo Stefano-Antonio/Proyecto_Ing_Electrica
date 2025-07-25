@@ -34,11 +34,12 @@ function CrearMateria() {
   const carrerasPermitidasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
 
   const [docentes, setDocentes] = useState([]);
+  const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de que esta variable esté definida en tu entorno
 
   useEffect(() => {
     const fetchDocentes = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/docentes");
+        const response = await axios.get(`${API_URL}/api/docentes`);
         setDocentes(response.data); // Guardamos la lista de docentes con el nombre incluido
       } catch (error) {
         console.error("Error al obtener los docentes:", error);
@@ -64,7 +65,7 @@ function CrearMateria() {
   
     try {
       await axios.post(
-        `http://localhost:5000/api/materias/subir-csv-por-carrera?id_carrera=${id_carrera}`, // Solo actualiza materias de la carrera
+        `${API_URL}/api/materias/subir-csv-por-carrera?id_carrera=${id_carrera}`, // Solo actualiza materias de la carrera
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -81,7 +82,7 @@ function CrearMateria() {
   const handleDownloadCSV = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/materias/exportar-csv-por-carrera?id_carrera=${id_carrera}`, // Solo descarga materias de la carrera
+        `${API_URL}/api/materias/exportar-csv-por-carrera?id_carrera=${id_carrera}`, // Solo descarga materias de la carrera
         { responseType: "blob" }
       );
   
@@ -147,7 +148,7 @@ function CrearMateria() {
         )
       };
 
-      const response = await axios.post('http://localhost:5000/api/materias', finalData);
+      const response = await axios.post(`${API_URL}/api/materias`, finalData);
       toast.success('Materia creada con éxito');
       setFormData({
         id_materia: '',
