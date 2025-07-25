@@ -27,6 +27,8 @@ function ModificarPersonal() {
     });
   };
 
+  const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de tener configurada la URL base en tu .env
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -37,7 +39,7 @@ function ModificarPersonal() {
     }
 
     try {
-      const response = await axios.put(`http://localhost:5000/api/personal/${persona._id}`, form);
+      const response = await axios.put(`${API_URL}/api/personal/${persona._id}`, form);
       toast.success("Usuario actualizado con éxito");
     } catch (error) {
       console.error("Error al actualizar el usuario:", error);

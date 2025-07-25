@@ -15,7 +15,7 @@ const AdministrarMateriasCoordinador = () => {
   const [materiaAEliminar, setMateriaAEliminar] = useState(null);
   const [horasMaximas, setHorasMaximas] = useState("");
   const [editMode, setEditMode] = useState(false); // Estado para controlar el modo de edición
-
+  const API_URL = process.env.REACT_APP_API_URL;
 
   const id_carrera = localStorage.getItem("id_carrera");
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ const AdministrarMateriasCoordinador = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/materias/carrera/${id_carrera}`
+        `${API_URL}/api/materias/carrera/${id_carrera}`
       );
       setMaterias(response.data);
     } catch (error) {
@@ -43,7 +43,7 @@ const AdministrarMateriasCoordinador = () => {
   // Cargar docentes desde el backend
   const fetchDocentes = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/docentes");
+      const response = await axios.get(`${API_URL}/api/docentes`);
       setDocentes(response.data);
     } catch (error) {
       console.error("Error al obtener datos de docentes:", error);
@@ -59,7 +59,7 @@ const AdministrarMateriasCoordinador = () => {
   const handleDelete = async () => {
     if (!materiaAEliminar) return;
     try {
-      await axios.delete(`http://localhost:5000/api/materias/${materiaAEliminar}`);
+      await axios.delete(`${API_URL}/api/materias/${materiaAEliminar}`);
       toast.success("Materia eliminada con éxito");
       fetchMaterias(); // Recargar la lista de materias
     } catch (error) {
@@ -114,7 +114,7 @@ const AdministrarMateriasCoordinador = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/materias/exportar-csv/carrera-filtrados/${id_carrera}`,
+        `${API_URL}/api/materias/exportar-csv/carrera-filtrados/${id_carrera}`,
         { ids },
         { responseType: "blob" }
       );
@@ -140,7 +140,7 @@ const AdministrarMateriasCoordinador = () => {
   const fetchHorasCoordinador = async () => {
     try {
       const id_carrera = localStorage.getItem("id_carrera");
-      const response = await axios.get(`http://localhost:5000/api/coordinadores/horas/${id_carrera}`);
+      const response = await axios.get(`${API_URL}/api/coordinadores/horas/${id_carrera}`);
       setHorasMaximas(response.data.horas); // Suponiendo que el backend regresa { horas: 40 }
     } catch (error) {
       console.error("Error al obtener las horas del coordinador:", error);
@@ -160,7 +160,7 @@ const AdministrarMateriasCoordinador = () => {
         return;
       }
       
-      await axios.put(`http://localhost:5000/api/coordinadores/horas/${matricula}`, {
+      await axios.put(`${API_URL}/api/coordinadores/horas/${matricula}`, {
         horas: horasMaximas,
       });
       toast.success(`Horas actualizadas a: ${horasMaximas}`);

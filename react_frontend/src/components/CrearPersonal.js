@@ -18,6 +18,7 @@ function CrearPersonal() {
   });
   const id_carrera = localStorage.getItem("id_carrera");
   const matriculaCoord = localStorage.getItem("matricula");
+  const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de que esta variable esté definida en tu entorno
 
   const navigate = useNavigate();
 
@@ -72,7 +73,7 @@ function CrearPersonal() {
     e.preventDefault();
     try {
       const formData = { ...form, id_carrera };
-      const response = await axios.post("http://localhost:5000/api/personal", formData);
+      const response = await axios.post(`${API_URL}/api/personal`, formData);
       toast.success("Usuario agregado con éxito");
       setForm({ nombre: "", matricula: "", correo: "", telefono: "", roles: "", password: "" });
     } catch (error) {
@@ -126,7 +127,7 @@ function CrearPersonal() {
   
     try {
       await axios.post(
-        `http://localhost:5000/api/personal/subir-csv/carrera/${id_carrera}`, // ✅ Ahora se pasa en la URL
+        `${API_URL}/api/personal/subir-csv/carrera/${id_carrera}`, // ✅ Ahora se pasa en la URL
         formData,
         { headers: { "Content-Type": "multipart/form-data", 
           "x-matricula-coordinador": matriculaCoord  // ✅ enviar matrícula del coordinador
@@ -156,7 +157,7 @@ function CrearPersonal() {
   
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/personal/exportar-csv/carrera/${id_carrera}`,
+        `${API_URL}/api/personal/exportar-csv/carrera/${id_carrera}`,
         { responseType: "blob" } // Recibir como blob para descarga
       );
   

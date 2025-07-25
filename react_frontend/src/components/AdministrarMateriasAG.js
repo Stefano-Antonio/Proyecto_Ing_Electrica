@@ -12,6 +12,7 @@ const AdministrarMateriasAG = () => {
   const [loading, setLoading] = useState(true);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [materiaAEliminar, setMateriaAEliminar] = useState(null);
+  const API_URL = process.env.REACT_APP_API_URL;
 
   const id_carrera = localStorage.getItem("id_carrera");
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const AdministrarMateriasAG = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/materias`
+        `${API_URL}/api/materias`
       );
       setMaterias(response.data);
     } catch (error) {
@@ -39,7 +40,7 @@ const AdministrarMateriasAG = () => {
   // Cargar docentes desde el backend
   const fetchDocentes = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/docentes");
+      const response = await axios.get(`${API_URL}/api/docentes`);
       setDocentes(response.data);
     } catch (error) {
       console.error("Error al obtener datos de docentes:", error);
@@ -60,7 +61,7 @@ const AdministrarMateriasAG = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/materias/exportar-csv/filtrados",
+        `${API_URL}/api/materias/exportar-csv/filtrados`,
         { ids },
         { responseType: "blob" }
       );

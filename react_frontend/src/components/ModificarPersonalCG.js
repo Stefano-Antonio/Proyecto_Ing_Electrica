@@ -35,6 +35,7 @@ function ModificarPersonalCG() {
     IRMcaS: "Ing. Robótica y Mecatrónica (Semiescolarizado)",
     IElecS: "Ing. Electricista (Semiescolarizado)",
   };
+  const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de tener configurada la URL base en tu .env
 
   // Configurar mostrarCarrera al cargar la página
   useEffect(() => {
@@ -57,7 +58,7 @@ function ModificarPersonalCG() {
 
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/personal/${personalSeleccionado._id}`,
+        `${API_URL}/api/personal/${personalSeleccionado._id}`,
         form
       );
       toast.success("Usuario actualizado con éxito");
@@ -178,7 +179,7 @@ function ModificarPersonalCG() {
                   type="button"
                   onClick={async () => {
                     try {
-                      await axios.put(`http://localhost:5000/api/personal/${personalSeleccionado._id}`,
+                      await axios.put(`${API_URL}/api/personal/${personalSeleccionado._id}`,
                         { ...form, id_carrera: form.id_carrera });
                       setForm(prev => ({ ...prev, id_carrera: form.id_carrera }));
                       toast.success('Carrera actualizada correctamente');

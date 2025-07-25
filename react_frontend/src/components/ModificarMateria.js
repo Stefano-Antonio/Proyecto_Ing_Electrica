@@ -30,6 +30,7 @@ function ModificarMateria() {
     laboratorio: false, // Asignar valor por defecto
     docente: '' // Aquí puedes colocar el ObjectId del docente si es necesario
   });
+  const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de tener configurada la URL base en tu .env
 
   
 
@@ -68,7 +69,7 @@ function ModificarMateria() {
   useEffect(() => {
     const fetchDocentes = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/docentes");
+        const response = await axios.get(`${API_URL}/api/docentes`);
         setDocentes(response.data); // Guardamos la lista de docentes con el nombre incluido
       } catch (error) {
         console.error("Error al obtener los docentes:", error);
@@ -95,7 +96,7 @@ function ModificarMateria() {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/materias/subir-csv-por-carrera?id_carrera=${id_carrera}`,
+        `${API_URL}/api/materias/subir-csv-por-carrera?id_carrera=${id_carrera}`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -117,7 +118,7 @@ function ModificarMateria() {
   const handleDownloadCSV = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/materias/exportar-csv", 
+        `${API_URL}/api/materias/exportar-csv`, 
         { responseType: "blob" }
       );
 
@@ -185,7 +186,7 @@ function ModificarMateria() {
         docente: formData.docente
       };
 
-      await axios.put(`http://localhost:5000/api/materias/${materia._id}`, materiaActualizada);
+      await axios.put(`${API_URL}/api/materias/${materia._id}`, materiaActualizada);
       toast.success("Materia actualizada con éxito");
       navigate(-1); // Navegar a la página anterior solo si fue éxito
     } catch (error) {

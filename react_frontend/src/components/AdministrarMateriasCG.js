@@ -13,6 +13,9 @@ const AdministrarMateriasCG = () => {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [materiaAEliminar, setMateriaAEliminar] = useState(null);
 
+  // Asegúrate de tener configurada la URL base en tu .env
+  const API_URL = process.env.REACT_APP_API_URL;
+
   const id_carrera = localStorage.getItem("id_carrera");
   const navigate = useNavigate();
 
@@ -26,7 +29,7 @@ const AdministrarMateriasCG = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/materias`
+        `${API_URL}/api/materias`
       );
       setMaterias(response.data);
     } catch (error) {
@@ -39,7 +42,7 @@ const AdministrarMateriasCG = () => {
   // Cargar docentes desde el backend
   const fetchDocentes = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/docentes");
+      const response = await axios.get(`${API_URL}/api/docentes`);
       setDocentes(response.data);
     } catch (error) {
       console.error("Error al obtener datos de docentes:", error);
@@ -55,7 +58,7 @@ const AdministrarMateriasCG = () => {
   const handleDelete = async () => {
     if (!materiaAEliminar) return;
     try {
-      await axios.delete(`http://localhost:5000/api/materias/${materiaAEliminar}`);
+      await axios.delete(`${API_URL}/api/materias/${materiaAEliminar}`);
       toast.success("Materia eliminada con éxito");
       fetchMaterias(); // Recargar la lista de materias
     } catch (error) {

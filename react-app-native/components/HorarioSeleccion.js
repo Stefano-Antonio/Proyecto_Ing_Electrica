@@ -16,11 +16,12 @@ function HorarioSeleccion() {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [nombreAlumno, setNombreAlumno] = useState(route.params?.nombre || "");
   const [matricula, setMatricula] = useState(null);
+  const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const fetchMaterias = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/materias");
+        const response = await fetch(`${API_URL}/api/materias`);
         const data = await response.json();
         const sortedData = data.sort((a, b) => a.grupo.localeCompare(b.grupo));
         setMaterias(sortedData);
