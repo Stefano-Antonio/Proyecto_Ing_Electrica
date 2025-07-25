@@ -17,20 +17,21 @@ const AlumnoListAdmin = () => {
   const [loading, setLoading] = useState(true);
   const [AlumnoAEliminar, setAlumnoAEliminar] = useState(null);
   const matriculaAdmin = localStorage.getItem("matricula");
+  const API_URL = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAlumnos = async () => {
       try {
         // Obtener los alumnos asociados al administrador
-        const response = await axios.get(`http://localhost:5000/api/alumnos/carrera-admin/${matriculaAdmin}`);
+        const response = await axios.get(`${API_URL}/api/alumnos/carrera-admin/${matriculaAdmin}`);
         const alumnosData = response.data;
 
         // Obtener los detalles del tutor para cada alumno
         const tutoresNombresTemp = {};
         await Promise.all(alumnosData.map(async (alumno) => {
           if (alumno.tutor) {
-            const tutorResponse = await axios.get(`http://localhost:5000/api/administradores/alumnos/${alumno.tutor}`);
+            const tutorResponse = await axios.get(`${API_URL}/api/administradores/alumnos/${alumno.tutor}`);
             tutoresNombresTemp[alumno._id] = tutorResponse.data.nombre; // Extraer el nombre del tutor
           }
         }));
@@ -38,7 +39,7 @@ const AlumnoListAdmin = () => {
         const fetchEstatus = async (alumno) => {
           try {
             //
-            const estatusResponse = await fetch(`http://localhost:5000/api/tutores/estatus/${alumno.matricula}`);
+            const estatusResponse = await fetch(`${API_URL}/api/tutores/estatus/${alumno.matricula}`);
             if (!estatusResponse.ok) {
               throw new Error("Error al obtener el estatus del horario");
             }
@@ -72,7 +73,7 @@ const AlumnoListAdmin = () => {
   const handleDownloadCSV = async () => {
       const ids = alumnosFiltrados.map(a => a._id);
       const response = await axios.post(
-        `http://localhost:5000/api/alumnos/exportar-csv/carrera-filtrados/${id_carrera}`,
+        `${API_URL}/api/alumnos/exportar-csv/carrera-filtrados/${id_carrera}`,
         { ids },
         { responseType: "blob" }
       );
@@ -196,8 +197,8 @@ const AlumnoListAdmin = () => {
       {mostrarModal && (
               <div className="modal">
                 <div className="modal-content">
-                  <h3>Descargar base de datos base de datos</h3>
-                  <p>Seleccione el archivo a subir:</p>
+                  <h3>Descargar base de datos</h3>
+                  <p>Haga clic para descargar la lista de alumnos filtrada</p>
                   <ul>
                   </ul>
                   <p>
@@ -211,8 +212,7 @@ const AlumnoListAdmin = () => {
             {mostrarModalMaterias && (
               <div className="modal">
                 <div className="modal-content">
-                  <h3>Descargar base de datos base de datos</h3>
-                  <p>Seleccione el archivo a subir:</p>
+                  <h3>Descargar base de datos</h3>
                   <ul>
                   </ul>
                   <p>

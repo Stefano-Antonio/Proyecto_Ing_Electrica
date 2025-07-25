@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import './HistorialAcademico.css';
 
 // Mueve esta función fuera de los componentes para reutilizarla
@@ -11,13 +14,15 @@ function getSemestreActual() {
   return `${año}-${periodo}`;
 }
 
+const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de que esta variable esté definida en tu entorno
+
 function HistorialAcademico() {
   const [historiales, setHistoriales] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     // Obtener historiales académicos del backend
-    fetch('http://localhost:5000/api/historial')
+    fetch(`${API_URL}/api/historial`)
       .then(res => res.json())
       .then(data => setHistoriales(data))
       .catch(() => setHistoriales([]));
@@ -41,22 +46,22 @@ const descargarArchivo = async (tipo) => {
     switch (tipo) {
         case 'personal':
             if (!id_carrera) {
-                alert('ID de carrera no encontrado.');
+                toast.error('ID de carrera no encontrado.');
                 return;
             }
-            url = `http://localhost:5000/api/personal/exportar-csv`;
+            url = `${API_URL}/api/personal/exportar-csv`;
             nombre = 'personal.csv'; // Cambia a .csv
             break;
         case 'alumnos':
-            url = 'http://localhost:5000/api/alumnos/exportar-csv';
+            url = `${API_URL}/api/alumnos/exportar-csv`;
             nombre = 'alumnos.csv'; // Cambia a .csv
             break;
         case 'materias':
-            url = 'http://localhost:5000/api/materias/exportar-csv';
+            url = `${API_URL}/api/materias/exportar-csv`;
             nombre = 'materias.csv'; // Cambia a .csv
             break;
         default:
-            alert('Tipo de descarga no válido.');
+            toast.error('Tipo de descarga no válido.');
             return;
     }
     try {
@@ -66,15 +71,15 @@ const descargarArchivo = async (tipo) => {
         if (!response.ok) throw new Error('Error al descargar ' + tipo);
         const blob = await response.blob();
         await window.api.saveFile(folderPath + '/' + nombre, blob);
-        alert(`Archivo ${nombre} guardado en ${folderPath}`);
+        toast.success(`Archivo ${nombre} guardado en ${folderPath}`);
     } catch (error) {
-        alert('Error al descargar archivo: ' + error.message);
+        toast.error('Error al descargar archivo: ' + error.message);
     }
 };
 
   const handleGenerarHistorialAcademico = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/historial/generar', {
+      const response = await fetch(`${API_URL}/api/historial/generar`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -86,13 +91,13 @@ const descargarArchivo = async (tipo) => {
       });
       const data = await response.json();
       if (response.ok) {
-        alert('Historial generado correctamente');
+        toast.success('Historial generado correctamente');
         setHistoriales(prev => [data.historial, ...prev]);
       } else {
-        alert('Error: ' + data.message);
+        toast.error('Error: ' + data.message);
       }
     } catch (err) {
-      alert('Error al generar historial: ' + err.message);
+      toast.error('Error al generar historial: ' + err.message);
     }
   };
 
@@ -103,7 +108,7 @@ const descargarArchivo = async (tipo) => {
 
   React.useEffect(() => {
     setLoading(true);
-    fetch(`http://localhost:5000/api/historial/fecha-borrado?semestre=${semestre}`)
+    fetch(`${API_URL}/api/historial/fecha-borrado?semestre=${semestre}`)
       .then(res => res.json())
       .then(data => {
         setFechaBorrado(data.fecha_de_borrado ? data.fecha_de_borrado.substring(0, 10) : 'No registrada');
@@ -117,7 +122,7 @@ const descargarArchivo = async (tipo) => {
     if (!editFecha) return;
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/historial/fecha-borrado', {
+      const res = await fetch(`${API_URL}/api/historial/fecha-borrado`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ semestre, fecha_de_borrado: editFecha })
@@ -125,12 +130,12 @@ const descargarArchivo = async (tipo) => {
       const data = await res.json();
       if (res.ok) {
         setFechaBorrado(new Date(editFecha).toLocaleString());
-        alert('Fecha de borrado actualizada');
+        toast.success('Fecha de borrado actualizada');
       } else {
-        alert(data.message || 'Error al actualizar fecha');
+        toast.error(data.message || 'Error al actualizar fecha');
       }
     } catch {
-      alert('Error al actualizar fecha');
+      toast.error('Error al actualizar fecha');
     } finally {
       setLoading(false);
     }
@@ -162,21 +167,21 @@ const descargarArchivo = async (tipo) => {
                       <td>{new Date(h.fecha_generacion).toLocaleString()}</td>
                       <td>
                         <a
-                          href={`http://localhost:5000/descargas/${h.semestre}/personal.csv`}
+                          href={`${API_URL}/descargas/${h.semestre}/personal.csv`}
                           download="personal.csv"
                           type="text/csv"
                         >Descargar</a>
                       </td>
                       <td>
                         <a
-                          href={`http://localhost:5000/descargas/${h.semestre}/alumnos.csv`}
+                          href={`${API_URL}/descargas/${h.semestre}/alumnos.csv`}
                           download="alumnos.csv"
                           type="text/csv"
                         >Descargar</a>
                       </td>
                       <td>
                         <a
-                          href={`http://localhost:5000/descargas/${h.semestre}/materias.csv`}
+                          href={`${API_URL}/descargas/${h.semestre}/materias.csv`}
                           download="materias.csv"
                           type="text/csv"
                         >Descargar</a>
@@ -185,9 +190,9 @@ const descargarArchivo = async (tipo) => {
                         <button onClick={async () => {
                           try {
                             const files = [
-                              { url: `http://localhost:5000/descargas/${h.semestre}/personal.csv`, name: 'personal.csv' },
-                              { url: `http://localhost:5000/descargas/${h.semestre}/alumnos.csv`, name: 'alumnos.csv' },
-                              { url: `http://localhost:5000/descargas/${h.semestre}/materias.csv`, name: 'materias.csv' }
+                              { url: `${API_URL}/descargas/${h.semestre}/personal.csv`, name: 'personal.csv' },
+                              { url: `${API_URL}/descargas/${h.semestre}/alumnos.csv`, name: 'alumnos.csv' },
+                              { url: `${API_URL}/descargas/${h.semestre}/materias.csv`, name: 'materias.csv' }
                             ];
                             for (const f of files) {
                               const response = await fetch(f.url);
@@ -200,9 +205,9 @@ const descargarArchivo = async (tipo) => {
                               link.click();
                               document.body.removeChild(link);
                             }
-                            alert(`Archivos descargados`);
+                            toast.success(`Archivos descargados`);
                           } catch (error) {
-                            alert('Error al descargar archivos: ' + error.message);
+                            toast.error('Error al descargar archivos: ' + error.message);
                           }
                         }}>Descargar todo</button>
                       </td>
@@ -237,41 +242,41 @@ const descargarArchivo = async (tipo) => {
             <button onClick={async () => {
               if(window.confirm('¿Seguro que deseas vaciar todas las materias?')){
                 try {
-                  const res = await fetch('http://localhost:5000/api/historial/vaciar-materias', { method: 'DELETE' });
+                  const res = await fetch(`${API_URL}/api/historial/vaciar-materias`, { method: 'DELETE' });
                   const data = await res.json();
-                  alert(data.message || 'Materias eliminadas');
-                } catch (err) { alert('Error al vaciar materias'); }
+                  toast.success(data.message || 'Materias eliminadas');
+                } catch (err) { toast.error('Error al vaciar materias'); }
               }
             }} style={{ width: '220px' }}>Vaciar materias</button>
             <button onClick={async () => {
               if(window.confirm('¿Seguro que deseas vaciar todos los alumnos?')){
                 try {
-                  const res = await fetch('http://localhost:5000/api/historial/vaciar-alumnos', { method: 'DELETE' });
+                  const res = await fetch(`${API_URL}/api/historial/vaciar-alumnos`, { method: 'DELETE' });
                   const data = await res.json();
-                  alert(data.message || 'Alumnos eliminados');
-                } catch (err) { alert('Error al vaciar alumnos'); }
+                  toast.success(data.message || 'Alumnos eliminados');
+                } catch (err) { toast.error('Error al vaciar alumnos'); }
               }
             }} style={{ width: '220px' }}>Vaciar alumnos</button>
             <button onClick={async () => {
               if(window.confirm('¿Seguro que deseas vaciar todo el personal?')){
                 try {
-                  const res = await fetch('http://localhost:5000/api/historial/vaciar-personal', { method: 'DELETE' });
+                  const res = await fetch(`${API_URL}/api/historial/vaciar-personal`, { method: 'DELETE' });
                   const data = await res.json();
-                  alert(data.message || 'Personal eliminado');
-                } catch (err) { alert('Error al vaciar personal'); }
+                  toast.success(data.message || 'Personal eliminado');
+                } catch (err) { toast.error('Error al vaciar personal'); }
               }
             }} style={{ width: '220px' }}>Vaciar personal</button>
             <button onClick={async () => {
               if(window.confirm('¿Seguro que deseas vaciar materias, alumnos y personal?')){
                 try {
-                  const res1 = await fetch('http://localhost:5000/api/historial/vaciar-materias', { method: 'DELETE' });
+                  const res1 = await fetch(`${API_URL}/api/historial/vaciar-materias`, { method: 'DELETE' });
                   const data1 = await res1.json();
-                  const res2 = await fetch('http://localhost:5000/api/historial/vaciar-alumnos', { method: 'DELETE' });
+                  const res2 = await fetch(`${API_URL}/api/historial/vaciar-alumnos`, { method: 'DELETE' });
                   const data2 = await res2.json();
-                  const res3 = await fetch('http://localhost:5000/api/historial/vaciar-personal', { method: 'DELETE' });
+                  const res3 = await fetch(`${API_URL}/api/historial/vaciar-personal`, { method: 'DELETE' });
                   const data3 = await res3.json();
                   alert((data1.message || '') + '\n' + (data2.message || '') + '\n' + (data3.message || ''));
-                } catch (err) { alert('Error al vaciar toda la base de datos'); }
+                } catch (err) { toast.error('Error al vaciar toda la base de datos'); }
               }
             }} style={{ width: '220px', background: '#c00', color: 'white', fontWeight: 'bold' }}>Vaciar TODO</button>
           </div>
@@ -301,7 +306,7 @@ function FechaBorradoPanel({ semestre, historiales }) {
   const obtenerFechaBorrado = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/historial/fecha-borrado?semestre=${semestre}`);
+      const res = await fetch(`${API_URL}/api/historial/fecha-borrado?semestre=${semestre}`);
       const data = await res.json();
       setFechaBorrado(data.fecha_de_borrado ? data.fecha_de_borrado.substring(0, 10) : 'No registrada');
       setEditFecha(data.fecha_de_borrado ? data.fecha_de_borrado.substring(0, 10) : '');
@@ -320,7 +325,7 @@ function FechaBorradoPanel({ semestre, historiales }) {
     if (!editFecha) return;
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/historial/fecha-borrado', {
+      const res = await fetch(`${API_URL}/api/historial/fecha-borrado`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ semestre, fecha_de_borrado: editFecha })
@@ -328,15 +333,15 @@ function FechaBorradoPanel({ semestre, historiales }) {
       const data = await res.json();
       if (res.ok) {
         setFechaBorrado(new Date(editFecha).toLocaleString());
-        alert('Fecha de borrado actualizada');
+        toast.success('Fecha de borrado actualizada');
         
         // Vuelve a obtener la fecha actualizada del backend
         obtenerFechaBorrado();
       } else {
-        alert(data.message || 'Error al actualizar fecha');
+        toast.error(data.message || 'Error al actualizar fecha');
       }
     } catch {
-      alert('Error al actualizar fecha');
+      toast.error('Error al actualizar fecha');
     } finally {
       setLoading(false);
     }
@@ -344,6 +349,7 @@ function FechaBorradoPanel({ semestre, historiales }) {
 
   return (
     <div style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '20px', minWidth: '260px', maxWidth: '350px', flex: '1 1 320px', background: '#f9f9f9', textAlign: 'center' }}>
+      <ToastContainer />
       <h3>Fecha de corte</h3>
       <p style={{ fontSize: '0.95em', color: '#555' }}>Semestre actual: <b>{semestre}</b></p>
       <p style={{ fontSize: '0.95em', color: '#555' }}>Hora de eliminación: 12:00am </p>

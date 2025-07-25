@@ -38,6 +38,8 @@ function ModificarAlumnoCG() {
     IRMcaS: "Ing. Robótica y Mecatrónica (Semiescolarizado)",
     IElecS: "Ing. Electricista (Semiescolarizado)",
   };
+  const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de tener configurada la URL base en tu .env
+
 
   
   // Llenar los campos del formulario con los datos del alumno
@@ -58,7 +60,7 @@ function ModificarAlumnoCG() {
 useEffect(() => {
     const fetchTutores = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/cordgen/tutores`);
+        const response = await axios.get(`${API_URL}/api/cordgen/tutores`);
         
         // Asegurar que la respuesta tenga la propiedad tutors y sea un array antes de actualizar el estado
         if (Array.isArray(response.data.tutors)) {
@@ -104,7 +106,7 @@ useEffect(() => {
   
       try {
         const response = await axios.post(
-          "http://localhost:5000/api/alumnos/subir-csv",
+          `${API_URL}/api/alumnos/subir-csv`,
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
         );
@@ -126,7 +128,7 @@ useEffect(() => {
     e.preventDefault();
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/cordgen/alumnos/${alumno._id}`,
+        `${API_URL}/api/cordgen/alumnos/${alumno._id}`,
         {
           nombre: form.nombre,
           id_carrera: form.id_carrera,
@@ -147,7 +149,7 @@ useEffect(() => {
   const handleDownloadCSV = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/alumnos/exportar-csv",
+        `${API_URL}/api/alumnos/exportar-csv`,
         {
           responseType: "blob", // Asegúrate de recibir el archivo como blob
         }
@@ -162,7 +164,7 @@ useEffect(() => {
       link.remove();
     } catch (error) {
       console.error("Error al descargar el archivo CSV:", error);
-      alert("No se pudo descargar el archivo");
+      toast.error("No se pudo descargar el archivo");
     }
   };
 

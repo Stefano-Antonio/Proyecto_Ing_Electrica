@@ -10,6 +10,7 @@ function CrearMateria() {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [file, setFile] = useState(null); // Almacenar el archivo CSV
   const id_carrera = localStorage.getItem("id_carrera");
+  const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de que esta variable esté definida en tu entorno
   const [formData, setFormData] = useState({
     id_materia: '',
     nombre: '',
@@ -38,7 +39,7 @@ function CrearMateria() {
   useEffect(() => {
     const fetchDocentes = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/docentes");
+        const response = await axios.get(`${API_URL}/api/docentes`);
         setDocentes(response.data); // Guardamos la lista de docentes con el nombre incluido
       } catch (error) {
         console.error("Error al obtener los docentes:", error);
@@ -65,7 +66,7 @@ function CrearMateria() {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/materias/subir-csv-por-carrera?id_carrera=${id_carrera}`,
+        `${API_URL}/api/materias/subir-csv-por-carrera?id_carrera=${id_carrera}`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -88,7 +89,7 @@ function CrearMateria() {
   const handleDownloadCSV = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/materias/exportar-csv-por-carrera?id_carrera=${id_carrera}`, // Solo descarga materias de la carrera
+        `${API_URL}/api/materias/exportar-csv-por-carrera?id_carrera=${id_carrera}`, // Solo descarga materias de la carrera
         { responseType: "blob" }
       );
   
@@ -142,7 +143,7 @@ function CrearMateria() {
     e.preventDefault();
     try {
       if (!id_carrera) {
-        alert("Error: No se encontró el ID de la carrera.");
+        toast.error("Error: No se encontró el ID de la carrera.");
         return;
       }
 
@@ -155,7 +156,7 @@ function CrearMateria() {
         )
       };
 
-      const response = await axios.post('http://localhost:5000/api/materias', finalData);
+      const response = await axios.post(`${API_URL}/api/materias`, finalData);
       toast.success('Materia creada con éxito');
       setFormData({
         id_materia: '',

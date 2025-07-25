@@ -57,10 +57,12 @@ function ModificarMateriaCG() {
     "IElecS",
   ];
 
+  const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de tener configurada la URL base en tu .env
+
   useEffect(() => {
     const fetchDocentes = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/docentes");
+        const response = await axios.get(`${API_URL}/api/docentes`);
         setDocentes(response.data); // Guardamos la lista de docentes con el nombre incluido
       } catch (error) {
         console.error("Error al obtener los docentes:", error);
@@ -77,7 +79,7 @@ function ModificarMateriaCG() {
   const handleSubmitCSV = async (e) => {
     e.preventDefault();
     if (!file) {
-      alert("Por favor selecciona un archivo CSV");
+      toast.warn("Por favor selecciona un archivo CSV");
       return;
     }
 
@@ -86,23 +88,23 @@ function ModificarMateriaCG() {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/materias/subir-csv",
+        `${API_URL}/api/materias/subir-csv`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      alert("Base de datos de materias actualizada con éxito desde el archivo CSV");
+      toast.success("Base de datos de materias actualizada con éxito desde el archivo CSV");
       setMostrarModal(false);
     } catch (error) {
       console.error("Error al subir el archivo CSV:", error);
-      alert("Hubo un error al actualizar la base de datos");
+      toast.error("Hubo un error al actualizar la base de datos");
     }
   };
 
   const handleDownloadCSV = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/materias/exportar-csv",
+        `${API_URL}/api/materias/exportar-csv`,
         { responseType: "blob" }
       );
 
@@ -115,7 +117,7 @@ function ModificarMateriaCG() {
       link.remove();
     } catch (error) {
       console.error("Error al descargar el archivo CSV:", error);
-      alert("No se pudo descargar el archivo");
+      toast.error("No se pudo descargar el archivo");
     }
   };
 
@@ -166,7 +168,7 @@ function ModificarMateriaCG() {
       };
 
       const response = await axios.put(
-        `http://localhost:5000/api/materias/${materiaSeleccionada._id}`,
+        `${API_URL}/api/materias/${materiaSeleccionada._id}`,
         finalData
       );
       toast.success("Materia actualizada con éxito");
@@ -333,7 +335,15 @@ function ModificarMateriaCG() {
                 </select>
               </div>
             </div>
-            {mostrarModal && (
+            <div className="materia-buttons">
+              <button type="submit" className="button">Guardar cambios</button>
+            </div>
+          </form>
+          <div className="materia-buttons">
+              <button className="button" onClick={() => setMostrarModal(true)}>Subir base de datos de materias</button>
+            </div>
+        </div>
+        {mostrarModal && (
               <div className="modal">
                 <div className="modal-content">
                   <h3>Subir base de datos</h3>
@@ -345,12 +355,6 @@ function ModificarMateriaCG() {
                 </div>
               </div>
             )}
-            <div className="materia-buttons">
-              <button type="submit" className="button">Guardar cambios</button>
-              <button className="button" onClick={() => setMostrarModal(true)}>Subir base de datos de materias</button>
-            </div>
-          </form>
-        </div>
       </div>
     </div>
   );

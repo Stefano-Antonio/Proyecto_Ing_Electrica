@@ -20,6 +20,7 @@ function CrearAlumnoCG() {
     tutor: "", // Nuevo campo para el tutor
     id_carrera: "",
   });
+  const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de que esta variable esté definida en tu entorno
 
   
   const carrerasPermitidas = {
@@ -41,7 +42,7 @@ function CrearAlumnoCG() {
 useEffect(() => {
     const fetchTutores = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/cordgen/tutores`);
+        const response = await axios.get(`${API_URL}/api/cordgen/tutores`);
         
         // Asegurar que la respuesta tenga la propiedad tutors y sea un array antes de actualizar el estado
         if (Array.isArray(response.data.tutors)) {
@@ -77,7 +78,7 @@ useEffect(() => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/alumnos/subir-csv",
+        `${API_URL}/api/alumnos/subir-csv`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -111,7 +112,7 @@ useEffect(() => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/api/cordgen/alumnos", form);
+      const response = await axios.post(`${API_URL}/api/cordgen/alumnos`, form);
       toast.success("Alumno agregado con éxito");
       setForm({ nombre: "", matricula: "", correo: "", telefono: "", tutor: "" }); // Reset form
       navigate(-1); // Regresar a la página anterior
@@ -124,7 +125,7 @@ useEffect(() => {
   const handleDownloadCSV = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/alumnos/exportar-csv",
+        `${API_URL}/api/alumnos/exportar-csv`,
         {
           responseType: "blob", // Asegúrate de recibir el archivo como blob
         }
@@ -139,7 +140,7 @@ useEffect(() => {
       link.remove();
     } catch (error) {
       console.error("Error al descargar el archivo CSV:", error);
-      alert("No se pudo descargar el archivo");
+      toast.error("No se pudo descargar el archivo");
     }
   };
 

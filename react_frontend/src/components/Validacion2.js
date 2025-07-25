@@ -88,7 +88,7 @@ function Validacion2() {
       setArchivo(file);
       setArchivoURL(URL.createObjectURL(file));
     } else {
-      alert("Por favor, selecciona un archivo PDF válido.");
+      toast.error("Por favor, selecciona un archivo PDF válido.");
     }
   };
 

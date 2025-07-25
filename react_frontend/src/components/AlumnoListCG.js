@@ -17,11 +17,12 @@ const AlumnoListCG = () => {
   const matriculaCord = localStorage.getItem("matricula");
   const id_carrera = localStorage.getItem("id_carrera");
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const fetchAlumnos = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/alumnos`);
+        const response = await axios.get(`${API_URL}/api/alumnos`);
         const alumnosData = response.data;
 
         // Obtener los nombres de los tutores
@@ -29,7 +30,7 @@ const AlumnoListCG = () => {
         await Promise.all(alumnosData.map(async (alumno) => {
           if (alumno.tutor) {
             try {
-              const tutorResponse = await axios.get(`http://localhost:5000/api/coordinadores/alumnos/${alumno.tutor}`);
+              const tutorResponse = await axios.get(`${API_URL}/api/coordinadores/alumnos/${alumno.tutor}`);
               tutoresNombresTemp[alumno._id] = tutorResponse.data.nombre;
             } catch (error) {
               tutoresNombresTemp[alumno._id] = "Error al obtener tutor";
@@ -40,7 +41,7 @@ const AlumnoListCG = () => {
         // Obtener estatus para cada alumno
         const fetchEstatus = async (alumno) => {
           try {
-            const estatusResponse = await fetch(`http://localhost:5000/api/tutores/estatus/${alumno.matricula}`);
+            const estatusResponse = await fetch(`${API_URL}/api/tutores/estatus/${alumno.matricula}`);
             if (!estatusResponse.ok) throw new Error("Error al obtener el estatus del horario");
             const estatusData = await estatusResponse.json();
             return { ...alumno, estatus: estatusData.estatus };
@@ -60,7 +61,7 @@ const AlumnoListCG = () => {
         // Consultar el estado de comprobante por cada carrera
         await Promise.all(carrerasUnicas.map(async (carrera) => {
           try {
-            const res = await axios.get(`http://localhost:5000/api/coordinadores/comprobante-habilitado/${carrera}`);
+            const res = await axios.get(`${API_URL}/api/coordinadores/comprobante-habilitado/${carrera}`);
             comprobanteCarreraTemp[carrera] = res.data.comprobantePagoHabilitado;
           } catch (error) {
             comprobanteCarreraTemp[carrera] = true; // Por defecto true si falla
@@ -75,7 +76,7 @@ const AlumnoListCG = () => {
 
     const fetchComprobantes = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/alumnos/comprobantes/lista');
+        const response = await axios.get(`${API_URL}/api/alumnos/comprobantes/lista`);
         setComprobantes(response.data);
       } catch (error) {
         setComprobantes([]);
@@ -127,7 +128,7 @@ const AlumnoListCG = () => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/alumnos/${AlumnoAEliminar}`);
+      await axios.delete(`${API_URL}/api/alumnos/${AlumnoAEliminar}`);
       setAlumnos(prevState => prevState.filter(alumno => alumno._id !== AlumnoAEliminar));
       toast.success("Alumno eliminado con éxito");
       setMostrarModal(false);

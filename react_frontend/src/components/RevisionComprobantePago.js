@@ -16,10 +16,11 @@ function RevisionComprobantePago() {
   const location = useLocation();
   const { nombre, matricula, matriculaTutor, id_carrera: idCarreraState } = location.state || {};
   const id_carrera = idCarreraState || localStorage.getItem("id_carrera");
+  const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de tener configurada la URL base en tu .env
 
   useEffect(() => {
     // Obtener datos del alumno (no dependas del horario)
-    fetch(`http://localhost:5000/api/alumnos/matricula/${matricula}`)
+    fetch(`${API_URL}/api/alumnos/matricula/${matricula}`)
       .then(response => response.json())
       .then(data => {
         setAlumno(data);
@@ -30,7 +31,7 @@ function RevisionComprobantePago() {
       });
 
     // Obtener horario (opcional)
-    fetch(`http://localhost:5000/api/tutores/horario/${matricula}`)
+    fetch(`${API_URL}/api/tutores/horario/${matricula}`)
       .then(response => response.json())
       .then(data => {
         setHorario(data.horario || []);
@@ -56,7 +57,7 @@ function RevisionComprobantePago() {
   const validarComprobante = async (nuevoEstatus) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/alumnos/validar-comprobante/${matricula}`,
+        `${API_URL}/api/alumnos/validar-comprobante/${matricula}`,
         { estatus: nuevoEstatus }
       );
       toast.success(`Comprobante marcado como ${nuevoEstatus === "Aceptado" ? "ACEPTADO" : "RECHAZADO"}`);
@@ -89,7 +90,7 @@ function RevisionComprobantePago() {
             <div className="horario-content">
               <div className="comprobante-viewer" style={{ width: "100%", maxWidth: 1000, margin: "0 auto", marginBottom: 24 }}>
                 <iframe
-                  src={`http://localhost:5000/uploads/comprobantes/Pago_${matricula}.pdf`}
+                  src={`${API_URL}/uploads/comprobantes/Pago_${matricula}.pdf`}
                   title="Comprobante de pago"
                   width="100%"
                   height="500px"

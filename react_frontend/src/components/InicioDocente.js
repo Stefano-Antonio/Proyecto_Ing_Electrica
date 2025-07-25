@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./InicioDocente.css";
 
 function InicioDocente() {
@@ -126,7 +128,7 @@ function InicioDocente() {
   const handleDownloadCSV = async () => {
     const matriculas = alumnosFiltrados.map((a) => a.matricula);
     if (matriculas.length === 0) {
-      alert("No hay alumnos filtrados para exportar.");
+      toast.error("No hay alumnos filtrados para exportar.");
       return;
     }
 
@@ -149,7 +151,7 @@ function InicioDocente() {
       document.body.removeChild(link);
     } catch (error) {
       console.error(" Error al descargar CSV:", error);
-      alert("Error al descargar la lista filtrada.");
+      toast.error("Error al descargar la lista filtrada.");
     }
   };
 
@@ -224,6 +226,7 @@ function InicioDocente() {
 
   return (
     <div className="docente-layout">
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="docente-container">
         <div className="top-right"> 
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button> 

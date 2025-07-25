@@ -9,6 +9,7 @@ function AdministrarTutorados() {
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const navigate = useNavigate();
   const { matriculaCord } = location.state || {};
+  const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     if (matriculaCord) {
@@ -33,7 +34,7 @@ function AdministrarTutorados() {
 
   const fetchAlumnoDetails = async (alumnoId) => {
     try {
-      const alumnoResponse = await fetch(`http://localhost:5000/api/alumnos/${alumnoId}`);
+      const alumnoResponse = await fetch(`${API_URL}/api/alumnos/${alumnoId}`);
       
       if (!alumnoResponse.ok) {
         throw new Error(`Error al obtener detalles del alumno con ID ${alumnoId}`);
@@ -57,7 +58,7 @@ function AdministrarTutorados() {
           return;
         }
   
-        const response = await fetch(`http://localhost:5000/api/coordinadores/matricula/${matricula}`);
+        const response = await fetch(`${API_URL}/api/coordinadores/matricula/${matricula}`);
         if (!response.ok) {
           throw new Error("Error al obtener los alumnos");
         }
@@ -78,7 +79,7 @@ function AdministrarTutorados() {
         // Obtener el estatus de cada alumno
         const fetchEstatus = async (alumno) => {
           try {
-            const estatusResponse = await fetch(`http://localhost:5000/api/tutores/estatus/${alumno.matricula}`);
+            const estatusResponse = await fetch(`${API_URL}/api/tutores/estatus/${alumno.matricula}`);
             if (!estatusResponse.ok) {
               throw new Error("Error al obtener el estatus del horario");
             }
