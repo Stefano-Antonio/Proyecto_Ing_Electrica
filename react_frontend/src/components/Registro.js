@@ -237,7 +237,8 @@ function Registro() {
           <h2>Iniciar sesión</h2>
           <form onSubmit={handleLogin}>
             <div className="field-group">
-              <label>Matrícula</label>
+                  <div className="password-input-wrapper">
+              <label className="registro-label">Matrícula</label>
               <input
                 type="text"
                 value={matricula}
@@ -245,48 +246,53 @@ function Registro() {
                 placeholder="Matrícula"
                 required
               />
+              </div>
             </div>
             {tipoUsuario === "personal" && (
               <div className="field-group">
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  Contraseña
-                </label>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Contraseña"
-                  required
-                  style={{ width: '100%' }}
-                />
-                  <button
-                    type="button"
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginLeft: '-30px', display: 'flex', alignItems: 'center' }}
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-                  >
-                    {showPassword ? (
-                      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.77 21.77 0 0 1 5.06-7.06" />
-                        <path d="M1 1l22 22" />
-                      </svg>
-                    ) : (
-                      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#002a5c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                      </svg>
-                    )}
-                  </button>
-                <button
-                  className="forgot-button"
-                  type="button"
-                  onClick={HandleForgotPassword}
-                >
-                  Olvidé mi contraseña
-                </button>
-              </div>
+                  <div className="password-input-wrapper">
+                  <label className="registro-label">Contraseña</label>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Contraseña"
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="toggle-password-button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                    >
+                      {showPassword ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.77 21.77 0 0 1 5.06-7.06" />
+                          <path d="M1 1l22 22" />
+                        </svg>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#002a5c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                          <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                      )}
+                    </button>
+                  </div>
+
+                </div>
             )}
             <div className="button-group">
+                  {tipoUsuario === "personal" ? (
+                    <button
+                      className="login-button"
+                      type="button"
+                      onClick={HandleForgotPassword}
+                    >
+                      Olvidé mi contraseña
+                    </button>
+                  ) : (
+                    <span style={{ display: 'inline-block', width: '100%' }}></span>
+                  )}
               <button className="login-button" type="submit">Iniciar sesión</button>
             </div>
           </form>

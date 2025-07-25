@@ -1,10 +1,45 @@
-body {
-  zoom: 0.9;
+/* Wrapper para el input y botón de contraseña */
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
-/* Pie de página general */
+
+.password-input-wrapper input {
+  width: 100%;
+  padding-right: 36px;
+}
+
+.toggle-password-button {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+}
+/* GENERAL */
+* {
+  box-sizing: border-box;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Evita scroll horizontal */
+  width: 100%;
+  max-width: 100%;
+  font-family: sans-serif;
+}
+
+/* Pie de página */
 .footer {
-  width: 500px;
-  margin: 0 auto;
+  width: 100%;
   text-align: center;
   padding: 12px 0;
   background: #f0f2f5;
@@ -15,122 +50,143 @@ body {
 
 @media (max-width: 768px) {
   .footer {
-    width: 500px;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
     border-radius: 0 0 10px 10px;
     font-size: 0.9rem;
     padding: 10px 0;
   }
 }
+
+/* Layout Principal */
 .registro-layout {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
-  margin-top: 0px;
-  padding: 0 10px; 
-  gap: 15px; /* Margen horizontal entre los .registro-container */
+  margin: 0 auto;
+  padding: 0 5%;
+  gap: 15px;
 }
 
-.login-section {
-  max-height: 420px;
-  overflow-y: auto;
-  padding-bottom: 10px;
-  margin-right: 24px;
-}
-
+/* Contenedor principal */
 .registro-container {
-  box-sizing: border-box;
-  min-height: 500px;
-  max-width: 100000px;
-  margin: 1000 auto 30px auto;
+  width: 100%;
+  max-width: 600px;
   background: #fff;
   border-radius: 18px;
   box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-  padding: 32px 28px 24px 28px;
-  position: relative;
+  padding: 32px 28px 24px;
+  margin: 30px auto;
   overflow: hidden;
 }
-.registro-container h1{
- margin-top: 20px; /* Margen superior para el título de bienvenida */
+
+.registro-container h1 {
+  margin-top: 20px;
 }
 
+.registro-label {
+  display: block;
+  margin-bottom: 8px;
+  text-align: left;
+  color: #002a5c;
+  font-weight: bold;
+}
+
+/* Grupos de campos */
 .field-group {
   display: flex;
-  width: 500px;
-  flex-wrap: wrap; /* Permite que el contenido se ajuste en columnas */
+  flex-wrap: wrap;
   align-items: center;
-  margin-bottom: 5px;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.registro-label {
+  text-align: left;
+  width: 250px;
+  min-width: 250px;
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #002a5c;
+  margin-bottom: 0;
+  margin-right: 4px;
 }
 
 .field-group label {
-  width: 120px; /* Ancho fijo para ambos labels */
-  margin-right: 10px;
-  text-align: left; /* Alinea el texto a la derecha */
+  flex: 1 1 120px;
+  text-align: left;
 }
 
 .field-group input,
 .field-group select {
-  flex: 1;
-  min-width: 20; /* Evita que el input se expanda fuera del contenedor */
-  padding: 8px;
-  margin-top: 5px;
+  flex: 2 1 6000px;
+  padding: 12px;
+  width: 6000px;
+  min-width: 6000px;
+  font-size: 1.1rem;
+  text-align: left;
+  display: inline-block;
 }
 
+/* Radio buttons */
 .radio-group {
   display: flex;
-  align-items: flex-start;
-  margin-top:45px;
-  flex-direction: row !important; /* Fuerza el diseño horizontal */
+  flex-direction: row !important; /* Fuerza horizontal siempre */
+  align-items: center;
+  flex-wrap: nowrap; /* No permite salto de línea */
+  gap: 15px;
+  margin-top: 20px;
 }
 
 .radio-option {
   display: flex;
   align-items: center;
-  margin-bottom: 25px; 
-  margin-right: 15px; /* Espacio entre las opciones */
 }
 
 .radio-option input[type="radio"] {
-  margin-right: 0px; /* Espacio entre el radio button y el label */
+  margin-right: 5px;
 }
 
+/* Botones */
 .login-button-container {
   text-align: center;
   margin-top: 20px;
 }
 
 .login-button {
-  width: 80%; /* Reduce el ancho del botón */
-  max-width: 150px; /* Ajusta el ancho máximo */
-  padding: 6px; /* Reduce el padding */
-  font-size: 14px; /* Reduce el tamaño de fuente */
-  cursor: pointer;
+  width: 100%;
+  max-width: 200px;
+  padding: 8px;
+  font-size: 14px;
   border-radius: 5px;
   background-color: #002a5c;
   color: white;
   border: none;
   margin-top: 10px;
-  margin-bottom: 15px; /* Añade margen debajo del botón */
-}
-.forgot-button {
-  width: 20%; /* Reduce el ancho del botón */
-  height: 30px; /* Ajusta la altura del botón */
-  font-size: 0.7rem; /* Reduce font size further */
-  padding: 3px 8px; /* Make padding slimmer */
+  cursor: pointer;
 }
 
+.forgot-button {
+  width: auto;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  margin-top: 5px;
+  display: block;
+  text-align: right;
+  margin-left: auto;
+}
+
+/* Secciones laterales */
 .session-selection,
 .login-section {
-  width: 500px; /* Asegura que ocupen el ancho completo del contenedor */
+  width: 100%;
+  max-width: 500px;
   background-color: #f0f2f5;
   padding: 25px;
   border-radius: 10px;
-  margin-bottom: 10px;
-  margin-top: 10px;
-  margin-right: 24px;
+  margin-bottom: 20px;
 }
 
 .session-selection h2,
@@ -138,74 +194,65 @@ body {
   color: #002a5c;
   font-size: 1.5rem;
   margin-bottom: 15px;
-  margin-top: 0px
+  margin-top: 0;
 }
 
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  width: 100%;
+  padding-right: 36px; /* espacio para el botón del ojo */
+}
+
+.toggle-password-button {
+  position: absolute;
+  right: 8px;
+  top: 35%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+/* Responsivo */
 @media (max-width: 768px) {
   .registro-layout {
-    flex-direction: column; /* Cambia a diseño vertical */
-    justify-content: center;
-    align-items: center;
-    width: 100%; /* Asegura que el contenedor ocupe todo el ancho de la pantalla */
-    margin: 0; /* Elimina márgenes laterales */
+    flex-direction: column;
+    padding: 0 20px;
   }
 
   .registro-container {
-    width: 100%; /* Ajusta el ancho para ocupar todo el fondo horizontal */
-    max-width: none; /* Elimina el ancho máximo */
-    padding: 20px; /* Ajusta el padding para mejor visualización */
-    min-height: auto; /* Ajusta la altura mínima */
-    max-height: auto; /* Ajusta la altura máxima */
-    box-shadow: none; /* Elimina la sombra para simplificar el diseño en móviles */
-    margin-top: 30px; /* Margen superior para el recuadro de "Ingrese sus credenciales" en móviles */
+    padding: 20px;
+    margin-top: 20px;
   }
 
-  .registro-container h1 {
-    margin-top: 20px; /* Margen superior para el título de bienvenida en móviles */
-  }
-
-  .field-group label {
-    width: 100%; /* Ocupa el ancho completo */
-    margin-bottom: 5px; /* Añade espacio debajo del label */
-    text-align: left; /* Mantiene alineación izquierda */
-  }
-
+  .field-group label,
   .field-group input,
   .field-group select {
-    width: 100%; /* Ajusta el ancho de los inputs */
-  }
-
-  .radio-group {
-    flex-direction: row !important; /* Fuerza el diseño horizontal */
-    align-items: center;
-  }
-
-  .radio-option {
-    margin-right: 15px; /* Espacio entre las opciones */
-    flex-direction: row; /* Cambia a diseño horizontal */
-    align-items: center; /* Alinea el texto y el botón al mismo nivel */
-  }
-
-  .radio-option input[type="radio"] {
-    margin-right: 10px; /* Espacio entre el radio button y el texto */
-  }
-
-  .login-button {
-    width: 100%; /* Ajusta el ancho de los botones */
-    max-width: none; /* Elimina el ancho máximo */
-  }
-
-  .forgot-button {
-    font-size: 0.6rem; /* Reduce el tamaño de la fuente en móviles */
+    width: 100%;
+    flex: none;
   }
 
   .session-selection,
   .login-section {
-    padding: 15px; /* Reduce el padding */
+    padding: 15px;
   }
 
   .session-selection h2,
   .login-section h2 {
-    font-size: 1.2rem; /* Reduce el tamaño de fuente */
+    font-size: 1.2rem;
+  }
+
+  .forgot-button {
+    font-size: 0.7rem;
   }
 }

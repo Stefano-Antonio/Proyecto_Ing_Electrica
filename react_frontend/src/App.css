@@ -1,3 +1,58 @@
+/* Estilos responsivos para tablas y formularios */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  word-break: break-word;
+  font-size: 1rem;
+}
+
+th, td {
+  padding: 8px;
+  font-size: 1rem;
+  word-break: break-word;
+}
+
+.scrollable-table, .tutor-content {
+  width: 100%;
+  overflow-x: auto;
+}
+
+form, .formulario, .form-container, .search-bar, .max-hours-input {
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input, select, textarea, button {
+  max-width: 100%;
+  font-size: 1rem;
+}
+
+@media (max-width: 1024px) {
+  table, th, td {
+    font-size: 0.95rem;
+    padding: 6px;
+  }
+  form, .formulario, .form-container, .search-bar, .max-hours-input {
+    font-size: 0.95rem;
+    padding: 6px;
+  }
+}
+
+@media (max-width: 768px) {
+  table, th, td {
+    font-size: 0.85rem;
+    padding: 4px;
+  }
+  form, .formulario, .form-container, .search-bar, .max-hours-input {
+    font-size: 0.85rem;
+    padding: 4px;
+  }
+  .scrollable-table, .tutor-content {
+    width: 100%;
+    overflow-x: auto;
+  }
+}
 .App {
   text-align: center;
   display: flex;
