@@ -12,7 +12,6 @@ const AdministrarPersonalCoordinador = () => {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mostrarModalPersonal, setMostrarModalPersonal] = useState(false);
   const [usuarioAEliminar, setUsuarioAEliminar] = useState(null);
-  const API_URL = process.env.REACT_APP_API_URL;
   
   const navigate = useNavigate();
   const id_carrera = localStorage.getItem("id_carrera");
@@ -26,7 +25,7 @@ const AdministrarPersonalCoordinador = () => {
       }
 
       try {
-        const response = await axios.get(`${API_URL}/api/personal/carrera/${matricula}`);
+        const response = await axios.get(`http://localhost:5000/api/personal/carrera/${matricula}`);
         setPersonal(response.data);
       } catch (error) {
         console.error("Error al obtener datos del personal:", error.message);
@@ -49,7 +48,7 @@ const AdministrarPersonalCoordinador = () => {
 
   try {
     const response = await axios.post(
-      `${API_URL}/api/personal/exportar-csv/carrera-filtrados/${id_carrera}`,
+      `http://localhost:5000/api/personal/exportar-csv/carrera-filtrados/${id_carrera}`,
       { matriculas },
       { responseType: "blob" }
     );
@@ -74,7 +73,7 @@ const AdministrarPersonalCoordinador = () => {
   const handleDelete = async () => {
     try {
       const formData = {usuarioAEliminar, idCarreraEsperada: id_carrera}; // Incluir id_carrera en los datos del formulario
-      await axios.delete(`${API_URL}/api/personal/coordinador`, formData);
+      await axios.delete("http://localhost:5000/api/personal/coordinador", formData);
       setPersonal(prevState => prevState.filter(persona => persona._id !== usuarioAEliminar));
       toast.success("Personal eliminado con éxito");
     } catch (error) {
