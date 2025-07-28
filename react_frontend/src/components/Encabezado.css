@@ -38,27 +38,37 @@
   }
   .header-title .highlight { color: white; /* Cambia el color del texto a blanco */ }
 
-  @media (max-width: 768px) {
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 5px 10px;
-      height: 50px; /* Reduce la altura del encabezado */
-    }
-
-    .header-logo_uaz,
-    .header-logo_uaei {
-  min-width: 50px;
-  max-width: 50px;
-    }
-
-    .header-title {
-      font-size: 0.9rem; /* Reduce el tamaño de la letra */
-      text-align: center;
-    }
-
-    .header-title .highlight {
-      font-size: 0.7rem; /* Reduce el tamaño de la letra para el texto destacado */
-    }
+  @media (max-width: 480px) {
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 10px;
+    height: auto;
   }
+
+  .header-logo_uaz,
+  .header-logo_uaei {
+    min-width: 40px;
+    max-width: 40px;
+    height: auto;
+  }
+
+  .header-title {
+    font-size: 0.75rem;
+    text-align: center;
+    line-height: 1.1;
+    padding: 0 5px;
+    flex: 1; /* Asegura que use el espacio disponible */
+  }
+
+  .header-title .highlight {
+    font-size: 0.65rem;
+  }
+
+  .header img {
+    height: auto;
+    object-fit: contain;
+  }
+}
+

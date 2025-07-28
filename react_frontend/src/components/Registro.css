@@ -31,6 +31,7 @@
 body, html {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
   overflow-x: hidden; /* Evita scroll horizontal */
   width: 100%;
   max-width: 100%;
@@ -94,24 +95,22 @@ body, html {
 
 /* Grupos de campos */
 .field-group {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  margin-bottom: 15px;
-  gap: 10px;
+  width: 100%;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #002a5c;
+  margin-bottom: 6px;
+  text-align: left;
 }
 
 .registro-label {
   text-align: left;
-  width: 250px;
-  min-width: 250px;
+  width: 100%;
   display: flex;
   align-items: center;
   font-size: 1.2rem;
   font-weight: bold;
   color: #002a5c;
-  margin-bottom: 0;
-  margin-right: 4px;
 }
 
 .field-group label {
@@ -121,14 +120,12 @@ body, html {
 
 .field-group input,
 .field-group select {
-  flex: 2 1 6000px;
-  padding: 12px;
-  width: 6000px;
-  min-width: 6000px;
-  font-size: 1.1rem;
-  text-align: left;
-  display: inline-block;
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  box-sizing: border-box;
 }
+
 
 /* Radio buttons */
 .radio-group {
@@ -182,30 +179,27 @@ body, html {
 .session-selection,
 .login-section {
   width: 100%;
-  max-width: 500px;
   background-color: #f0f2f5;
   padding: 25px;
-  border-radius: 10px;
-  margin-bottom: 20px;
+  border-radius: 0px;
+  margin-bottom: 0px;
 }
 
 .session-selection h2,
 .login-section h2 {
   color: #002a5c;
   font-size: 1.5rem;
-  margin-bottom: 15px;
   margin-top: 0;
 }
 
 .password-input-wrapper {
+  width: 100%;
   position: relative;
-  display: flex;
-  align-items: center;
 }
 
 .password-input-wrapper input {
   width: 100%;
-  padding-right: 36px; /* espacio para el botón del ojo */
+  padding-right: 36px;
 }
 
 .toggle-password-button {
@@ -225,6 +219,17 @@ body, html {
 
 /* Responsivo */
 @media (max-width: 768px) {
+  .App {
+    padding: 10px;
+  }
+
+  .registro-label {
+    width: 100%;
+    min-width: unset;
+    font-size: 1rem;
+    margin-bottom: 6px;
+  }
+
   .registro-layout {
     flex-direction: column;
     padding: 0 20px;
@@ -242,9 +247,13 @@ body, html {
     flex: none;
   }
 
+
   .session-selection,
   .login-section {
-    padding: 15px;
+    max-width: 100%;
+    width: 100%;
+    margin: 20px 0;
+    border-radius: 0;
   }
 
   .session-selection h2,

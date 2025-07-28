@@ -256,7 +256,7 @@ function Registro() {
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Contraseña"
+                      placeholder="********"
                       required
                     />
                     <button
