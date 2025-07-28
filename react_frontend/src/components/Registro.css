@@ -105,7 +105,8 @@ body, html {
 
 .registro-label {
   text-align: left;
-  width: 100%;
+  min-width: 50px; /* o el ancho que necesites */
+  max-width: 150px; /* o el ancho que necesites */
   display: flex;
   align-items: center;
   font-size: 1.2rem;
@@ -118,14 +119,23 @@ body, html {
   text-align: left;
 }
 
-.field-group input,
-.field-group select {
+.field-group input{
   width: 100%;
   padding: 10px;
   font-size: 1rem;
+  margin-bottom: 10px;
   box-sizing: border-box;
 }
 
+.field-group select {
+width: 800px; /* ancho aumentado */
+min-width: 400px;
+max-width: 800px;
+padding: 10px;
+font-size: 1rem;
+box-sizing: border-box;
+margin-left: -280px; /* recargado a la izquierda */
+}
 
 /* Radio buttons */
 .radio-group {
