@@ -48,15 +48,6 @@ body, html {
   color: #002a5c;
   font-size: 1rem;
 }
-
-@media (max-width: 768px) {
-  .footer {
-    border-radius: 0 0 10px 10px;
-    font-size: 0.9rem;
-    padding: 10px 0;
-  }
-}
-
 /* Layout Principal */
 .registro-layout {
   display: flex;
@@ -93,15 +84,6 @@ body, html {
   font-weight: bold;
 }
 
-/* Grupos de campos */
-.field-group {
-  width: 100%;
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: #002a5c;
-  margin-bottom: 6px;
-  text-align: left;
-}
 
 .registro-label {
   text-align: left;
@@ -114,38 +96,7 @@ body, html {
   color: #002a5c;
 }
 
-.field-group label {
-  flex: 1 1 120px;
-  text-align: left;
-}
 
-.field-group input{
-  width: 100%;
-  padding: 10px;
-  font-size: 1rem;
-  margin-bottom: 10px;
-  box-sizing: border-box;
-}
-
-.field-group select {
-width: 800px; /* ancho aumentado */
-min-width: 400px;
-max-width: 800px;
-padding: 10px;
-font-size: 1rem;
-box-sizing: border-box;
-margin-left: -280px; /* recargado a la izquierda */
-}
-
-/* Radio buttons */
-.radio-group {
-  display: flex;
-  flex-direction: row !important; /* Fuerza horizontal siempre */
-  align-items: center;
-  flex-wrap: nowrap; /* No permite salto de línea */
-  gap: 15px;
-  margin-top: 20px;
-}
 
 .radio-option {
   display: flex;
@@ -164,7 +115,7 @@ margin-left: -280px; /* recargado a la izquierda */
 
 .login-button {
   width: 100%;
-  max-width: 200px;
+  max-width: 150px;
   padding: 8px;
   font-size: 14px;
   border-radius: 5px;
@@ -215,7 +166,7 @@ margin-left: -280px; /* recargado a la izquierda */
 .toggle-password-button {
   position: absolute;
   right: 8px;
-  top: 35%;
+  top: 28%;
   background: none;
   border: none;
   cursor: pointer;
@@ -229,6 +180,14 @@ margin-left: -280px; /* recargado a la izquierda */
 
 /* Responsivo */
 @media (max-width: 768px) {
+  .field-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #002a5c;
+    margin-bottom: 16px;
+  }
+
   .App {
     padding: 10px;
   }
@@ -251,10 +210,13 @@ margin-left: -280px; /* recargado a la izquierda */
   }
 
   .field-group label,
-  .field-group input,
-  .field-group select {
+  .field-group input{
     width: 100%;
     flex: none;
+  
+  }
+  .field-group select {
+    width: 100%;
   }
 
 
@@ -274,9 +236,57 @@ margin-left: -280px; /* recargado a la izquierda */
   .forgot-button {
     font-size: 0.7rem;
   }
+
+  .footer {
+    border-radius: 0 0 10px 10px;
+    font-size: 0.9rem;
+    padding: 10px 0;
+  }
+
+  .radio-group {
+  display: flex;
+  flex-direction: row !important; /* Fuerza horizontal siempre */
+  align-items: center;
+  flex-wrap: nowrap; /* No permite salto de línea */
+  gap: 15px;
+  margin-top: 20px;
+}
+
 }
 
 @media (min-width: 769px) {
+  .field-group {
+    display: flex;
+    width: 380px;
+    align-items: center;
+    gap: 12px;
+    color: #002a5c;
+    margin-bottom: 16px;
+  }
+
+  .field-group label {
+    width: 140px; /* Fijo para alinear */
+    font-weight: bold;
+    text-align: left;
+    margin: 0;
+    align-self: flex-start; /* Alinea el texto arriba si los radios son verticales */
+    padding-top: 6px; /* Ajusta si necesitas más alineación */
+  }
+
+  .field-group .radio-group {
+    display: flex;
+    gap: 1px;
+    flex-wrap: nowrap;
+    align-items: center; /* Alinea los radios con el texto */
+  }
+
+  .field-group select {
+    flex: 1;
+    max-width: 215px; /* Permite ocupar el espacio restante */
+    width: auto;
+    min-width: 150px;
+  }
+
   .registro-layout {
     display: flex;
     justify-content: center;
@@ -290,4 +300,5 @@ margin-left: -280px; /* recargado a la izquierda */
     min-width: 300px; /* evita que se hagan demasiado pequeños */
     max-width: 450px; /* opcional para controlar el máximo */
   }
+
 }
