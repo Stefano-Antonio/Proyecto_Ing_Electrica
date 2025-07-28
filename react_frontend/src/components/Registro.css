@@ -265,3 +265,19 @@ body, html {
     font-size: 0.7rem;
   }
 }
+
+@media (min-width: 769px) {
+  .registro-layout {
+    display: flex;
+    justify-content: center;
+    align-items: stretch; /* o center si prefieres centrado vertical */
+    gap: 40px; /* espacio entre los dos recuadros */
+    padding: 20px 0;
+  }
+
+  .registro-container {
+    flex: 1 1 45%; /* permite crecer, pero mantiene proporción */
+    min-width: 300px; /* evita que se hagan demasiado pequeños */
+    max-width: 450px; /* opcional para controlar el máximo */
+  }
+}
