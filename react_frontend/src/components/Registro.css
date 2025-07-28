@@ -283,7 +283,7 @@ body, html {
   .field-group select {
     flex: 1;
     max-width: 215px; /* Permite ocupar el espacio restante */
-    width: auto;
+    width: 100%;
     min-width: 150px;
   }
 
