@@ -10,6 +10,7 @@ function CrearMateriaCG() {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mostrarCarrera, setMostrarCarrera] = useState(false);
   const [file, setFile] = useState(null); // Almacenar el archivo CSV
+  const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de que esta variable esté definida en tu entorno
   const [formData, setFormData] = useState({
       id_materia: '',
       id_carrera: '',
@@ -55,7 +56,7 @@ function CrearMateriaCG() {
     useEffect(() => {
       const fetchDocentes = async () => {
         try {
-          const response = await axios.get("http://localhost:5000/api/docentes"); 
+          const response = await axios.get(`${API_URL}/api/docentes`); 
           setDocentes(response.data); // Guardamos la lista de docentes con el nombre incluido
         } catch (error) {
           console.error("Error al obtener los docentes:", error);
@@ -82,7 +83,7 @@ function CrearMateriaCG() {
     
       try {
         await axios.post(
-          "http://localhost:5000/api/materias/subir-csv", // Cambiar la URL a 'materias'
+          `${API_URL}/api/materias/subir-csv`, // Cambiar la URL a 'materias'
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
         );
@@ -98,7 +99,7 @@ function CrearMateriaCG() {
     const handleDownloadCSV = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/materias/exportar-csv", // Cambiar la URL a 'materias'
+          `${API_URL}/api/materias/exportar-csv`, // Cambiar la URL a 'materias'
           { responseType: "blob" }
         );
     
@@ -167,7 +168,7 @@ function CrearMateriaCG() {
         };
 
         if (id_carrera === "ISftwS" || id_carrera === "IDsrS" || id_carrera === "IEIndS" || id_carrera === "ICmpS" || id_carrera === "IRMcaS" || id_carrera === "IElecS") {
-          const response = await axios.post('http://localhost:5000/api/materias', finalData);
+          const response = await axios.post(`${API_URL}/api/materias`, finalData);
           toast.success('Materia creada con éxito');
           setFormData({
             id_materia: '',
@@ -181,7 +182,7 @@ function CrearMateriaCG() {
             docente: ''
           });
         } else {
-          const response = await axios.post('http://localhost:5000/api/materias', finalData);
+          const response = await axios.post(`${API_URL}/api/materias`, finalData);
           toast.success('Materia creada con éxito');
           setFormData({
             id_materia: '',

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -13,6 +13,7 @@ const AlumnoListCoord = () => {
   const [nombre, setNombreAlumno] = ("");
   const [comprobanteHabilitado, setComprobanteHabilitado] = useState(true);
   const id_carrera = localStorage.getItem("id_carrera");
+  const location = useLocation(); 
   const [comprobantes, setComprobantes] = useState([]);
   const [matricula, setMatriculaAlumno] = useState("");
   const [mostrarComprobante, setMostrarComprobante] = useState(true);
@@ -21,12 +22,14 @@ const AlumnoListCoord = () => {
   const [AlumnoAEliminar, setAlumnoAEliminar] = useState(null);
   const matriculaCord = localStorage.getItem("matricula");
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL;
+
 
   useEffect(() => {
     // Obtener alumnos y tutores
     const fetchAlumnos = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/alumnos/carrera/${matriculaCord}`);
+        const response = await axios.get(`${API_URL}/api/alumnos/carrera/${matriculaCord}`);
         const alumnosData = response.data;
 
         // Obtener los nombres de los tutores
@@ -34,7 +37,7 @@ const AlumnoListCoord = () => {
         await Promise.all(alumnosData.map(async (alumno) => {
           if (alumno.tutor) {
             try {
-              const tutorResponse = await axios.get(`http://localhost:5000/api/coordinadores/alumnos/${alumno.tutor}`);
+              const tutorResponse = await axios.get(`${API_URL}/api/coordinadores/alumnos/${alumno.tutor}`);
               tutoresNombresTemp[alumno._id] = tutorResponse.data.nombre;
             } catch (error) {
               tutoresNombresTemp[alumno._id] = "Error al obtener tutor";
@@ -45,7 +48,7 @@ const AlumnoListCoord = () => {
         // Obtener estatus de horario para cada alumno
         const fetchEstatus = async (alumno) => {
           try {
-            const estatusResponse = await fetch(`http://localhost:5000/api/tutores/estatus/${alumno.matricula}`);
+            const estatusResponse = await fetch(`${API_URL}/api/tutores/estatus/${alumno.matricula}`);
             if (!estatusResponse.ok) throw new Error("Error al obtener el estatus del horario");
             const estatusData = await estatusResponse.json();
             return { ...alumno, estatus: estatusData.estatus };
@@ -66,7 +69,7 @@ const AlumnoListCoord = () => {
     // Obtener lista de comprobantes
     const fetchComprobantes = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/alumnos/comprobantes/lista');
+        const response = await axios.get(`${API_URL}/api/alumnos/comprobantes/lista`);
         setComprobantes(response.data);
       } catch (error) {
         console.error('Error al obtener la lista de comprobantes:', error);
@@ -76,7 +79,7 @@ const AlumnoListCoord = () => {
     // Obtener si el comprobante está habilitado
     const fetchComprobanteHabilitado = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/coordinadores/comprobante-habilitado/${id_carrera}`);
+        const res = await axios.get(`${API_URL}/api/coordinadores/comprobante-habilitado/${id_carrera}`);
         setComprobanteHabilitado(res.data.comprobantePagoHabilitado);
         setMostrarComprobante(res.data.comprobantePagoHabilitado); // Sincroniza el estado visual
       } catch (error) {
@@ -84,6 +87,30 @@ const AlumnoListCoord = () => {
         setMostrarComprobante(true);
       }
     };
+
+    // Recuperar estado guardado de la sesión
+    const estadoGuardado = sessionStorage.getItem("vistaAlumnoCoord");
+    
+    // Verificar si se viene de una validación
+    const cameFromValidation = location.state?.reload === true;
+
+    // Si hay un estado guardado, restaurarlo
+    if (estadoGuardado && !cameFromValidation) {
+      const { searchTerm, scrollY, alumnos, tutoresNombres, mostrarComprobante } = JSON.parse(estadoGuardado);
+
+      setSearchTerm(searchTerm || "");
+      setAlumnos(alumnos || []);
+      setTutoresNombres(tutoresNombres || {});
+      setMostrarComprobante(mostrarComprobante ?? true);
+      setComprobanteHabilitado(mostrarComprobante ?? true); // por consistencia
+
+      // Scroll hacia la posición anterior
+      setTimeout(() => window.scrollTo(0, scrollY || 0), 0);
+
+      sessionStorage.removeItem("vistaAlumnoCoord"); // Solo se restaura una vez
+      setLoading(false); // No hacemos fetch si restauramos
+      return;
+    }
 
     // Ejecutar todas las funciones asíncronas
     const fetchData = async () => {
@@ -96,15 +123,33 @@ const AlumnoListCoord = () => {
     fetchData();
   }, [matriculaCord, id_carrera]);
 
+  useEffect(() => {
+    if (location.state?.reload) {
+      window.history.replaceState({}, document.title);
+    }
+  }, []);
+
+
+  const guardarEstadoVista = () => {
+    sessionStorage.setItem("vistaAlumnoCoord", JSON.stringify({
+      searchTerm,
+      scrollY: window.scrollY,
+      alumnos,
+      tutoresNombres,
+      mostrarComprobante,
+    }));
+  };
+
 
   const handleNavigate1 = () => {
+    guardarEstadoVista(); // Guarda el estado actual antes de navegar
     navigate("/coordinador/crear-alumno", { state: { matriculaCord: matriculaCord } });
   };
 
     const handleDownloadCSV = async () => {
       const ids = alumnosFiltrados.map(a => a._id);
       const response = await axios.post(
-        `http://localhost:5000/api/alumnos/exportar-csv/carrera-filtrados/${id_carrera}`,
+        `${API_URL}/api/alumnos/exportar-csv/carrera-filtrados/${id_carrera}`,
         { ids },
         { responseType: "blob" }
       );
@@ -118,18 +163,22 @@ const AlumnoListCoord = () => {
     };
 
   const handleNavigate2 = () => {
+    guardarEstadoVista(); // Guarda el estado actual antes de navegar
     navigate("/coordinador/admin-tutor", { state: { matriculaCord: matriculaCord } });
   };
 
   const handleNavigate3 = (alumno) => {
+    guardarEstadoVista(); // Guarda el estado actual antes de navegar
     navigate(`/coordinador/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
   };
 
   const handleNavigate4 = (alumno) => {
+    guardarEstadoVista(); // Guarda el estado actual antes de navegar
     navigate(`/coordinador/validar-pago/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
   };
 
   const handleModify = (alumno) => {
+    guardarEstadoVista(); // Guarda el estado actual antes de navegar
     navigate("/coordinador/modificar-alumno", { state: { alumno, matriculaCord: matriculaCord } });
   };
 
@@ -138,7 +187,7 @@ const AlumnoListCoord = () => {
     setComprobanteHabilitado(nuevoEstado);
     setMostrarComprobante(nuevoEstado);
     try {
-      await axios.put(`http://localhost:5000/api/coordinadores/comprobante-habilitado/${id_carrera}`, {
+      await axios.put(`${API_URL}/api/coordinadores/comprobante-habilitado/${id_carrera}`, {
         comprobantePagoHabilitado: nuevoEstado
       });
       toast.success(nuevoEstado ? "Comprobante habilitado" : "Comprobante deshabilitado");
@@ -159,7 +208,7 @@ const AlumnoListCoord = () => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/alumnos/${AlumnoAEliminar}`);
+      await axios.delete(`${API_URL}/api/alumnos/${AlumnoAEliminar}`);
       setAlumnos(prevState => prevState.filter(alumno => alumno._id !== AlumnoAEliminar));
       toast.success("Alumno eliminado con éxito");
       setMostrarModal(false);

@@ -13,6 +13,7 @@ function CrearAlumno() {
   const id_carrera = localStorage.getItem("id_carrera");
   const { matriculaCord } = location.state || {};
   const [file, setFile] = useState(null); // Estado para el archivo
+  const API_URL = process.env.REACT_APP_API_URL;
   const [form, setForm] = useState({
     nombre: "",
     matricula: "",
@@ -27,7 +28,7 @@ function CrearAlumno() {
   useEffect(() => {
     const fetchTutores = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/coordinadores/tutores/${(matriculaCord)}`);
+        const response = await axios.get(`${API_URL}/api/coordinadores/tutores/${(matriculaCord)}`);
         setTutores(response.data); // Suponiendo que la API regresa un array de objetos [{_id, nombre}]
       } catch (error) {
         console.error("Error al obtener tutores:", error);
@@ -53,7 +54,7 @@ function CrearAlumno() {
   
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/alumnos/subir-csv/carrera/${id_carrera}`, // <-- Ahora incluye id_carrera
+        `${API_URL}/api/alumnos/subir-csv/carrera/${id_carrera}`, // <-- Ahora incluye id_carrera
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -88,11 +89,11 @@ function CrearAlumno() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/api/alumnos", form);
-      toast.success("Alumno agregado con éxito");
+      const response = await axios.post(`${API_URL}/api/alumnos`, form);
       setForm({ nombre: "", matricula: "", correo: "", telefono: "", tutor: "" }); // Reset form
-      toast.success("Alumno creado con exito");
-      navigate(-1); // Regresar a la página anterior
+      setTimeout(() => {
+        navigate("/coordinador/alumnos", { state: { reload: true } });
+      }, 200); // Espera un poco para mostrar el toast antes de recargar
     } catch (error) {
       console.error("Error al agregar el alumno:", error);
       toast.error("Hubo un error al agregar el alumno");
@@ -102,7 +103,7 @@ function CrearAlumno() {
   const handleDownloadCSV = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/alumnos/exportar-csv/carrera/${id_carrera}`,
+        `${API_URL}/api/alumnos/exportar-csv/carrera/${id_carrera}`,
         {
           responseType: "blob", // Asegúrate de recibir el archivo como blob
         }

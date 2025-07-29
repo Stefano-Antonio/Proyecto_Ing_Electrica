@@ -9,17 +9,18 @@ function AsignarTutor() {
   const location = useLocation();
   const [personal, setPersonal] = useState([]);
   const [alumnos, setAlumnos] = useState([]);
+  const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     // Fetch de personal desde el servidor
-    fetch("http://localhost:5000/api/personal")
+    fetch(`${API_URL}/api/personal`)
       .then((response) => response.json())
       .then((data) => setPersonal(data))
       .catch((error) => console.error("Error al obtener el personal:", error));
   }, []);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/alumnos')
+    axios.get(`${API_URL}/api/alumnos`)
       .then(response => {
         setAlumnos(response.data);
       })

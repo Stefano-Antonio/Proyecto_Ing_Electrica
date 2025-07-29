@@ -84,6 +84,8 @@ function RevisionHorarioTutor() {
       } else if (tutorMatricula.startsWith("P")) {
         // Regresar a la vista principal de docente (no a /docente/alumnos)
         navigate("/docente/alumnos", { state: { reload: true } });
+      } else if(tutorMatricula.startsWith("C")){
+        navigate("/coordinador/alumnos", { state: { reload: true } });
       } else {
         navigate(-1);
       }

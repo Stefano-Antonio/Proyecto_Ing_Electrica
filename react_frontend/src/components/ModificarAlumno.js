@@ -15,6 +15,7 @@ function ModificarAlumno() {
   const [file, setFile] = useState(null); // Estado para el archivo
   const [tutores, setTutores] = useState([]); // Lista de tutores
   const matriculaTutor = matriculaCord;
+  const API_URL = process.env.REACT_APP_API_URL;
   const [form, setForm] = useState({
     nombre: "",
     matricula: "",
@@ -41,7 +42,7 @@ function ModificarAlumno() {
   useEffect(() => {
     const fetchTutores = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/coordinadores/tutores/${matriculaCord}`);
+        const response = await axios.get(`${API_URL}/api/coordinadores/tutores/${matriculaCord}`);
         setTutores(response.data); // Suponiendo que la API regresa un array de objetos [{_id, nombre}]
       } catch (error) {
         console.error("Error al obtener tutores:", error);
@@ -72,7 +73,7 @@ function ModificarAlumno() {
   const handleDownloadCSV = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/alumnos/exportar-csv/carrera/${id_carrera}`,
+        `${API_URL}/api/alumnos/exportar-csv/carrera/${id_carrera}`,
         {
           responseType: "blob", // Asegúrate de recibir el archivo como blob
         }
@@ -107,7 +108,7 @@ function ModificarAlumno() {
   
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/alumnos/subir-csv/carrera/${id_carrera}`, // <-- Ahora incluye id_carrera
+        `${API_URL}/api/alumnos/subir-csv/carrera/${id_carrera}`, // <-- Ahora incluye id_carrera
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -129,7 +130,7 @@ function ModificarAlumno() {
     e.preventDefault();
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/alumnos/${alumno._id}`,
+        `${API_URL}/api/alumnos/${alumno._id}`,
         {
           nombre: form.nombre,
           matricula: form.matricula,
@@ -138,8 +139,9 @@ function ModificarAlumno() {
           tutor: form.tutor // Enviar el tutor seleccionado
         }
       );
-      toast.success("Alumno actualizado con éxito");
-      navigate(-1);
+      setTimeout(() => {
+              navigate("/coordinador/alumnos", { state: { reload: true } });
+            }, 200); // Espera un poco para mostrar el toast antes de recargar
     } catch (error) {
       console.error("Error al actualizar el alumno:", error);
       toast.error("Hubo un error al actualizar el alumno");
