@@ -84,6 +84,8 @@ function RevisionHorarioTutor() {
       } else if (tutorMatricula.startsWith("P")) {
         // Regresar a la vista principal de docente (no a /docente/alumnos)
         navigate("/docente/alumnos", { state: { reload: true } });
+      } else if(tutorMatricula.startsWith("C")){
+        navigate("/coordinador/alumnos", { state: { reload: true } });
       } else {
         navigate(-1);
       }
@@ -119,8 +121,8 @@ function RevisionHorarioTutor() {
   return (
     <div className="horario-layout">
       <div className="horario-container">
-  <button className="button-small logout-button" onClick={handleLogout}>Cerrar sesión</button>
-  <button className="button-small back-button" onClick={() => navigate(-1)}>Regrsar</button>
+        <button className="button-small logout-button" onClick={handleLogout}>Cerrar sesión</button>
+        <button className="button-small back-button" onClick={() => navigate(-1)}>Regrsar</button>
 
         <h1>Revisión de horario</h1>
         {alumno ? (

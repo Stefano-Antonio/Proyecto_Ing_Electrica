@@ -74,8 +74,10 @@ function CrearPersonal() {
     try {
       const formData = { ...form, id_carrera };
       const response = await axios.post(`${API_URL}/api/personal`, formData);
-      toast.success("Usuario agregado con éxito");
       setForm({ nombre: "", matricula: "", correo: "", telefono: "", roles: "", password: "" });
+      setTimeout(() => {
+        navigate("/coordinador/personal", { state: { reload: true } });
+      }, 200); // Espera un poco para mostrar el toast antes de recargar
     } catch (error) {
       // Verifica si el error es por matrícula duplicada
       if (

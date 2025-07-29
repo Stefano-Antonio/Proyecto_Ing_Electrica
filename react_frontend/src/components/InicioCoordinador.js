@@ -1,4 +1,5 @@
 import React from "react";
+import {useEffect} from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import "./InicioCoordinador.css";
 
@@ -7,6 +8,11 @@ const InicioCoordinador = () => {
     const id_carrera = localStorage.getItem("id_carrera");
     const nombre = localStorage.getItem("nombre");
     const matricula = localStorage.getItem("matricula");
+
+    useEffect(() => {
+      // Limpiar la cache de alumnos del coordinador anterior
+      sessionStorage.removeItem("vistaAlumnoCoord");
+    }, []);
 
     const handleLogout = () => {
       localStorage.removeItem("isAuthenticated");

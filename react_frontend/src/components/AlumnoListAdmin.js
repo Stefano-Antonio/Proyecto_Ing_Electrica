@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -19,6 +19,7 @@ const AlumnoListAdmin = () => {
   const matriculaAdmin = localStorage.getItem("matricula");
   const API_URL = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchAlumnos = async () => {
@@ -65,10 +66,46 @@ const AlumnoListAdmin = () => {
       setLoading(false); // Indica que los datos han sido cargados
     };
 
+    // Recuperar estado guardado de la sesión
+    const estadoGuardado = sessionStorage.getItem("vistaAlumnoCoord");
+    
+    // Verificar si se viene de una validación
+    const cameFromValidation = location.state?.reload === true;
+
+    // Si hay un estado guardado, restaurarlo
+    if (estadoGuardado && !cameFromValidation) {
+      const { searchTerm, scrollY, alumnos, tutoresNombres, mostrarComprobante } = JSON.parse(estadoGuardado);
+
+      setSearchTerm(searchTerm || "");
+      setAlumnos(alumnos || []);
+      setTutoresNombres(tutoresNombres || {});
+
+      // Scroll hacia la posición anterior
+      setTimeout(() => window.scrollTo(0, scrollY || 0), 0);
+
+      sessionStorage.removeItem("vistaAlumnoCoord"); // Solo se restaura una vez
+      setLoading(false); // No hacemos fetch si restauramos
+      return;
+    }
+
     fetchData();
     fetchAlumnos();
   }, [matriculaAdmin]);
 
+  useEffect(() => {
+      if (location.state?.reload) {
+        window.history.replaceState({}, document.title);
+      }
+    }, []);
+
+  const guardarEstadoVista = () => {
+    sessionStorage.setItem("vistaAlumnoCoord", JSON.stringify({
+      searchTerm,
+      scrollY: window.scrollY,
+      alumnos,
+      tutoresNombres,
+    }));
+  };
 
   const handleDownloadCSV = async () => {
       const ids = alumnosFiltrados.map(a => a._id);
@@ -86,11 +123,8 @@ const AlumnoListAdmin = () => {
       document.body.removeChild(link);
     };
 
-  const handleNavigate2 = () => {
-    navigate("/administrador/admin-tutor", { state: { matriculaAdmin: matriculaAdmin } });
-  };
-
-  const handleNavigate3 = (alumno) => {
+  const handleNavigate = (alumno) => {
+    guardarEstadoVista();
     navigate(`/administrador/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaAdmin: matriculaAdmin} });
   };
 
@@ -167,7 +201,7 @@ const AlumnoListAdmin = () => {
                   <td className="actions">
                     <button
                       className="icon-button"
-                      onClick={() => handleNavigate3(alumno)}
+                      onClick={() => handleNavigate(alumno)}
                       disabled={alumno.estatus === "En espera"} // Deshabilitar el botón si el estatus es "En espera"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

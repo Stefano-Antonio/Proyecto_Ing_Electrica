@@ -1,7 +1,7 @@
 import "./AdministrarPersonal.css";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -12,10 +12,32 @@ const AdministrarPersonalCoordinador = () => {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mostrarModalPersonal, setMostrarModalPersonal] = useState(false);
   const [usuarioAEliminar, setUsuarioAEliminar] = useState(null);
+  const API_URL = process.env.REACT_APP_API_URL;
   
   const navigate = useNavigate();
   const id_carrera = localStorage.getItem("id_carrera");
+  const location = useLocation(); 
+
   useEffect(() => {
+
+    // Verificar si hay un estado guardado en sessionStorage
+    const estadoGuardado = sessionStorage.getItem("vistaPersonalCoord");
+    // Si hay un estado guardado, usarlo para inicializar el componente
+    const cameFromValidation = location.state?.reload === true;
+
+    if (estadoGuardado && !cameFromValidation) {
+      const { searchTerm: savedSearchTerm, scrollY, personal: savedPersonal } = JSON.parse(estadoGuardado);
+
+      setSearchTerm(savedSearchTerm || "");
+      setPersonal(savedPersonal || []);
+      setTimeout(() => window.scrollTo(0, scrollY || 0), 0);
+
+      sessionStorage.removeItem("vistaPersonalCoord");
+      setLoading(false);
+      return;
+    }
+
+    // Función para cargar el personal desde el backend
     const fetchPersonal = async () => {
       const matricula = localStorage.getItem("matricula");
       if (!matricula) {
@@ -25,7 +47,7 @@ const AdministrarPersonalCoordinador = () => {
       }
 
       try {
-        const response = await axios.get(`http://localhost:5000/api/personal/carrera/${matricula}`);
+        const response = await axios.get(`${API_URL}/api/personal/carrera/${matricula}`);
         setPersonal(response.data);
       } catch (error) {
         console.error("Error al obtener datos del personal:", error.message);
@@ -35,6 +57,12 @@ const AdministrarPersonalCoordinador = () => {
     };
 
     fetchPersonal();
+  }, []);
+
+  useEffect(() => {
+    if (location.state?.reload) {
+      window.history.replaceState({}, document.title);
+    }
   }, []);
 
   const handleDownloadCSV = async () => {
@@ -48,7 +76,7 @@ const AdministrarPersonalCoordinador = () => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/api/personal/exportar-csv/carrera-filtrados/${id_carrera}`,
+      `${API_URL}/api/personal/exportar-csv/carrera-filtrados/${id_carrera}`,
       { matriculas },
       { responseType: "blob" }
     );
@@ -73,7 +101,7 @@ const AdministrarPersonalCoordinador = () => {
   const handleDelete = async () => {
     try {
       const formData = {usuarioAEliminar, idCarreraEsperada: id_carrera}; // Incluir id_carrera en los datos del formulario
-      await axios.delete("http://localhost:5000/api/personal/coordinador", formData);
+      await axios.delete(`${API_URL}/api/personal/coordinador`, formData);
       setPersonal(prevState => prevState.filter(persona => persona._id !== usuarioAEliminar));
       toast.success("Personal eliminado con éxito");
     } catch (error) {
@@ -82,6 +110,14 @@ const AdministrarPersonalCoordinador = () => {
     } finally {
       setMostrarModal(false);
     }
+  };
+
+  const guardarEstadoVista = () => {
+    sessionStorage.setItem("vistaPersonalCoord", JSON.stringify({
+      searchTerm,
+      scrollY: window.scrollY,
+      personal
+    }));
   };
 
   const getRoleText = (roles) => {
@@ -172,7 +208,10 @@ const AdministrarPersonalCoordinador = () => {
                       <td>{getRoleText(personal.roles)}</td>
                       <td>
                         <div className="action-buttons">
-                          <button className="icon-button" onClick={() => navigate("/coordinador/modificar-personal", { state: { personal } })}>
+                          <button className="icon-button" onClick={() => {
+                              guardarEstadoVista();
+                              navigate("/coordinador/modificar-personal", { state: { personal } });
+                            }}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                               <path d="M12 20h9"></path>
                               <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
@@ -230,7 +269,10 @@ const AdministrarPersonalCoordinador = () => {
             )}
 
         <div className="add-delete-buttons">
-          <button onClick={() => navigate("/coordinador/crear-personal")}>Agregar personal</button>
+          <button onClick={() => {
+            guardarEstadoVista();
+            navigate("/coordinador/crear-personal");
+          }}>Agregar personal</button>
           <button onClick={handleDownloadDB}>Descargar CSV de personal</button>
         </div>
       </div>

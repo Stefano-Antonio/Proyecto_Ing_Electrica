@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom"; // Importar useLocation y useNavigate
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./InicioTutor.css";
 
 function InicioTutor() {
@@ -8,6 +10,7 @@ function InicioTutor() {
   const [error, setError] = useState(null);
   const location = useLocation();
   const [comprobantes, setComprobantes] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [comprobantePorCarrera, setComprobantePorCarrera] = useState({});
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const navigate = useNavigate();
@@ -41,7 +44,7 @@ function InicioTutor() {
   useEffect(() => {
     const fetchComprobantes = async () => {
       try {
-        const response = await axios.get("${API_URL}/api/alumnos/comprobantes/lista");
+        const response = await axios.get(`${API_URL}/api/alumnos/comprobantes/lista`);
         setComprobantes(response.data); 
       } catch (error) {
         console.error("Error al obtener la lista de comprobantes:", error);
@@ -53,6 +56,23 @@ function InicioTutor() {
   }, []);
 
   useEffect(() => {
+    // Recuperar estado guardado de la sesión
+      const estadoGuardado = sessionStorage.getItem("vistaAlumnoTutor");
+      const cameFromValidation = location.state?.reload === true;
+
+      if (estadoGuardado && !cameFromValidation) {
+        const { searchTerm, scrollY, alumnos: savedAlumnos, comprobantePorCarrera: savedComprobantePorCarrera } = JSON.parse(estadoGuardado);
+
+        setSearchTerm(searchTerm || "");
+        setAlumnos(savedAlumnos || []);
+        setComprobantePorCarrera(savedComprobantePorCarrera || {});
+        setTimeout(() => window.scrollTo(0, scrollY || 0), 0);
+
+        sessionStorage.removeItem("vistaAlumnoTutor");
+        setLoading(false);
+        return;
+      }
+
     const fetchAlumnos = async () => {
       try {
         const matricula = matriculaTutor || storedMatriculaTutor;
@@ -114,8 +134,33 @@ function InicioTutor() {
     }
   }, [matriculaTutor, storedMatriculaTutor, location.state]);
 
+    useEffect(() => {
+      if (location.state?.reload) {
+        window.history.replaceState({}, document.title);
+      }
+    }, []);
+  
+  
+    const guardarEstadoVista = () => {
+      sessionStorage.setItem("vistaAlumnoTutor", JSON.stringify({
+        searchTerm,
+        scrollY: window.scrollY,
+        alumnos,
+        comprobantes,
+        comprobantePorCarrera,
+      }));
+    };
+
   const handleRevisarHorario = (alumno) => {
-    navigate(`/tutor/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaTutor , id_carrea: alumno.id_carrera } });
+    guardarEstadoVista();
+      navigate(`/tutor/revisar-horario/${alumno.matricula}`, {
+        state: {
+          nombre: alumno.nombre,
+          matricula: alumno.matricula,
+          matriculaTutor,
+          id_carrea: alumno.id_carrera
+        }
+      });
   };
 
   const carrerasPermitidas = {
@@ -142,7 +187,7 @@ function InicioTutor() {
 
     try {
       const response = await axios.post(
-        "${API_URL}/api/alumnos/exportar-csv/filtrados",
+        `${API_URL}/api/alumnos/exportar-csv/filtrados`,
         { matriculas },
         { responseType: "blob" }
       );
@@ -159,7 +204,7 @@ function InicioTutor() {
       document.body.removeChild(link);
     } catch (error) {
       console.error("Error al descargar CSV:", error);
-      alert("Error al descargar la lista filtrada.");
+      toast.error("Error al descargar la lista filtrada.");
     }
   };
 
@@ -210,6 +255,7 @@ function InicioTutor() {
 
   return (
     <div className="tutor-layout">
+      <ToastContainer />
       <div className="tutor-container">
         <div className="top-right">
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>

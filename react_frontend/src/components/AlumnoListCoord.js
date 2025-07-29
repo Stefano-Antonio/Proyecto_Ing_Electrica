@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -13,6 +13,7 @@ const AlumnoListCoord = () => {
   const [nombre, setNombreAlumno] = ("");
   const [comprobanteHabilitado, setComprobanteHabilitado] = useState(true);
   const id_carrera = localStorage.getItem("id_carrera");
+  const location = useLocation(); 
   const [comprobantes, setComprobantes] = useState([]);
   const [matricula, setMatriculaAlumno] = useState("");
   const [mostrarComprobante, setMostrarComprobante] = useState(true);
@@ -87,6 +88,30 @@ const AlumnoListCoord = () => {
       }
     };
 
+    // Recuperar estado guardado de la sesión
+    const estadoGuardado = sessionStorage.getItem("vistaAlumnoCoord");
+    
+    // Verificar si se viene de una validación
+    const cameFromValidation = location.state?.reload === true;
+
+    // Si hay un estado guardado, restaurarlo
+    if (estadoGuardado && !cameFromValidation) {
+      const { searchTerm, scrollY, alumnos, tutoresNombres, mostrarComprobante } = JSON.parse(estadoGuardado);
+
+      setSearchTerm(searchTerm || "");
+      setAlumnos(alumnos || []);
+      setTutoresNombres(tutoresNombres || {});
+      setMostrarComprobante(mostrarComprobante ?? true);
+      setComprobanteHabilitado(mostrarComprobante ?? true); // por consistencia
+
+      // Scroll hacia la posición anterior
+      setTimeout(() => window.scrollTo(0, scrollY || 0), 0);
+
+      sessionStorage.removeItem("vistaAlumnoCoord"); // Solo se restaura una vez
+      setLoading(false); // No hacemos fetch si restauramos
+      return;
+    }
+
     // Ejecutar todas las funciones asíncronas
     const fetchData = async () => {
       await fetchAlumnos();
@@ -98,8 +123,26 @@ const AlumnoListCoord = () => {
     fetchData();
   }, [matriculaCord, id_carrera]);
 
+  useEffect(() => {
+    if (location.state?.reload) {
+      window.history.replaceState({}, document.title);
+    }
+  }, []);
+
+
+  const guardarEstadoVista = () => {
+    sessionStorage.setItem("vistaAlumnoCoord", JSON.stringify({
+      searchTerm,
+      scrollY: window.scrollY,
+      alumnos,
+      tutoresNombres,
+      mostrarComprobante,
+    }));
+  };
+
 
   const handleNavigate1 = () => {
+    guardarEstadoVista(); // Guarda el estado actual antes de navegar
     navigate("/coordinador/crear-alumno", { state: { matriculaCord: matriculaCord } });
   };
 
@@ -120,18 +163,22 @@ const AlumnoListCoord = () => {
     };
 
   const handleNavigate2 = () => {
+    guardarEstadoVista(); // Guarda el estado actual antes de navegar
     navigate("/coordinador/admin-tutor", { state: { matriculaCord: matriculaCord } });
   };
 
   const handleNavigate3 = (alumno) => {
+    guardarEstadoVista(); // Guarda el estado actual antes de navegar
     navigate(`/coordinador/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
   };
 
   const handleNavigate4 = (alumno) => {
+    guardarEstadoVista(); // Guarda el estado actual antes de navegar
     navigate(`/coordinador/validar-pago/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
   };
 
   const handleModify = (alumno) => {
+    guardarEstadoVista(); // Guarda el estado actual antes de navegar
     navigate("/coordinador/modificar-alumno", { state: { alumno, matriculaCord: matriculaCord } });
   };
 

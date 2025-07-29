@@ -72,7 +72,7 @@ const actualizarEstatus = async (nuevoEstatus) => {
       throw new Error("Error al actualizar el estatus");
     }
 
-    navigate(-1); // Regresar a la página anterior
+    navigate("/administrador/alumnos", { state: { reload: true } });
 
     // Ya NO elimines el horario ni envíes el comentario aquí,
     // el backend ya envía el correo automáticamente al cambiar el estatus.

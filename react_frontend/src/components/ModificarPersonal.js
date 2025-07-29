@@ -40,7 +40,9 @@ function ModificarPersonal() {
 
     try {
       const response = await axios.put(`${API_URL}/api/personal/${persona._id}`, form);
-      toast.success("Usuario actualizado con éxito");
+      setTimeout(() => {
+        navigate("/coordinador/personal", { state: { reload: true } });
+      }, 200); // Espera un poco para mostrar el toast antes de recargar
     } catch (error) {
       console.error("Error al actualizar el usuario:", error);
       toast.error("Hubo un error al actualizar el usuario");
