@@ -9,6 +9,7 @@ const AdministrarPersonalAG = () => {
   const [personal, setPersonal] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
+  const API_URL = process.env.REACT_APP_API_URL;
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -21,10 +22,10 @@ const AdministrarPersonalAG = () => {
       }
 
       try {
-        const response = await axios.get(`http://localhost:5000/api/personal`);
+        const response = await axios.get(`${API_URL}/api/personal`);
         const personalConCarrera = await Promise.all(response.data.map(async (persona) => {
           try {
-        const carreraResponse = await axios.get(`http://localhost:5000/api/admingen/carrera/${persona.matricula}`);
+        const carreraResponse = await axios.get(`${API_URL}/api/admingen/carrera/${persona.matricula}`);
         return { ...persona, id_carrera: carreraResponse.data.id_carrera };
           } catch (error) {
         console.error(`Error al obtener id_carrera para ${matricula}:`, error.message);
@@ -90,7 +91,7 @@ const AdministrarPersonalAG = () => {
 
       try {
         const response = await axios.post(
-          "http://localhost:5000/api/personal/exportar-csv/filtrados",
+          `${API_URL}/api/personal/exportar-csv/filtrados`,
           { matriculas },
           { responseType: "blob" }
         );

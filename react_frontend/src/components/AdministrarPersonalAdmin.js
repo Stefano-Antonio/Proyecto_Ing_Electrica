@@ -10,6 +10,8 @@ const AdministrarPersonalAdmin = () => {
   const [mostrarModalPersonal, setMostrarModalPersonal] = useState(false);
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const id_carrera = localStorage.getItem("id_carrera");
+  const API_URL = process.env.REACT_APP_API_URL;
+
   useEffect(() => {
     const fetchPersonal = async () => {
       const matricula = localStorage.getItem("matricula");
@@ -20,7 +22,7 @@ const AdministrarPersonalAdmin = () => {
       }
 
       try {
-        const response = await axios.get(`http://localhost:5000/api/personal/carrera/${matricula}`);
+        const response = await axios.get(`${API_URL}/api/personal/carrera/${matricula}`);
         setPersonal(response.data);
       } catch (error) {
         console.error("Error al obtener datos del personal:", error.message);
@@ -81,7 +83,7 @@ const AdministrarPersonalAdmin = () => {
 
       try {
         const response = await axios.post(
-          `http://localhost:5000/api/personal/exportar-csv/carrera-filtrados/${id_carrera}`,
+          `${API_URL}/api/personal/exportar-csv/carrera-filtrados/${id_carrera}`,
           { matriculas },
           { responseType: "blob" }
         );

@@ -11,6 +11,7 @@ const AdministrarPersonalCG = () => {
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const [mostrarModal, setMostrarModal] = useState(false);
   const [usuarioAEliminar, setUsuarioAEliminar] = useState(null);
+  const API_URL = process.env.REACT_APP_API_URL;
   
   const navigate = useNavigate();
   const id_carrera = localStorage.getItem("id_carrera");
@@ -24,10 +25,10 @@ const AdministrarPersonalCG = () => {
         return;
       }
       try {
-        const response = await axios.get(`http://localhost:5000/api/personal`);
+        const response = await axios.get(`${API_URL}/api/personal`);
         const personalConCarrera = await Promise.all(response.data.map(async (persona) => {
           try {
-        const carreraResponse = await axios.get(`http://localhost:5000/api/cordgen/carrera/${persona.matricula}`);
+        const carreraResponse = await axios.get(`${API_URL}/api/cordgen/carrera/${persona.matricula}`);
         return { ...persona, id_carrera: carreraResponse.data.id_carrera };
           } catch (error) {
         console.error(`Error al obtener id_carrera para ${matricula}:`, error.message);
@@ -44,17 +45,9 @@ const AdministrarPersonalCG = () => {
     fetchPersonal();
   }, []);
 
-  const handleRoleChange = (matricula, nuevoRol) => {
-    setPersonal(prevState =>
-      prevState.map(persona =>
-        persona.matricula === matricula ? { ...persona, roles: nuevoRol } : persona
-      )
-    );
-  };
-
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/personal/${usuarioAEliminar}`);
+      await axios.delete(`${API_URL}/api/personal/${usuarioAEliminar}`);
       setPersonal(prevState => prevState.filter(persona => persona._id !== usuarioAEliminar));
       toast.success("Personal eliminado con éxito");
     } catch (error) {
@@ -95,7 +88,7 @@ const AdministrarPersonalCG = () => {
     }
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/personal/exportar-excel/carrera/${id_carrera}`,
+        `${API_URL}/api/personal/exportar-excel/carrera/${id_carrera}`,
         { responseType: "blob" }
       );
       const url = window.URL.createObjectURL(new Blob([response.data]));
