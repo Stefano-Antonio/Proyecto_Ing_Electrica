@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -12,6 +12,7 @@ const AlumnoListCG = () => {
   const [comprobantes, setComprobantes] = useState([]);
   const [comprobantePorCarrera, setComprobantePorCarrera] = useState({});
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [AlumnoAEliminar, setAlumnoAEliminar] = useState(null);
   const matriculaCord = localStorage.getItem("matricula");
@@ -20,6 +21,31 @@ const AlumnoListCG = () => {
   const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
+
+    // Recuperar estado guardado de la sesión
+    const estadoGuardado = sessionStorage.getItem("vistaAlumnoCoordGen");
+    
+    // Verificar si se viene de una validación
+    const cameFromValidation = location.state?.reload === true;
+
+    // Si hay un estado guardado, restaurarlo
+    if (estadoGuardado && !cameFromValidation) {
+      const { searchTerm, scrollY, alumnos, tutoresNombres, comprobantes, comprobantePorCarrera } = JSON.parse(estadoGuardado);
+
+      setSearchTerm(searchTerm || "");
+      setAlumnos(alumnos || []);
+      setTutoresNombres(tutoresNombres || {});
+      setComprobantes(comprobantes || []);
+      setComprobantePorCarrera(comprobantePorCarrera ?? true); // por consistencia
+
+      // Scroll hacia la posición anterior
+      setTimeout(() => window.scrollTo(0, scrollY || 0), 0);
+
+      sessionStorage.removeItem("vistaAlumnoCoordGen"); // Solo se restaura una vez
+      setLoading(false); // No hacemos fetch si restauramos
+      return;
+    }
+
     const fetchAlumnos = async () => {
       try {
         const response = await axios.get(`${API_URL}/api/alumnos`);
@@ -92,24 +118,46 @@ const AlumnoListCG = () => {
     fetchData();
   }, [matriculaCord, id_carrera]);
 
+  useEffect(() => {
+      if (location.state?.reload) {
+        window.history.replaceState({}, document.title);
+      }
+    }, []);
+
+  const guardarEstadoVista = () => {
+    sessionStorage.setItem("vistaAlumnoCoordGen", JSON.stringify({
+      searchTerm,
+      scrollY: window.scrollY,
+      alumnos,
+      tutoresNombres,
+      comprobantes,
+      comprobantePorCarrera,
+    }));
+  };
+
   const handleNavigate1 = () => {
+    guardarEstadoVista();
     navigate("/crear-alumno-cg", { state: { matriculaCord: matriculaCord } });
   };
 
   const handleNavigate2 = () => {
+    guardarEstadoVista();
     navigate("/admin-tutor", { state: { matriculaCord: matriculaCord } });
   };
 
   const handleNavigate3 = (alumno) => {
+    guardarEstadoVista();
     navigate(`/coordinador-gen/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
   };
 
   const handleModify = (alumno) => {
+    guardarEstadoVista();
     navigate("/modificar-alumno-cg", { state: { alumno, matriculaCord: matriculaCord } });
   };
 
   // Función para validar el comprobante de pago
   const handleValidate = (alumno) => {
+    guardarEstadoVista();
     navigate(`/validar-pago-cg/${alumno.matricula}`, {
       state: {
         nombre: alumno.nombre,

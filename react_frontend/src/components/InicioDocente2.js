@@ -44,6 +44,21 @@ function InicioDocente2() {
   }, []);
 
   useEffect(() => {
+
+    // Recuperar el estado guardado de la vista
+    const estadoGuardado = sessionStorage.getItem("vistaMateriasDocente");
+    const cameFromValidation = location.state?.reload === true;
+
+    if (estadoGuardado && !cameFromValidation) {
+      const { searchTerm, scrollY, materias: savedMaterias } = JSON.parse(estadoGuardado);
+      setSearchTerm(searchTerm || "");
+      setMaterias(savedMaterias || []);
+      setTimeout(() => window.scrollTo(0, scrollY || 0), 0);
+      sessionStorage.removeItem("vistaMateriasDocente");
+      return;
+    }
+
+    // Obtener materias si no hay estado guardado
     const fetchMaterias = async () => {
       try {
         const matricula = matriculaDocente || storedMatriculaDocente;
@@ -72,6 +87,13 @@ function InicioDocente2() {
     fetchMaterias();
   }, [matriculaDocente, storedMatriculaDocente]);
 
+  // Recuperar el estado guardado de la vista
+  useEffect(() => {
+    if (location.state?.reload) {
+      window.history.replaceState({}, document.title);
+    }
+  }, []);
+
   // Función para formatear el nombre de la materia
   const formatUrl = (nombre) => {
     return nombre
@@ -83,7 +105,16 @@ function InicioDocente2() {
       .replace(/\s+/g, "-"); // Reemplaza espacios por guiones
   };
 
+  const guardarEstadoVista = () => {
+    sessionStorage.setItem("vistaMateriasDocente", JSON.stringify({
+      searchTerm,
+      scrollY: window.scrollY,
+      materias,
+    }));
+  }
+
   const handleListaAlumnos = (materia) => {
+    guardarEstadoVista(); // Guardar el estado antes de cambiar de vista
     const materiaUrl = formatUrl(materia.nombre); // Formatea el nombre de la materia
     navigate(`/docente/materias/${materiaUrl}/lista-alumnos`, {
       state: {
@@ -147,7 +178,7 @@ function InicioDocente2() {
       IElec: "Electricista",
       ISftwS: "Software (Semiescolarizado)",
       IDsrS: "Desarrollo (Semiescolarizado)",
-      IEIndS: "Electrónica Industrial(Semiescolarizado)",
+      IEIndS: "Electrónica Industrial (Semiescolarizado)",
       ICmpS: "Computación (Semiescolarizado)",
       IRMcaS: "Robótica y Mecatrónica (Semiescolarizado)",
       IElecS: "Electricista (Semiescolarizado)",

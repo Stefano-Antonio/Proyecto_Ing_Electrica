@@ -8,6 +8,7 @@ function InicioDocente() {
   const [alumnos, setAlumnos] = useState([]);
   const [error, setError] = useState(null);
   const location = useLocation();
+  const [loading, setLoading] = useState(true);
   const [comprobantes, setComprobantes] = useState([]);
   const [comprobantePorCarrera, setComprobantePorCarrera] = useState({});
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
@@ -43,6 +44,25 @@ function InicioDocente() {
 
 
     useEffect(() => {
+
+      // Verificar si hay un estado guardado en sessionStorage
+      const estadoGuardado = sessionStorage.getItem("vistaAlumnoDocente");
+      const cameFromValidation = location.state?.reload === true;
+
+      // Si hay un estado guardado y no se viene de la validación, restaurar el estado
+      if (estadoGuardado && !cameFromValidation) {
+        const { searchTerm, scrollY, alumnos: savedAlumnos, comprobantePorCarrera: savedComprobantePorCarrera } = JSON.parse(estadoGuardado);
+
+        setSearchTerm(searchTerm || "");
+        setAlumnos(savedAlumnos || []);
+        setComprobantePorCarrera(savedComprobantePorCarrera || {});
+        setTimeout(() => window.scrollTo(0, scrollY || 0), 0);
+
+        sessionStorage.removeItem("vistaAlumnoDocente");
+        setLoading(false);
+        return;
+      }
+
       const fetchAlumnos = async () => {
         try {
           const matricula = matriculaDocente || storedMatriculaDocente;
@@ -104,6 +124,13 @@ function InicioDocente() {
       }
     }, [matriculaDocente, storedMatriculaDocente, location.state]);
 
+    // Guardar el estado de la vista en sessionStorage
+    useEffect(() => {
+      if (location.state?.reload) {
+        window.history.replaceState({}, document.title);
+      }
+    }, []);
+
 
     useEffect(() => {
       const fetchComprobantes = async () => {
@@ -119,10 +146,23 @@ function InicioDocente() {
       fetchComprobantes();
     }, []);
 
+  const guardarEstadoVista = () => {
+    sessionStorage.setItem("vistaAlumnoDocente", JSON.stringify({
+    searchTerm,
+    scrollY: window.scrollY,
+    alumnos,
+    comprobantes,
+    comprobantePorCarrera,
+    }));
+  };
+
+  // Navega a la vista para revisar el horario del alumno
   const handleRevisarHorario = (alumno) => {
+    guardarEstadoVista(); // Guardar el estado antes de navegar
     navigate(`/docente/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaTutor: matriculaDocente, id_carrera: alumno.id_carrera} });
   };
 
+  // Funcion que permite descargar la base de datos de alumnos del docente en CSV
   const handleDownloadCSV = async () => {
     const matriculas = alumnosFiltrados.map((a) => a.matricula);
     if (matriculas.length === 0) {
@@ -169,7 +209,7 @@ function InicioDocente() {
       IElecS: "Electricista (Semiescolarizado)",
     };
 
-
+  // Función que cierra sesión
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("userType");

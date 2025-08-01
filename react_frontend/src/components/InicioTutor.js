@@ -134,6 +134,7 @@ function InicioTutor() {
     }
   }, [matriculaTutor, storedMatriculaTutor, location.state]);
 
+    // Guardar el estado de la vista en sessionStorage
     useEffect(() => {
       if (location.state?.reload) {
         window.history.replaceState({}, document.title);

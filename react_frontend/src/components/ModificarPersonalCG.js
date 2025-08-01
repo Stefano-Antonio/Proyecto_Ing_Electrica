@@ -62,7 +62,9 @@ function ModificarPersonalCG() {
         form
       );
       toast.success("Usuario actualizado con éxito");
-      navigate("/inicio-coordinador-gen/personal"); // Redirigir después de actualizar
+      setTimeout(() => {
+        navigate("/inicio-coordinador-gen/personal", { state: { reload: true } });
+      }, 200); // Espera un poco para mostrar el toast antes de recargar
     } catch (error) {
       console.error("Error al actualizar el usuario:", error);
       toast.error("Hubo un error al actualizar el usuario");

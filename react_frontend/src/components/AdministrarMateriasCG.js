@@ -12,6 +12,7 @@ const AdministrarMateriasCG = () => {
   const [loading, setLoading] = useState(true);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [materiaAEliminar, setMateriaAEliminar] = useState(null);
+  const location = useLocation();
 
   // Asegúrate de tener configurada la URL base en tu .env
   const API_URL = process.env.REACT_APP_API_URL;
@@ -20,9 +21,44 @@ const AdministrarMateriasCG = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchMaterias();
-    fetchDocentes();
-  }, []);
+      // Cargar el estado guardado desde sessionStorage
+      const estadoGuardado = sessionStorage.getItem("vistaMateriasCoordGen");
+      // Verificar si se viene de la validación de materias
+      const cameFromValidation = location.state?.reload === true;
+  
+      // Si hay un estado guardado y no se viene de la validación, usarlo
+      if (estadoGuardado && !cameFromValidation) {
+        const { searchTerm: savedSearchTerm, scrollY, materias: savedMaterias } = JSON.parse(estadoGuardado);
+  
+        setSearchTerm(savedSearchTerm || "");
+        setMaterias(savedMaterias || []);
+        setTimeout(() => window.scrollTo(0, scrollY || 0), 0);
+  
+        sessionStorage.removeItem("vistaMateriasCoordGen");
+        setLoading(false);
+        return;
+      }
+  
+      // Guardar el estado actual en sessionStorage al salir de la página
+      fetchMaterias();
+      fetchDocentes();
+      
+    }, []);
+
+  useEffect(() => {
+      if (location.state?.reload) {
+        window.history.replaceState({}, document.title);
+      }
+    }, []);
+
+  // Guardar el estado de la vista en sessionStorage
+    const guardarEstadoVista = () => {
+      sessionStorage.setItem("vistaMateriasCoordGen", JSON.stringify({
+        searchTerm,
+        scrollY: window.scrollY,
+        materias
+      }));
+    };
 
   // Cargar materias desde el backend
   const fetchMaterias = async () => {
@@ -93,6 +129,7 @@ const AdministrarMateriasCG = () => {
   
 
   const handleListaAlumnos = (materia) => {
+    guardarEstadoVista();
     const materiaUrl = formatUrl(materia.nombre); // Formatea el nombre de la materia
     navigate(`/docente/materias/${materiaUrl}/lista-alumnos`, {
       state: {
@@ -170,6 +207,12 @@ const AdministrarMateriasCG = () => {
     );
   });
 
+  
+  
+    if (loading) {
+      return <div className="loading">Cargando información de materias...</div>;
+    }
+
   return (
     <div className="admin-materias">
       <ToastContainer position="top-right" autoClose={3000} />
@@ -243,7 +286,10 @@ const AdministrarMateriasCG = () => {
                         </button>
                         <button
                           className="icon-button"
-                          onClick={() => navigate("/modificar-materia-cg", { state: { materia } })}
+                          onClick={() => {
+                            guardarEstadoVista();
+                            navigate("/modificar-materia-cg", { state: { materia } })
+                          }}
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M12 20h9"></path>
@@ -289,7 +335,10 @@ const AdministrarMateriasCG = () => {
         )}
 
         <div className="add-delete-buttons">
-          <button onClick={() => navigate("/crear-materia-cg")}>Agregar nueva materia</button>
+          <button onClick={() => {
+            guardarEstadoVista();
+            navigate("/crear-materia-cg")
+          }}>Agregar nueva materia</button>
         </div>
       </div>
     </div>

@@ -1,13 +1,14 @@
 import "./AdministrarPersonal.css";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 const AdministrarPersonalCG = () => {
   const [personal, setPersonal] = useState([]);
   const [loading, setLoading] = useState(true);
+  const location = useLocation(); 
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const [mostrarModal, setMostrarModal] = useState(false);
   const [usuarioAEliminar, setUsuarioAEliminar] = useState(null);
@@ -17,6 +18,24 @@ const AdministrarPersonalCG = () => {
   const id_carrera = localStorage.getItem("id_carrera");
 
   useEffect(() => {
+
+    // Verificar si hay un estado guardado en sessionStorage
+    const estadoGuardado = sessionStorage.getItem("vistaPersonalCoordGen");
+    // Si hay un estado guardado, usarlo para inicializar el componente
+    const cameFromValidation = location.state?.reload === true;
+
+    if (estadoGuardado && !cameFromValidation) {
+      const { searchTerm: savedSearchTerm, scrollY, personal: savedPersonal } = JSON.parse(estadoGuardado);
+
+      setSearchTerm(savedSearchTerm || "");
+      setPersonal(savedPersonal || []);
+      setTimeout(() => window.scrollTo(0, scrollY || 0), 0);
+
+      sessionStorage.removeItem("vistaPersonalCoordGen");
+      setLoading(false);
+      return;
+    }
+
     const fetchPersonal = async () => {
       const matricula = localStorage.getItem("matricula");
       if (!matricula) {
@@ -45,12 +64,19 @@ const AdministrarPersonalCG = () => {
     fetchPersonal();
   }, []);
 
-  const handleRoleChange = (matricula, nuevoRol) => {
-    setPersonal(prevState =>
-      prevState.map(persona =>
-        persona.matricula === matricula ? { ...persona, roles: nuevoRol } : persona
-      )
-    );
+  // Carga el estado guardado en SessionStorage
+  useEffect(() => {
+      if (location.state?.reload) {
+        window.history.replaceState({}, document.title);
+      }
+    }, []);
+
+  const guardarEstadoVista = () => {
+    sessionStorage.setItem("vistaPersonalCoordGen", JSON.stringify({
+      searchTerm,
+      scrollY: window.scrollY,
+      personal
+    }));
   };
 
   const handleDelete = async () => {
@@ -226,7 +252,9 @@ const AdministrarPersonalCG = () => {
                         <td>{getRoleText(personal.roles)}</td>
                         <td>
                           <div className="action-buttons">
-                            <button className="icon-button" onClick={() => navigate("/modificar-personal-cg", { state: { personal } })}>
+                            <button className="icon-button" onClick={() => {
+                              guardarEstadoVista();
+                              navigate("/modificar-personal-cg", { state: { personal } })}}>
                               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M12 20h9"></path>
                                 <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
@@ -269,7 +297,9 @@ const AdministrarPersonalCG = () => {
         )}
 
         <div className="add-delete-buttons">
-          <button onClick={() => navigate("/crear-personal-cg")}>Agregar personal</button>
+          <button onClick={() => {
+            guardarEstadoVista();
+            navigate("/crear-personal-cg")}}>Agregar personal</button>
         </div>
       </div>
     </div>
