@@ -172,7 +172,9 @@ function ModificarMateriaCG() {
         finalData
       );
       toast.success("Materia actualizada con éxito");
-      navigate(-1); // Navegar a la página anterior
+      setTimeout(() => {
+        navigate("/inicio-coordinador-gen/materias", { state: { reload: true } });
+      }, 200);  // Espera un poco para mostrar el toast antes de recargar
     } catch (error) {
       console.error("Error al actualizar la materia:", error);
       toast.error("Hubo un error al actualizar la materia");

@@ -188,7 +188,9 @@ function ModificarMateria() {
 
       await axios.put(`${API_URL}/api/materias/${materia._id}`, materiaActualizada);
       toast.success("Materia actualizada con éxito");
-      navigate(-1); // Navegar a la página anterior solo si fue éxito
+      setTimeout(() => {
+        navigate("/coordinador/materias", { state: { reload: true } });
+      }, 200);  // Espera un poco para mostrar el toast antes de recargar
     } catch (error) {
       // Mostrar mensaje específico si viene del backend
       if (error.response && error.response.data && error.response.data.message) {

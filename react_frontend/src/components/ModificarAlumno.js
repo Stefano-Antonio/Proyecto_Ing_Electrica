@@ -140,7 +140,9 @@ function ModificarAlumno() {
         }
       );
       toast.success("Alumno actualizado con éxito");
-      navigate(-1);
+      setTimeout(() => {
+        navigate("/coordinador/alumnos", { state: { reload: true } });
+      }, 200);  // Espera un poco para mostrar el toast antes de recargar
     } catch (error) {
       console.error("Error al actualizar el alumno:", error);
       toast.error("Hubo un error al actualizar el alumno");

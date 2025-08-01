@@ -113,9 +113,10 @@ useEffect(() => {
     e.preventDefault();
     try {
       const response = await axios.post(`${API_URL}/api/cordgen/alumnos`, form);
-      toast.success("Alumno agregado con éxito");
       setForm({ nombre: "", matricula: "", correo: "", telefono: "", tutor: "" }); // Reset form
-      navigate(-1); // Regresar a la página anterior
+      setTimeout(() => {
+        navigate("/inicio-coordinador-gen/personal", { state: { reload: true } });
+      }, 200); // Espera un poco para mostrar el toast antes de recargar
     } catch (error) {
       console.error("Error al agregar el alumno:", error);
       toast.error("Hubo un error al agregar el alumno");
