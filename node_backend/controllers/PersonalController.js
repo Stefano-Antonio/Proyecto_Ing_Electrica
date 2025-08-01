@@ -227,6 +227,15 @@ exports.deletePersonal = async (req, res) => {
       await Administradores.findOneAndDelete({ personalMatricula: personal.matricula });
     }
 
+    //Eliminarlo tambien de la lista de los alumnos que lo tenga como tutor
+    const personalId = personal._id;
+
+    // Eliminarlo de los alumnos que lo tengan como docente
+    await Materia.updateMany(
+      { docente: personalId },
+      { $unset: { docente: "" } }
+    );
+
     // Eliminar el personal
     await Personal.findByIdAndDelete(req.params.id);
         res.status(204).json({ message: 'Personal eliminado' });
@@ -239,9 +248,10 @@ exports.deletePersonal = async (req, res) => {
 
 
 exports.deletePersonalCord = async (req, res) => {
-
-  const { id, idCarreraEsperada } = req.body;
-
+  const { usuarioAEliminar, idCarreraEsperada } = req.body;
+  console.log(" idCarreraEsperada:", usuarioAEliminar, idCarreraEsperada);
+  const id = usuarioAEliminar;
+  
   try {
       const personal = await Personal.findById(id);
       if (!personal) {
@@ -258,16 +268,19 @@ exports.deletePersonalCord = async (req, res) => {
   if (personal.roles.includes('D')) {
     const docente = await Docentes.findOne({ personalMatricula: personal.matricula })
       
-    //Buscar si el docente tiene materias o alumnos con un id_carrera diferente al del coordinador
-    const alumnoInvalido = await Alumno.findById({
-      _id: { $in: docente.alumnos},
-      id_carrera: {$ne: idCarreraEsperada}
-      });
+    // Verificar si el docente tiene alumnos o materias con id_carrera diferente al del coordinador
+    let alumnoInvalido = false;
+    let materiaInvalida = false;
 
-    const materiaInvalida = await Materia.findById({
-      _id: { $in: docente.materias},
-      id_carrera: {$ne: idCarreraEsperada}
-      });
+    if (docente && Array.isArray(docente.alumnos) && docente.alumnos.length > 0) {
+      const alumnos = await Alumno.find({ _id: { $in: docente.alumnos } });
+      alumnoInvalido = alumnos.some(alumno => alumno.id_carrera !== idCarreraEsperada);
+    }
+
+    if (docente && Array.isArray(docente.materias) && docente.materias.length > 0) {
+      const materias = await Materia.find({ _id: { $in: docente.materias } });
+      materiaInvalida = materias.some(materia => materia.id_carrera !== idCarreraEsperada);
+    }
 
     if (alumnoInvalido && materiaInvalida){
     
@@ -279,13 +292,16 @@ exports.deletePersonalCord = async (req, res) => {
   if (personal.roles.includes('T')) {
     const tutor = await Tutores.findOne({ personalMatricula: personal.matricula })
 
-    //Buscar si el docente tiene materias o alumnos con un id_carrera diferente al del coordinador
-    const malumnoInvalido = await Alumno.findById({
-      _id: { $in: tutor.alumnos},
-      id_carrera: {$ne: idCarreraEsperada}
-      });
+    let alumnoInvalido = false;
 
-    if (malumnoInvalido){
+    if (tutor && Array.isArray(tutor.alumnos) && tutor.alumnos.length > 0) {
+      const alumnos = await Alumno.find({ _id: { $in: tutor.alumnos } });
+      alumnoInvalido = alumnos.some(alumno => alumno.id_carrera !== idCarreraEsperada);
+    }
+
+    console.log("alumnoInvalido:", alumnoInvalido.id_carrera);
+
+    if (alumnoInvalido){
     
       await Tutores.findOneAndDelete({ personalMatricula: personal.matricula });
     }else{
@@ -298,6 +314,14 @@ exports.deletePersonalCord = async (req, res) => {
   if (personal.roles.includes('A')) {
     await Administradores.findOneAndDelete({ personalMatricula: personal.matricula });
   }
+
+
+    // Eliminarlo de los alumnos que lo tengan como docente
+    await Materia.updateMany(
+      { docente: personalId },
+      { $unset: { docente: "" } }
+    );
+
 
   // Eliminar el personal
   await Personal.findByIdAndDelete(req.params.id);
