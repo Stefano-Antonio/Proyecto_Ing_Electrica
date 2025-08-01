@@ -16,51 +16,50 @@
   padding: 20px;
   font-size: 14px;
   width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
-/* Ajuste dinámico del tamaño lateral del pie de página */
 .footer-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 100%; /* Ajusta el ancho máximo según el tamaño de la página */
-  margin: 0 auto; /* Centra el contenedor */
-  padding: 0 5%; /* Ajusta el padding dinámicamente */
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 5%;
+  flex-wrap: wrap;
+  box-sizing: border-box;
 }
 
 .footer-content {
   flex: 1;
   text-align: center;
+  box-sizing: border-box;
 }
 
-.footer-image-1 {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.footer-image-1 img {
-  width: 100px; /* Ajusta el tamaño según sea necesario */
-  height: auto;
-  margin: 0 10px;
-}
-
+.footer-image-1,
 .footer-image-2 {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex: 1;
+  flex-wrap: wrap;
+  box-sizing: border-box;
 }
 
+.footer-image-1 img,
 .footer-image-2 img {
-  width: 100px; /* Ajusta el tamaño según sea necesario */
+  width: 100px;
   height: auto;
   margin: 0 10px;
+  max-width: 100%;
 }
 
 /* Media query para versiones móviles */
 @media (max-width: 768px) {
   .footer {
     width: 100%;
+    min-width: 400px;
     margin-left: 0;
     margin-right: 0;
     border-radius: 0 0 10px 10px;
@@ -69,24 +68,24 @@
     box-sizing: border-box;
     overflow-x: hidden;
   }
+
   .footer-container {
     flex-direction: column;
-    width: 100%;
-    margin-left: 0;
-    margin-right: 0;
-    padding: 0;
-    box-sizing: border-box;
-    overflow-x: hidden;
+    align-items: center;
+    padding: 0 10px;
   }
+
   .footer-content {
-    text-align: center;
+    margin-bottom: 10px;
   }
+
   .footer-image-1,
   .footer-image-2 {
-    display: block;
-    margin: 0 auto;
+    margin-bottom: 10px;
   }
-  .footer-image-1 img, .footer-image-2 img {
+
+  .footer-image-1 img,
+  .footer-image-2 img {
     width: 80px;
     margin: 5px;
   }

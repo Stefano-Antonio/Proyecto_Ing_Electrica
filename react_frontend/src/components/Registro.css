@@ -1,3 +1,30 @@
+/* Agrupa label e input en una sola línea y limita el ancho */
+.field-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  margin-bottom: 16px;
+}
+
+.registro-label {
+  width: 120px;
+  min-width: 80px;
+  max-width: 140px;
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #002a5c;
+  margin-bottom: 0;
+  text-align: left;
+}
+
+.password-input-wrapper, .field-group input {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 100%;
+}
 /* Wrapper para el input y botón de contraseña */
 .password-input-wrapper {
   position: relative;
