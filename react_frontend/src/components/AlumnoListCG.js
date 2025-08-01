@@ -252,11 +252,11 @@ const AlumnoListCG = () => {
                 <tr>
                   <th>Programa</th>
                   <th>Matricula</th>
-                  <th>Nombre del alumno</th>
-                  <th>Tutor asignado</th>
+                  <th>Nombre alumno</th>
+                  <th>Tutor</th>
                   <th>Horario</th>
-                  <th>Estatus de horario</th>
-                  <th>Comprobante de pago</th>
+                  <th>Estatus</th>
+                  <th>Pago</th>
                   <th>Eliminar</th>
                 </tr>
               </thead>

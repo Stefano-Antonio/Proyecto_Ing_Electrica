@@ -290,13 +290,13 @@ const AlumnoListCoord = () => {
           <thead>
             <tr>
               <th>Matricula</th>
-              <th>Nombre del alumno</th>
-              <th>Tutor asignado</th>
+              <th>Nombre alumno</th>
+              <th>Tutor</th>
               <th>Correo</th>
               <th>Telefono</th>
               <th>Horario</th>
-              <th>Estatus de horario</th>
-              {mostrarComprobante && <th>Comprobante de pago</th>}
+              <th>Estatus</th>
+              {mostrarComprobante && <th>Pago</th>}
               <th>Eliminar</th>
             </tr>
           </thead>

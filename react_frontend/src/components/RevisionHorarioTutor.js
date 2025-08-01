@@ -63,7 +63,6 @@ function RevisionHorarioTutor() {
 
   const actualizarEstatus = async (nuevoEstatus) => {
     try {
-      console.log("Actualizando estatus...");
       const response = await fetch(`${API_URL}/api/tutores/estatus/actualizar/${matricula}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

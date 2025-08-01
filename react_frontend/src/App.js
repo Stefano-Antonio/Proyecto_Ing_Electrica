@@ -85,10 +85,8 @@ import HistorialAcademico from './components/HistorialAcademico';
 function App() {
   const location = useLocation();
   const userType = localStorage.getItem("userType") || "alumno";
- const [esMovil, setEsMovil] = useState(window.innerWidth <= 768);
+  const [esMovil, setEsMovil] = useState(window.innerWidth <= 1300);
   const esRegistro = location.pathname === '/' || location.pathname === '/login';
-
- const [esMovil2, setEsMovil2] = useState(window.innerWidth <= 768);
 
 useEffect(() => {
   const manejarResize = () => {
@@ -192,7 +190,7 @@ useEffect(() => {
           </div>
           <div className="Lat_derecha"></div> {/* Barra lateral derecha */}
         </div>
-      {(!esMovil || esRegistro) && <Pie_pagina />}
+      {(esRegistro) && <Pie_pagina />}
       </div>
   );
 }

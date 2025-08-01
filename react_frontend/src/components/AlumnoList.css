@@ -69,6 +69,7 @@
   
   .alumnos-table {
     width: 100%;
+    table-layout: auto; /* Permite que el ancho de columna se ajuste al contenido */
     height: 900px;
     border-collapse: collapse;
     margin-bottom: 100px;
@@ -77,6 +78,9 @@
   
   .alumnos-table, th, td {
     border: 1px solid #ccc;
+    height: 20px;
+    white-space: nowrap;      /* Evita saltos de línea */
+    max-width: 150px;           /* Permite que la columna solo crezca según el contenido */
     height: 20px; /* Uniform row height for all table rows */
   }
   

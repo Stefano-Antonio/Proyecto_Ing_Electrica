@@ -14,7 +14,6 @@ th, td {
 
 .scrollable-table, .tutor-content {
   width: 100%;
-  overflow-x: auto;
 }
 
 form, .formulario, .form-container, .search-bar, .max-hours-input {
@@ -57,10 +56,10 @@ input, select, textarea, button {
   text-align: center;
   display: flex;
   flex-direction: column;
+  overflow-x: auto; /* Permitir desplazamiento lateral en vista móvil */
   min-height: 100vh; /* Asegúrate de que ocupe el 100% de la altura de la ventana */
   margin: 0; /* Elimina márgenes no deseados */
   padding: 0; /* Elimina rellenos no deseados */
-  overflow-x: hidden; /* Mantener oculto el desplazamiento lateral en vista de escritorio */
 }
 
 .Main-layout {
@@ -90,7 +89,7 @@ input, select, textarea, button {
 }
 
 /* Estilos responsivos para pantallas móviles */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .App {
     flex-direction: column;
     padding: 10px; /* Ajusta el padding para móviles */
@@ -133,7 +132,7 @@ input, select, textarea, button {
   padding: 12px 0;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .Pie_pagina {
     width: 100%;
     max-width: 100000px;

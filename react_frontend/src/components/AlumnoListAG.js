@@ -155,7 +155,7 @@ const AlumnoListAG = () => {
               <th>Nombre del alumno</th>
               <th>Tutor asignado</th>
               <th>Horario</th>
-              <th>Estatus de horario</th>
+              <th>Estatus</th>
             </tr>
           </thead>
           <tbody>
