@@ -176,8 +176,13 @@ function ModificarMateriaCG() {
         navigate("/inicio-coordinador-gen/materias", { state: { reload: true } });
       }, 200);  // Espera un poco para mostrar el toast antes de recargar
     } catch (error) {
+      // Mostrar mensaje específico del backend si existe
+      if (error.response && error.response.data && error.response.data.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Hubo un error al actualizar la materia");
+      }
       console.error("Error al actualizar la materia:", error);
-      toast.error("Hubo un error al actualizar la materia");
     }
   };
 
