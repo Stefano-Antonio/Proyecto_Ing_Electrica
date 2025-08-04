@@ -286,6 +286,7 @@ exports.updateMateria = async (req, res) => {
 };
 
 
+
 // Eliminar una materia
 exports.deleteMateria = async (req, res) => {
   

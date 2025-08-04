@@ -23,7 +23,16 @@ router.post('/alumno/login', async (req, res) => {
     const tieneHorario = alumno.horario !== null;
     const validacionCompleta = alumno.horario?.validacionCompleta || false;
 
-    const token = jwt.sign({ id: alumno._id }, 'tu_secreto', { expiresIn: '10m' });
+    // 🔐 Generar token JWT real
+    const token = jwt.sign(
+      {
+        id: alumno._id,
+        matricula: alumno.matricula,
+        rol: 'alumno'
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN }
+    );
     
     return res.json({ 
       mensaje: 'Inicio de sesión exitoso', 
@@ -86,6 +95,18 @@ router.post('/personal/login', async (req, res) => {
         }
       }
     }
+
+    // 🔐 Generar token JWT
+    const token = jwt.sign(
+      {
+        id: personal._id,
+        matricula: personal.matricula,
+        roles: personal.roles,
+        id_carrera: id_carrera
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN }
+    );
 
     // Respuesta exitosa
     return res.status(200).json({

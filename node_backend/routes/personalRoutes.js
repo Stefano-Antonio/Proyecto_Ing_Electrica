@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const verificarToken = require('../middlewares/authMiddleware');
 const personalController = require('../controllers/PersonalController');
 
 // Rutas para importar/exportar CSV

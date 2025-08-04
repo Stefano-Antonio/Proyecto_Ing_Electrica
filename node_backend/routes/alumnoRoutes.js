@@ -5,6 +5,7 @@ const upload = alumnoController.upload;
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const verificarToken = require('../middlewares/authMiddleware'); // Middleware para verificar el token antes de acceder a las rutas
 
 const storageComprobantes = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -32,7 +33,8 @@ const storageComprobantes = multer.diskStorage({
 });
 const uploadComprobante = multer({ storage: storageComprobantes });
 
-
+// Middleware para verificar el token antes de acceder a las rutas
+router.use(verificarToken);
 
 // Ruta para exportar a CSV (debe ir antes de las rutas dinámicas)
 router.get('/exportar-csv', alumnoController.exportarAlumnosCSV);
