@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import "react-toastify/dist/ReactToastify.css";
 import "./CrearPersonal.css";
 
@@ -17,6 +18,7 @@ function CrearPersonal() {
     password: ""
   });
   const id_carrera = localStorage.getItem("id_carrera");
+  const token = localStorage.getItem("token");
   const matriculaCoord = localStorage.getItem("matricula");
   const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de que esta variable esté definida en tu entorno
 
@@ -73,7 +75,7 @@ function CrearPersonal() {
     e.preventDefault();
     try {
       const formData = { ...form, id_carrera };
-      const response = await axios.post(`${API_URL}/api/personal`, formData);
+      const response = await apiClient.post(`${API_URL}/api/personal`, formData);
       setForm({ nombre: "", matricula: "", correo: "", telefono: "", roles: "", password: "" });
       setTimeout(() => {
         navigate("/coordinador/personal", { state: { reload: true } });
@@ -128,7 +130,7 @@ function CrearPersonal() {
     formData.append("csv", file);
   
     try {
-      await axios.post(
+      await apiClient.post(
         `${API_URL}/api/personal/subir-csv/carrera/${id_carrera}`, // ✅ Ahora se pasa en la URL
         formData,
         { headers: { "Content-Type": "multipart/form-data", 
@@ -158,7 +160,7 @@ function CrearPersonal() {
     }
   
     try {
-      const response = await axios.get(
+      const response = await apiClient.get(
         `${API_URL}/api/personal/exportar-csv/carrera/${id_carrera}`,
         { responseType: "blob" } // Recibir como blob para descarga
       );

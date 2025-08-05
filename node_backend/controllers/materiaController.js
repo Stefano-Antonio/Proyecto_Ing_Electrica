@@ -8,7 +8,7 @@ const multer = require('multer');
 const csv = require('csv-parser');
 const fs = require('fs');
 const path = require('path');
-const carrerasPermitidas = ["ISftw", "IDsr", "IEInd", "ICmp", "IRMca", "ISftwS","IDsr", "IEInd", "ICmp", "IRMca"];
+const carrerasPermitidas = ["ISftw", "IDsr", "IEInd", "ICmp", "IRMca", "IElec", "ISftwS","IDsrS", "IEIndS", "ICmpS", "IRMcaS", "IElecS"];
 
 
 // Configurar multer para manejar el archivo CSV

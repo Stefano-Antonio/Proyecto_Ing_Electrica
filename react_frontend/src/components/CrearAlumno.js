@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./CrearAlumno.css";
@@ -12,6 +13,7 @@ function CrearAlumno() {
   const location = useLocation();
   const id_carrera = localStorage.getItem("id_carrera");
   const { matriculaCord } = location.state || {};
+  const token = localStorage.getItem("token");
   const [file, setFile] = useState(null); // Estado para el archivo
   const API_URL = process.env.REACT_APP_API_URL;
   const [form, setForm] = useState({
@@ -28,7 +30,7 @@ function CrearAlumno() {
   useEffect(() => {
     const fetchTutores = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/coordinadores/tutores/${(matriculaCord)}`);
+        const response = await apiClient.get(`${API_URL}/api/coordinadores/tutores/${(matriculaCord)}`);
         setTutores(response.data); // Suponiendo que la API regresa un array de objetos [{_id, nombre}]
       } catch (error) {
         console.error("Error al obtener tutores:", error);
@@ -53,7 +55,7 @@ function CrearAlumno() {
     formData.append("csv", file);
   
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         `${API_URL}/api/alumnos/subir-csv/carrera/${id_carrera}`, // <-- Ahora incluye id_carrera
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
@@ -89,7 +91,7 @@ function CrearAlumno() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${API_URL}/api/alumnos`, form);
+      const response = await apiClient.post(`${API_URL}/api/alumnos`, form);
       setForm({ nombre: "", matricula: "", correo: "", telefono: "", tutor: "" }); // Reset form
       setTimeout(() => {
         navigate("/coordinador/alumnos", { state: { reload: true } });
@@ -102,7 +104,7 @@ function CrearAlumno() {
 
   const handleDownloadCSV = async () => {
     try {
-      const response = await axios.get(
+      const response = await apiClient.get(
         `${API_URL}/api/alumnos/exportar-csv/carrera/${id_carrera}`,
         {
           responseType: "blob", // Asegúrate de recibir el archivo como blob

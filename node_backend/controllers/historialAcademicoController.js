@@ -12,14 +12,19 @@ const Coordinadores = require('../models/Coordinadores');
 const Horarios = require('../models/Horario');
 
 
-async function generarHistorialCore({ semestre, matricula, fecha_generacion = new Date() }) {
+async function generarHistorialCore({ semestre, matricula, fecha_generacion = new Date(), token }) {
   const folderPath = path.join(__dirname, '..', 'exports', semestre);
   if (!fs.existsSync(folderPath)) {
     fs.mkdirSync(folderPath, { recursive: true });
   }
 
-  const descargarYGuardar = async (url, outputPath) => {
-    const response = await axios.get(url, { responseType: 'arraybuffer' });
+  const descargarYGuardar = async (url, outputPath, token) => {
+    const response = await axios.get(url, { 
+      responseType: 'arraybuffer',
+      headers: {
+        Authorization: `Bearer ${token}` // Usa el token recibido
+       }
+      });
     fs.writeFileSync(outputPath, response.data);
   };
 
@@ -32,9 +37,9 @@ async function generarHistorialCore({ semestre, matricula, fecha_generacion = ne
   const rutaPersonal = path.join(folderPath, 'personal.csv');
 
   await Promise.all([
-    descargarYGuardar(urlAlumnos, rutaAlumnos),
-    descargarYGuardar(urlMaterias, rutaMaterias),
-    descargarYGuardar(urlPersonal, rutaPersonal),
+    descargarYGuardar(urlAlumnos, rutaAlumnos, token),
+    descargarYGuardar(urlMaterias, rutaMaterias, token),
+    descargarYGuardar(urlPersonal, rutaPersonal, token),
   ]);
 
   const personal = await Personal.findOne({ matricula });
@@ -69,10 +74,12 @@ async function generarHistorialCore({ semestre, matricula, fecha_generacion = ne
 
 const generarHistorial = async (req, res) => {
   try {
+    const token = req.headers.authorization?.replace('Bearer ', '') || req.body.token;
     const historial = await generarHistorialCore({
       semestre: req.body.semestre,
       matricula: req.body.matricula,
       fecha_generacion: req.body.fecha_generacion,
+      token
     });
     res.status(200).json(historial);
   } catch (err) {

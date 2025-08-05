@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import "./DocenteAlumnos.css";
 
 function DocenteAlumnos() {
@@ -7,6 +8,7 @@ function DocenteAlumnos() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const location = useLocation();
+  const token = localStorage.getItem("token");
   const { nombre, matricula: matriculaDocente, materiaId, materiaNombre } = location.state || {};
   const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de tener configurada la URL base en tu .env
   
@@ -28,7 +30,14 @@ function DocenteAlumnos() {
           return;
         }
         // Obtener los alumnos de la materia
-        const response = await fetch(`${API_URL}/api/docentes/materia/${materiaId}/alumnos`);
+        const response = await fetch(`${API_URL}/api/docentes/materia/${materiaId}/alumnos`,
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json"
+            }
+          }
+        );
         if (!response.ok) {
           throw new Error("Error al obtener los alumnos");
         }
@@ -78,7 +87,7 @@ function DocenteAlumnos() {
   
   
   const handleBack = () => {
-    navigate(-1, { state: { nombre, matricula: matriculaDocente || storedMatriculaDocente } });
+    navigate(-1, { state: { nombre, token, matricula: matriculaDocente || storedMatriculaDocente } });
   };
 
   // Filtrar alumnos por búsqueda

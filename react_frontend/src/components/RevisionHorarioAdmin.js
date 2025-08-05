@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "./RevisionHorarioTutor.css";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 
 function RevisionHorarioAdmin() {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [horario, setHorario] = useState([]);
   const [comentario, setComentario] = useState("");
+  const token = localStorage.getItem("token");
   const [estatus, setEstatus] = useState(null);
   const [alumno, setAlumno] = useState(null); // Inicializar como null
   const navigate = useNavigate();
@@ -16,7 +18,14 @@ function RevisionHorarioAdmin() {
   const { nombre , matricula, matriculaTutor } = location.state || {};
   const carrerasPermitidasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
   useEffect(() => {
-    fetch(`${API_URL}/api/tutores/horario/${matricula}`)
+    fetch(`${API_URL}/api/tutores/horario/${matricula}`,
+      {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+    )
       .then(response => response.json())
       .then(data => {
         setAlumno(data.alumno);
@@ -29,6 +38,10 @@ function RevisionHorarioAdmin() {
   const eliminarHorario = async () => {
     try {
       const response = await fetch(`${API_URL}/api/tutores/eliminar/${alumno.matricula}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
         method: "DELETE",
       });
 
@@ -46,7 +59,10 @@ function RevisionHorarioAdmin() {
     try {
       const response = await fetch(`${API_URL}/api/tutores/enviarCorreo`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json" 
+        },
         body: JSON.stringify({ alumnoId: alumno._id, comentario }),
       });
 
@@ -64,7 +80,9 @@ const actualizarEstatus = async (nuevoEstatus) => {
   try {
     const response = await fetch(`${API_URL}/api/tutores/estatus/actualizar-admin/${matricula}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json" },
       body: JSON.stringify({ estatus: nuevoEstatus, comentario }),
     });
 
@@ -72,7 +90,16 @@ const actualizarEstatus = async (nuevoEstatus) => {
       throw new Error("Error al actualizar el estatus");
     }
 
-    navigate("/administrador/alumnos", { state: { reload: true } });
+    const adminMatricula = matriculaTutor || localStorage.getItem("matriculaTutor") || "";
+
+    if (adminMatricula.startsWith("A")) {
+        navigate("/administrador/alumnos", { state: { reload: true } });
+      } else if (adminMatricula.startsWith("AG")) {
+        // Regresar a la vista principal de docente (no a /docente/alumnos)
+        navigate("/inicio-administrador-gen/alumnos", { state: { reload: true } });
+      } else {
+        navigate(-1);
+      }
 
     // Ya NO elimines el horario ni envíes el comentario aquí,
     // el backend ya envía el correo automáticamente al cambiar el estatus.
