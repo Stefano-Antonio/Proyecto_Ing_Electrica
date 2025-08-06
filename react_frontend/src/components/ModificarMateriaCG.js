@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./CrearMateria.css";
@@ -8,6 +9,7 @@ import "./CrearMateria.css";
 function ModificarMateriaCG() {
   const navigate = useNavigate();
   const location = useLocation();
+  const token = localStorage.getItem("token");
   const materiaSeleccionada = location.state?.materia || {}; // Recibir los datos de la materia seleccionada
 
   const [mostrarModal, setMostrarModal] = useState(false);
@@ -62,7 +64,7 @@ function ModificarMateriaCG() {
   useEffect(() => {
     const fetchDocentes = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/docentes`);
+        const response = await apiClient.get(`${API_URL}/api/docentes`);
         setDocentes(response.data); // Guardamos la lista de docentes con el nombre incluido
       } catch (error) {
         console.error("Error al obtener los docentes:", error);
@@ -87,7 +89,7 @@ function ModificarMateriaCG() {
     formData.append("csv", file);
 
     try {
-      await axios.post(
+      await apiClient.post(
         `${API_URL}/api/materias/subir-csv`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
@@ -103,7 +105,7 @@ function ModificarMateriaCG() {
 
   const handleDownloadCSV = async () => {
     try {
-      const response = await axios.get(
+      const response = await apiClient.get(
         `${API_URL}/api/materias/exportar-csv`,
         { responseType: "blob" }
       );
@@ -167,7 +169,7 @@ function ModificarMateriaCG() {
         ),
       };
 
-      const response = await axios.put(
+      const response = await apiClient.put(
         `${API_URL}/api/materias/${materiaSeleccionada._id}`,
         finalData
       );
@@ -176,8 +178,13 @@ function ModificarMateriaCG() {
         navigate("/inicio-coordinador-gen/materias", { state: { reload: true } });
       }, 200);  // Espera un poco para mostrar el toast antes de recargar
     } catch (error) {
+      // Mostrar mensaje específico del backend si existe
+      if (error.response && error.response.data && error.response.data.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Hubo un error al actualizar la materia");
+      }
       console.error("Error al actualizar la materia:", error);
-      toast.error("Hubo un error al actualizar la materia");
     }
   };
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import { ToastContainer, toast } from "react-toastify";
 import "./CrearPersonal.css";
 
@@ -36,6 +37,7 @@ function ModificarPersonalCG() {
     IElecS: "Ing. Electricista (Semiescolarizado)",
   };
   const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de tener configurada la URL base en tu .env
+  const token = localStorage.getItem("token");
 
   // Configurar mostrarCarrera al cargar la página
   useEffect(() => {
@@ -57,7 +59,7 @@ function ModificarPersonalCG() {
     }
 
     try {
-      const response = await axios.put(
+      const response = await apiClient.put(
         `${API_URL}/api/personal/${personalSeleccionado._id}`,
         form
       );
@@ -181,7 +183,7 @@ function ModificarPersonalCG() {
                   type="button"
                   onClick={async () => {
                     try {
-                      await axios.put(`${API_URL}/api/personal/${personalSeleccionado._id}`,
+                      await apiClient.put(`${API_URL}/api/personal/${personalSeleccionado._id}`,
                         { ...form, id_carrera: form.id_carrera });
                       setForm(prev => ({ ...prev, id_carrera: form.id_carrera }));
                       toast.success('Carrera actualizada correctamente');

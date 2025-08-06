@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import "react-toastify/dist/ReactToastify.css";
 import "./CrearAlumno.css";
 
@@ -10,6 +11,7 @@ function ModificarAlumnoCG() {
   const [mostrarModal, setMostrarModal] = useState(false);
   const location = useLocation();
   const alumno = location.state?.alumno;
+  const token = localStorage.getItem("token");
   const { matriculaCord } = location.state || {};
   const [tutores, setTutores] = useState([]); // Lista de tutores
   const matriculaTutor = matriculaCord;
@@ -60,7 +62,7 @@ function ModificarAlumnoCG() {
 useEffect(() => {
     const fetchTutores = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/cordgen/tutores`);
+        const response = await apiClient.get(`${API_URL}/api/cordgen/tutores`);
         
         // Asegurar que la respuesta tenga la propiedad tutors y sea un array antes de actualizar el estado
         if (Array.isArray(response.data.tutors)) {
@@ -105,7 +107,7 @@ useEffect(() => {
       formData.append("csv", file);
   
       try {
-        const response = await axios.post(
+        const response = await apiClient.post(
           `${API_URL}/api/alumnos/subir-csv`,
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
@@ -127,7 +129,7 @@ useEffect(() => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(
+      const response = await apiClient.put(
         `${API_URL}/api/cordgen/alumnos/${alumno._id}`,
         {
           nombre: form.nombre,
@@ -149,7 +151,7 @@ useEffect(() => {
 
   const handleDownloadCSV = async () => {
     try {
-      const response = await axios.get(
+      const response = await apiClient.get(
         `${API_URL}/api/alumnos/exportar-csv`,
         {
           responseType: "blob", // Asegúrate de recibir el archivo como blob

@@ -2,6 +2,7 @@ import "./AdministrarPersonal.css";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -11,6 +12,7 @@ const AdministrarPersonalCG = () => {
   const location = useLocation(); 
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const [mostrarModal, setMostrarModal] = useState(false);
+  const token = localStorage.getItem("token"); // Token de autenticación
   const [usuarioAEliminar, setUsuarioAEliminar] = useState(null);
   const API_URL = process.env.REACT_APP_API_URL;
   
@@ -44,10 +46,10 @@ const AdministrarPersonalCG = () => {
         return;
       }
       try {
-        const response = await axios.get(`${API_URL}/api/personal`);
+        const response = await apiClient.get(`${API_URL}/api/personal`);
         const personalConCarrera = await Promise.all(response.data.map(async (persona) => {
           try {
-        const carreraResponse = await axios.get(`${API_URL}/api/cordgen/carrera/${persona.matricula}`);
+        const carreraResponse = await apiClient.get(`${API_URL}/api/cordgen/carrera/${persona.matricula}`);
         return { ...persona, id_carrera: carreraResponse.data.id_carrera };
           } catch (error) {
         console.error(`Error al obtener id_carrera para ${matricula}:`, error.message);
@@ -81,7 +83,7 @@ const AdministrarPersonalCG = () => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`${API_URL}/api/personal/${usuarioAEliminar}`);
+      await apiClient.delete(`${API_URL}/api/personal/${usuarioAEliminar}`);
       setPersonal(prevState => prevState.filter(persona => persona._id !== usuarioAEliminar));
       toast.success("Personal eliminado con éxito");
     } catch (error) {
@@ -121,7 +123,7 @@ const AdministrarPersonalCG = () => {
       return;
     }
     try {
-      const response = await axios.get(
+      const response = await apiClient.get(
         `${API_URL}/api/personal/exportar-excel/carrera/${id_carrera}`,
         { responseType: "blob" }
       );

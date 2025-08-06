@@ -1,6 +1,7 @@
 import React, { useState, useEffect  } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./CrearMateria.css";
@@ -8,6 +9,7 @@ import "./CrearMateria.css";
 function CrearMateriaCG() {
   const navigate = useNavigate();
   const [mostrarModal, setMostrarModal] = useState(false);
+  const token = localStorage.getItem("token");
   const [mostrarCarrera, setMostrarCarrera] = useState(false);
   const [file, setFile] = useState(null); // Almacenar el archivo CSV
   const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de que esta variable esté definida en tu entorno
@@ -56,7 +58,7 @@ function CrearMateriaCG() {
     useEffect(() => {
       const fetchDocentes = async () => {
         try {
-          const response = await axios.get(`${API_URL}/api/docentes`); 
+          const response = await apiClient.get(`${API_URL}/api/docentes`); 
           setDocentes(response.data); // Guardamos la lista de docentes con el nombre incluido
         } catch (error) {
           console.error("Error al obtener los docentes:", error);
@@ -82,7 +84,7 @@ function CrearMateriaCG() {
       formData.append("csv", file);
     
       try {
-        await axios.post(
+        await apiClient.post(
           `${API_URL}/api/materias/subir-csv`, // Cambiar la URL a 'materias'
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
@@ -98,7 +100,7 @@ function CrearMateriaCG() {
     
     const handleDownloadCSV = async () => {
       try {
-        const response = await axios.get(
+        const response = await apiClient.get(
           `${API_URL}/api/materias/exportar-csv`, // Cambiar la URL a 'materias'
           { responseType: "blob" }
         );
@@ -168,7 +170,7 @@ function CrearMateriaCG() {
         };
 
         if (id_carrera === "ISftwS" || id_carrera === "IDsrS" || id_carrera === "IEIndS" || id_carrera === "ICmpS" || id_carrera === "IRMcaS" || id_carrera === "IElecS") {
-          const response = await axios.post(`${API_URL}/api/materias`, finalData);
+          const response = await apiClient.post(`${API_URL}/api/materias`, finalData);
           toast.success('Materia creada con éxito');
           setFormData({
             id_materia: '',
@@ -182,7 +184,7 @@ function CrearMateriaCG() {
             docente: ''
           });
         } else {
-          const response = await axios.post(`${API_URL}/api/materias`, finalData);
+          const response = await apiClient.post(`${API_URL}/api/materias`, finalData);
           toast.success('Materia creada con éxito');
           setFormData({
             id_materia: '',

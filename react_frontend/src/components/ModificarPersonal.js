@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./CrearPersonal.css";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 
 function ModificarPersonal() {
   const location = useLocation();
@@ -39,7 +40,7 @@ function ModificarPersonal() {
     }
 
     try {
-      const response = await axios.put(`${API_URL}/api/personal/${persona._id}`, form);
+      const response = await apiClient.put(`${API_URL}/api/personal/${persona._id}`, form);
       setTimeout(() => {
         navigate("/coordinador/personal", { state: { reload: true } });
       }, 200); // Espera un poco para mostrar el toast antes de recargar

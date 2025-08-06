@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./HorarioSeleccion.css";
 import axios from "axios";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import { toast } from "react-toastify"; // Asegúrate de tener instalada y configurada la librería react-toastify
 
 function HorarioSeleccion() {
@@ -14,6 +15,7 @@ function HorarioSeleccion() {
   const [conflictos, setConflictos] = useState([]);
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const [mostrarModal, setMostrarModal] = useState(false);
+  const token = localStorage.getItem("token");
   const [mostrarModalHoras, setMostrarModalHoras] = useState(false); // Nuevo estado para el modal de horas excedidas
   const [nombre, setNombreAlumno] = useState(localStorage.getItem("nombreAlumno") || "Alumno desconocido");
   const [id, setIDAlumno] = useState(localStorage.getItem("IDAlumno") || "ID desconocido");
@@ -43,7 +45,14 @@ useEffect(() => {
     }
 
     try {
-      const response = await fetch(`${API_URL}/api/materias/carrera/${id_carrera}`);
+      const response = await fetch(`${API_URL}/api/materias/carrera/${id_carrera}`,
+        {
+          headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json"
+            }
+        }
+      );
       const data = await response.json();
       const sortedData = data.sort((a, b) => a.grupo.localeCompare(b.grupo));
       setMaterias(sortedData);
@@ -238,7 +247,7 @@ useEffect(() => {
   const fetchHorasCoordinador = async () => {
     try {
       const id_carrera = localStorage.getItem("id_carrera");
-      const response = await axios.get(`${API_URL}/api/coordinadores/horas/${id_carrera}`);
+      const response = await apiClient.get(`${API_URL}/api/coordinadores/horas/${id_carrera}`);
       setHorasMaximas(response.data.horas); // Suponiendo que el backend regresa { horas: 40 }
     } catch (error) {
       console.error("Error al obtener las horas del coordinador:", error);

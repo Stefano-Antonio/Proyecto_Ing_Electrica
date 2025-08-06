@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import "./AdministrarMaterias.css";
 
 const AdministrarMateriasCoordinador = () => {
@@ -14,6 +15,7 @@ const AdministrarMateriasCoordinador = () => {
   const [mostrarModalMaterias, setMostrarModalMaterias] = useState(false);
   const [materiaAEliminar, setMateriaAEliminar] = useState(null);
   const [horasMaximas, setHorasMaximas] = useState("");
+  const token = localStorage.getItem("token");
   const [editMode, setEditMode] = useState(false); // Estado para controlar el modo de edición
   const API_URL = process.env.REACT_APP_API_URL;
   const location = useLocation();
@@ -30,7 +32,7 @@ const AdministrarMateriasCoordinador = () => {
   const fetchMaterias = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
+      const response = await apiClient.get(
         `${API_URL}/api/materias/carrera/${id_carrera}`
       );
       setMaterias(response.data);
@@ -44,7 +46,7 @@ const AdministrarMateriasCoordinador = () => {
   // Cargar docentes desde el backend
   const fetchDocentes = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/docentes`);
+      const response = await apiClient.get(`${API_URL}/api/docentes`);
       setDocentes(response.data);
     } catch (error) {
       console.error("Error al obtener datos de docentes:", error);
@@ -60,7 +62,7 @@ const AdministrarMateriasCoordinador = () => {
   const handleDelete = async () => {
     if (!materiaAEliminar) return;
     try {
-      await axios.delete(`${API_URL}/api/materias/${materiaAEliminar}`);
+      await apiClient.delete(`${API_URL}/api/materias/${materiaAEliminar}`);
       toast.success("Materia eliminada con éxito");
       fetchMaterias(); // Recargar la lista de materias
     } catch (error) {
@@ -115,7 +117,7 @@ const AdministrarMateriasCoordinador = () => {
     }
 
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         `${API_URL}/api/materias/exportar-csv/carrera-filtrados/${id_carrera}`,
         { ids },
         { responseType: "blob" }
@@ -142,7 +144,7 @@ const AdministrarMateriasCoordinador = () => {
   const fetchHorasCoordinador = async () => {
     try {
       const id_carrera = localStorage.getItem("id_carrera");
-      const response = await axios.get(`${API_URL}/api/coordinadores/horas/${id_carrera}`);
+      const response = await apiClient.get(`${API_URL}/api/coordinadores/horas/${id_carrera}`);
       setHorasMaximas(response.data.horas); // Suponiendo que el backend regresa { horas: 40 }
     } catch (error) {
       console.error("Error al obtener las horas del coordinador:", error);
@@ -162,7 +164,7 @@ const AdministrarMateriasCoordinador = () => {
         return;
       }
       
-      await axios.put(`${API_URL}/api/coordinadores/horas/${matricula}`, {
+      await apiClient.put(`${API_URL}/api/coordinadores/horas/${matricula}`, {
         horas: horasMaximas,
       });
       toast.success(`Horas actualizadas a: ${horasMaximas}`);

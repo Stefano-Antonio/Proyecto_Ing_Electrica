@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import "./AdministrarMaterias.css";
 
 const AdministrarMateriasCG = () => {
@@ -10,6 +11,7 @@ const AdministrarMateriasCG = () => {
   const [docentes, setDocentes] = useState([]);
   const [searchTerm, setSearchTerm] = useState(""); // Filtro de búsqueda
   const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem("token");
   const [mostrarModal, setMostrarModal] = useState(false);
   const [materiaAEliminar, setMateriaAEliminar] = useState(null);
   const location = useLocation();
@@ -64,7 +66,7 @@ const AdministrarMateriasCG = () => {
   const fetchMaterias = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
+      const response = await apiClient.get(
         `${API_URL}/api/materias`
       );
       setMaterias(response.data);
@@ -78,7 +80,7 @@ const AdministrarMateriasCG = () => {
   // Cargar docentes desde el backend
   const fetchDocentes = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/docentes`);
+      const response = await apiClient.get(`${API_URL}/api/docentes`);
       setDocentes(response.data);
     } catch (error) {
       console.error("Error al obtener datos de docentes:", error);
@@ -94,7 +96,7 @@ const AdministrarMateriasCG = () => {
   const handleDelete = async () => {
     if (!materiaAEliminar) return;
     try {
-      await axios.delete(`${API_URL}/api/materias/${materiaAEliminar}`);
+      await apiClient.delete(`${API_URL}/api/materias/${materiaAEliminar}`);
       toast.success("Materia eliminada con éxito");
       fetchMaterias(); // Recargar la lista de materias
     } catch (error) {

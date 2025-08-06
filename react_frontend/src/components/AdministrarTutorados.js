@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import "./AdministrarTutorados.css";
 
 function AdministrarTutorados() {
   const [alumnos, setAlumnos] = useState([]);
   const [error, setError] = useState(null);
   const location = useLocation();
+  const token = localStorage.getItem("token");
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const navigate = useNavigate();
   const { matriculaCord } = location.state || {};
@@ -34,7 +36,14 @@ function AdministrarTutorados() {
 
   const fetchAlumnoDetails = async (alumnoId) => {
     try {
-      const alumnoResponse = await fetch(`${API_URL}/api/alumnos/${alumnoId}`);
+      const alumnoResponse = await fetch(`${API_URL}/api/alumnos/${alumnoId}`,
+        {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
       
       if (!alumnoResponse.ok) {
         throw new Error(`Error al obtener detalles del alumno con ID ${alumnoId}`);
@@ -58,7 +67,14 @@ function AdministrarTutorados() {
           return;
         }
   
-        const response = await fetch(`${API_URL}/api/coordinadores/matricula/${matricula}`);
+        const response = await fetch(`${API_URL}/api/coordinadores/matricula/${matricula}`,
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json"
+            }
+          }
+        );
         if (!response.ok) {
           throw new Error("Error al obtener los alumnos");
         }
@@ -79,7 +95,14 @@ function AdministrarTutorados() {
         // Obtener el estatus de cada alumno
         const fetchEstatus = async (alumno) => {
           try {
-            const estatusResponse = await fetch(`${API_URL}/api/tutores/estatus/${alumno.matricula}`);
+            const estatusResponse = await fetch(`${API_URL}/api/tutores/estatus/${alumno.matricula}`,
+              {
+                headers: {
+                  "Authorization": `Bearer ${token}`,
+                  "Content-Type": "application/json"
+                }
+              }
+            );
             if (!estatusResponse.ok) {
               throw new Error("Error al obtener el estatus del horario");
             }

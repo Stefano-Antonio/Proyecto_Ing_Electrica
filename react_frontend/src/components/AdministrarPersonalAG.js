@@ -3,11 +3,13 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import 'react-toastify/dist/ReactToastify.css';
 
 const AdministrarPersonalAG = () => {
   const [personal, setPersonal] = useState([]);
   const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem("token");
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const API_URL = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
@@ -21,10 +23,10 @@ const AdministrarPersonalAG = () => {
       }
 
       try {
-        const response = await axios.get(`${API_URL}/api/personal`);
+        const response = await apiClient.get(`${API_URL}/api/personal`);
         const personalConCarrera = await Promise.all(response.data.map(async (persona) => {
           try {
-        const carreraResponse = await axios.get(`${API_URL}/api/admingen/carrera/${persona.matricula}`);
+        const carreraResponse = await apiClient.get(`${API_URL}/api/admingen/carrera/${persona.matricula}`);
         return { ...persona, id_carrera: carreraResponse.data.id_carrera };
           } catch (error) {
         console.error(`Error al obtener id_carrera para ${matricula}:`, error.message);
@@ -89,7 +91,7 @@ const AdministrarPersonalAG = () => {
       }
 
       try {
-        const response = await axios.post(
+        const response = await apiClient.post(
           `${API_URL}/api/personal/exportar-csv/filtrados`,
           { matriculas },
           { responseType: "blob" }

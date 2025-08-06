@@ -1,6 +1,6 @@
-
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
@@ -18,6 +18,7 @@ function Validacion1() {
   const [matricula, setMatricula] = useState(localStorage.getItem("matricula")); // Obtener matrícula del localStorage
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const token = localStorage.getItem("token");
   const { materiasSeleccionadas = [] } = location.state || {};
   const carrerasPermitidasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
 
@@ -32,7 +33,7 @@ function Validacion1() {
       }
 
       try {
-        const response = await axios.get(
+        const response = await apiClient.get(
           `${API_URL}/api/alumnos/${id}`
         );
         const { _id, nombre, correo, telefono } = response.data;
@@ -101,7 +102,7 @@ function Validacion1() {
 
     try {
       // Actualizar los datos del alumno
-      await axios.put(`${API_URL}/api/alumnos/horario/${id}`, {
+      await apiClient.put(`${API_URL}/api/alumnos/horario/${id}`, {
         nombre: nombre,
         correo: email,
         telefono: phone,

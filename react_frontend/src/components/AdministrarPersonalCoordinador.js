@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import 'react-toastify/dist/ReactToastify.css';
 
 const AdministrarPersonalCoordinador = () => {
@@ -47,7 +48,7 @@ const AdministrarPersonalCoordinador = () => {
       }
 
       try {
-        const response = await axios.get(`${API_URL}/api/personal/carrera/${matricula}`);
+        const response = await apiClient.get(`${API_URL}/api/personal/carrera/${matricula}`);
         setPersonal(response.data);
       } catch (error) {
         console.error("Error al obtener datos del personal:", error.message);
@@ -75,7 +76,7 @@ const AdministrarPersonalCoordinador = () => {
   }
 
   try {
-    const response = await axios.post(
+    const response = await apiClient.post(
       `${API_URL}/api/personal/exportar-csv/carrera-filtrados/${id_carrera}`,
       { matriculas },
       { responseType: "blob" }
@@ -102,7 +103,7 @@ const AdministrarPersonalCoordinador = () => {
     try {
       const formData = {usuarioAEliminar, idCarreraEsperada: id_carrera}; // Incluir id_carrera en los datos del formulario
       console.log("Datos enviados para eliminar:", formData);
-      await axios.request({
+      await apiClient.request({
         url: `${API_URL}/api/personal/coordinador`,
         method: 'DELETE',
         data: { usuarioAEliminar, idCarreraEsperada: id_carrera }

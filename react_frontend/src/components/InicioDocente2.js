@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import "./InicioDocente2.css";
 
 function InicioDocente2() {
@@ -11,6 +12,7 @@ function InicioDocente2() {
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const location = useLocation();
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
   const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de tener configurada la URL base en tu .env
 
   const { nombre: nombreDocente, matricula: matriculaDocente } = location.state || {};
@@ -69,7 +71,14 @@ function InicioDocente2() {
         }
 
         //  OBTENER MATERIAS DEL DOCENTE 
-        const response = await fetch(`${API_URL}/api/docentes/materias/${matricula}`);
+        const response = await fetch(`${API_URL}/api/docentes/materias/${matricula}`,
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json"
+            }
+          }
+        );
         if (!response.ok) {
           throw new Error("Error al obtener las materias");
         }
@@ -146,7 +155,7 @@ function InicioDocente2() {
     }
 
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         `${API_URL}/api/materias/exportar-csv/filtrados`,
         { ids },
         { responseType: "blob" }

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import "react-toastify/dist/ReactToastify.css";
 import "./AdministrarMaterias.css";
 
@@ -10,6 +11,7 @@ const AdministrarMateriasAG = () => {
   const [docentes, setDocentes] = useState([]);
   const [searchTerm, setSearchTerm] = useState(""); // Filtro de búsqueda
   const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem("token");
   const [mostrarModal, setMostrarModal] = useState(false);
   const [materiaAEliminar, setMateriaAEliminar] = useState(null);
   const API_URL = process.env.REACT_APP_API_URL;
@@ -26,7 +28,7 @@ const AdministrarMateriasAG = () => {
   const fetchMaterias = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
+      const response = await apiClient.get(
         `${API_URL}/api/materias`
       );
       setMaterias(response.data);
@@ -40,7 +42,7 @@ const AdministrarMateriasAG = () => {
   // Cargar docentes desde el backend
   const fetchDocentes = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/docentes`);
+      const response = await apiClient.get(`${API_URL}/api/docentes`);
       setDocentes(response.data);
     } catch (error) {
       console.error("Error al obtener datos de docentes:", error);
@@ -60,7 +62,7 @@ const AdministrarMateriasAG = () => {
     }
 
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         `${API_URL}/api/materias/exportar-csv/filtrados`,
         { ids },
         { responseType: "blob" }

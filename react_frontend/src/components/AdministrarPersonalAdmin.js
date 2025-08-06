@@ -1,6 +1,7 @@
 import "./AdministrarPersonal.css";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -20,7 +21,7 @@ const AdministrarPersonalAdmin = () => {
       }
 
       try {
-        const response = await axios.get(`${API_URL}/api/personal/carrera/${matricula}`);
+        const response = await apiClient.get(`${API_URL}/api/personal/carrera/${matricula}`);
         setPersonal(response.data);
       } catch (error) {
         console.error("Error al obtener datos del personal:", error.message);
@@ -80,7 +81,7 @@ const AdministrarPersonalAdmin = () => {
       }
 
       try {
-        const response = await axios.post(
+        const response = await apiClient.post(
           `${API_URL}/api/personal/exportar-csv/carrera-filtrados/${id_carrera}`,
           { matriculas },
           { responseType: "blob" }

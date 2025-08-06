@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import 'react-toastify/dist/ReactToastify.css';
 import "./AlumnoList.css";
 
@@ -13,6 +14,7 @@ const AlumnoListAG = () => {
   const [matricula, setMatriculaAlumno] = useState("");
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem("token");
   const [AlumnoAEliminar, setAlumnoAEliminar] = useState(null);
   const matriculaCord = localStorage.getItem("matricula");
   const navigate = useNavigate();
@@ -22,14 +24,14 @@ const AlumnoListAG = () => {
     const fetchAlumnos = async () => {
       try {
         // Obtener los alumnos asociados al coordinador
-        const response = await axios.get(`${API_URL}/api/alumnos`);
+        const response = await apiClient.get(`${API_URL}/api/alumnos`);
         const alumnosData = response.data;
 
         // Obtener los detalles del tutor para cada alumno
         const tutoresNombresTemp = {};
         await Promise.all(alumnosData.map(async (alumno) => {
           if (alumno.tutor) {
-            const tutorResponse = await axios.get(`${API_URL}/api/coordinadores/alumnos/${alumno.tutor}`);
+            const tutorResponse = await apiClient.get(`${API_URL}/api/coordinadores/alumnos/${alumno.tutor}`);
             tutoresNombresTemp[alumno._id] = tutorResponse.data.nombre; // Extraer el nombre del tutor
           }
         }));
@@ -37,7 +39,14 @@ const AlumnoListAG = () => {
         const fetchEstatus = async (alumno) => {
           try {
             //
-            const estatusResponse = await fetch(`${API_URL}/api/tutores/estatus/${alumno.matricula}`);
+            const estatusResponse = await fetch(`${API_URL}/api/tutores/estatus/${alumno.matricula}`,
+              {
+                headers: {
+                  "Authorization": `Bearer ${token}`,
+                  "Content-Type": "application/json"
+                }
+              }
+            );
             if (!estatusResponse.ok) {
               throw new Error("Error al obtener el estatus del horario");
             }
@@ -81,7 +90,7 @@ const AlumnoListAG = () => {
       }
 
       try {
-        const response = await axios.post(
+        const response = await apiClient.post(
           `${API_URL}/api/alumnos/exportar-csv/filtrados`,
           { matriculas },
           { responseType: "blob" }

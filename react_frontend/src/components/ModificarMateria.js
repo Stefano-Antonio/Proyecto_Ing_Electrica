@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./CrearMateria.css";
@@ -69,7 +70,7 @@ function ModificarMateria() {
   useEffect(() => {
     const fetchDocentes = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/docentes`);
+        const response = await apiClient.get(`${API_URL}/api/docentes`);
         setDocentes(response.data); // Guardamos la lista de docentes con el nombre incluido
       } catch (error) {
         console.error("Error al obtener los docentes:", error);
@@ -95,7 +96,7 @@ function ModificarMateria() {
     formData.append("csv", file);
 
     try {
-      const response = await axios.post(
+      const response = await apiClient.post(
         `${API_URL}/api/materias/subir-csv-por-carrera?id_carrera=${id_carrera}`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
@@ -117,7 +118,7 @@ function ModificarMateria() {
 
   const handleDownloadCSV = async () => {
     try {
-      const response = await axios.get(
+      const response = await apiClient.get(
         `${API_URL}/api/materias/exportar-csv`, 
         { responseType: "blob" }
       );
@@ -186,7 +187,7 @@ function ModificarMateria() {
         docente: formData.docente
       };
 
-      await axios.put(`${API_URL}/api/materias/${materia._id}`, materiaActualizada);
+      await apiClient.put(`${API_URL}/api/materias/${materia._id}`, materiaActualizada);
       toast.success("Materia actualizada con éxito");
       setTimeout(() => {
         navigate("/coordinador/materias", { state: { reload: true } });

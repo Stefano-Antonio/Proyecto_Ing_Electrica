@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Validacion2.css";
@@ -46,7 +47,7 @@ function Validacion2() {
     // Obtener el estatus del horario del alumno
     const obtenerEstatusHorario = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/alumnos/estatus/${matricula}`);
+        const response = await apiClient.get(`${API_URL}/api/alumnos/estatus/${matricula}`);
         setEstatusHorario(response.data); // Guardar el estatus recibido (0 o 1)
       } catch (error) {
         console.error("Error al obtener el estatus del horario:", error);
@@ -58,7 +59,7 @@ function Validacion2() {
   useEffect(() => {
     const fetchComprobanteHabilitado = async () => {
       try {
-        const res = await axios.get(`${API_URL}/api/coordinadores/comprobante-habilitado/${id_carrera}`);
+        const res = await apiClient.get(`${API_URL}/api/coordinadores/comprobante-habilitado/${id_carrera}`);
         setComprobanteHabilitado(res.data.comprobantePagoHabilitado);
       } catch (error) {
         setComprobanteHabilitado(true); // Por defecto true si falla
@@ -71,7 +72,7 @@ function Validacion2() {
     // Consultar si ya hay comprobante y su estatus usando la nueva ruta optimizada
     const fetchComprobanteYEstado = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/alumnos/comprobante/${matricula}`);
+        const response = await apiClient.get(`${API_URL}/api/alumnos/comprobante/${matricula}`);
         setComprobanteExiste(response.data.existe);
         setEstatusComprobante(response.data.estatus || "Pendiente");
       } catch (error) {
@@ -102,7 +103,7 @@ function Validacion2() {
     formData.append('comprobante', archivoRenombrado);
 
     try {
-      await axios.post(
+      await apiClient.post(
         `${API_URL}/api/alumnos/subir-comprobante/${matricula}`,
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }

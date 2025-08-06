@@ -76,14 +76,17 @@ const descargarArchivo = async (tipo) => {
 
   const handleGenerarHistorialAcademico = async () => {
     try {
+      const token = localStorage.getItem('token'); // Obtén el token guardado
       const response = await fetch(`${API_URL}/api/historial/generar`, {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${token}`, // Envía el token al backend
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           semestre: semestre,
-          matricula: localStorage.getItem('matricula')
+          matricula: localStorage.getItem('matricula'),
+          token // También puedes enviarlo en el body si lo prefieres
         })
       });
       const data = await response.json();

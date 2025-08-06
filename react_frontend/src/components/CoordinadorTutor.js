@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import { useLocation, useNavigate } from "react-router-dom"; // Importar useLocation y useNavigate
 import "./AdministrarTutorados.css";
 
 function CoordinadorTutor() {
     const [alumnos, setAlumnos] = useState([]);
     const [error, setError] = useState(null);
+    const token = localStorage.getItem("token");
     const location = useLocation();
     const navigate = useNavigate();
     const API_URL = process.env.REACT_APP_API_URL;
@@ -44,7 +46,14 @@ function CoordinadorTutor() {
                     return;
                 }
 
-                const response = await fetch(`${API_URL}/api/coordinadores/${matricula}`);
+                const response = await fetch(`${API_URL}/api/coordinadores/${matricula}`,
+                    {
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        }
+                    }
+                );
                 if (!response.ok) {
                     throw new Error("Error al obtener los alumnos");
                 }
@@ -53,7 +62,14 @@ function CoordinadorTutor() {
 
                 const fetchEstatus = async (alumno) => {
                     try {
-                        const estatusResponse = await fetch(`${API_URL}/api/coordinadores/estatus/${alumno.matricula}`);
+                        const estatusResponse = await fetch(`${API_URL}/api/coordinadores/estatus/${alumno.matricula}`, 
+                            {
+                                headers: {
+                                    "Authorization": `Bearer ${token}`,
+                                    "Content-Type": "application/json"
+                                }
+                            }
+                        );
                         if (!estatusResponse.ok) {
                             throw new Error("Error al obtener el estatus del horario");
                         }
