@@ -29,7 +29,8 @@
 }
 
 .personal-table {
-  width: 50%;
+  width: auto;          
+  table-layout: auto;   
   border-collapse: collapse;
   margin-bottom: 0px;
   text-align: left;
@@ -45,7 +46,9 @@
 
 .personal-table th,
 .personal-table td {
+  white-space: nowrap;  
   padding: 4px 6px; /* antes era 10px */
+  max-width: 1px;      
   text-align: center;
 }
 
