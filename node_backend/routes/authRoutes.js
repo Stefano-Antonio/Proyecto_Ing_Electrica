@@ -64,7 +64,7 @@ router.post('/personal/login', async (req, res) => {
       return res.status(401).json({ mensaje: 'Contraseña incorrecta' });
     }
 
-    // Crear token válido
+    // Crear token válido con JWT
     const token = jwt.sign({ id: personal._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     // Buscar en los diferentes modelos para obtener el id_carrera
