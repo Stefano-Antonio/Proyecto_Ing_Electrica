@@ -29,8 +29,8 @@
 }
 
 .personal-table {
-  width: auto;          
-  table-layout: auto;   
+  width: auto;
+  table-layout: auto; /* Las columnas se adaptan al contenido */
   border-collapse: collapse;
   margin-bottom: 0px;
   text-align: left;
@@ -45,10 +45,10 @@
 }
 
 .personal-table th,
+.personal-table th,
 .personal-table td {
-  white-space: nowrap;  
-  padding: 4px 6px; /* antes era 10px */
-  max-width: 1px;      
+  white-space: nowrap; /* Evita saltos de línea, el ancho se adapta al texto */
+  padding: 4px 6px;
   text-align: center;
 }
 
