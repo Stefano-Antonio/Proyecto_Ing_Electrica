@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
-import 'react-toastify/dist/ReactToastify.css';
+import './AdministrarPersonal.css';
 
 const AdministrarPersonalAG = () => {
   const [personal, setPersonal] = useState([]);

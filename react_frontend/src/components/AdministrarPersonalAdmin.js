@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import './AdministrarPersonal.css';
 
 const AdministrarPersonalAdmin = () => {
   const [personal, setPersonal] = useState([]);
