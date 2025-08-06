@@ -3,6 +3,7 @@ import "./RevisionHorarioTutor.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import {ToastContainer, toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import axios from "axios"; // Asegúrate de tener axios instalado
 
 function RevisionComprobantePago() {
@@ -11,6 +12,7 @@ function RevisionComprobantePago() {
   const [comentario, setComentario] = useState("");
   const [estatus, setEstatus] = useState(null);
   const [alumno, setAlumno] = useState(null);
+  const token = localStorage.getItem("token");
   const [alumnoCargado, setAlumnoCargado] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,7 +22,14 @@ function RevisionComprobantePago() {
 
   useEffect(() => {
     // Obtener datos del alumno (no dependas del horario)
-    fetch(`${API_URL}/api/alumnos/matricula/${matricula}`)
+    fetch(`${API_URL}/api/alumnos/matricula/${matricula}`,
+      {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        } 
+      }
+    )
       .then(response => response.json())
       .then(data => {
         setAlumno(data);
@@ -31,7 +40,14 @@ function RevisionComprobantePago() {
       });
 
     // Obtener horario (opcional)
-    fetch(`${API_URL}/api/tutores/horario/${matricula}`)
+    fetch(`${API_URL}/api/tutores/horario/${matricula}`,
+      {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        } 
+      }
+    )
       .then(response => response.json())
       .then(data => {
         setHorario(data.horario || []);
@@ -56,14 +72,30 @@ function RevisionComprobantePago() {
   // Nueva función para validar comprobante
   const validarComprobante = async (nuevoEstatus) => {
     try {
-      await axios.put(
+      await apiClient.put(
         `${API_URL}/api/alumnos/validar-comprobante/${matricula}`,
         { estatus: nuevoEstatus }
       );
       toast.success(`Comprobante marcado como ${nuevoEstatus === "Aceptado" ? "ACEPTADO" : "RECHAZADO"}`);
       // Opcional: recargar datos del alumno o navegar
       setAlumno({ ...alumno, estatusComprobante: nuevoEstatus });
-      navigate(-1);
+      // Usar matriculaTutor de props o de localStorage como fallback
+      const tutorMatricula = matriculaTutor || localStorage.getItem("matriculaTutor") || "";
+
+      
+      // Filtrar por la matrícula para determinar el tipo de usuario
+      if (tutorMatricula.startsWith("T")) {
+        navigate("/tutor", { state: { reload: true } });
+      } else if (tutorMatricula.startsWith("P")) {
+        // Regresar a la vista principal de docente (no a /docente/alumnos)
+        navigate("/docente/alumnos", { state: { reload: true } });
+      } else if(tutorMatricula.startsWith("C")){
+        navigate("/coordinador/alumnos", { state: { reload: true } });
+      } else if(tutorMatricula.startsWith("CG")){
+        navigate("/inicio-coordinador-gen/alumnos", { state: { reload: true } });
+      } else {
+        navigate(-1);
+      }
     } catch (error) {
       toast.error("Error al actualizar el estatus del comprobante");
     }

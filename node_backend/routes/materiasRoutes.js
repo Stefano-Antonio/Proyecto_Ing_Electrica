@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const materiaController = require('../controllers/materiaController');
+const verificarToken = require('../middlewares/authMiddleware');
+
+// Middleware para verificar el token antes de acceder a las rutas
+router.use(verificarToken);
 
 // Rutas para importar/exportar CSV
 router.post('/subir-csv', materiaController.upload.single('csv'), materiaController.subirMateriasCSV);

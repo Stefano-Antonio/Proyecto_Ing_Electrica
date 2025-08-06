@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -44,7 +45,7 @@ function Registro() {
   
   const HandleForgotPassword = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/personal/password/${matricula}`);
+      const response = await apiClient.get(`${API_URL}/api/personal/password/${matricula}`);
       if (response.status === 200) {
         toast.success("Se ha enviado un correo para la recuperación de contraseña.", {
           position: "top-right",
@@ -80,7 +81,7 @@ function Registro() {
           ? { matricula, id_carrera } // Se envía id_carrera junto con matrícula
           : { matricula, password };
   
-      const response = await axios.post(endpoint, payload);
+      const response = await apiClient.post(endpoint, payload);
   
       if (response.status === 200) {
         const { mensaje, roles, token, nombre, id, id_carrera: idCarreraBD, horario, validacionCompleta } = response.data;
@@ -102,6 +103,8 @@ function Registro() {
           });
           return;
         }
+
+        localStorage.setItem("token", token);
   
         localStorage.setItem("id_carrera", idCarreraBD);
         localStorage.setItem("isAuthenticated", "true");

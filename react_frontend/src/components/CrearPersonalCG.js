@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import "./CrearPersonal.css";
 
 function CrearPersonal() {
   const [mostrarModal, setMostrarModal] = useState(false); // Controlar el modal
   const [mostrarCarrera, setMostrarCarrera] = useState(false);
   const [file, setFile] = useState(null); // Almacenar el archivo CSV
+  const token = localStorage.getItem("token");
   const [form, setForm] = useState({
     nombre: "",
     matricula: "",
@@ -117,7 +119,7 @@ function CrearPersonal() {
     }
   
     try {
-      const response = await axios.post(`${API_URL}/api/personal`, form);
+      const response = await apiClient.post(`${API_URL}/api/personal`, form);
       toast.success("Usuario agregado con éxito");
       setForm({
         nombre: "",
@@ -170,7 +172,7 @@ function CrearPersonal() {
     formData.append("csv", file);
 
     try {
-      await axios.post(
+      await apiClient.post(
         `${API_URL}/api/personal/subir-csv`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
@@ -192,7 +194,7 @@ function CrearPersonal() {
   
   const handleDownloadCSV = async () => {
     try {
-      const response = await axios.get(
+      const response = await apiClient.get(
         `${API_URL}/api/personal/exportar-csv`,
         { responseType: "blob" }
       );

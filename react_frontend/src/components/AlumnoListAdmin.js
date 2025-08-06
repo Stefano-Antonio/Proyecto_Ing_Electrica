@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import 'react-toastify/dist/ReactToastify.css';
 import "./AlumnoList.css";
 
@@ -12,6 +13,7 @@ const AlumnoListAdmin = () => {
   const [mostrarModalMaterias, setMostrarModalMaterias] = useState(false);
   const id_carrera = localStorage.getItem("id_carrera");
   const [nombre, setNombreAlumno] = ("");
+  const token = localStorage.getItem("token");
   const [matricula, setMatriculaAlumno] = useState("");
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const [loading, setLoading] = useState(true);
@@ -25,14 +27,14 @@ const AlumnoListAdmin = () => {
     const fetchAlumnos = async () => {
       try {
         // Obtener los alumnos asociados al administrador
-        const response = await axios.get(`${API_URL}/api/alumnos/carrera-admin/${matriculaAdmin}`);
+        const response = await apiClient.get(`${API_URL}/api/alumnos/carrera-admin/${matriculaAdmin}`);
         const alumnosData = response.data;
 
         // Obtener los detalles del tutor para cada alumno
         const tutoresNombresTemp = {};
         await Promise.all(alumnosData.map(async (alumno) => {
           if (alumno.tutor) {
-            const tutorResponse = await axios.get(`${API_URL}/api/administradores/alumnos/${alumno.tutor}`);
+            const tutorResponse = await apiClient.get(`${API_URL}/api/administradores/alumnos/${alumno.tutor}`);
             tutoresNombresTemp[alumno._id] = tutorResponse.data.nombre; // Extraer el nombre del tutor
           }
         }));
@@ -40,7 +42,14 @@ const AlumnoListAdmin = () => {
         const fetchEstatus = async (alumno) => {
           try {
             //
-            const estatusResponse = await fetch(`${API_URL}/api/tutores/estatus/${alumno.matricula}`);
+            const estatusResponse = await fetch(`${API_URL}/api/tutores/estatus/${alumno.matricula}`,
+              {
+                headers: {
+                  "Authorization": `Bearer ${token}`,
+                  "Content-Type": "application/json"
+                }
+              }
+            );
             if (!estatusResponse.ok) {
               throw new Error("Error al obtener el estatus del horario");
             }
@@ -109,7 +118,7 @@ const AlumnoListAdmin = () => {
 
   const handleDownloadCSV = async () => {
       const ids = alumnosFiltrados.map(a => a._id);
-      const response = await axios.post(
+      const response = await apiClient.post(
         `${API_URL}/api/alumnos/exportar-csv/carrera-filtrados/${id_carrera}`,
         { ids },
         { responseType: "blob" }

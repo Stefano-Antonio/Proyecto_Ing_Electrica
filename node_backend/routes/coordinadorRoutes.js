@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const coordinadorController = require('../controllers/coordinadorController');
+const verificarToken = require('../middlewares/authMiddleware');
+
+// Middleware para verificar el token antes de acceder a las rutas
+router.use(verificarToken);
 
 // Ruta para obtener los alumnos de un tutor específico
 router.get('/alumnos/:id', coordinadorController.getAlumnosAsignados); 

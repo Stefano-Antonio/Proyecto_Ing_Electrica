@@ -4,6 +4,10 @@ const tutorController = require('../controllers/tutorController');
 const Alumno = require('../models/Alumno');
 const Horario = require('../models/Horario');
 const Materia = require('../models/Materia');
+const verificarToken = require('../middlewares/authMiddleware');
+
+// Middleware para verificar el token antes de acceder a las rutas
+router.use(verificarToken);
 
 // Nueva ruta para obtener los alumnos asignados a un tutor
 router.get('/:matricula', tutorController.getAlumnosAsignados);

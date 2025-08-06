@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./RevisionHorarioTutor.css";
+import apiClient from '../utils/axiosConfig';
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 
 function RevisionHorarioTutor() {
@@ -9,6 +10,7 @@ function RevisionHorarioTutor() {
   const [estatus, setEstatus] = useState(null);
   const [alumno, setAlumno] = useState(null); // Inicializar como null
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
   const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de tener configurada la URL base en tu .env
 
   // Recuperar el estado (nombre y matricula) desde la navegación
@@ -18,7 +20,15 @@ function RevisionHorarioTutor() {
   const carrerasPermitidasSemiescolarizadas = ['ISftwS', 'IDsrS', 'IEIndS', 'ICmpS', 'IRMcaS', 'IElecS'];
 
   useEffect(() => {
-    fetch(`${API_URL}/api/tutores/horario/${matricula}`)
+    fetch(`${API_URL}/api/tutores/horario/${matricula}`,
+      {
+                headers: {
+                  "Authorization": `Bearer ${token}`,
+                  "Content-Type": "application/json"
+                }
+
+      }
+    )
       .then(response => response.json())
       .then(data => {
         setAlumno(data.alumno);
@@ -31,6 +41,10 @@ function RevisionHorarioTutor() {
     try {
       const response = await fetch(`${API_URL}/api/tutores/eliminar/${alumno.matricula}`, {
         method: "DELETE",
+        headers: {
+                  "Authorization": `Bearer ${token}`,
+                  "Content-Type": "application/json"
+                }
       });
 
       if (!response.ok) {
@@ -47,7 +61,9 @@ function RevisionHorarioTutor() {
     try {
       const response = await fetch(`${API_URL}/api/tutores/${alumno._id}/comentario`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json" },
         body: JSON.stringify({ comentario }),
       });
 
@@ -65,7 +81,9 @@ function RevisionHorarioTutor() {
     try {
       const response = await fetch(`${API_URL}/api/tutores/estatus/actualizar/${matricula}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json" },
         body: JSON.stringify({ estatus: nuevoEstatus, comentario }),
       });
   
@@ -85,6 +103,8 @@ function RevisionHorarioTutor() {
         navigate("/docente/alumnos", { state: { reload: true } });
       } else if(tutorMatricula.startsWith("C")){
         navigate("/coordinador/alumnos", { state: { reload: true } });
+      } else if(tutorMatricula.startsWith("CG")){
+        navigate("/inicio-coordinador-gen/alumnos", { state: { reload: true } });
       } else {
         navigate(-1);
       }
@@ -121,7 +141,7 @@ function RevisionHorarioTutor() {
     <div className="horario-layout">
       <div className="horario-container">
         <button className="button-small logout-button" onClick={handleLogout}>Cerrar sesión</button>
-        <button className="button-small back-button" onClick={() => navigate(-1)}>Regrsar</button>
+        <button className="button-small back-button" onClick={() => navigate(-1)}>Regresar</button>
 
         <h1>Revisión de horario</h1>
         {alumno ? (

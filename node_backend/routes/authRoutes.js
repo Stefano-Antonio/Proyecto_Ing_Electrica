@@ -23,7 +23,7 @@ router.post('/alumno/login', async (req, res) => {
     const tieneHorario = alumno.horario !== null;
     const validacionCompleta = alumno.horario?.validacionCompleta || false;
 
-    const token = jwt.sign({ id: alumno._id }, 'tu_secreto', { expiresIn: '10m' });
+    const token = jwt.sign({ id: alumno._id }, process.env.JWT_SECRET, { expiresIn: '30m' });
     
     return res.json({ 
       mensaje: 'Inicio de sesión exitoso', 
@@ -64,6 +64,9 @@ router.post('/personal/login', async (req, res) => {
       return res.status(401).json({ mensaje: 'Contraseña incorrecta' });
     }
 
+    // Crear token válido con JWT
+    const token = jwt.sign({ id: personal._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
     // Buscar en los diferentes modelos para obtener el id_carrera
     let id_carrera = null;
 
@@ -94,7 +97,7 @@ router.post('/personal/login', async (req, res) => {
       matricula: personal.matricula,
       roles: personal.roles,
       id_carrera: id_carrera,
-      token: 'mock-token' // Genera un token real si usas JWT
+      token // Genera un token real si usas JWT
     });
   } catch (error) {
     console.error('Error en loginPersonal:', error);
