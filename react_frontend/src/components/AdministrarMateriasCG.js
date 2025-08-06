@@ -241,7 +241,7 @@ const AdministrarMateriasCG = () => {
                   <th>Cupo</th>
                   <th>Materia</th>
                   <th>Docente</th>
-                  <th>Laboratorio</th>
+                  <th>Lab</th>
                   <th>Lunes</th>
                   <th>Martes</th>
                   <th>Miércoles</th>

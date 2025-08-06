@@ -102,6 +102,7 @@ exports.getPersonal = async (req, res) => {
 };
 
 exports.getPersonalByCarrera = async (req, res) => {
+  console.log("Obteniendo personal por carrera");
   try {
     const { matricula } = req.params;
 
@@ -114,22 +115,47 @@ exports.getPersonalByCarrera = async (req, res) => {
     }
 
     const id_carrera = coordinador ? coordinador.id_carrera : administrador.id_carrera;
+    // Buscar docentes que tengan al menos una materia o alumno con id_carrera igual
+    const docentes = await Docentes.find({
+      $or: [
+      { materias: { $exists: true, $not: { $size: 0 } } },
+      { alumnos: { $exists: true, $not: { $size: 0 } } }
+      ]
+    }).select("personalMatricula materias alumnos");
 
-    // Obtener alumnos de la carrera
-    const alumnos = await Alumno.find({ id_carrera }).select("_id");
-    const alumnosIds = alumnos.map(alumno => alumno._id);
+    // Filtrar docentes por materias o alumnos de la carrera
+    const docentesFiltrados = [];
+    for (const docente of docentes) {
+      let tieneMateriaCarrera = false;
+      let tieneAlumnoCarrera = false;
 
+      if (docente.materias && docente.materias.length > 0) {
+      const materias = await Materia.find({ _id: { $in: docente.materias }, id_carrera });
+      tieneMateriaCarrera = materias.length > 0;
+      }
+      if (docente.alumnos && docente.alumnos.length > 0) {
+      const alumnos = await Alumno.find({ _id: { $in: docente.alumnos }, id_carrera });
+      tieneAlumnoCarrera = alumnos.length > 0;
+      }
+      if (tieneMateriaCarrera || tieneAlumnoCarrera) {
+      docentesFiltrados.push({ personalMatricula: docente.personalMatricula });
+      }
+    }
 
-    // Obtener materias de la carrera
-    const materias = await Materia.find({ id_carrera }).select("_id");
-    const materiasIds = materias.map(materia => materia._id);
+    // Buscar tutores que tengan al menos un alumno con id_carrera igual
+    const tutores = await Tutores.find({
+      alumnos: { $exists: true, $not: { $size: 0 } }
+    }).select("personalMatricula alumnos");
 
-
-    // Buscar todos los docentes
-    const docentes = await Docentes.find().select("personalMatricula");
-
-    // Buscar todos los tutores
-    const tutores = await Tutores.find().select("personalMatricula");
+    const tutoresFiltrados = [];
+    for (const tutor of tutores) {
+      if (tutor.alumnos && tutor.alumnos.length > 0) {
+      const alumnos = await Alumno.find({ _id: { $in: tutor.alumnos }, id_carrera });
+      if (alumnos.length > 0) {
+        tutoresFiltrados.push({ personalMatricula: tutor.personalMatricula });
+      }
+      }
+    }
 
     // Buscar coordinadores y administradores de la carrera
     const [coordinadores, administradores] = await Promise.all([
@@ -258,12 +284,6 @@ exports.deletePersonalCord = async (req, res) => {
           return res.status(404).json({ message: 'Personal no encontrado' });
       }
 
-      // Eliminar el personal de los alumnos que lo tienen como tutor
-  await Alumno.updateMany(
-    { tutor: personal._id },
-    { $unset: { tutor: "" } }
-  );
-
   // Eliminar el personal de las colecciones específicas (Docentes, Tutores, Coordinadores, Administradores)
   if (personal.roles.includes('D')) {
     const docente = await Docentes.findOne({ personalMatricula: personal.matricula })
@@ -282,12 +302,23 @@ exports.deletePersonalCord = async (req, res) => {
       materiaInvalida = materias.some(materia => materia.id_carrera !== idCarreraEsperada);
     }
 
-    if (alumnoInvalido && materiaInvalida){
+    if (!alumnoInvalido && materiaInvalida){
     
       await Docentes.findOneAndDelete({ personalMatricula: personal.matricula });
       }else{
         return res.status(404).json({ message: 'El docente tiene alumnos o materias en otra carrera existente' });
       }
+
+      // Eliminarlo de los alumnos que lo tengan como docente
+      await Alumno.updateMany(
+      { tutor: personal._id },
+      { $unset: { tutor: "" } }
+    );
+
+    await Materia.updateMany(
+      { docente: docente._id },
+      { $unset: { docente: "" } }
+    );
   }
   if (personal.roles.includes('T')) {
     const tutor = await Tutores.findOne({ personalMatricula: personal.matricula })
@@ -299,32 +330,47 @@ exports.deletePersonalCord = async (req, res) => {
       alumnoInvalido = alumnos.some(alumno => alumno.id_carrera !== idCarreraEsperada);
     }
 
-    console.log("alumnoInvalido:", alumnoInvalido.id_carrera);
+    if (alumnoInvalido) {
+    
+    console.log("alumno Invalido:", alumnoInvalido.id_carrera);
+    
+    } else {
 
-    if (alumnoInvalido){
+    console.log("no hay ningun alumno Invalido");
+    }
+
+    if (!alumnoInvalido){
     
       await Tutores.findOneAndDelete({ personalMatricula: personal.matricula });
     }else{
       return res.status(404).json({ message: 'El tutor tiene alumnos en otra carrera existente' });
     }
+
+  
+    // Eliminarlo de los alumnos que lo tengan como docente
+    await Alumno.updateMany(
+    { tutor: personal._id },
+    { $unset: { tutor: "" } }
+  );
   }
   if (personal.roles.includes('C')) {
     await Coordinadores.findOneAndDelete({ personalMatricula: personal.matricula });
+    
+      await Alumno.updateMany(
+      { tutor: personal._id },
+      { $unset: { tutor: "" } }
+    );
   }
   if (personal.roles.includes('A')) {
     await Administradores.findOneAndDelete({ personalMatricula: personal.matricula });
   }
 
 
-    // Eliminarlo de los alumnos que lo tengan como docente
-    await Materia.updateMany(
-      { docente: personalId },
-      { $unset: { docente: "" } }
-    );
+
 
 
   // Eliminar el personal
-  await Personal.findByIdAndDelete(req.params.id);
+  await Personal.findByIdAndDelete(personal.id);
       res.status(204).json({ message: 'Personal eliminado' });
   } catch (error) {
       res.status(500).json({ message: 'Error al eliminar el personal', error });

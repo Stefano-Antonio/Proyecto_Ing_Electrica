@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "./ModificarMateria.css";
+import "./CrearMateria.css";
 
 function ModificarMateria() {
   const navigate = useNavigate();

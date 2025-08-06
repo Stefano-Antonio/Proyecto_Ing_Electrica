@@ -107,7 +107,7 @@
   .top-left {
     position: absolute;
     top: 10px;
-    left: 10px;
+    left: 0;
   }
   
   .back-button {
@@ -119,9 +119,11 @@
     text-decoration: none; /* Sin subrayado */
     display: inline-block; /* Mostrar en línea */
     font-size: 16px; /* Tamaño de la fuente */
-    margin: 4px 2px; /* Margen */
+    margin: 4px 0; /* Margen solo arriba y abajo, sin margen lateral */
     cursor: pointer; /* Cambiar el cursor al pasar sobre el botón */
     border-radius: 12px; /* Bordes redondeados */
+    min-width: max-content; /* El ancho mínimo será el del contenido */
+    width: auto; /* El ancho se ajusta al texto */
   }
   
   .materias-layout {

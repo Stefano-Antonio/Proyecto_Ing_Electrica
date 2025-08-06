@@ -131,10 +131,27 @@ h3, h4 {
   width: 100%;
 }
 
+/* Puedes agregar esto al final de tu archivo de estilos de la tabla */
+.action-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  padding: 4px;
+  margin: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
 
 .button-container {
   display: flex; /* Usar flexbox para alinear los botones */
-  gap: 8px; /* Espaciado entre los botones */
+  gap: -10px; /* Espaciado entre los botones */
   justify-content: center; /* Centrar los botones horizontalmente */
   align-items: center; /* Alinear los botones verticalmente */
 }

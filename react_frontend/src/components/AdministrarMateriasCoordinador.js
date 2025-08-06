@@ -129,7 +129,7 @@ const AdministrarMateriasCoordinador = () => {
       link.click();
       link.remove();
     } catch (error) {
-      console.error("❌ Error al descargar CSV de materias filtradas:", error);
+      console.error("Error al descargar CSV de materias filtradas:", error);
       toast.error("No se pudo descargar el archivo.");
     }
   };
@@ -293,7 +293,7 @@ const AdministrarMateriasCoordinador = () => {
                   <th>Cupo</th>
                   <th>Materia</th>
                   <th>Docente</th>
-                  <th>Laboratorio</th>
+                  <th>Lab</th>
                   {esSemiescolarizada ? (
                     <>
                       <th>Paridad</th>

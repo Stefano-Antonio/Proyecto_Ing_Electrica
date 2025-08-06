@@ -89,7 +89,7 @@ const AdministrarPersonalCoordinador = () => {
     link.click();
     link.remove();
   } catch (error) {
-    console.error("❌ Error al descargar CSV filtrado de personal:", error);
+    console.error("Error al descargar CSV filtrado de personal:", error);
     toast.error("No se pudo descargar el archivo.");
   }
 };
