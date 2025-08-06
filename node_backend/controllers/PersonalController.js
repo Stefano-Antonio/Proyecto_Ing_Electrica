@@ -34,6 +34,15 @@ exports.createPersonal = async (req, res) => {
     const { matricula, nombre, password, roles, correo, telefono, id_carrera } = req.body;
 
     try {
+
+        // Validar si ya hay un usuario de personal relacionado a un coordinador de carrera
+        if (roles === 'C' && matricula.match(/^C\d{4}$/)) {
+            const coordinadorExistente = await Coordinadores.findOne({ id_carrera });
+            if (coordinadorExistente) {
+                return res.status(409).json({ message: 'Ya existe un coordinador registrado para esta carrera.' });
+            }
+        }
+        
         const newPersonal = new Personal({ matricula, nombre, password, roles, correo, telefono });
         const usuarioGuardado = await newPersonal.save();
 
