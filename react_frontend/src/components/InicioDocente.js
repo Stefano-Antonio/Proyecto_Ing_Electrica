@@ -272,7 +272,7 @@ function InicioDocente() {
       state: { 
         nombre: alumno.nombre, 
         matricula: alumno.matricula, 
-        matriculaDocente: matriculaDocente,
+        matriculaTutor: matriculaDocente,
         id_carrera: alumno.id_carrera // AGREGADO
       } 
     });

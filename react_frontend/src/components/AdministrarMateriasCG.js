@@ -133,9 +133,9 @@ const AdministrarMateriasCG = () => {
   const handleListaAlumnos = (materia) => {
     guardarEstadoVista();
     const materiaUrl = formatUrl(materia.nombre); // Formatea el nombre de la materia
-    navigate(`/docente/materias/${materiaUrl}/lista-alumnos`, {
+    navigate(`/coord-gen/materias/${materiaUrl}/lista-alumnos`, {
       state: {
-        nombre: docentes.nombre,
+        nombre: getDocenteNombre(materia),
         matricula: docentes.matricula,
         materiaId: materia._id,
         materiaNombre: materia.nombre,
@@ -290,7 +290,7 @@ const AdministrarMateriasCG = () => {
                           className="icon-button"
                           onClick={() => {
                             guardarEstadoVista();
-                            navigate("/modificar-materia-cg", { state: { materia } })
+                            navigate("/coord-gen/materias/modificar-materia", { state: { materia } })
                           }}
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -339,7 +339,7 @@ const AdministrarMateriasCG = () => {
         <div className="add-delete-buttons">
           <button onClick={() => {
             guardarEstadoVista();
-            navigate("/crear-materia-cg")
+            navigate("/coord-gen/materias/crear-materia")
           }}>Agregar nueva materia</button>
         </div>
       </div>

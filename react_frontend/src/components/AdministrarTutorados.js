@@ -144,9 +144,9 @@ function AdministrarTutorados() {
   if ((matriculaCord || storedMatriculaTutor).startsWith("C") && !(matriculaCord || storedMatriculaTutor).startsWith("CG")) {
     navigate("/coordinador/alumnos", { state: { matriculaCord: matriculaCord || storedMatriculaTutor } });
   } else if ((matriculaCord || storedMatriculaTutor).startsWith("CG")) {
-    navigate("/inicio-coordinador-gen/alumnos", { state: { matriculaCord: matriculaCord || storedMatriculaTutor } });
+    navigate("/coord-gen/alumnos", { state: { matriculaCord: matriculaCord || storedMatriculaTutor } });
   } else {
-    navigate("/inicio-coordinador/alumnos", { state: { matriculaCord: matriculaCord || storedMatriculaTutor } });
+    navigate("/coord-gen/alumnos", { state: { matriculaCord: matriculaCord || storedMatriculaTutor } });
   }}
 
   const getEstatusIcon = (estatus) => {

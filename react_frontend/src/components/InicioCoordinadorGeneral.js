@@ -31,9 +31,9 @@ function InicioCoordinadorGen() {
 
   return (
     <div className="docente-layout">
-      {location.pathname !== '/inicio-coordinador-gen' && (
+      {location.pathname !== '/coord-gen' && (
         <div className="top-hide" style={{ display: 'flex', justifyContent: 'flex-start', margin: '10px 0 0 0' }}>
-          <button className="back-button hide-button-fixed" onClick={() => navigate('/inicio-coordinador-gen')}>Ocultar</button>
+          <button className="back-button hide-button-fixed" onClick={() => navigate('/coord-gen')}>Ocultar</button>
         </div>
       )}
       <div className="docente-container">
@@ -47,10 +47,10 @@ function InicioCoordinadorGen() {
         <h4>A continuacion, seleccione la lista que desee visualizar</h4>
 
         <div className="buttons">
-          <button onClick={() => navigate("/inicio-coordinador-gen/alumnos")}>Administrar alumno</button>
-          <button onClick={() => navigate("/inicio-coordinador-gen/personal")}>Administrar personal</button>
-          <button onClick={() => navigate("/inicio-coordinador-gen/materias")}>Administrar materias</button>
-          <button onClick={() => navigate("/inicio-coordinador-gen/historial-academico")}>Historial académico</button>
+          <button onClick={() => navigate("/coord-gen/alumnos")}>Administrar alumno</button>
+          <button onClick={() => navigate("/coord-gen/personal")}>Administrar personal</button>
+          <button onClick={() => navigate("/coord-gen/materias")}>Administrar materias</button>
+          <button onClick={() => navigate("/coord-gen/historial-academico")}>Historial académico</button>
         </div>
   
         {/* Aquí se mostrará el componente de la ruta anidada */}

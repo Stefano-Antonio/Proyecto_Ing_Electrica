@@ -102,7 +102,6 @@ const AdministrarPersonalCoordinador = () => {
   const handleDelete = async () => {
     try {
       const formData = {usuarioAEliminar, idCarreraEsperada: id_carrera}; // Incluir id_carrera en los datos del formulario
-      console.log("Datos enviados para eliminar:", formData);
       await apiClient.request({
         url: `${API_URL}/api/personal/coordinador`,
         method: 'DELETE',

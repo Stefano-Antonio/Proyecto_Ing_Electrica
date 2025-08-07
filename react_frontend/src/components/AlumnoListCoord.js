@@ -107,19 +107,20 @@ const AlumnoListCoord = () => {
     // Si hay un estado guardado, restaurarlo
     if (estadoGuardado && !cameFromValidation) {
       const { searchTerm, scrollY, alumnos, tutoresNombres, mostrarComprobante } = JSON.parse(estadoGuardado);
-
       setSearchTerm(searchTerm || "");
       setAlumnos(alumnos || []);
       setTutoresNombres(tutoresNombres || {});
       setMostrarComprobante(mostrarComprobante ?? true);
-      setComprobanteHabilitado(mostrarComprobante ?? true); // por consistencia
-
-      // Scroll hacia la posición anterior
+      setComprobanteHabilitado(mostrarComprobante ?? true);
       setTimeout(() => window.scrollTo(0, scrollY || 0), 0);
-
-      sessionStorage.removeItem("vistaAlumnoCoord"); // Solo se restaura una vez
-      setLoading(false); // No hacemos fetch si restauramos
+      sessionStorage.removeItem("vistaAlumnoCoord");
+      setLoading(false);
       return;
+    }
+
+    // Si reload es true, borra el sessionStorage y haz fetch
+    if (cameFromValidation) {
+      sessionStorage.removeItem("vistaAlumnoCoord");
     }
 
     // Ejecutar todas las funciones asíncronas
@@ -131,7 +132,7 @@ const AlumnoListCoord = () => {
     };
 
     fetchData();
-  }, [matriculaCord, id_carrera]);
+  }, [matriculaCord, id_carrera, location.state]);
 
   useEffect(() => {
     if (location.state?.reload) {
@@ -179,7 +180,13 @@ const AlumnoListCoord = () => {
 
   const handleNavigate3 = (alumno) => {
     guardarEstadoVista(); // Guarda el estado actual antes de navegar
-    navigate(`/coordinador/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
+    navigate(`/coordinador/revisar-horario/${alumno.matricula}`, { state: 
+      { 
+        nombre: alumno.nombre, 
+        matricula: alumno.matricula, 
+        matriculaTutor: matriculaCord
+      } 
+    });
   };
 
   const handleNavigate4 = (alumno) => {

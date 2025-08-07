@@ -9,7 +9,7 @@ function InicioAdministradorGen() {
   const location = useLocation();
 
 
-  const nombre = location.state?.nombre || "Coordinador";
+  const nombre = location.state?.nombre || "Administrador";
 
 
   const handleLogout = () => {
@@ -30,9 +30,9 @@ function InicioAdministradorGen() {
         <h4>A continuacion, seleccione la lista que desee visualizar</h4>
 
         <div className="buttons">
-          <button onClick={() => navigate("/inicio-administrador-gen/alumnos")}>Administrar alumno</button>
-          <button onClick={() => navigate("/inicio-administrador-gen/personal")}>Administrar personal</button>
-          <button onClick={() => navigate("/inicio-administrador-gen/materias")}>Administrar materias</button>
+          <button onClick={() => navigate("/admin-gen/alumnos")}>Administrar alumno</button>
+          <button onClick={() => navigate("/admin-gen/personal")}>Administrar personal</button>
+          <button onClick={() => navigate("/admin-gen/materias")}>Administrar materias</button>
         </div>
   
         {/* Aquí se mostrará el componente de la ruta anidada */}

@@ -141,10 +141,10 @@ function Registro() {
           } else if (roles.includes("T")) {
             navigate("/tutor", { state: { nombre, matricula } });
           } else if (roles.includes("CG")) {
-            navigate("/inicio-coordinador-gen", { state: { nombre, matricula } });
+            navigate("/coord-gen", { state: { nombre, matricula } });
           }
           else if (roles.includes("AG")) {
-            navigate("/inicio-administrador-gen", { state: { nombre, matricula } });
+            navigate("/admin-gen", { state: { nombre, matricula } });
           } else {
             setMensaje("Usuario personal desconocido");
           }

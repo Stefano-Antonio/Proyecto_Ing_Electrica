@@ -92,11 +92,12 @@ const actualizarEstatus = async (nuevoEstatus) => {
 
     const adminMatricula = matriculaTutor || localStorage.getItem("matriculaTutor") || "";
 
-    if (adminMatricula.startsWith("A")) {
-        navigate("/administrador/alumnos", { state: { reload: true } });
-      } else if (adminMatricula.startsWith("AG")) {
+
+    if (adminMatricula.startsWith("AG")) {
+        navigate("/admin-gen/alumnos", { state: { reload: true } });
+      } else if (adminMatricula.startsWith("A")) {
         // Regresar a la vista principal de docente (no a /docente/alumnos)
-        navigate("/inicio-administrador-gen/alumnos", { state: { reload: true } });
+        navigate("/administrador/alumnos", { state: { reload: true } });
       } else {
         navigate(-1);
       }
