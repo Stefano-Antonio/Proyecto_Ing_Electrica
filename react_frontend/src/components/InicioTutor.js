@@ -235,7 +235,7 @@ function InicioTutor() {
 
   const getEstatusIcon = (estatus) => {
     switch (estatus) {
-      case "Sin revisar":
+      case "Falta de revisar":
         return <span className="status-icon yellow"></span>; 
       case "En espera":
         return <span className="status-icon gray"></span>; 

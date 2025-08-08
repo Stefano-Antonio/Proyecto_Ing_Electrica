@@ -196,7 +196,7 @@ const AlumnoListCG = () => {
 
   const getEstatusIcon = (estatus) => {
     switch (estatus) {
-      case "Sin revisar":
+      case "Falta de revisar":
         return <span className="status-icon yellow"></span>;
       case "En espera":
         return <span className="status-icon gray"></span>;
@@ -229,7 +229,7 @@ const AlumnoListCG = () => {
 
   // Palabras clave para estatus y carreras
   const estatusClaves = [
-    { clave: "sin revisar", valor: "Sin revisar" },
+    { clave: "falta de revisar", valor: "Falta de revisar" },
     { clave: "revisado", valor: "Revisado" },
     { clave: "en espera", valor: "En espera" }
   ];
@@ -258,9 +258,17 @@ const AlumnoListCG = () => {
 
     // Filtro por estatus
     const estatusFiltro = estatusClaves.find(e => e.clave === search);
-    if (estatusFiltro) {
-      return alumno.estatus.toLowerCase() === estatusFiltro.valor.toLowerCase();
-    }
+   if (estatusFiltro) {
+      if (estatusFiltro.valor === "falta de revisar") {
+        // Incluye los que son "Falta de revisar" o estatus vacío/desconocido
+        return (
+          !alumno.estatus ||
+          alumno.estatus.toLowerCase() === "Falta de revisar" ||
+          alumno.estatus.toLowerCase() === "Falta de revisar"
+        );
+      }
+  return alumno.estatus && alumno.estatus.toLowerCase() === estatusFiltro.valor.toLowerCase();
+}
 
     // Filtro por carrera clave
     if (carreraClaves.includes(search)) {

@@ -42,6 +42,7 @@
 
 .personal-table, th, td {
   border: 1px solid #ccc;
+  font-size: 14px;  
 }
 
 .personal-table th,
