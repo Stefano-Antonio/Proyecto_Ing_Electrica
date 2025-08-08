@@ -51,6 +51,7 @@ import ModificarPersonal from './components/ModificarPersonal';
 import './components/ModificarPersonal.css';
 import CrearMateria from './components/CrearMateria';
 import CrearMateriaCG from './components/CrearMateriaCG';
+import CreateMateria from './components/CreateMateria';
 import './components/CrearMateria.css';
 import AsignarTutor from './components/AsignarTutor';
 import './components/ModificarMateria.css';
