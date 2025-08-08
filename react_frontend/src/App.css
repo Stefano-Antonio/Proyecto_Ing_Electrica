@@ -12,7 +12,18 @@ th, td {
   word-break: break-word;
 }
 
-.scrollable-table, .tutor-content {
+.scrollable-table {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  box-sizing: border-box;
+}
+.scrollable-table table {
+  width: 100%;
+  min-width: max-content;
+  box-sizing: border-box;
+}
+.tutor-content {
   width: 100%;
 }
 
@@ -82,8 +93,8 @@ input, select, textarea, button {
 
 .Lat_iazquierda, .Lat_derecha {
   background-color: #e0e0e0; 
-  min-height:75vh;
-  height: 100vh;  
+  min-height: 100vh; /* mínimo la altura de la ventana */
+  height: auto;      /* pero se expande si el contenido es mayor */
 }
 
 .Contenido {
@@ -162,25 +173,15 @@ input, select, textarea, button {
 }
 
 @media (min-width: 901px) {
-  /* Solo cuando las barras laterales están reducidas */
-  .Lat_iazquierda.lat-barra-reducida ~ .Contenido .Header-wrapper {
-    padding-left: 100px !important;
-    padding-right: 100px !important;
+  .lat-barra-reducida ~ .Contenido .Header-wrapper,
+  .Main-layout .Header-wrapper,
+  .Header-wrapper {
     width: 100%;
     max-width: 100%;
     margin-left: 0;
     margin-right: 0;
-    box-sizing: border-box;
-  }
-  
-  /* Solo cuando las barras laterales están reducidas */
-  .Lat_iazquierda.lat-barra-reducida ~ .Contenido .Header-wrapper {
-    padding-left: 100px !important;
-    padding-right: 100px !important;
-    width: 100%;
-    max-width: 100%;
-    margin-left: 0;
-    margin-right: 0;
+    padding-left: 60px;
+    padding-right: 60px;
     box-sizing: border-box;
   }
 
