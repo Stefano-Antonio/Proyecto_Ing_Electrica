@@ -212,7 +212,7 @@
 .materia-table td {
     border: 1px solid #ccc;
     text-align: center;
-    font-size: 10px;  
+    font-size: 8px;  
     overflow: hidden;
     height: 20px; /* Uniform row height for all table rows */
 }

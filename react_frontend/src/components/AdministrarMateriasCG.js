@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -7,6 +8,14 @@ import apiClient from '../utils/axiosConfig'; // Importar la configuración de a
 import "./AdministrarMaterias.css";
 
 const AdministrarMateriasCG = () => {
+  // Estado para el filtro de tipo de materia
+  const [tipoCarrera, setTipoCarrera] = useState("todas"); // "todas", "escolarizada", "semiescolarizada"
+
+  // Carreras semiescolarizadas
+  const carrerasSemiescolarizadas = [
+    "ISftwS", "IDsrS", "IEIndS", "ICmpS", "IRMcaS", "IElecS"
+  ];
+
   const [materias, setMaterias] = useState([]);
   const [docentes, setDocentes] = useState([]);
   const [searchTerm, setSearchTerm] = useState(""); // Filtro de búsqueda
@@ -173,9 +182,17 @@ const AdministrarMateriasCG = () => {
       .toLowerCase();
   });
 
-  // Filtrar materias por búsqueda y carrera
+  // Filtrar materias por búsqueda, carrera y tipo
   const materiasFiltradas = materias.filter((materia) => {
     const search = searchTerm.toLowerCase();
+
+    // Filtro por tipo de materia
+    if (tipoCarrera === "escolarizada" && carrerasSemiescolarizadas.includes(materia.id_carrera)) {
+      return false;
+    }
+    if (tipoCarrera === "semiescolarizada" && !carrerasSemiescolarizadas.includes(materia.id_carrera)) {
+      return false;
+    }
 
     // Obtener nombre de carrera sin "Ing. en" y sin " (Semiescolarizado)"
     let nombreCarreraCompleto = carrerasPermitidas[materia.id_carrera] || "";
@@ -232,6 +249,15 @@ const AdministrarMateriasCG = () => {
           className="search-bar"
         />
 
+
+        {/* Botones de filtro por tipo de materia */}
+        <div className="filtros-materias" style={{ marginBottom: '16px', display: 'flex', gap: '8px', justifyContent: 'center' }}>
+          <button onClick={() => setTipoCarrera("escolarizada")}>Escolarizadas</button>
+          <button onClick={() => setTipoCarrera("semiescolarizada")}>Semiescolarizadas</button>
+          <button onClick={() => setTipoCarrera("todas")}>Todas</button>
+        </div>
+
+
         {materiasFiltradas.length > 0 ? (
           <div className="scrollable-table">
             <table className="materia-table">
@@ -244,12 +270,18 @@ const AdministrarMateriasCG = () => {
                   <th>Materia</th>
                   <th>Docente</th>
                   <th>Lab</th>
-                  <th>Lunes</th>
-                  <th>Martes</th>
-                  <th>Miércoles</th>
-                  <th>Jueves</th>
+                  {/* Mostrar días según el filtro */}
+                  {tipoCarrera !== "semiescolarizada" && (
+                    <>
+                      <th>Lunes</th>
+                      <th>Martes</th>
+                      <th>Miércoles</th>
+                      <th>Jueves</th>
+                    </>
+                  )}
                   <th>Viernes</th>
-                  <th>Sabado</th>
+                  {/* Mostrar Sábado si hay alguna materia semiescolarizada en el filtro 'todas' o si el filtro es semiescolarizada */}
+                  {((tipoCarrera === "todas" && materiasFiltradas.some(m => carrerasSemiescolarizadas.includes(m.id_carrera))) || tipoCarrera === "semiescolarizada") && <th>Sábado</th>}
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -272,12 +304,22 @@ const AdministrarMateriasCG = () => {
                     </td>
                     <td>{getDocenteNombre(materia)}</td>
                     <td>{materia.laboratorio ? "Sí" : "No"}</td>
-                    <td>{materia.horarios.lunes || "-"}</td>
-                    <td>{materia.horarios.martes || "-"}</td>
-                    <td>{materia.horarios.miercoles || "-"}</td>
-                    <td>{materia.horarios.jueves || "-"}</td>
+                    {/* Mostrar días según el filtro */}
+                    {tipoCarrera !== "semiescolarizada" && (
+                      <>
+                        <td>{materia.horarios.lunes || "-"}</td>
+                        <td>{materia.horarios.martes || "-"}</td>
+                        <td>{materia.horarios.miercoles || "-"}</td>
+                        <td>{materia.horarios.jueves || "-"}</td>
+                      </>
+                    )}
                     <td>{materia.horarios.viernes || "-"}</td>
-                    <td>{materia.horarios.sabado || "-"}</td>
+                    {/* Mostrar Sábado si corresponde */}
+                    {((tipoCarrera === "todas" && materiasFiltradas.some(m => carrerasSemiescolarizadas.includes(m.id_carrera))) || tipoCarrera === "semiescolarizada") && (
+                      tipoCarrera === "semiescolarizada" || carrerasSemiescolarizadas.includes(materia.id_carrera)
+                        ? <td>{materia.horarios.sabado || "-"}</td>
+                        : <td></td>
+                    )}
                     <td>
                       <div className="button-container">
                         <button className="icon-button" onClick={() => handleListaAlumnos(materia)}>
@@ -336,7 +378,7 @@ const AdministrarMateriasCG = () => {
           </div>
         )}
 
-        <div className="add-delete-buttons">
+        <div className="add-delete-buttons" style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
           <button onClick={() => {
             guardarEstadoVista();
             navigate("/coord-gen/materias/crear-materia")
