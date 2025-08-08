@@ -283,7 +283,6 @@ exports.deletePersonal = async (req, res) => {
 
 exports.deletePersonalCord = async (req, res) => {
   const { usuarioAEliminar, idCarreraEsperada } = req.body;
-  console.log(" idCarreraEsperada:", usuarioAEliminar, idCarreraEsperada);
   const id = usuarioAEliminar;
   
   try {
@@ -415,6 +414,15 @@ exports.subirPersonalCSV = async (req, res) => {
           if (!matricula || !nombre || !password || !roles || !correo || !telefono) continue;
 
           matricula = matricula.trim();
+
+          // Validar que no haya más de un coordinador por carrera
+          if (roles.includes("C") && id_carrera && matricula.match(/^C\d{4}$/)) {
+            const coordinadorExistente = await Coordinadores.findOne({ id_carrera });
+            if (coordinadorExistente && coordinadorExistente.personalMatricula !== matricula) {
+              // Si ya existe otro coordinador para esa carrera, NO crear el usuario ni el documento
+              continue; // Salta este registro
+            }
+          }
 
           // Si es el coordinador general, ignorar por completo
           if (coordinadorGeneral && matricula === coordinadorGeneral.matricula) {

@@ -26,7 +26,7 @@ function generarPDFHorario(nombreAlumno, carrera, materias) {
     materia: 120,
     grupo: 60,
     salon: 60,
-    dias: 70, // ancho por día
+    dias: 70,
   };
 
   const colPositions = {
@@ -62,14 +62,12 @@ function generarPDFHorario(nombreAlumno, carrera, materias) {
   materias.forEach((materia) => {
     const rowTop = doc.y + 4;
 
-    // Verificación de salto de página
     if (rowTop > doc.page.height - 60) {
       doc.addPage();
     }
 
-    // Ajuste de texto con salto de línea automático
     doc.fontSize(10);
-    doc.text(materia.nombre || '', colPositions.materia, rowTop, {
+    doc.text(`${materia.nombre || ''} (provisional)`, colPositions.materia, rowTop, {
       width: colWidths.materia,
       lineGap: 2,
     });

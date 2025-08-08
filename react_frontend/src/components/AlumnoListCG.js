@@ -146,7 +146,7 @@ const AlumnoListCG = () => {
 
   const handleNavigate1 = () => {
     guardarEstadoVista();
-    navigate("/coord-gen/alumnos/crear-alumno", { state: { matriculaCord: matriculaCord } });
+    navigate("/crear-alumno-cg", { state: { matriculaCord: matriculaCord } });
   };
 
   const handleNavigate2 = () => {
@@ -156,7 +156,7 @@ const AlumnoListCG = () => {
 
   const handleNavigate3 = (alumno) => {
     guardarEstadoVista();
-    navigate(`/coord-gen/alumnos/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaTutor: matriculaCord} });
+    navigate(`/coordinador-gen/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaTutor: matriculaCord} });
   };
 
   const handleModify = (alumno) => {
