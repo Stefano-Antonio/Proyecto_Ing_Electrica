@@ -58,6 +58,14 @@
 }
 
 
+/* Si la columna de nombre es la 2ª columna */
+.personal-table td:nth-child(2),
+.personal-table th:nth-child(2) {
+  min-width: 220px;   /* Ajusta el valor según lo que necesites */
+  max-width: 400px;   /* Opcional: limita el ancho máximo */
+  white-space: normal; /* Permite saltos de línea si el nombre es muy largo */
+  word-break: break-word;
+}
 
 .search-bar {
   width: 100%; /* Ajusta el ancho al 100% del contenedor */

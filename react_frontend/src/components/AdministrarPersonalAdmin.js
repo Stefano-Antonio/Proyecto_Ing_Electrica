@@ -1,4 +1,3 @@
-import "./AdministrarPersonal.css";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
