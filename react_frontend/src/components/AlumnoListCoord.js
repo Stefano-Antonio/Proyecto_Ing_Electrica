@@ -237,7 +237,7 @@ const AlumnoListCoord = () => {
 
   const getEstatusIcon = (estatus) => {
     switch (estatus) {
-      case "Sin revisar":
+      case "Falta de revisar":
         return <span className="status-icon yellow"></span>; 
       case "En espera":
         return <span className="status-icon gray"></span>; 
@@ -266,6 +266,7 @@ const AlumnoListCoord = () => {
     // Si el término de búsqueda es un estatus exacto, solo filtrar por estatus
     const esFiltroPorEstatus = ["falta de revisar", "revisado", "en espera"].includes(search);
 
+    
     return esFiltroPorEstatus
       ? estatusCoincide
       : nombreCoincide || matriculaCoincide || tutorCoincide || idCarreraCoincide || alumno.estatus.toLowerCase().includes(search);

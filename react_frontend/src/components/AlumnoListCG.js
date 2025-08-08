@@ -6,6 +6,7 @@ import apiClient from '../utils/axiosConfig'; // Importar la configuración de a
 import 'react-toastify/dist/ReactToastify.css';
 import "./AlumnoList.css";
 
+
 const AlumnoListCG = () => {
   const [alumnos, setAlumnos] = useState([]);
   const [tutoresNombres, setTutoresNombres] = useState({});
@@ -21,6 +22,9 @@ const AlumnoListCG = () => {
   const id_carrera = localStorage.getItem("id_carrera");
   const navigate = useNavigate();
   const API_URL = process.env.REACT_APP_API_URL;
+
+  // Filtro visual para tipo de alumno
+  const [tipoAlumno, setTipoAlumno] = useState("todos"); // "todos", "escolarizado", "semiescolarizado"
 
   useEffect(() => {
 
@@ -196,7 +200,7 @@ const AlumnoListCG = () => {
 
   const getEstatusIcon = (estatus) => {
     switch (estatus) {
-      case "Sin revisar":
+      case "Falta de revisar":
         return <span className="status-icon yellow"></span>;
       case "En espera":
         return <span className="status-icon gray"></span>;
@@ -229,9 +233,10 @@ const AlumnoListCG = () => {
 
   // Palabras clave para estatus y carreras
   const estatusClaves = [
-    { clave: "sin revisar", valor: "Sin revisar" },
-    { clave: "revisado", valor: "Revisado" },
-    { clave: "en espera", valor: "En espera" }
+    { clave: "falta de revisar", valor: "falta de revisar" },
+    { clave: "sin revisar", valor: "falta de revisar" },
+    { clave: "revisado", valor: "revisado" },
+    { clave: "en espera", valor: "en espera" }
   ];
 
   const carreraClaves = Object.values(carrerasPermitidas).map(nombre => {
@@ -243,15 +248,29 @@ const AlumnoListCG = () => {
       .toLowerCase();
   });
 
-  // Filtrar alumnos por búsqueda
+
+  // Carreras semiescolarizadas
+  const carrerasSemiescolarizadas = [
+    "ISftwS", "IDsrS", "IEIndS", "ICmpS", "IRMcaS", "IElecS"
+  ];
+
+  // Filtrar alumnos por búsqueda y tipo
   const alumnosFiltrados = alumnos.filter(alumno => {
-    const search = searchTerm.toLowerCase();
+    // Filtro por tipo de alumno
+    if (tipoAlumno === "escolarizado" && carrerasSemiescolarizadas.includes(alumno.id_carrera)) {
+      return false;
+    }
+    if (tipoAlumno === "semiescolarizado" && !carrerasSemiescolarizadas.includes(alumno.id_carrera)) {
+      return false;
+    }
+
+    const search = searchTerm.trim().toLowerCase();
 
     // Obtener nombre de carrera sin "Ing. en" y sin " (Semiescolarizado)"
     let nombreCarreraCompleto = carrerasPermitidas[alumno.id_carrera] || "";
     let nombreCarreraClave = nombreCarreraCompleto
       .replace(/^Ing\. en\s*/i, "")
-      .replace(/^Ing\.\s*/i, "")
+      .replace(/^Ing\./i, "")
       .replace(/\s*\(Semiescolarizado\)/i, "")
       .trim()
       .toLowerCase();
@@ -259,7 +278,17 @@ const AlumnoListCG = () => {
     // Filtro por estatus
     const estatusFiltro = estatusClaves.find(e => e.clave === search);
     if (estatusFiltro) {
-      return alumno.estatus.toLowerCase() === estatusFiltro.valor.toLowerCase();
+      if (estatusFiltro.valor === "falta de revisar") {
+        // Incluye los que son "Falta de revisar", "Sin revisar", vacío o desconocido
+        const estatusAlumno = (alumno.estatus || "").trim().toLowerCase();
+        return (
+          estatusAlumno === "falta de revisar" ||
+          estatusAlumno === "sin revisar" ||
+          estatusAlumno === "" ||
+          estatusAlumno === "desconocido"
+        );
+      }
+      return alumno.estatus && alumno.estatus.trim().toLowerCase() === estatusFiltro.valor;
     }
 
     // Filtro por carrera clave
@@ -302,6 +331,14 @@ const AlumnoListCG = () => {
         style={{ width: "800px" }}
       />
     </div>
+
+        {/* Botones de filtro por tipo de alumno */}
+        <div className="filtros-alumnos" style={{ marginBottom: '16px', display: 'flex', gap: '8px', justifyContent: 'center' }}>
+          <button onClick={() => setTipoAlumno("escolarizado")}>Escolarizados</button>
+          <button onClick={() => setTipoAlumno("semiescolarizado")}>Semiescolarizados</button>
+          <button onClick={() => setTipoAlumno("todos")}>Todos</button>
+        </div>
+
         {alumnosFiltrados.length > 0 ? (
           <div className="alumno-scrollable-table">
             <table className="alumnos-table">

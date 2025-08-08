@@ -97,13 +97,16 @@ useEffect(() => {
   return () => window.removeEventListener('resize', manejarResize);
 }, []);
 
+  // Detectar si está en una ruta de coordinador general
+  const esCoordGen = location.pathname.startsWith('/coord-gen');
+
   return (
       <div className="App">
         <div className="Header-wrapper"> {/* Wrapper para espacio debajo del encabezado */}
           <Encabezado />
         </div>
         <div className="Main-layout">
-          <div className="Lat_iazquierda"></div> {/* Barra lateral izquierda */}
+          <div className={`Lat_iazquierda${esCoordGen ? ' lat-barra-reducida' : ''}`}></div> {/* Barra lateral izquierda */}
           <div className="Contenido">
             <Routes>
               <Route path="/" element={<PrivateRoute><Registro /></PrivateRoute>} />
@@ -190,7 +193,7 @@ useEffect(() => {
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </div>
-          <div className="Lat_derecha"></div> {/* Barra lateral derecha */}
+          <div className={`Lat_derecha${esCoordGen ? ' lat-barra-reducida' : ''}`}></div> {/* Barra lateral derecha */}
         </div>
       {(esRegistro) && <Pie_pagina />}
       </div>
