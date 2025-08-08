@@ -20,7 +20,7 @@ const RedirectRoute = ({ children, userType }) => {
         } else if (roles.includes("T")){
             return "/tutor";
         } else if (roles.includes("CG")){
-            return "/inicio-coordinador-gen";
+            return "/coord-gen";
         } else if (roles.includes("AG")){
             return "/inicio-administrador-gen";
         }

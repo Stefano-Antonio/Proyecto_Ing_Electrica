@@ -134,7 +134,7 @@ const AlumnoListAdmin = () => {
 
   const handleNavigate = (alumno) => {
     guardarEstadoVista();
-    navigate(`/administrador/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaAdmin: matriculaAdmin} });
+    navigate(`/administrador/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaTutor: matriculaAdmin} });
   };
 
 

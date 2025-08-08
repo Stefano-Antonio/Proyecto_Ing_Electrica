@@ -16,7 +16,7 @@ const AlumnoListAG = () => {
   const [loading, setLoading] = useState(true);
   const token = localStorage.getItem("token");
   const [AlumnoAEliminar, setAlumnoAEliminar] = useState(null);
-  const matriculaCord = localStorage.getItem("matricula");
+  const matriculaAdmin = localStorage.getItem("matricula");
   const navigate = useNavigate();
   const API_URL = process.env.REACT_APP_API_URL; // Asegúrate de tener configurada la URL base en tu .env
 
@@ -74,11 +74,11 @@ const AlumnoListAG = () => {
 
     fetchData();
     fetchAlumnos();
-  }, [matriculaCord]);
+  }, [matriculaAdmin]);
 
 
   const handleNavigate3 = (alumno) => {
-    navigate(`/administrador/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
+    navigate(`/admin-gen/alumnos/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaTutor: matriculaAdmin} });
   };
 
 
@@ -163,6 +163,8 @@ const AlumnoListAG = () => {
               <th>Matricula</th>
               <th>Nombre del alumno</th>
               <th>Tutor asignado</th>
+              <th>Correo</th>
+              <th>Telefono</th>
               <th>Horario</th>
               <th>Estatus</th>
             </tr>
@@ -174,6 +176,8 @@ const AlumnoListAG = () => {
                 <td>{alumno.matricula}</td>
                 <td>{alumno.nombre}</td>
                 <td>{tutoresNombres[alumno._id] ? tutoresNombres[alumno._id] : "Sin asignar"}</td>
+                <td>{alumno.correo}</td>
+                <td>{alumno.telefono}</td>
                 <td className="actions">
                   <button
                     className="icon-button"

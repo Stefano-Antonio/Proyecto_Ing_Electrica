@@ -198,7 +198,7 @@ function CrearMateriaCG() {
             docente: ''
           });
           setTimeout(() => {
-            navigate("/inicio-coordinador-gen/materias", { state: { reload: true } });
+            navigate("/coord-gen/materias", { state: { reload: true } });
           }, 200);  // Espera un poco para mostrar el toast antes de recargar
         }
       } catch (error) {

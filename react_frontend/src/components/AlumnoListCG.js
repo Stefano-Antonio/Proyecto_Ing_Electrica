@@ -151,23 +151,23 @@ const AlumnoListCG = () => {
 
   const handleNavigate2 = () => {
     guardarEstadoVista();
-    navigate("/admin-tutor", { state: { matriculaCord: matriculaCord } });
+    navigate("/coord-gen/alumnos/admin-tutor", { state: { matriculaCord: matriculaCord } });
   };
 
   const handleNavigate3 = (alumno) => {
     guardarEstadoVista();
-    navigate(`/coordinador-gen/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
+    navigate(`/coordinador-gen/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaTutor: matriculaCord} });
   };
 
   const handleModify = (alumno) => {
     guardarEstadoVista();
-    navigate("/modificar-alumno-cg", { state: { alumno, matriculaCord: matriculaCord } });
+    navigate("/coord-gen/alumnos/modificar-alumno", { state: { alumno, matriculaCord: matriculaCord } });
   };
 
   // Función para validar el comprobante de pago
   const handleValidate = (alumno) => {
     guardarEstadoVista();
-    navigate(`/validar-pago-cg/${alumno.matricula}`, {
+    navigate(`/coord-gen/alumnos/validar-pago/${alumno.matricula}`, {
       state: {
         nombre: alumno.nombre,
         matricula: alumno.matricula,
@@ -311,6 +311,8 @@ const AlumnoListCG = () => {
                   <th>Matricula</th>
                   <th>Nombre alumno</th>
                   <th>Tutor</th>
+                  <th>Correo</th>
+                  <th>Telefono</th>
                   <th>Horario</th>
                   <th>Estatus</th>
                   <th>Pago</th>
@@ -324,6 +326,8 @@ const AlumnoListCG = () => {
                     <td>{alumno.matricula}</td>
                     <td>{alumno.nombre}</td>
                     <td>{tutoresNombres[alumno._id] ? tutoresNombres[alumno._id] : "Sin asignar"}</td>
+                    <td>{alumno.correo}</td>
+                    <td>{alumno.telefono}</td>
                     <td className="actions">
                       <button
                         className="icon-button"

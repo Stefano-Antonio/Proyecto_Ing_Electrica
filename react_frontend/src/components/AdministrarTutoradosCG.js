@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import apiClient from '../utils/axiosConfig'; // Importar la configuración de axios
 import "./AdministrarTutorados.css";
 
-function AdministrarTutoradosAdmin() {
+function AdministrarTutoradosCG() {
   const [alumnos, setAlumnos] = useState([]);
   const [error, setError] = useState(null);
   const location = useLocation();
+  const token = localStorage.getItem("token");
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el filtro de búsqueda
   const navigate = useNavigate();
-  const { matriculaAdmin } = location.state || {};
+  const { matriculaCord } = location.state || {};
   const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
-    if (matriculaAdmin) {
-      localStorage.setItem("matriculaTutor", matriculaAdmin);
+    if (matriculaCord) {
+      localStorage.setItem("matriculaTutor", matriculaCord);
     }
-  }, [matriculaAdmin]);
+  }, [matriculaCord]);
 
   const storedMatriculaTutor = localStorage.getItem("matriculaTutor");
 
@@ -34,7 +36,14 @@ function AdministrarTutoradosAdmin() {
 
   const fetchAlumnoDetails = async (alumnoId) => {
     try {
-      const alumnoResponse = await fetch(`${API_URL}/api/alumnos/${alumnoId}`);
+      const alumnoResponse = await fetch(`${API_URL}/api/alumnos/${alumnoId}`,
+        {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
       
       if (!alumnoResponse.ok) {
         throw new Error(`Error al obtener detalles del alumno con ID ${alumnoId}`);
@@ -51,14 +60,21 @@ function AdministrarTutoradosAdmin() {
   useEffect(() => {
     const fetchAlumnos = async () => {
       try {
-        const matricula = matriculaAdmin || storedMatriculaTutor;
+        const matricula = matriculaCord || storedMatriculaTutor;
         if (!matricula) {
           console.error("Matrícula del tutor no encontrada");
           setError("Matrícula del tutor no encontrada");
           return;
         }
   
-        const response = await fetch(`${API_URL}/api/administradores/matricula/${matricula}`);
+        const response = await fetch(`${API_URL}/api/coordinadores/matricula/${matricula}`,
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json"
+            }
+          }
+        );
         if (!response.ok) {
           throw new Error("Error al obtener los alumnos");
         }
@@ -79,7 +95,14 @@ function AdministrarTutoradosAdmin() {
         // Obtener el estatus de cada alumno
         const fetchEstatus = async (alumno) => {
           try {
-            const estatusResponse = await fetch(`${API_URL}/api/tutores/estatus/${alumno.matricula}`);
+            const estatusResponse = await fetch(`${API_URL}/api/tutores/estatus/${alumno.matricula}`,
+              {
+                headers: {
+                  "Authorization": `Bearer ${token}`,
+                  "Content-Type": "application/json"
+                }
+              }
+            );
             if (!estatusResponse.ok) {
               throw new Error("Error al obtener el estatus del horario");
             }
@@ -101,11 +124,12 @@ function AdministrarTutoradosAdmin() {
     };
   
     fetchAlumnos();
-  }, [matriculaAdmin, storedMatriculaTutor]);
+  }, [matriculaCord, storedMatriculaTutor]);
   
 
-  const handleRevisarHorario = (alumno) => {
-    navigate(`/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaAdmin: matriculaAdmin } });
+
+    const handleRevisarHorario = (alumno) => {
+    navigate(`/coord-gen/alumnos/revisar-horario/${alumno.matricula}`, { state: { nombre: alumno.nombre, matricula: alumno.matricula, matriculaCord: matriculaCord} });
   };
 
   const handleLogout = () => {
@@ -116,9 +140,14 @@ function AdministrarTutoradosAdmin() {
     navigate("/");
   };
 
-  const handleBack = () => { 
-    navigate("/administrador/alumnos", { state: { matriculaAdmin: matriculaAdmin || storedMatriculaTutor } }); // Navegar a la página anterior 
-  }
+  const handleBack = () => {
+  if ((matriculaCord || storedMatriculaTutor).startsWith("CG") && !(matriculaCord || storedMatriculaTutor).startsWith("C")) {
+    navigate("/coord-gen/alumnos", { state: { matriculaCord: matriculaCord || storedMatriculaTutor } });
+  } else if ((matriculaCord || storedMatriculaTutor).startsWith("C")) {
+    navigate("/coord/alumnos", { state: { matriculaCord: matriculaCord || storedMatriculaTutor } });
+  } else {
+    navigate("/coord/alumnos", { state: { matriculaCord: matriculaCord || storedMatriculaTutor } });
+  }}
 
   const getEstatusIcon = (estatus) => {
     switch (estatus) {
@@ -142,9 +171,7 @@ function AdministrarTutoradosAdmin() {
   return (
     <div className="tutorados-layout">
       <div className="tutorados-container">
-        <div className="top-left">
           <button className="back-button" onClick={handleBack}>Regresar</button>
-        </div>
         <div className="top-right">
           <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
         </div>
@@ -205,4 +232,4 @@ function AdministrarTutoradosAdmin() {
   );
 }
 
-export default AdministrarTutoradosAdmin;
+export default AdministrarTutoradosCG;

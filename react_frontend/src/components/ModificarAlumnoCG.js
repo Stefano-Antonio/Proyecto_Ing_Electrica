@@ -141,7 +141,7 @@ useEffect(() => {
         }
       );
       setTimeout(() => {
-        navigate("/inicio-coordinador-gen/alumnos", { state: { reload: true } });
+        navigate("/coord-gen/alumnos", { state: { reload: true } });
       }, 200);  // Espera un poco para mostrar el toast antes de recargar
     } catch (error) {
       console.error("Error al actualizar el alumno:", error);

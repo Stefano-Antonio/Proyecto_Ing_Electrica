@@ -150,6 +150,7 @@ const AdministrarMateriasAG = () => {
                   <th>Cupo</th>
                   <th>Materia</th>
                   <th>Docente</th>
+                  <th>Lab</th>
                   <th>Lunes</th>
                   <th>Martes</th>
                   <th>Miércoles</th>
@@ -167,6 +168,7 @@ const AdministrarMateriasAG = () => {
                     <td>{materia.cupo}</td>
                     <td>{materia.nombre}</td>
                     <td c>{getDocenteNombre(materia)}</td>
+                    <td>{materia.laboratorio ? "Sí" : "No"}</td>
                     <td>{materia.horarios.lunes || "-"}</td>
                     <td>{materia.horarios.martes || "-"}</td>
                     <td>{materia.horarios.miercoles || "-"}</td>

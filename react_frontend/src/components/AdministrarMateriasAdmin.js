@@ -126,8 +126,10 @@ const AdministrarMateriasAdmin = () => {
                 <tr>
                   <th>Grupo</th>
                   <th>Salón</th>
+                  <th>Cupo</th>
                   <th>Materia</th>
                   <th>Docente</th>
+                  <th>Lab</th>
                   <th>Lunes</th>
                   <th>Martes</th>
                   <th>Miércoles</th>
@@ -141,8 +143,10 @@ const AdministrarMateriasAdmin = () => {
                   <tr key={materia._id}>
                     <td>{materia.grupo}</td>
                     <td>{materia.salon}</td>
+                    <td>{materia.cupo}</td>
                     <td>{materia.nombre}</td>
                     <td>{getDocenteNombre(materia)}</td>
+                    <td>{materia.laboratorio ? "Sí" : "No"}</td>
                     <td>{materia.horarios.lunes || "-"}</td>
                     <td>{materia.horarios.martes || "-"}</td>
                     <td>{materia.horarios.miercoles || "-"}</td>

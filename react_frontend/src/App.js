@@ -64,7 +64,7 @@ import AdministrarPersonalCG from "./components/AdministrarPersonalCG";
 import './components/InicioCoordinadorGen.css';
 import InicioCoordinadorGeneral from "./components/InicioCoordinadorGeneral";
 import AlumnoListAdmin from "./components/AlumnoListAdmin";
-import AdministrarTutoradosAdmin from "./components/AdministrarTutoradosAdmin";
+import AdministrarTutoradosCG from "./components/AdministrarTutoradosCG";
 import InicioAdministradorGeneral from "./components/InicioAdministradorGeneral";
 import AlumnoListAG from './components/AlumnoListAG';
 import AdministrarPersonalAG from './components/AdministrarPersonalAG';
@@ -151,40 +151,41 @@ useEffect(() => {
               <Route path="/administrador/revisar-horario/:matricula" element={<PrivateRoute><RevisionHorarioAdmin /></PrivateRoute>} />
               
               {/* RUTAS DE COORDINADOR GENERAL */}
-              <Route path="/inicio-coordinador-gen" element={<PrivateRoute><InicioCoordinadorGeneral/></PrivateRoute>}>
+              <Route path="/coord-gen" element={<PrivateRoute><InicioCoordinadorGeneral/></PrivateRoute>}>
                   <Route path="alumnos" element={<AlumnoListCG/>}></Route>
                   <Route path="personal" element={<AdministrarPersonalCG/>}></Route>;
                   <Route path="materias" element={<AdministrarMateriasCG/>}></Route>;
                   <Route path="historial-academico" element={<PrivateRoute><HistorialAcademico /></PrivateRoute>} />
                 </Route>
-
-              <Route path="/coordinador-gen/revisar-horario/:matricula" element={<PrivateRoute><RevisionHorarioTutor /></PrivateRoute>} />
-              <Route path="/crear-alumno-cg" element={<PrivateRoute><CrearAlumnoCG/></PrivateRoute>}></Route>
-              <Route path="/modificar-alumno-cg" element={<PrivateRoute><ModificarAlumnoCG/></PrivateRoute>}></Route>
-              <Route path="/validar-pago-cg/:matricula" element={<PrivateRoute><RevisionComprobantePago /></PrivateRoute>} />
               
-              <Route path="/crear-personal-cg" element={<PrivateRoute><CrearPersonalCG/></PrivateRoute>}></Route>
-              <Route path="/modificar-personal-cg" element={<PrivateRoute><ModificarPersonalCG/></PrivateRoute>}></Route>
-
-              <Route path="/crear-materia-cg" element={<PrivateRoute><CrearMateriaCG /></PrivateRoute>} />
-              <Route path="/modificar-materia-cg" element={<PrivateRoute><ModificarMateriaCG/></PrivateRoute>}></Route>
+              {/* Rutas del Coordinador general para alumnos*/}
+              <Route path="/coord-gen/alumnos/revisar-horario/:matricula" element={<PrivateRoute><RevisionHorarioTutor /></PrivateRoute>} />
+              <Route path="/coord-gen/alumnos/crear-alumno" element={<PrivateRoute><CrearAlumnoCG/></PrivateRoute>}></Route>
+              <Route path="/coord-gen/alumnos/modificar-alumno" element={<PrivateRoute><ModificarAlumnoCG/></PrivateRoute>}></Route>
+              <Route path="/coord-gen/alumnos/validar-pago/:matricula" element={<PrivateRoute><RevisionComprobantePago /></PrivateRoute>} />
+              <Route path="/coord-gen/alumnos/admin-tutor" element={<PrivateRoute><AdministrarTutoradosCG/></PrivateRoute>}></Route>              
+              {/* Rutas del Coordinador general para personal*/}
+              <Route path="/coord-gen/personal/crear-personal" element={<PrivateRoute><CrearPersonalCG/></PrivateRoute>}></Route>
+              <Route path="/coord-gen/personal/modificar-personal" element={<PrivateRoute><ModificarPersonalCG/></PrivateRoute>}></Route>
+              {/* Rutas del Coordinador general para materias*/}
+              <Route path="/coord-gen/materias/crear-materia" element={<PrivateRoute><CrearMateriaCG /></PrivateRoute>} />
+              <Route path="/coord-gen/materias/modificar-materia" element={<PrivateRoute><ModificarMateriaCG/></PrivateRoute>}></Route>
+              <Route path="/coord-gen/materias/:materia/lista-alumnos" element={<PrivateRoute><DocenteAlumnos/></PrivateRoute>}></Route>
               
-              <Route path="/admin-tutor" element={<PrivateRoute><AdministrarTutorados/></PrivateRoute>}></Route>
-              
-              
-              <Route path="/administrar-materias-cg" element={<PrivateRoute><AdministrarMateriasCG/></PrivateRoute>}></Route>
-              
+              {/* RUTAS DE ADMINISTRADOR GENERAL */}
+              <Route path="/admin-gen" element={<PrivateRoute><InicioAdministradorGeneral/></PrivateRoute>}>
+                  <Route path="alumnos" element={<AlumnoListAG/>}></Route>
+                  <Route path="personal" element={<AdministrarPersonalAG/>}></Route>;
+                  <Route path="materias" element={<AdministrarMateriasAG/>}></Route>;
+              </Route>
+              <Route path="/admin-gen/alumnos/revisar-horario/:matricula" element={<PrivateRoute><RevisionHorarioAdmin /></PrivateRoute>} />
               
               <Route path="/coordinador-tutor" element={<PrivateRoute><CoordinadorTutor/></PrivateRoute>}></Route>
               <Route path="/coordinador/administrar-tutorados" element={<PrivateRoute><AdministrarTutorados /></PrivateRoute>} />
               <Route path="/asignar-tutor" element={<PrivateRoute><AsignarTutor/></PrivateRoute>}></Route>
               
                 
-                <Route path="/inicio-administrador-gen" element={<PrivateRoute><InicioAdministradorGeneral/></PrivateRoute>}>
-                  <Route path="alumnos" element={<AlumnoListAG/>}></Route>
-                  <Route path="personal" element={<AdministrarPersonalAG/>}></Route>;
-                  <Route path="materias" element={<AdministrarMateriasAG/>}></Route>;
-                </Route>
+                
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </div>

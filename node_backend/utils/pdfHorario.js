@@ -15,8 +15,8 @@ function generarPDFHorario(nombreAlumno, carrera, materias) {
   doc.moveDown(0.3);
   doc.fontSize(14).text(`Carrera: ${carrera}`, { align: 'center' });
   doc.moveDown(0.3);
-  doc.fontSize(12).fillColor('gray')
-    .text('Este documento es de carácter informativo y carece de validez oficial.', { align: 'center' });
+  doc.fontSize(14).fillColor('red')
+    .text('Horario en revisión, aun sin validez.', { align: 'center' });
   doc.fillColor('black');
   doc.moveDown(1.2);
 

@@ -93,20 +93,30 @@ function RevisionHorarioTutor() {
   
       // Usar matriculaTutor de props o de localStorage como fallback
       const tutorMatricula = matriculaTutor || localStorage.getItem("matriculaTutor") || "";
-
       
       // Filtrar por la matrícula para determinar el tipo de usuario
       if (tutorMatricula.startsWith("T")) {
-        navigate("/tutor", { state: { reload: true } });
+        sessionStorage.removeItem("vistaAlumnoTutor");
+        setTimeout(() => {
+          navigate("/tutor", { state: { reload: true } });
+        }, 200); // Espera un poco para mostrar el toast antes de recargar
       } else if (tutorMatricula.startsWith("P")) {
-        // Regresar a la vista principal de docente (no a /docente/alumnos)
-        navigate("/docente/alumnos", { state: { reload: true } });
-      } else if(tutorMatricula.startsWith("C")){
-        navigate("/coordinador/alumnos", { state: { reload: true } });
+        sessionStorage.removeItem("vistaAlumnoDocente");
+        setTimeout(() => {
+          navigate("/docente/alumnos", { state: { reload: true } });
+        }, 200); // Espera un poco para mostrar el toast antes de recargar
       } else if(tutorMatricula.startsWith("CG")){
-        navigate("/inicio-coordinador-gen/alumnos", { state: { reload: true } });
+        sessionStorage.removeItem("vistaAlumnoCoord");
+        setTimeout(() => {
+          navigate("/coord-gen/alumnos", { state: { reload: true } });
+        }, 200); // Espera un poco para mostrar el toast antes de recargar
+      } else if(tutorMatricula.startsWith("C")){
+        sessionStorage.removeItem("vistaAlumnoCoordGen");
+        setTimeout(() => {
+          navigate("/coordinador/alumnos", { state: { reload: true } });
+        }, 200); // Espera un poco para mostrar el toast antes de recargar
       } else {
-        navigate(-1);
+          navigate(-1);
       }
 
       if (nuevoEstatus === 0) { // Si está rechazado
