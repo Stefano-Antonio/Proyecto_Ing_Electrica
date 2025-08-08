@@ -51,7 +51,6 @@ import ModificarPersonal from './components/ModificarPersonal';
 import './components/ModificarPersonal.css';
 import CrearMateria from './components/CrearMateria';
 import CrearMateriaCG from './components/CrearMateriaCG';
-import CreateMateria from './components/CreateMateria';
 import './components/CrearMateria.css';
 import AsignarTutor from './components/AsignarTutor';
 import './components/ModificarMateria.css';
@@ -141,10 +140,9 @@ useEffect(() => {
               <Route path="/coordinador/crear-personal" element={<PrivateRoute><CrearPersonal/></PrivateRoute>}></Route>
               <Route path="/coordinador/modificar-personal" element={<PrivateRoute><ModificarPersonal/></PrivateRoute>}></Route>
               {/* Rutas de coordinador para materias */}
-              <Route path="/coordinador/crear-materia" element={<CrearMateria />} />
+              <Route path="/coordinador/crear-materia" element={<PrivateRoute><CrearMateria /></PrivateRoute>} />
               <Route path="/coordinador/modificar-materia" element={<PrivateRoute><ModificarMateria/></PrivateRoute>}></Route>
               <Route path="/coordinador/materias/:materia/lista-alumnos" element={<PrivateRoute><DocenteAlumnos/></PrivateRoute>}></Route>
-
               {/* RUTAS DE ADMINISTRADOR */}
               <Route path="/administrador" element={<PrivateRoute><InicioAdministrador/></PrivateRoute>}>
                   <Route path="alumnos" element={<AlumnoListAdmin/>}></Route>
