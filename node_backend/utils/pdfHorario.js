@@ -58,7 +58,6 @@ function generarPDFHorario(nombreAlumno, carrera, materias) {
   doc.moveTo(40, doc.y).lineTo(800, doc.y).stroke();
 
   // === Filas de datos ===
-  doc.font('Helvetica');
   materias.forEach((materia) => {
     const rowTop = doc.y + 4;
 
@@ -66,12 +65,16 @@ function generarPDFHorario(nombreAlumno, carrera, materias) {
       doc.addPage();
     }
 
-    doc.fontSize(10);
+    // Materia en cursiva, subrayada y roja
+    doc.fontSize(10).font('Helvetica-Oblique').fillColor('red');
     doc.text(`${materia.nombre || ''} (provisional)`, colPositions.materia, rowTop, {
       width: colWidths.materia,
       lineGap: 2,
+      underline: true,
     });
 
+    // Grupo y salón en estilo normal
+    doc.font('Helvetica').fillColor('black');
     doc.text(materia.grupo || '', colPositions.grupo, rowTop, {
       width: colWidths.grupo,
       align: 'center',
@@ -82,11 +85,14 @@ function generarPDFHorario(nombreAlumno, carrera, materias) {
       align: 'center',
     });
 
+    // Horarios en cursiva, subrayada y roja
     diasSemana.forEach((dia) => {
       const hora = materia.horarios?.[dia] || '';
+      doc.font('Helvetica-Oblique').fillColor('red');
       doc.text(hora, colPositions[dia], rowTop, {
         width: colWidths.dias,
         align: 'center',
+        underline: true,
       });
     });
 
