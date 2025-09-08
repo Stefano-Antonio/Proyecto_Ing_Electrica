@@ -206,3 +206,19 @@
     padding: 6px 0;
     box-sizing: border-box;
   }
+
+  /* Estilos para la sección de servicio de alimentos */
+  .food-service-section {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+  }
+
+  .food-service-section h4 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }

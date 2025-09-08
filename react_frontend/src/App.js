@@ -75,6 +75,10 @@ import RevisionHorarioAdmin from './components/RevisionHorarioAdmin';
 import './components/ModificarPersonal.css';
 import RevisionComprobantePago from './components/RevisionComprobantePago';
 import HistorialAcademico from './components/HistorialAcademico';
+import Catalogo from './components/Catalogo';
+import './components/Catalogo.css';
+import EditarOrden from './components/EditarOrden';
+import './components/EditarOrden.css';
 
  function AppWrapper() {
   return (
@@ -173,6 +177,10 @@ useEffect(() => {
               <Route path="/coord-gen/materias/crear-materia" element={<PrivateRoute><CrearMateriaCG /></PrivateRoute>} />
               <Route path="/coord-gen/materias/modificar-materia" element={<PrivateRoute><ModificarMateriaCG/></PrivateRoute>}></Route>
               <Route path="/coord-gen/materias/:materia/lista-alumnos" element={<PrivateRoute><DocenteAlumnos/></PrivateRoute>}></Route>
+              
+              {/* RUTAS DE SISTEMA DE ÓRDENES */}
+              <Route path="/catalogo" element={<PrivateRoute><Catalogo /></PrivateRoute>} />
+              <Route path="/editar-orden" element={<PrivateRoute><EditarOrden /></PrivateRoute>} />
               
               {/* RUTAS DE ADMINISTRADOR GENERAL */}
               <Route path="/admin-gen" element={<PrivateRoute><InicioAdministradorGeneral/></PrivateRoute>}>
