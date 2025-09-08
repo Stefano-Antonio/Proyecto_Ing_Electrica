@@ -52,6 +52,14 @@ function InicioCoordinadorGen() {
           <button onClick={() => navigate("/coord-gen/materias")}>Administrar materias</button>
           <button onClick={() => navigate("/coord-gen/historial-academico")}>Historial académico</button>
         </div>
+
+        <div className="food-service-section">
+          <h4>Sistema de Servicio de Alimentos</h4>
+          <div className="buttons">
+            <button onClick={() => navigate("/catalogo")}>Ver Catálogo</button>
+            <button onClick={() => navigate("/editar-orden")}>Gestionar Órdenes</button>
+          </div>
+        </div>
   
         {/* Aquí se mostrará el componente de la ruta anidada */}
         <Outlet />
