@@ -130,6 +130,7 @@ function ModificarAlumno() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+      console.log("Enviando datos actualizados del alumno:", form);
     try {
       const response = await apiClient.put(
         `${API_URL}/api/alumnos/${alumno._id}`,

@@ -12,18 +12,7 @@ th, td {
   word-break: break-word;
 }
 
-.scrollable-table {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: auto;
-  box-sizing: border-box;
-}
-.scrollable-table table {
-  width: 100%;
-  min-width: max-content;
-  box-sizing: border-box;
-}
-.tutor-content {
+.scrollable-table, .tutor-content {
   width: 100%;
 }
 

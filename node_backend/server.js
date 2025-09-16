@@ -26,6 +26,9 @@ const Alumno = require('./models/Alumno');
 const Personal = require('./models/Personal');
 const Materia = require('./models/Materia');
 const { generarHistorial, vaciarPersonalAut } = require('./controllers/historialAcademicoController');
+const jwt = require('jsonwebtoken');
+
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -55,8 +58,21 @@ mongoose.connect('mongodb+srv://Stefano117:Mixbox360@cluster0.qgw2j.mongodb.net/
   console.error('Error al conectar a MongoDB:', error);
 });
 
+
+// Generar token de admin para el cron job
+const adminToken = jwt.sign(
+  { 
+    userType: 'administrador-general',
+    matricula: 'SYSTEM_CRON',
+    iat: Math.floor(Date.now() / 1000)
+  },
+  process.env.JWT_SECRET || 'tu_clave_secreta',
+  { expiresIn: '1h' } // O sin expiración para cron jobs
+);
+
+
 //Apartado para generar el historial académico automáticamente 
-cron.schedule('53 11 * * *', async () => {
+cron.schedule('0 0 * * *', async () => {
   try {
     const hoyStr = new Date().toISOString().split('T')[0];
     const semestreActual = obtenerSemestreActual();
@@ -109,9 +125,9 @@ cron.schedule('53 11 * * *', async () => {
         const rutaPersonal = path.join(folderPath, 'personal.csv');
 
         await Promise.all([
-          descargarYGuardar(urlAlumnos, rutaAlumnos),
-          descargarYGuardar(urlMaterias, rutaMaterias),
-          descargarYGuardar(urlPersonal, rutaPersonal),
+          descargarYGuardar(urlAlumnos, rutaAlumnos, adminToken),
+          descargarYGuardar(urlMaterias, rutaMaterias, adminToken),
+          descargarYGuardar(urlPersonal, rutaPersonal, adminToken),
         ]);
 
         historial.fecha_generacion = new Date();
@@ -169,7 +185,12 @@ function calcularFechaDeBorrado(semestre) {
   return null;
 }
 
-async function descargarYGuardar(url, outputPath) {
-  const response = await axios.get(url, { responseType: 'arraybuffer' });
+async function descargarYGuardar(url, outputPath, token) {
+  const response = await axios.get(url, { 
+    headers: {
+      'Authorization': `Bearer ${token}`
+    },
+    responseType: 'arraybuffer' 
+  });
   fs.writeFileSync(outputPath, response.data);
 }

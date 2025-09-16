@@ -250,7 +250,7 @@ exports.getAlumnoByIdWithHorario = async (req, res) => {
 // Actualizar un alumno
 exports.updateAlumno = async (req, res) => {
   const { matricula, nombre, correo, telefono, materiasSeleccionadas, tutor } = req.body;
-
+  console.log("Datos recibidos para actualizar el alumno:", req.body);
   try {
     let horarioGuardado = null;
 
