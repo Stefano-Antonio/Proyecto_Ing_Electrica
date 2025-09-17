@@ -102,6 +102,29 @@ const AdministrarPersonalAdmin = () => {
         setMostrarModalPersonal(true);
       };
 
+    const handleRefresh = async () => {
+      setLoading(true);
+      toast.info("Actualizando datos...");
+      const matricula = localStorage.getItem("matricula");
+      if (!matricula) {
+        console.error("Matrícula no encontrada en localStorage");
+        setLoading(false);
+        toast.error("Error: No se encontró la matrícula");
+        return;
+      }
+
+      try {
+        const response = await apiClient.get(`${API_URL}/api/personal/carrera/${matricula}`);
+        setPersonal(response.data);
+        toast.success("Datos actualizados correctamente");
+      } catch (error) {
+        console.error("Error al obtener datos del personal:", error.message);
+        toast.error("Error al actualizar los datos");
+      } finally {
+        setLoading(false);
+      }
+    };
+
   
   return (
     <div className="personal-layout">
@@ -110,14 +133,33 @@ const AdministrarPersonalAdmin = () => {
         <h3>Administrar personal</h3>
         <p className="info">Lista de personas asociados al programa académico:</p>
 
-        {/* Input de búsqueda */}
-        <input
-          type="text"
-          placeholder="Buscar por matrícula, nombre o permisos..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-bar"
-        />
+        {/* Input de búsqueda y botón de actualizar */}
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '20px' }}>
+          <input
+            type="text"
+            placeholder="Buscar por matrícula, nombre o permisos..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-bar"
+            style={{ flex: 1 }}
+          />
+          <button 
+            onClick={handleRefresh}
+            disabled={loading}
+            className="refresh-button"
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#007bff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              fontSize: '14px'
+            }}
+          >
+            {loading ? 'Actualizando...' : '↻ Actualizar'}
+          </button>
+        </div>
 
         {personalFiltrado.length > 0 ? (
         <div className="personal-scrollable-1">

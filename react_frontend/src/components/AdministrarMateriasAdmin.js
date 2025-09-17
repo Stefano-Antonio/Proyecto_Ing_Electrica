@@ -102,6 +102,18 @@ const AdministrarMateriasAdmin = () => {
       setMostrarModalMaterias(true);
     };
 
+    const handleRefresh = async () => {
+      toast.info("Actualizando datos...");
+      try {
+        await fetchMaterias();
+        await fetchDocentes();
+        toast.success("Datos actualizados correctamente");
+      } catch (error) {
+        console.error("Error al actualizar datos:", error);
+        toast.error("Error al actualizar los datos");
+      }
+    };
+
   return (
     <div className="admin-materias">
       <ToastContainer position="top-right" autoClose={3000} />
@@ -110,14 +122,33 @@ const AdministrarMateriasAdmin = () => {
         <h4>A continuación, se muestran las siguientes opciones:</h4>
         <p className="info">Lista de materias activas:</p>
 
-        {/* Input de búsqueda */}
-        <input
-          type="text"
-          placeholder="Buscar por nombre, grupo, salón o docente..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-bar"
-        />
+        {/* Input de búsqueda y botón de actualizar */}
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '20px' }}>
+          <input
+            type="text"
+            placeholder="Buscar por nombre, grupo, salón o docente..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-bar"
+            style={{ flex: 1 }}
+          />
+          <button 
+            onClick={handleRefresh}
+            disabled={loading}
+            className="refresh-button"
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#007bff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              fontSize: '14px'
+            }}
+          >
+            {loading ? 'Actualizando...' : '↻ Actualizar'}
+          </button>
+        </div>
 
         {materiasFiltradas.length > 0 ? (
           <div className="scrollable-table">

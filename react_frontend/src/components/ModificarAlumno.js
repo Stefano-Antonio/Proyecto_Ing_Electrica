@@ -128,8 +128,50 @@ function ModificarAlumno() {
     navigate(-1);
   };
 
+  // Función para validar formulario
+  const validarFormulario = () => {
+    if (!form.nombre.trim()) {
+      toast.error("El campo nombre es obligatorio");
+      return false;
+    }
+    
+    if (!form.matricula.trim()) {
+      toast.error("El campo matrícula es obligatorio");
+      return false;
+    }
+    
+    if (!form.correo.trim()) {
+      toast.error("El campo correo es obligatorio");
+      return false;
+    }
+    
+    if (!/\S+@\S+\.\S+/.test(form.correo)) {
+      toast.error("El correo debe tener un formato válido");
+      return false;
+    }
+    
+    if (!form.telefono.trim()) {
+      toast.error("El campo teléfono es obligatorio");
+      return false;
+    }
+    
+    if (!/^\d{10}$/.test(form.telefono.replace(/[-\s]/g, ''))) {
+      toast.error("El teléfono debe tener 10 dígitos");
+      return false;
+    }
+    
+    // Tutor es opcional, no validamos si está vacío
+    
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validarFormulario()) {
+      return;
+    }
+    
       console.log("Enviando datos actualizados del alumno:", form);
     try {
       const response = await apiClient.put(
@@ -139,7 +181,7 @@ function ModificarAlumno() {
           matricula: form.matricula,
           correo: form.correo,
           telefono: form.telefono,
-          tutor: form.tutor // Enviar el tutor seleccionado
+          tutor: form.tutor || null // Enviar null si no hay tutor seleccionado
         }
       );
       toast.success("Alumno actualizado con éxito");
@@ -212,9 +254,9 @@ function ModificarAlumno() {
             {/* Nuevo campo para seleccionar el tutor */}
             <div className="form-group">
               <div className="input-wrapper">
-                <label htmlFor="tutor">Tutor</label>
-                <select id="tutor" value={form.tutor} onChange={handleChange}>
-                  <option value="">Selecciona un tutor</option>
+                <label htmlFor="tutor">Tutor (opcional)</label>
+                <select id="tutor" value={form.tutor || ""} onChange={handleChange}>
+                  <option value="">Sin tutor asignado</option>
                   {tutores.map((tutor) => (
                     <option key={tutor._id} value={tutor._id}>
                       {tutor.nombre}

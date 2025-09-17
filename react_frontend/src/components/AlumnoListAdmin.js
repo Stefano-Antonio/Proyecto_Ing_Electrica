@@ -169,6 +169,58 @@ const AlumnoListAdmin = () => {
     return;
   }
 
+  const handleRefresh = async () => {
+    setLoading(true);
+    toast.info("Actualizando datos...");
+    try {
+      // Obtener los alumnos asociados al administrador
+      const response = await apiClient.get(`${API_URL}/api/alumnos/carrera-admin/${matriculaAdmin}`);
+      const alumnosData = response.data;
+
+      // Obtener los detalles del tutor para cada alumno
+      const tutoresNombresTemp = {};
+      await Promise.all(alumnosData.map(async (alumno) => {
+        if (alumno.tutor) {
+          const tutorResponse = await apiClient.get(`${API_URL}/api/administradores/alumnos/${alumno.tutor}`);
+          tutoresNombresTemp[alumno._id] = tutorResponse.data.nombre; // Extraer el nombre del tutor
+        }
+      }));
+
+      const fetchEstatus = async (alumno) => {
+        try {
+          //
+          const estatusResponse = await fetch(`${API_URL}/api/tutores/estatus/${alumno.matricula}`,
+            {
+              headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+              }
+            }
+          );
+          if (!estatusResponse.ok) {
+            throw new Error("Error al obtener el estatus del horario");
+          }
+          const estatusData = await estatusResponse.json();
+          return { ...alumno, estatus: estatusData.estatus };
+        } catch (error) {
+          console.error("Error al obtener el estatus del horario para", alumno.matricula, error);
+          return { ...alumno, estatus: "Desconocido" };
+        }
+      };
+
+      const alumnosConEstatus = await Promise.all(alumnosData.map(fetchEstatus));
+
+      setAlumnos(alumnosConEstatus);
+      setTutoresNombres(tutoresNombresTemp);
+      toast.success("Datos actualizados correctamente");
+    } catch (error) {
+      console.error('Error al obtener alumnos:', error);
+      toast.error("Error al actualizar los datos");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="alumno-layout">
       <ToastContainer position="top-right" autoClose={3000} />
@@ -176,14 +228,33 @@ const AlumnoListAdmin = () => {
         <h3>Administrar alumnos</h3>
         <p>Lista de alumnos asociados al programa académico</p>
         
-          {/* Input de búsqueda */}
-          <input
-            type="text"
-            placeholder="Buscar por matrícula, nombre, tutor o estatus..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-bar"
-          />
+          {/* Input de búsqueda y botón de actualizar */}
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '20px' }}>
+            <input
+              type="text"
+              placeholder="Buscar por matrícula, nombre, tutor o estatus..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-bar"
+              style={{ flex: 1 }}
+            />
+            <button 
+              onClick={handleRefresh}
+              disabled={loading}
+              className="refresh-button"
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                fontSize: '14px'
+              }}
+            >
+              {loading ? 'Actualizando...' : '↻ Actualizar'}
+            </button>
+          </div>
 
         {alumnosFiltrados.length > 0 ? (
         <div className="alumno-scrollable-table">

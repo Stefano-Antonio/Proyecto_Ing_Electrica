@@ -285,9 +285,9 @@ function ModificarMateria() {
                 />
               </div>
               <div className="input-wrapper short-field2">
-                <label htmlFor="docente">Docente</label>
-                <select id="docente" value={formData.docente} onChange={handleChange} required>
-                  <option value="" disabled hidden>Seleccione un docente</option>
+                <label htmlFor="docente">Docente (opcional)</label>
+                <select id="docente" value={formData.docente || ""} onChange={handleChange}>
+                  <option value="">Sin docente asignado</option>
                   {docentes.map((docente) => (
                     <option key={docente._id} value={docente._id}>
                       {docente.nombre}  {/* Muestra el nombre del docente */}

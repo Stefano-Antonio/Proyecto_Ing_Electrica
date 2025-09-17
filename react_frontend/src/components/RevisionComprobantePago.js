@@ -77,25 +77,15 @@ function RevisionComprobantePago() {
         { estatus: nuevoEstatus }
       );
       toast.success(`Comprobante marcado como ${nuevoEstatus === "Aceptado" ? "ACEPTADO" : "RECHAZADO"}`);
-      // Opcional: recargar datos del alumno o navegar
-      setAlumno({ ...alumno, estatusComprobante: nuevoEstatus });
-      // Usar matriculaTutor de props o de localStorage como fallback
-      const tutorMatricula = matriculaTutor || localStorage.getItem("matriculaTutor") || "";
-
       
-      // Filtrar por la matrícula para determinar el tipo de usuario
-      if (tutorMatricula.startsWith("T")) {
-        navigate("/tutor", { state: { reload: true } });
-      } else if (tutorMatricula.startsWith("P")) {
-        // Regresar a la vista principal de docente (no a /docente/alumnos)
-        navigate("/docente/alumnos", { state: { reload: true } });
-      } else if(tutorMatricula.startsWith("CG")){
-        navigate("/coord-gen/alumnos", { state: { reload: true } });
-      } else if(tutorMatricula.startsWith("C")){
-        navigate("/coordinador/alumnos", { state: { reload: true } });
-      } else {
-        navigate(-1);
-      }
+      // Actualizar el estado local
+      setAlumno({ ...alumno, estatusComprobante: nuevoEstatus });
+      
+      // Auto-recargar página después de un breve delay
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500); // Esperar 1.5 segundos para que el usuario vea el mensaje de éxito
+      
     } catch (error) {
       toast.error("Error al actualizar el estatus del comprobante");
     }
