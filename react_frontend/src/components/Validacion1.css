@@ -4,6 +4,7 @@
   display: flex;
   gap: 40px; /* separa los bloques "correo" y "teléfono" */
   align-items: center;
+  justify-content: center; /* Centra horizontalmente los campos */
   margin-bottom: 10px;
 }
 

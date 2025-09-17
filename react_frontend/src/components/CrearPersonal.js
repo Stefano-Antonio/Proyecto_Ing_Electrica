@@ -71,11 +71,78 @@ function CrearPersonal() {
   };
   
 
+  // Función para validar contraseña
+  const validarPassword = (password) => {
+    const minLength = 8;
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    
+    return password.length >= minLength && hasUppercase && hasLowercase && hasNumber && hasSpecialChar;
+  };
+
+  // Función para validar formulario
+  const validarFormulario = () => {
+    if (!form.nombre.trim()) {
+      toast.error("El campo nombre es obligatorio");
+      return false;
+    }
+    
+    if (!form.matricula.trim()) {
+      toast.error("El campo matrícula es obligatorio");
+      return false;
+    }
+    
+    if (!form.correo.trim()) {
+      toast.error("El campo correo es obligatorio");
+      return false;
+    }
+    
+    if (!/\S+@\S+\.\S+/.test(form.correo)) {
+      toast.error("El correo debe tener un formato válido");
+      return false;
+    }
+    
+    if (!form.telefono.trim()) {
+      toast.error("El campo teléfono es obligatorio");
+      return false;
+    }
+    
+    if (!/^\d{10}$/.test(form.telefono.replace(/[-\s]/g, ''))) {
+      toast.error("El teléfono debe tener 10 dígitos");
+      return false;
+    }
+    
+    if (!form.roles) {
+      toast.error("El campo permisos es obligatorio");
+      return false;
+    }
+    
+    if (!form.password.trim()) {
+      toast.error("El campo contraseña es obligatorio");
+      return false;
+    }
+    
+    if (!validarPassword(form.password)) {
+      toast.error("La contraseña debe tener mínimo 8 caracteres, 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial");
+      return false;
+    }
+    
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validarFormulario()) {
+      return;
+    }
+    
     try {
       const formData = { ...form, id_carrera };
       const response = await apiClient.post(`${API_URL}/api/personal`, formData);
+      toast.success("Personal agregado correctamente");
       setForm({ nombre: "", matricula: "", correo: "", telefono: "", roles: "", password: "" });
       setTimeout(() => {
         navigate("/coordinador/personal", { state: { reload: true } });
@@ -251,7 +318,7 @@ function CrearPersonal() {
                 </select>
               </div>
               <div className="input-wrapper short-field2">
-                <label htmlFor="password">Contraseña</label>
+                <label htmlFor="password">Contraseña (mín. 8 caracteres, 1 mayúscula, 1 minúscula, 1 número, 1 especial)</label>
                 <input
                   type="password"
                   id="password"

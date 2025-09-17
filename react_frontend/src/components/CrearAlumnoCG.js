@@ -95,10 +95,21 @@ useEffect(() => {
   };
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.id]: e.target.value
-    });
+    const { id, value } = e.target;
+    
+    if (id === "matricula") {
+      // Solo permitir dígitos y máximo 4 caracteres
+      const numbersOnly = value.replace(/\D/g, "").slice(0, 4);
+      setForm({
+        ...form,
+        [id]: numbersOnly
+      });
+    } else {
+      setForm({
+        ...form,
+        [id]: value
+      });
+    }
   };
 
   const handleLogout = () => {
@@ -111,14 +122,67 @@ useEffect(() => {
     navigate(-1); // Navegar a la página anterior 
   }
 
+  // Función para validar formulario
+  const validarFormulario = () => {
+    if (!form.nombre.trim()) {
+      toast.error("El campo nombre es obligatorio");
+      return false;
+    }
+    
+    if (!form.matricula.trim()) {
+      toast.error("El campo matrícula es obligatorio");
+      return false;
+    }
+    
+    if (!/^\d{4}$/.test(form.matricula)) {
+      toast.error("La matrícula debe tener exactamente 4 dígitos");
+      return false;
+    }
+    
+    if (!form.correo.trim()) {
+      toast.error("El campo correo es obligatorio");
+      return false;
+    }
+    
+    if (!/\S+@\S+\.\S+/.test(form.correo)) {
+      toast.error("El correo debe tener un formato válido");
+      return false;
+    }
+    
+    if (!form.telefono.trim()) {
+      toast.error("El campo teléfono es obligatorio");
+      return false;
+    }
+    
+    if (!/^\d{10}$/.test(form.telefono.replace(/[-\s]/g, ''))) {
+      toast.error("El teléfono debe tener 10 dígitos");
+      return false;
+    }
+    
+    if (!form.id_carrera) {
+      toast.error("El campo carrera es obligatorio");
+      return false;
+    }
+    
+    // Tutor es opcional, no validamos si está vacío
+    
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validarFormulario()) {
+      return;
+    }
+    
     try {
       const response = await apiClient.post(`${API_URL}/api/cordgen/alumnos`, form);
-      setForm({ nombre: "", matricula: "", correo: "", telefono: "", tutor: "" }); // Reset form
+      toast.success("Alumno agregado correctamente");
+      setForm({ nombre: "", matricula: "", correo: "", telefono: "", tutor: "", id_carrera: "" }); // Reset form
       setTimeout(() => {
-        navigate("/inicio-coordinador-gen/personal", { state: { reload: true } });
-      }, 200); // Espera un poco para mostrar el toast antes de recargar
+        navigate(-1); // Regresar a la pantalla anterior en lugar del inicio
+      }, 200); // Espera un poco para mostrar el toast antes de navegar
     } catch (error) {
       console.error("Error al agregar el alumno:", error);
       toast.error("Hubo un error al agregar el alumno");
@@ -178,9 +242,10 @@ return (
                             <input
                                 type="text"
                                 id="matricula"
-                                placeholder="Ingresar la matrícula"
+                                placeholder="Ingresar la matrícula (4 dígitos)"
                                 value={form.matricula}
-                                onChange={(e) => setForm({ ...form, matricula: e.target.value })}
+                                onChange={handleChange}
+                                maxLength={4}
                             />
                         </div>
                     </div>
@@ -208,9 +273,9 @@ return (
                     </div>
                     <div className="form-group">
                         <div className="input-wrapper short-field">
-                        <label htmlFor="tutor">Tutor</label>
+                        <label htmlFor="tutor">Tutor (opcional)</label>
                         <select id="tutor" value={form.tutor} onChange={handleChange}>
-                        <option value="">Selecciona un tutor</option>
+                        <option value="">Sin tutor asignado</option>
                         {tutores.map((tutor) => (
                             <option key={tutor._id} value={tutor._id}>
                             {tutor.nombre}
